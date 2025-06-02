@@ -120,7 +120,8 @@ macro ('match-pats-arm( term (:Literal: l) )) (
 );
 
 macro ('match-pats-arm( term (:Tag: l lt) )) (
-   ( (let (uuid v) term) (==( (.0( (uuid v) )) l )) )
+   ( (let (uuid v) term) (==( (.discriminator-case-tag( (uuid v) )) l )) )
+   #( (let (uuid v) term) (==( (.discriminator-case-tag( (uuid v) )) (as (uuid v) lt) )) )
 );
 
 macro ('match-pats-arm( term ('macro::lhs-head( x rest )) )) (
