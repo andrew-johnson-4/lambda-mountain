@@ -15,17 +15,19 @@ infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (:
          (set r (max( r1 r2 )))
       ))
       ( case (
-         (if (==( case-number 0_u64 )) (
-            (let tag '_s)
-            (match case (
-               ()
-               ( (Lit( tg _ )) (set tag tg) )
-               ( (App( (Lit( tg _ )) args )) (set tag tg) )
-               ( ASTEOF () )
-               ( _ (
-                  (print 'Unexpected\sType\sCase\s_s)(print base-type)(print '\n_s)(exit 1_u64)
-               ))
+         (let tag '_s)
+         (match case (
+            ()
+            ( (Lit( tg _ )) (set tag tg) )
+            ( (App( (Lit( tg _ )) args )) (set tag tg) )
+            ( ASTEOF () )
+            ( _ (
+               (print 'Unexpected\sType\sCase\s_s)(print base-type)(print '\n_s)(exit 1_u64)
             ))
+         ))
+         (let and-tag (&&( base-type (t1(+( 'Tag::_s tag ))) )))
+         (add-quick-prop( and-tag and-tag (t2( 'CaseNumber_s (t1(to-string case-number)) )) ))
+         (if (==( case-number 0_u64 )) (
             (add-quick-prop( (t3( 'Array_s base-type TAny )) (t3( 'Array_s base-type TAny ))
                (t2( 'CaseNumber_s (t1 '0_s) ))
             ))
