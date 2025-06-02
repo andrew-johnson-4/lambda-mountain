@@ -78,6 +78,10 @@ let infer-type2-definition(term: AST): Nil = (
          for vector Tuple{ field-name=first, field-type=second } in case-fields {
             o-case-fields = cons((field-name, field-type), o-case-fields);
          };
+         let tag-guard = lhs-type && t1(c"Tag::"+case-tag);
+         let tag-case-number = t2(c"CaseNumber", t1(to-string(case-index)));
+         add-quick-prop(tag-guard, tag-guard, tag-case-number);
+         add-weaken-quick-prop(tag-guard, tag-guard, tag-case-number);
          infer-type2-yield-constructor(lhs-type, case-tag, case-index, o-case-fields, term);
          case-index = case-index + 1;
       };

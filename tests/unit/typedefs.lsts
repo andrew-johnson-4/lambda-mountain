@@ -26,3 +26,6 @@ let t3 = I2{1};
 print("TT a=\{t1.a}, b=\{t1.b} discriminator \{t1.discriminator-case-tag}\n");
 print("I1 a=\{t2.i}, b=\{(t2 as Tag::I1).j} discriminator: \{t2.discriminator-case-tag}\n");
 print("I2 discriminator: \{t3.discriminator-case-tag}\n");
+
+print("I1 discriminator \{(t2 as Tag::I1).discriminator-case-tag}\n");
+print("I2 discriminator \{(t2 as Tag::I2).discriminator-case-tag}\n");
