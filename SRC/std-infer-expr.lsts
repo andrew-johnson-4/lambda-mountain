@@ -59,7 +59,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          add-concrete-type-instance(tt);
          (tctx, let new-t) = std-infer-expr(tctx, t, false, used, TAny);
          if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
-         let inner-tt = typeof(t);
+         let inner-tt = normalize(typeof(t));
          if tt.tag.has-prefix(c"Tag::") then tt = tt && inner-tt
          else tt = tt && inner-tt.with-only-class;
          ascript-normal(term, tt);
