@@ -171,7 +171,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x1 )) )) (
    (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
-      (if (==( (.0( (uuid v) )) l ))
+      (if (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) ))
           (if (match-pats-arm( (open(.1( (as (uuid v) lt) ))) x1 ))
               (set (uuid m) 1_u8)
               ()
@@ -186,7 +186,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x2 x1 )) )) (
    (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
-      (if (==( (.0( (uuid v) )) l ))
+      (if (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) ))
           (if (match-pats-arm( (open(.1( (as (uuid v) lt) ))) x1 ))
               (if (match-pats-arm( (open(.2( (as (uuid v) lt) ))) x2 ))
                   (set (uuid m) 1_u8)
@@ -204,7 +204,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x3 x2 x1 )) )) (
    (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
-      (if (==( (.0( (uuid v) )) l ))
+      (if (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) ))
           (if (match-pats-arm( (open(.1( (as (uuid v) lt) ))) x1 ))
               (if (match-pats-arm( (open(.2( (as (uuid v) lt) ))) x2 ))
                   (if (match-pats-arm( (open(.3( (as (uuid v) lt) ))) x3 ))
@@ -225,7 +225,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x4 x3 x2 x1 )) )) (
    (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
-      (if (==( (.0( (uuid v) )) l ))
+      (if (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) ))
           (if (match-pats-arm( (open(.1( (as (uuid v) lt) ))) x1 ))
               (if (match-pats-arm( (open(.2( (as (uuid v) lt) ))) x2 ))
                   (if (match-pats-arm( (open(.3( (as (uuid v) lt) ))) x3 ))
@@ -249,7 +249,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x5 x4 x3 x2 x1 )) )) (
    (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
-      (if (==( (.0( (uuid v) )) l ))
+      (if (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) ))
           (if (match-pats-arm( (open(.1( (as (uuid v) lt) ))) x1 ))
               (if (match-pats-arm( (open(.2( (as (uuid v) lt) ))) x2 ))
                   (if (match-pats-arm( (open(.3( (as (uuid v) lt) ))) x3 ))
@@ -276,7 +276,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x6 x5 x4 x3 x2 x1 )) )) (
    (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
-      (if (==( (.0( (uuid v) )) l ))
+      (if (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) ))
           (if (match-pats-arm( (open(.1( (as (uuid v) lt) ))) x1 ))
               (if (match-pats-arm( (open(.2( (as (uuid v) lt) ))) x2 ))
                   (if (match-pats-arm( (open(.3( (as (uuid v) lt) ))) x3 ))
@@ -310,7 +310,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ('macro::bind-field-by-key( x1-key x1
    (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
-      (if (==( (.0( (uuid v) )) l ))
+      (if (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) ))
           (if (match-pats-arm( (open(x1-key( (as (uuid v) lt) ))) x1 ))
               (set (uuid m) 1_u8)
               ()
@@ -325,7 +325,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ('macro::bind-field-by-key( x1-key ('
    (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
-      (if (==( (.0( (uuid v) )) l ))
+      (if (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) ))
           (if (match-pats-arm( (raw(x1-key( (as (uuid v) lt) ))) x1 ))
               (set (uuid m) 1_u8)
               ()
@@ -340,7 +340,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( ('macro::bind-field-by-key( x2-key 
    (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
-      (if (==( (.0( (uuid v) )) l ))
+      (if (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) ))
           (if (match-pats-arm( (open(x1-key( (as (uuid v) lt) ))) x1 ))
               (if (match-pats-arm( (open(x2-key( (as (uuid v) lt) ))) x2 ))
                   (set (uuid m) 1_u8)
@@ -358,7 +358,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( ('macro::bind-field-by-key( x2-key 
    (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
-      (if (==( (.0( (uuid v) )) l ))
+      (if (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) ))
           (if (match-pats-arm( (raw(x1-key( (as (uuid v) lt) ))) x1 ))
               (if (match-pats-arm( (open(x2-key( (as (uuid v) lt) ))) x2 ))
                   (set (uuid m) 1_u8)
@@ -376,7 +376,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( ('macro::bind-field-by-key( x2-key 
    (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
-      (if (==( (.0( (uuid v) )) l ))
+      (if (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) ))
           (if (match-pats-arm( (open(x1-key( (as (uuid v) lt) ))) x1 ))
               (if (match-pats-arm( (raw(x2-key( (as (uuid v) lt) ))) x2 ))
                   (set (uuid m) 1_u8)
@@ -394,7 +394,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( ('macro::bind-field-by-key( x2-key 
    (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
-      (if (==( (.0( (uuid v) )) l ))
+      (if (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) ))
           (if (match-pats-arm( (raw(x1-key( (as (uuid v) lt) ))) x1 ))
               (if (match-pats-arm( (raw(x2-key( (as (uuid v) lt) ))) x2 ))
                   (set (uuid m) 1_u8)
@@ -412,7 +412,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( ('macro::bind-field-by-key( x3-key 
    (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
-      (if (==( (.0( (uuid v) )) l ))
+      (if (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) ))
           (if (match-pats-arm( (open(x1-key( (as (uuid v) lt) ))) x1 ))
               (if (match-pats-arm( (open(x2-key( (as (uuid v) lt) ))) x2 ))
                   (if (match-pats-arm( (open(x3-key( (as (uuid v) lt) ))) x3 ))
@@ -433,7 +433,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( ('macro::bind-field-by-key( x4-key 
    (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
-      (if (==( (.0( (uuid v) )) l ))
+      (if (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) ))
           (if (match-pats-arm( (open(x1-key( (as (uuid v) lt) ))) x1 ))
               (if (match-pats-arm( (open(x2-key( (as (uuid v) lt) ))) x2 ))
                   (if (match-pats-arm( (open(x3-key( (as (uuid v) lt) ))) x3 ))
@@ -457,7 +457,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( ('macro::bind-field-by-key( x5-key 
    (
       (let (uuid v) term)
       (let (uuid m) 0_u8)
-      (if (==( (.0( (uuid v) )) l ))
+      (if (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) ))
           (if (match-pats-arm( (open(x1-key( (as (uuid v) lt) ))) x1 ))
               (if (match-pats-arm( (open(x2-key( (as (uuid v) lt) ))) x2 ))
                   (if (match-pats-arm( (open(x3-key( (as (uuid v) lt) ))) x3 ))
