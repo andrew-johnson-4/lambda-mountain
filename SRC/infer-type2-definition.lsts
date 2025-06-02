@@ -1,5 +1,5 @@
 
-let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST): Nil = (
+let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U64): Nil = (
    let ctx = None :: Maybe<TContext>;
    ctx = ctx.bind( c"base-type", base-type, ASTEOF );
    ctx = ctx.bind( c"field-type", field-type, ASTEOF );
@@ -17,7 +17,15 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    infer-global-context(field-get-indirect);
    infer-global-context(field-set-indirect);
 
-   ast-parsed-program = ast-parsed-program + field-get + field-set + field-get-indirect + field-set-indirect;
+   ctx = None :: Maybe<TContext>;
+   ctx = ctx.bind( c"base-type", base-type, ASTEOF );
+   ctx = ctx.bind( c"field-type", field-type, ASTEOF );
+   ctx = ctx.bind( c"field-name", TAny, mk-lit(field-name) );
+   ctx = ctx.bind( c"primitive::field-get", TAny, mk-var(c"."+to-string(field-ordinal)) );
+   let field-ordinal-get = substitute(ctx, find-global-callable(c"primitive::field-get", base-type, blame));
+   infer-global-context(field-ordinal-get);
+
+   ast-parsed-program = ast-parsed-program + field-get + field-set + field-get-indirect + field-set-indirect + field-ordinal-get;
 );
 
 let type2-base-type-index = {} :: HashtableEq<(CString,U64),U64>;
@@ -50,12 +58,14 @@ let infer-type2-definition(term: AST): Nil = (
    if non-zero(opaque-alias) then add-opaque-type-alias(lhs-type, opaque-alias);
    for vector Tuple{ case-tag=first, case-fields=second } in cases {
       type2-base-type-index = type2-base-type-index.bind( lhs-type.ground-tag-and-arity, 1 );
+      let field-ordinal = 0_u64;
       for vector Tuple{ field-name=first, field-type=second } in case-fields {
          let guard = lhs-type && (if non-zero(case-tag) then t1(c"Tag::"+case-tag) else TAny);
          let field-wrapped-type = t2(c"Field::"+field-name, field-type);
          add-quick-prop(lhs-type, guard, field-wrapped-type);
          add-weaken-quick-prop(lhs-type, guard, field-wrapped-type);
-         visit-field-template(field-name, guard, field-type, term);
+         visit-field-template(field-name, guard, field-type, term, case-fields.length - field-ordinal);
+         field-ordinal = field-ordinal + 1;
       };
    };
    let common-fields = [] :: List<(CString,Type)>;
@@ -71,7 +81,7 @@ let infer-type2-definition(term: AST): Nil = (
    let lm2struct = if has-tag-case then t1(c"LM2Struct") else t1(c"LM2Struct") && t1(c"LM2StructFlat");
    add-quick-prop(lhs-type, lhs-type, lm2struct);
    add-weaken-quick-prop(lhs-type, lhs-type, lm2struct);
-   let case-index = 0_i64;
+   let case-index = 0_u64;
    for vector Tuple{ case-tag=first, case-fields=second } in cases {
       if case-tag!=c"" {
          let o-case-fields = common-fields;
@@ -88,9 +98,9 @@ let infer-type2-definition(term: AST): Nil = (
    };
 );
 
-let type-constructor-tag-ordinal-index = {} :: HashtableEq<(CString,U64,CString),I64>;
+let type-constructor-tag-ordinal-index = {} :: HashtableEq<(CString,U64,CString),U64>;
 
-let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-number: I64, case-fields: List<(CString,Type)>, blame: AST): Nil = (
+let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, case-fields: List<(CString,Type)>, blame: AST): Nil = (
    (let base-tag, let base-arity) = base-type.ground-tag-and-arity;
    type-constructor-tag-ordinal-index = type-constructor-tag-ordinal-index.bind( (base-tag,base-arity,case-tag), case-number );
 
