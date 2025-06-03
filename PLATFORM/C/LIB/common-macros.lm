@@ -15,7 +15,7 @@ macro ( ('set ('macro::lhs-index( base index )) rhs) )
 
 macro ( ('macro::define-zero (base-type constructor)) ) (
    non-zero := λ(: t base-type). (: (
-      (!=( (.0 t) (.0(: constructor base-type)) ))
+      (!=( (.discriminator-case-tag t) (.discriminator-case-tag(: constructor base-type)) ))
    ) U64);
 );
 
