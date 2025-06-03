@@ -27,27 +27,27 @@ compile-c-typedef-ordinal := λ(: base-type Type)(: blame AST). (: (
    ) ())
 ) Nil);
 
-continue-compile-c-typedefs-concrete := (: LEOF List<Tuple<Tuple<Maybe<TContext>,Type>,AST>>);
+continue-compile-c-typedefs-concrete := (: LEOF List<Tuple<Maybe<TContext>,Type,AST>>);
 continue-compile-c-typedefs-count := 0_u64;
 try-continue-compile-c-typedefs := λ. (: (
    (let continue continue-compile-c-typedefs-concrete)
-   (set continue-compile-c-typedefs-concrete (: LEOF List<Tuple<Tuple<Maybe<TContext>,Type>,AST>>))
+   (set continue-compile-c-typedefs-concrete (: LEOF List<Tuple<Maybe<TContext>,Type,AST>>))
    (while (non-zero continue) (
       (set continue-compile-c-typedefs-count (+( continue-compile-c-typedefs-count 1_u64 )))
       (if (>( continue-compile-c-typedefs-count 100_u64 )) (
          (print 'Unable\sTo\sResolve\sCircular\sType\sDependency\sDuring\sCompilation\n_s)
-         (for-each ((Tuple( (Tuple( _ base-type )) td )) in continue) (
+         (for-each ((Tuple( _ base-type td )) in continue) (
             (print 'Typedef:\s_s)(print base-type)(print '\n_s)
          ))
          (exit 1_u64)
       ) ())
-      (for-each ( (Tuple( (Tuple( tctx base-type )) body )) in continue ) (
+      (for-each ( (Tuple( tctx base-type body )) in continue ) (
          (if (.is-open base-type) () (
             (compile-c-typedef-concrete( tctx base-type body ))
          ))
       ))
       (set continue continue-compile-c-typedefs-concrete)
-      (set continue-compile-c-typedefs-concrete (: LEOF List<Tuple<Tuple<Maybe<TContext>,Type>,AST>>))
+      (set continue-compile-c-typedefs-concrete (: LEOF List<Tuple<Maybe<TContext>,Type,AST>>))
    ))
 ) Nil);
 
@@ -78,7 +78,7 @@ is-incomplete-typedef := λ(: tt Type). (: (
       ( (TGround( 'Array_s _ )) () )
       ( (TGround( 'Arrow_s _ )) () )
       ( (TGround( _ _ )) (
-         (if (||( (.lookup( is-cstruct-hard-compiled-index tt 0_u64 )) (.is-type2 tt) )) () (
+         (if (.lookup( is-cstruct-hard-compiled-index tt 0_u64 )) () (
             (set r 1_u64)
          ))
       ))
@@ -120,7 +120,7 @@ compile-c-typedef-concrete := λ(: tctx Maybe<TContext>)(: base-type Type)(: bod
       )))
       (if incomplete (
          (set continue-compile-c-typedefs-concrete (cons(
-            (Tuple( (Tuple( tctx base-type )) original-body ))
+            (Tuple( tctx base-type original-body ))
             continue-compile-c-typedefs-concrete
          )))
       ) (
@@ -202,7 +202,7 @@ compile-c-mark-field-as-seen := λ(: tt Type). (: (
             (compile-c-typedef-concrete-ordinal( tt body ))
             (let tctx (unify( base-type tt )))
             (set continue-compile-c-typedefs-concrete (cons(
-               (Tuple( (Tuple( tctx tt )) body ))
+               (Tuple( tctx tt body ))
                continue-compile-c-typedefs-concrete
             )))
             (match tt (

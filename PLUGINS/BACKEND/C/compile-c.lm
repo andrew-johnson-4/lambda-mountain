@@ -39,6 +39,9 @@ plugins-backend-c-compile := λ . (: (
       ( (@( td (Typedef( _ _ )) )) (
          (set typedefs (+( typedefs td )))
       ))
+      ( (@( td (Typedef2( _ _ )) )) (
+         (set typedefs (+( typedefs td )))
+      ))
       ( _ () )
    )))
    (for-each-v (td in (.unroll-seq typedefs)) (match td (
@@ -49,6 +52,9 @@ plugins-backend-c-compile := λ . (: (
       ( (Typedef( (AType( lhs )) rhs )) (
          (compile-c-typedef-ordinal( lhs td ))
       ))
+      ( (Typedef2( _ )) (
+         (std-c-compile-type2-typedef td)
+      ))
    )))
    (for-each-v (td in (.unroll-seq typedefs)) (match td (
       ()
@@ -58,13 +64,6 @@ plugins-backend-c-compile := λ . (: (
       ( (Typedef( (AType( lhs )) rhs )) (
          (compile-c-typedef( lhs rhs ))
       ))
-   )))
-   (for-each-v (td in (.unroll-seq ast-parsed-program)) (match td (
-      ()
-      ( (Typedef2( _ )) (
-         (std-c-compile-type2-typedef td)
-      ))
-      ( _ () )
    )))
    (try-continue-compile-c-typedefs())
    (compile-program-ordered( global-ctx ast-parsed-program ))
