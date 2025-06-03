@@ -1,9 +1,8 @@
 
-index-c-type-ordinal := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<Type,String>[]) )) HashtableEq<Type,String>);
+index-c-type-ordinal := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<Tuple<String,U64>,U64>[]) )) HashtableEq<Tuple<String,U64>,U64>);
 
 compile-c-typedef-concrete-ordinal := λ(: base-type Type)(: blame AST). (: (
-   (let base-uuid (uuid()))
-   (set index-c-type-ordinal (.bind( index-c-type-ordinal base-type base-uuid )))
+   (set index-c-type-ordinal (.bind( index-c-type-ordinal (.ground-tag-and-arity base-type) 1_u64 )))
    (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom 'typedef\sstruct\s_s)) )))
    (set assemble-header-section (SCons( (close assemble-header-section) (close(mangle-c-type( base-type blame ))) )))
    (set assemble-header-section (SCons( (close assemble-header-section) (close(SAtom '\s_s)) )))
@@ -91,7 +90,6 @@ is-cstruct-hard-compiled-index := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<T
 compile-c-typedef-concrete := λ(: tctx Maybe<TContext>)(: base-type Type)(: body AST). (: (
    (if (.is-open base-type) () (
       (let original-body body)
-      (let base-uuid (.lookup( index-c-type-ordinal base-type 'UnknownCTypename_s )))
       (let case-number 0_u64)
       (let cases SNil)
       (let incomplete 0_u64)
@@ -200,7 +198,7 @@ compile-c-mark-field-as-seen := λ(: tt Type). (: (
       (let base-type (.first base-body))
       (let body (.second base-body))
       (if (&&( (non-zero body) (not(.lookup( is-cstruct-hard-compiled-index tt 0_u64 ))) )) (
-         (if (non-zero(.lookup( index-c-type-ordinal tt '_s ))) () (
+         (if (.has( index-c-type-ordinal (.ground-tag-and-arity tt) )) () (
             (compile-c-typedef-concrete-ordinal( tt body ))
             (let tctx (unify( base-type tt )))
             (set continue-compile-c-typedefs-concrete (cons(
