@@ -13,12 +13,6 @@ macro ( ('set ('macro::lhs-field( base field )) rhs) )
 macro ( ('set ('macro::lhs-index( base index )) rhs) )
       ( set[] ((macro::lhs-as-rhs base) index rhs) );
 
-macro ( ('macro::define-zero (base-type constructor)) ) (
-   non-zero := λ(: t base-type). (: (
-      (!=( (.discriminator-case-tag t) (.discriminator-case-tag(: constructor base-type)) ))
-   ) U64);
-);
-
 macro ( ('macro::define-zero (base-type constructor con-tag)) ) (
    non-zero := λ(: t base-type). (: (
       (!=( (.discriminator-case-tag t) (.discriminator-case-tag(as t con-tag)) ))
