@@ -1,6 +1,6 @@
 
 parse-many-expressions := λ(: tokens List<Token>). (: (
-   (let expr ASTEOF)
+   (let expr (mk-eof()))
    (let remainder (: LEOF List<Token>))
    (while (non-zero tokens) (
       (match tokens (

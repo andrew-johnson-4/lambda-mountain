@@ -32,7 +32,7 @@ typeof-var-raw := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String). (: (
 ) Type);
 
 defof-var := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String). (: (
-   (let found ASTEOF)
+   (let found (mk-eof()))
    (let continue 1_u64)
    (for-each ( (Tuple( k vt def )) in
                (.get-or( tctx (: LEOF List<Tuple<String,Type,AST>>) )) ) (
@@ -55,7 +55,7 @@ defof-var := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String). (: (
 
 defof-var := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String)(: tt Type). (: (
    (set vname (find-alias( vname tt )))
-   (let found ASTEOF)
+   (let found (mk-eof()))
    (let found-type ta)
    (let continue 1_u64)
    (for-each ( (Tuple( k vt def )) in

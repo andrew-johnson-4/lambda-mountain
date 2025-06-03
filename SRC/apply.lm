@@ -9,7 +9,7 @@ apply := λ(: ctx AContext)(: term AST). (: (
          (set return (AType( (substitute( ctx tt )) )))
       ))
       ( (Var( n _ )) (
-         (let nr (.lookup( ctx n ASTEOF )))
+         (let nr (.lookup( ctx n (mk-eof()) )))
          (if (non-zero nr) (set return nr) ())
       ))
       ( (App( vl vr )) (
@@ -26,7 +26,7 @@ apply := λ(: ctx AContext)(: term AST). (: (
          )))
       ))
       ( (Seq( seq )) (
-         (set return ASTEOF)
+         (set return (mk-eof()))
          (for-each-v (s in seq) (
             (set return (+( return (apply( ctx s )) )))
          ))

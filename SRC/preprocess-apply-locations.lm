@@ -42,7 +42,7 @@ preprocess-apply-locations := λ(: program AST). (: (
          )))
       ))
       ( (Seq( seq )) (
-         (set r ASTEOF)
+         (set r (mk-eof()))
          (for-each-v (p in seq) (
             (set r (+( r (preprocess-apply-locations p) )))
          ))

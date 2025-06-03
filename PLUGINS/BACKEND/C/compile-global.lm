@@ -5,7 +5,7 @@ compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
 
 compile-global-c-has-main := 0_u64;
 
-compile-global-c-main-term := ASTEOF;
+compile-global-c-main-term := (mk-eof());
 
 compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
    (let kt (typeof term))

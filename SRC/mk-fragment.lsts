@@ -1,7 +1,7 @@
 
 let mk-fragment(): Fragment = (
    Fragment {
-      ASTEOF, close([] :: List<Tuple<CString,S>>),
+      mk-eof(), close([] :: List<Tuple<CString,S>>),
       ta, close(mk-fctx()), ([] :: List<Fragment[]>)
    }
 );

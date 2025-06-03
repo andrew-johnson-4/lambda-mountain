@@ -22,7 +22,7 @@ infer-tctx := λ(: tctx Maybe<TContext>)(: tt Type). (: (
             tctx
             tv
             (t1 'Constant_s)
-            ASTEOF
+            (mk-eof())
          )))
       ))
       ( (TGround( _ ts )) (

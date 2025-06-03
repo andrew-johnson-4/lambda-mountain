@@ -13,42 +13,42 @@ let std-apply-macro-weak(tctx: Maybe<TContext>, mname: CString, margs: AST, used
 let std-apply-macro-concat(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
    match margs {
       App{ left:Var{left-key=key}, right:Var{right-key=key} } => (tctx, mk-var(left-key + right-key));
-      _ => (tctx, ASTEOF);
+      _ => (tctx, mk-eof());
    }
 );
 
 let std-apply-macro-variable(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
    match margs {
       Var{} => (tctx, margs);
-      _ => (tctx, ASTEOF);
+      _ => (tctx, mk-eof());
    }
 );
 
 let std-apply-macro-underscore(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
    match margs {
       Var{key:c"_"} => (tctx, margs);
-      _ => (tctx, ASTEOF);
+      _ => (tctx, mk-eof());
    }
 );
 
 let std-apply-macro-tag(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
    match margs {
       Lit{key=key} => (
-         if index-of-tag(key)==unknown-index-of-tag then (tctx, ASTEOF) else {
+         if index-of-tag(key)==unknown-index-of-tag then (tctx, mk-eof()) else {
             let tag-name    = mk-lit(to-string(index-of-tag(key)));
             let tag-ordinal = tag-name.ascript(t1(c"Constant") && t1(c"Literal") && t1(c"U64"));
             let tag-type    = mk-atype(t1(c"Tag::" + key));
             (tctx, mk-cons(mk-cons(tag-name, tag-ordinal), tag-type))
          }
       );
-      _ => (tctx, ASTEOF);
+      _ => (tctx, mk-eof());
    }
 );
 
 let std-apply-macro-constant(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
    match margs {
       App{ left:Lit{key:c":"}, right:App{left:Lit{},right:AType{}} } => (tctx, margs);
-      _ => (tctx, ASTEOF);
+      _ => (tctx, mk-eof());
    }
 );
 
@@ -57,7 +57,7 @@ let std-apply-macro-location(tctx: Maybe<TContext>, mname: CString, margs: AST):
 );
 
 let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, used: IsUsed, strong: Bool): (TContext?, AST) = (
-   let result = ASTEOF;
+   let result = mk-eof();
    if mname==c"macro::concat" then (tctx, result) = std-apply-macro-concat(tctx, mname, margs)
    else if mname==c"macro::location" then (tctx, result) = std-apply-macro-location(tctx, mname, margs)
    else if mname==c"macro::variable" then (tctx, result) = std-apply-macro-variable(tctx, mname, margs)

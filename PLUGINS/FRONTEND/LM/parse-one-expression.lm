@@ -1,6 +1,6 @@
 
 parse-one-expression := λ(: tokens List<Token>). (: (
-   (let expr ASTEOF)
+   (let expr (mk-eof()))
    (let remainder (: LEOF List<Token>))
    (match tokens (
       ()

@@ -1,8 +1,8 @@
 
 let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U64): Nil = (
    let ctx = None :: Maybe<TContext>;
-   ctx = ctx.bind( c"base-type", base-type, ASTEOF );
-   ctx = ctx.bind( c"field-type", field-type, ASTEOF );
+   ctx = ctx.bind( c"base-type", base-type, mk-eof() );
+   ctx = ctx.bind( c"field-type", field-type, mk-eof() );
    ctx = ctx.bind( c"field-name", ta, mk-lit(field-name) );
    ctx = ctx.bind( c"primitive::field-get", ta, mk-var(c"."+field-name) );
    ctx = ctx.bind( c"primitive::field-set", ta, mk-var(c"set."+field-name) );
@@ -18,8 +18,8 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    infer-global-context(field-set-indirect);
 
    ctx = None :: Maybe<TContext>;
-   ctx = ctx.bind( c"base-type", base-type, ASTEOF );
-   ctx = ctx.bind( c"field-type", field-type, ASTEOF );
+   ctx = ctx.bind( c"base-type", base-type, mk-eof() );
+   ctx = ctx.bind( c"field-type", field-type, mk-eof() );
    ctx = ctx.bind( c"field-name", ta, mk-lit(field-name) );
    ctx = ctx.bind( c"primitive::field-get", ta, mk-var(c"."+to-string(field-ordinal)) );
    let field-ordinal-get = substitute(ctx, find-global-callable(c"primitive::field-get", base-type, blame));

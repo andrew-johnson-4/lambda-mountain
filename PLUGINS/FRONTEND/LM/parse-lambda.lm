@@ -9,7 +9,7 @@ parse-lambda := λ(: tokens List<Token>). (: (
       ))
       ( _ () )
    ))
-   (let expr ASTEOF)
+   (let expr (mk-eof()))
    (let remainder (: LEOF List<Token>))
    (match (parse-one-expression tokens) (
       ()

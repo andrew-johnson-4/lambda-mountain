@@ -8,7 +8,7 @@ let find-global-callable(fname: CString, arg-types: Type, blame: AST): AST = (
          match-set = match-set.push( (kt, t) );
       }
    };
-   let result = ASTEOF;
+   let result = mk-eof();
    for vector Tuple{kt1=first, t1=second} in match-set { if not(non-zero(result)) {
       let all-accept = true;
       for vector Tuple{kt2=first, t2=second} in match-set {

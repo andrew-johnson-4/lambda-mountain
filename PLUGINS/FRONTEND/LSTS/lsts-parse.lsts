@@ -106,15 +106,15 @@ let lsts-parse-doc-expr(tokens: List<Token>): Tuple<AST, List<(CString, AST)>, L
 );
 
 let lsts-parse-doc(tokens: List<Token>): Tuple<AST, List<Token>> = (
-   let ast = ASTEOF;
-   let para = ASTEOF;
+   let ast = mk-eof();
+   let para = mk-eof();
 
    let tags = [] :: List<(CString, AST)>;
 
    while lsts-parse-head(tokens) == c"##" {
       tokens = tail(tokens);
 
-      let line = ASTEOF;
+      let line = mk-eof();
       # special token inserted by the lexer only in doc strings
       while lsts-parse-head(tokens) != c"\n" {
          (let ax, let new-tags, tokens) = lsts-parse-doc-expr(tokens);
@@ -131,7 +131,7 @@ let lsts-parse-doc(tokens: List<Token>): Tuple<AST, List<Token>> = (
          # empty line => new paragraph
          if non-zero(para) {
             ast = ast + para;
-            para = ASTEOF;
+            para = mk-eof();
          };
       };
    };
@@ -434,7 +434,7 @@ let lsts-parse-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
 );
 
 let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   let base = ASTEOF {};
+   let base = mk-eof();
    lsts-parse-expect(c"[", tokens);
    let loc = head(tokens).location;
    tokens = tail(tokens);
@@ -535,7 +535,7 @@ let lsts-make-maybe-var(tokens: List<Token>): Tuple<AST,List<Token>> = (
    } else {
       if not(non-zero(tokens)) { lsts-parse-expect(c"Identifier", tokens); };
       let loc = head(tokens).location;
-      let base = ASTEOF;
+      let base = mk-eof();
       if lsts-is-lit(head(tokens).key) {
          base = lsts-make-lit(head(tokens));
          tokens = tail(tokens);
@@ -957,7 +957,7 @@ let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
 let lsts-parse-typedef-case(tokens: List<Token>): Tuple<AST,List<Token>> = (
    lsts-parse-expect(c"[Type Case Tag]", lsts-is-lit-head(lsts-parse-head(tokens)), tokens);
    let tag = head(tokens); tokens = tail(tokens);
-   let fields = ASTEOF {};
+   let fields = mk-eof();
    if lsts-parse-head(tokens) == c"{" {
       lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
       while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
@@ -1047,7 +1047,7 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
       lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
       name = name + lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
    };
-   let args-list = ASTEOF {};
+   let args-list = mk-eof();
    let return-type = ta;
    if lsts-parse-head(tokens) == c"(" {
       let sig = lsts-parse-function-signature(tokens, loc);
@@ -1098,7 +1098,7 @@ type ASTOrIdent = ASTOrIdentAST { ast: AST }
                 ;
 
 let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   let base = ASTEOF {};
+   let base = mk-eof();
    match tokens {
       [Token{key:c"if"}.. Token{key:c"let"}.. rest] => (
          let loc = head(tokens).location; tokens = rest;
@@ -1328,7 +1328,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
 );
 
 let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   let expr = ASTEOF;
+   let expr = mk-eof();
    if lsts-parse-head(tokens)==c"[" {
       let loc = head(tokens).location;
       lsts-parse-expect(c"[", tokens); tokens = tail(tokens);
@@ -1559,7 +1559,7 @@ let lsts-parse-match2(tokens: List<Token>): Tuple<AST,List<Token>> = (
 );
 
 let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   let base = ASTEOF;
+   let base = mk-eof();
    if lsts-has-assign(tokens) {
       let loc = head(tokens).location;
 
@@ -1665,7 +1665,7 @@ let lsts-make-lit(t: Token): AST = (
    let base = Lit { t.key, t };
    if t.key.has-suffix(c"_ss") && t.key.contains(c"\\{") {
       let s = t.key;
-      base = ASTEOF {};
+      base = mk-eof();
       let buffer = SNil{};
       while non-zero(s) && s != c"_ss" {
          if s.has-prefix(c"\\{") {
@@ -1760,7 +1760,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
       let loc = head(tokens).location;
       let tag = lsts-parse-head(tokens); tokens = tail(tokens);
       lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-      let des-args = ASTEOF {};
+      let des-args = mk-eof();
       while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
          let attr-loc = head(tokens).location;
          let binding = c"";
@@ -1786,7 +1786,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
             let val-rest = lsts-parse-lhs-one(tokens);
             tokens = val-rest.second;
             val-rest.first;
-         } else { ASTEOF{} };
+         } else { mk-eof() };
          if not(non-zero(val)) && not(non-zero(binding)) && not(non-zero(attr-key)) {
             lsts-parse-expect(c"[Struct LHS]", tokens); tokens = tail(tokens);
          };
@@ -1833,14 +1833,14 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
       );
    } else {
       lsts-parse-expect(c"[Left Hand Side]", tokens);
-      ASTEOF {}
+      mk-eof()
    };
    Tuple { base, tokens }
 );
 
 let lsts-parse-lit(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let loc = head(tokens).location;
-   let term = ASTEOF {};
+   let term = mk-eof();
    if lsts-parse-head(tokens).has-suffix(c"_ss") {
       while lsts-parse-head(tokens).has-suffix(c"_ss") {
          let cat = lsts-make-lit(head(tokens));
@@ -1860,7 +1860,7 @@ let lsts-parse-lit(tokens: List<Token>): Tuple<AST,List<Token>> = (
 );
 
 let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   let term = ASTEOF {};
+   let term = mk-eof();
    if lsts-parse-head(tokens)==c"type" {
       tokens = tail(tokens);
       lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
@@ -1954,7 +1954,7 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
          if lsts-is-enum-head(lsts-parse-head(tokens)) {
             let tag = head(tokens); tokens = tail(tokens);
             term = Lit { tag.key, tag };
-            let fields = ASTEOF {};
+            let fields = mk-eof();
             if lsts-parse-head(tokens) == c"{" {
                lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
                while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
@@ -2045,7 +2045,7 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
                tokens = term1-rest.second;
                term1-rest.first;
             };
-            let term2 = ASTEOF {};
+            let term2 = mk-eof();
             if lsts-parse-head(tokens)==c":" {
                lsts-parse-expect( c":", tokens ); tokens = tail(tokens);
                term2 = if lsts-parse-head(tokens)==c"]" {

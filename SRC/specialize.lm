@@ -1,7 +1,7 @@
 
 specialize := λ(: key String)(: ft Type)(: unify-ctx Maybe<TContext>)(: result-type Type). (: (
    (if (is-special( key result-type )) () (
-      (let term ASTEOF)
+      (let term (mk-eof()))
       (for-each ((Tuple( kt _ t )) in (.lookup( global-type-context key (: LEOF List<Tuple<Type,Type,AST>>) ))) (
          (if (==( ft kt )) (
             (match t (

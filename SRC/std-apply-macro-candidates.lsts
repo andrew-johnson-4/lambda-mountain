@@ -6,7 +6,7 @@ let std-apply-macro-candidates(tctx: TContext?, mname: CString, margs: AST, cand
    # define macro candidate 2
    # should be sent as
    # [ candidate 2, candidate 1 ]
-   let t = ASTEOF;
+   let t = mk-eof();
    for Tuple{ctype=first, second:Abs{mlhs=lhs,rhs:App{left:Lit{key:c":"},right:App{mrhs=left}}}} in candidates {
       if not(non-zero(t)) {
          (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, mlhs);
