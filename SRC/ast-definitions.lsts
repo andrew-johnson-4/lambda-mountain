@@ -1,6 +1,6 @@
 
-type SourceLocation = SourceLocation { filename: CString, line: U64, column: U64 };
-type Token = Token { skey: String, key: CString, nonce: U64, location: SourceLocation };
+type2 SourceLocation = { filename: CString, line: U64, column: U64 };
+type2 Token = { skey: String, key: CString, nonce: U64, location: SourceLocation };
 
 type AST = ASTEOF
          | ASTNil
