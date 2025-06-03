@@ -196,7 +196,7 @@ compile-c-mark-field-as-seen := λ(: tt Type). (: (
          ))
          ( _ () )
       ))
-      (let base-body (.lookup( compile-c-type-body-of-base-type (.tag tt) (Tuple( TAny ASTEOF )) )))
+      (let base-body (.lookup( compile-c-type-body-of-base-type (.tag tt) (Tuple( ta ASTEOF )) )))
       (let base-type (.first base-body))
       (let body (.second base-body))
       (if (&&( (non-zero body) (not(.lookup( is-cstruct-hard-compiled-index tt 0_u64 ))) )) (

@@ -6,7 +6,7 @@ let reduce-plural(dpts: List<Type>): List<Type> = (
    for Tuple{try-denormal=first, try=second} in pts {
       for Tuple{tst-denormal=first, tst=second} in pts {
          if not(is(try-denormal,tst-denormal)) && can-unify(try-denormal.domain, tst-denormal.domain) {
-            try = TAny{};
+            try = ta;
          }
       };
       if non-zero(try) { return = cons(try, return); }

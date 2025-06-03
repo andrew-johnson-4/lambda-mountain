@@ -11,7 +11,7 @@ let .lookup-soft(ctx: FContext, k: CString, kt: Type, sloc: AST): Fragment = (
 
 let .lookup(ctx: FContext, k: CString, kt: Type, sloc: AST, hard: U64): Fragment = (
    let original-ctx = ctx;
-   let found = TAny;
+   let found = ta;
    let r = mk-fragment();
    k = find-alias(k, kt);
    kt = denormalize-strong(kt);
@@ -19,7 +19,7 @@ let .lookup(ctx: FContext, k: CString, kt: Type, sloc: AST, hard: U64): Fragment
       FCtxBind { remainder=remainder, ctx-k=k, ctx-kt=kt, ctx-kv=kv } => (
          if k==ctx-k {
             if ctx-kt.is-arrow {
-               if kt==TAny || can-unify( ctx-kt.domain, kt ) || can-unify(ctx-kt.domain, kt.domain) {
+               if kt==ta || can-unify( ctx-kt.domain, kt ) || can-unify(ctx-kt.domain, kt.domain) {
                   if non-zero(found) {
                      if can-unify(found, ctx-kt.domain) {
                         r = ctx-kv;

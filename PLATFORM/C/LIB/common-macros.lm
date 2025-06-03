@@ -303,7 +303,7 @@ macro ('match-pats-arm( term ((:Tag: l lt) ( x6 x5 x4 x3 x2 x1 )) )) (
 );
 
 macro ('match-pats-arm( term ( (:Tag: l lt) () ) )) (
-   ( (let (uuid v) term) (==( (.0( (uuid v) )) l )) )
+   ( (let (uuid v) term) (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) )) )
 );
 
 macro ('match-pats-arm( term ((:Tag: l lt) ('macro::bind-field-by-key( x1-key x1 )) ) )) (

@@ -14,7 +14,7 @@ parse-type-single := λ(: tt String). (: (
                (if (non-zero buff) (
                   (let vn (clone-rope buff))
                   (if (==( vn '?_s )) (
-                     (set base-type TAny)
+                     (set base-type ta)
                   ) (
                      (if (lm-is-variable vn) (
                         (set base-type (TVar vn))
@@ -34,7 +34,7 @@ parse-type-single := λ(: tt String). (: (
                (if (non-zero buff) (
                   (let vn (clone-rope buff))
                   (if (==( vn '?_s )) (
-                     (set base-type TAny)
+                     (set base-type ta)
                   ) (
                      (if (lm-is-variable vn) (
                         (set base-type (TVar vn))
@@ -79,7 +79,7 @@ parse-type-single := λ(: tt String). (: (
                      (set base-type (t3(
                         'Array_s
                         base-type
-                        TAny
+                        ta
                      )))
                   ))
                ))
@@ -118,7 +118,7 @@ parse-type-single := λ(: tt String). (: (
    (if (non-zero buff) (
       (let vn (clone-rope buff))
       (if (==( vn '?_s )) (
-         (set base-type TAny)
+         (set base-type ta)
       ) (
          (if (lm-is-variable vn) (
             (set base-type (TVar vn))

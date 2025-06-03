@@ -1,6 +1,6 @@
 
 parse-lambda := λ(: tokens List<Token>). (: (
-   (let tt-ext TAny)
+   (let tt-ext ta)
    (match tokens (
       ()
       ( (LCons( ':_t (LCons( tt-lit_t rr )) )) (

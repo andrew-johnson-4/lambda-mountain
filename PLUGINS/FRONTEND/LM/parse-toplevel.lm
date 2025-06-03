@@ -121,7 +121,7 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                         (close(AType(t1 'U64_s)))
                      )))
                   )))
-                  TAny
+                  ta
                ))) ))
             )))
             (set tokens remainder)

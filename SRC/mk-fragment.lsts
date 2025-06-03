@@ -2,7 +2,7 @@
 let mk-fragment(): Fragment = (
    Fragment {
       ASTEOF, close([] :: List<Tuple<CString,S>>),
-      TAny, close(mk-fctx()), ([] :: List<Fragment[]>)
+      ta, close(mk-fctx()), ([] :: List<Fragment[]>)
    }
 );
 

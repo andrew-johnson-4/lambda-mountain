@@ -25,7 +25,7 @@ let mk-typedef(l: AST, r: AST): AST = (
 
 let mk-typedef2(loc: SourceLocation, lhs-type: Type): AST = (
    Typedef2{ loc, lhs-type, mk-vector(type(Type)), mk-vector(type(Type)), mk-vector(type((CString,Type))),
-             TAny, TAny, TAny, mk-vector(type((CString,Vector<(CString,Type)>))) }
+             ta, ta, ta, mk-vector(type((CString,Vector<(CString,Type)>))) }
 );
 
 let .with-implies(term: AST, implies: Vector<Type>): AST = (

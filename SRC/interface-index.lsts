@@ -15,6 +15,6 @@ let interface-self-index = {} :: HashtableEq<(CString,U64),(Type,Type)>;
 
 # TODO: remove this lookup
 # (Type,Type) needed to be reified, but the compiler should infer that
-interface-self-index.lookup((c"",0_u64),(TAny, TAny));
+interface-self-index.lookup((c"",0_u64),(ta, ta));
 
 let interface-implementors = [] :: List<(Type,Type,AST)>;

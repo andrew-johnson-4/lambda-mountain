@@ -2,7 +2,7 @@
 let denormalize-cache = mk-hashtable-is(type(Type), type(Type));
 
 let denormalize(tt: Type): Type = (
-   let ct = denormalize-cache.lookup(tt, TAny);
+   let ct = denormalize-cache.lookup(tt, ta);
    if non-zero(ct) then ct else (
       ct = tt.rewrite-type-alias;
       ct = with-size(ct);
@@ -24,7 +24,7 @@ let denormalize-arrow(pt: Type): Type = (
                rc => ( result = result.push(rc); () );
             }
          };
-         if result.length==0 then TAny
+         if result.length==0 then ta
          else if result.length==1 then result[0]
          else tand(result)
       );
@@ -50,7 +50,7 @@ let denormalize-cons(pt: Type): Type = (
                rc => ( result = result.push(rc); () );
             }
          };
-         if result.length==0 then TAny
+         if result.length==0 then ta
          else if result.length==1 then result[0]
          else tand(result)
       );

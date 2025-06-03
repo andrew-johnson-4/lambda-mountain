@@ -4,7 +4,7 @@ type StructLayout = LM1Style | CStyle | FragmentStyle | UnknownStyle;
 type ClassInfo = ClassInfo { layout: StructLayout, lhs: Type, cases: List<Tuple<CString,Type>> };
 let class-info-index = {} :: HashtableEq<Tuple<CString,U64>,ClassInfo>;
 
-let class-info-default = ClassInfo{ UnknownStyle, TAny, [] :: List<Tuple<CString,Type>> };
+let class-info-default = ClassInfo{ UnknownStyle, ta, [] :: List<Tuple<CString,Type>> };
 let .with-layout(ci: ClassInfo, layout: StructLayout): ClassInfo = (
    ClassInfo{ layout, ci.lhs, [] :: List<Tuple<CString,Type>> }
 );
@@ -50,7 +50,7 @@ let .only-child(cls: Type): CString = (
 let index-fields-of-tag(tag: CString, base-type: Type, fields-params: Type, fields-rhs: Type): Nil = (
    add-class-info-case(base-type, tag, fields-rhs);
    index-fields-quick-prop( t1(c"Tag::" + tag), base-type, fields-rhs, 1 );
-   index-fields-quick-prop( t1(c"Tag::" + tag), t3( c"Array", base-type, TAny), fields-rhs, 1 );
+   index-fields-quick-prop( t1(c"Tag::" + tag), t3( c"Array", base-type, ta), fields-rhs, 1 );
 );
 
 let index-fields-quick-prop(tag-tt: Type, base-type: Type, fields-tt: Type, field-index: U64): Nil = (
@@ -59,7 +59,7 @@ let index-fields-quick-prop(tag-tt: Type, base-type: Type, fields-tt: Type, fiel
          add-quick-prop( tag-tt, base-type,
             t2( c"Field::" + to-string(field-index), pt )
          );
-         add-quick-prop( t3( c"Array", base-type, TAny ), t3( c"Array", base-type, TAny ),
+         add-quick-prop( t3( c"Array", base-type, ta ), t3( c"Array", base-type, ta ),
             t2( c"Field::" + to-string(field-index), pt )
          );
          index-fields-quick-prop( tag-tt, base-type, rst, field-index + 1)
@@ -69,7 +69,7 @@ let index-fields-quick-prop(tag-tt: Type, base-type: Type, fields-tt: Type, fiel
          add-quick-prop( tag-tt, base-type,
             t2( c"Field::" + to-string(field-index), pt )
          );
-         add-quick-prop( t3( c"Array", base-type, TAny ), t3( c"Array", base-type, TAny ),
+         add-quick-prop( t3( c"Array", base-type, ta ), t3( c"Array", base-type, ta ),
             t2( c"Field::" + to-string(field-index), pt )
          )
       );

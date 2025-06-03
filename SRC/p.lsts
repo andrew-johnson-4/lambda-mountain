@@ -1,8 +1,8 @@
 
 let .r(tt: Type, i: USize): Type = (
    match tt {
-      TGround { parameters=parameters } => parameters.nth(i, TAny);
-      _ => TAny;
+      TGround { parameters=parameters } => parameters.nth(i, ta);
+      _ => ta;
    }
 );
 let .r1(tt: Type): Type = tt.r(0);
@@ -12,8 +12,8 @@ let .r4(tt: Type): Type = tt.r(3);
 
 let .l(tt: Type, i: USize): Type = (
    match tt {
-      TGround { parameters=parameters } => parameters.reverse.nth(i, TAny);
-      _ => TAny;
+      TGround { parameters=parameters } => parameters.reverse.nth(i, ta);
+      _ => ta;
    }
 );
 let .l1(tt: Type): Type = tt.l(0);
