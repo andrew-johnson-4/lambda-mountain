@@ -233,8 +233,11 @@ let lsts-parse(tokens: List<Token>): Nil = (
             ast-parsed-program = ast-parsed-program + mk-app(
                Var{ c"macro::define-zero", with-key(constructor, c"macro::define-zero") },
                mk-cons(
-                  AType{ base-type-rest.first },
-                  Lit{ constructor.key, constructor }
+                  mk-cons(
+                     AType{ base-type-rest.first },
+                     Lit{ constructor.key, constructor }
+                  ),
+                  Lit{ c"Tag::"+constructor.key, with-key(constructor, c"Tag::"+constructor.key) }
                )
             );
          );
