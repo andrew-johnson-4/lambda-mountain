@@ -89,6 +89,7 @@ is-incomplete-typedef := λ(: tt Type). (: (
 is-cstruct-hard-compiled-index := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<Type,U64>[]) )) HashtableEq<Type,U64>);
 compile-c-typedef-concrete := λ(: tctx Maybe<TContext>)(: base-type Type)(: body AST). (: (
    (if (.is-open base-type) () (
+   (if (.is-type2 base-type) (std-c-compile-type2-typedef-concrete( tctx base-type body )) (
       (let original-body body)
       (let case-number 0_u64)
       (let cases SNil)
@@ -136,7 +137,7 @@ compile-c-typedef-concrete := λ(: tctx Maybe<TContext>)(: base-type Type)(: bod
          ) ())
          (set assemble-types-section (SCons( (close assemble-types-section) (close(SAtom '}\:\n_s)) )))
       ))
-   ))
+   ))))
 ) Nil);
 
 compile-c-type-body-of-base-type :=  (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<String,Tuple<Type,AST>>[]) )) HashtableEq<String,Tuple<Type,AST>>);

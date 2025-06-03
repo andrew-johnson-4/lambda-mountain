@@ -64,6 +64,7 @@ plugins-backend-c-compile := λ . (: (
       ( (Typedef( (AType( lhs )) rhs )) (
          (compile-c-typedef( lhs rhs ))
       ))
+      ( (Typedef2( _ )) () )
    )))
    (try-continue-compile-c-typedefs())
    (compile-program-ordered( global-ctx ast-parsed-program ))
