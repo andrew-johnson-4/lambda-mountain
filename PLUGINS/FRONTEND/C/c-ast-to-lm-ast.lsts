@@ -146,7 +146,7 @@ let std-c-sig-of-params-list(params: List<CTerm>, is-vararg: Bool): AST = (
          return = pe;
       }
    };
-   if non-zero(return) then return else ASTNil
+   if non-zero(return) then return else mk-nil()
 );
 
 let std-c-paramstype-of-params-list(params: List<CTerm>, is-vararg: Bool): Type = (
@@ -180,10 +180,10 @@ let std-c-nametype-of-decl(base-type: Type, decl: CTerm): (CString, Type) = (
 
 let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, misc-type: Type, ps: Maybe<CTerm>): (CString, AST) = (
    let params = match ps {
-      None{} => ASTNil;
+      None{} => mk-nil();
       Some{content:CList{value=value}} => std-c-sig-of-params-list(value, false);
       Some{content:CUnaryPrefix{op:"ParameterTypeList...",arg:CList{value=value}}} => std-c-sig-of-params-list(value, true);
-      Some{content=content} => (print("std-c-sig-of-declarator unrecognized params \{content}\n"); ASTNil);
+      Some{content=content} => (print("std-c-sig-of-declarator unrecognized params \{content}\n"); mk-nil());
    };
    match declarator {
       CBinaryOp{op:c"Declarator*", ptr=arg1, arg2:CIdentifier{name=value}} => (
@@ -360,7 +360,7 @@ let std-c-name-of-declarator(declarator: CTerm): Tuple<String,Type> = (
 
 let std-c-lhs-of-parameter-list(declaration-list: CTerm): AST = (
    match declaration-list {
-      CMaybe{value:None{}} => ASTNil;
+      CMaybe{value:None{}} => mk-nil();
       _ => fail("Unsupported C Parameter List:\n\{declaration-list}\n");
    };
 );
@@ -404,7 +404,7 @@ let std-c-lift-lhs(rhs: AST): (AST, AST) = (
 let std-c-expr-of-statement(t: CTerm): AST = (
    match t {
       CCompound{terms=terms} => (
-         let inner = ASTNil;
+         let inner = mk-nil();
          for it in terms {
             inner = App{ true, close(inner), close(std-c-expr-of-statement(it)) };
          };
@@ -567,7 +567,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
       CZOp{op=op} => (
          App{
             close(Var{ untern("c::" + op), mk-token("c::" + op) }),
-            close(ASTNil)
+            close(mk-nil())
          };
       );
       CFor{op=op, arg1=arg1, arg2=arg2, arg3=arg3, stmt=stmt} => (

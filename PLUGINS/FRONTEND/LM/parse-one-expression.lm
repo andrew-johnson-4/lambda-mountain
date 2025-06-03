@@ -5,7 +5,7 @@ parse-one-expression := λ(: tokens List<Token>). (: (
    (match tokens (
       ()
       ( LEOF (
-         (set expr ASTNil)
+         (set expr (mk-nil()))
          (set remainder (: LEOF List<Token>))
       ))
       ( (LCons( '\l_t r )) (

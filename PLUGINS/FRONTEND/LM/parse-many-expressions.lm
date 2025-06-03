@@ -10,7 +10,7 @@ parse-many-expressions := λ(: tokens List<Token>). (: (
             (set tokens (: LEOF List<Token>))
          ))
          ( (LCons( '\]_t tl )) (
-            (if (non-zero expr) () (set expr ASTNil))
+            (if (non-zero expr) () (set expr (mk-nil())))
             (set remainder tl)
             (set tokens (: LEOF List<Token>))
          ))

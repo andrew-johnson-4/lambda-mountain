@@ -81,14 +81,14 @@ let lsts-parse-doc-expr(tokens: List<Token>): Tuple<AST, List<(CString, AST)>, L
          let v = if lsts-parse-head(tokens) == c"[" {
             tokens = tail(tokens);
             let key = lsts-parse-head(tokens); tokens = tail(tokens);
-            let val = ASTNil;
+            let val = mk-nil();
             if lsts-parse-head(tokens) == c":" {
                tokens = tail(tokens);
                (val, tokens) = lsts-parse-expression(tokens);
             };
             lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
             tags = cons( (key,val), tags );
-            ASTNil;
+            mk-nil();
          } else {
             (let v, tokens) = lsts-parse-expression(tokens);
             v
@@ -279,10 +279,10 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c"typed", tokens); tokens = tail(tokens);
    lsts-parse-expect(c"macro", tokens); tokens = tail(tokens);
    (let mname, tokens) = lsts-parse-identifier(tokens);
-   let margs = ASTNil;
+   let margs = mk-nil();
    lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
    while lsts-parse-head(tokens)!=c")" {
-      if not(is(margs,ASTNil)) then { lsts-parse-expect(c",", tokens); tokens = tail(tokens); };
+      if not(is(margs,mk-nil())) then { lsts-parse-expect(c",", tokens); tokens = tail(tokens); };
       (let binding, tokens) = lsts-parse-identifier(tokens);
       let mbind = mk-var(binding);
       while lsts-parse-head(tokens) != c":" {
@@ -292,7 +292,7 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
       lsts-parse-expect(c":", tokens); tokens = tail(tokens);
       (let mbindt, tokens) = lsts-parse-type(tokens);
       let marg = mk-app(mk-lit(c":"), mk-cons(mbind, mk-atype(mbindt)));
-      if is(margs,ASTNil) then margs = marg
+      if is(margs,mk-nil()) then margs = marg
                           else margs = mk-cons(margs, marg);
    };
    lsts-parse-expect(c")", tokens); tokens = tail(tokens);
@@ -991,7 +991,7 @@ type LstsFnSignature = LstsFnSignature { args-list: AST, args-type: Type, return
 
 # parses:    (a: I32, b: I32): U64
 let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tuple<LstsFnSignature, List<Token>> = (
-   let out = LstsFnSignature { ASTNil, ta, ta };
+   let out = LstsFnSignature { mk-nil(), ta, ta };
 
    lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
    while non-zero(tokens) && lsts-parse-head(tokens)!=c")" {
@@ -1009,7 +1009,7 @@ let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tup
          Lit{ c":", with-location(mk-token(":"),loc) },
          mk-cons(mk-var(arg-name), mk-atype(arg-type))
       ) else mk-var(arg-name);
-      if is( out.args-list, ASTNil{} ) {
+      if is( out.args-list, mk-nil() ) {
          out.args-list = arg-binding;
          out.args-type = arg-type;
       } else {
@@ -1126,7 +1126,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             lsts-parse-expect(c"else", tokens); tokens = tail(tokens);
             if lsts-parse-head(tokens) == c"{" {
                lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-               let false-expr = if lsts-parse-head(tokens) == c"}" then ASTNil else {
+               let false-expr = if lsts-parse-head(tokens) == c"}" then mk-nil() else {
                   let f-rest = lsts-parse-expression(tokens);
                   tokens = f-rest.second;
                   f-rest.first;
@@ -1138,8 +1138,8 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
                tokens = f-rest.second;
                f-rest.first;
             };
-         } else ASTNil;
-         let cases = mk-cons(ASTNil, mk-cons(lhs-rest.first, matched-rest.first));
+         } else mk-nil();
+         let cases = mk-cons(mk-nil(), mk-cons(lhs-rest.first, matched-rest.first));
          if non-zero(default-rest) {
             cases = mk-cons(cases, mk-cons(
                Var{ c"_", with-location(mk-token(c"_"),loc) },
@@ -1164,7 +1164,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
          };
          let t = if lsts-parse-head(tokens) == c"{" {
             lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-            let true-expr = if lsts-parse-head(tokens) == c"}" then ASTNil else {
+            let true-expr = if lsts-parse-head(tokens) == c"}" then mk-nil() else {
                let t-rest = lsts-parse-expression(tokens);
                tokens = t-rest.second;
                t-rest.first;
@@ -1176,12 +1176,12 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             tokens = t-rest.second;
             t-rest.first;
          };
-         let f = ASTNil {};
+         let f = mk-nil();
          if lsts-parse-head(tokens) == "else" {
             lsts-parse-expect(c"else", tokens); tokens = tail(tokens);
             f = if lsts-parse-head(tokens) == c"{" {
                lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-               let false-expr = if lsts-parse-head(tokens) == c"}" then ASTNil else {
+               let false-expr = if lsts-parse-head(tokens) == c"}" then mk-nil() else {
                   let f-rest = lsts-parse-expression(tokens);
                   tokens = f-rest.second;
                   f-rest.first;
@@ -1253,7 +1253,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
          let iter-rest = lsts-parse-small-expression(tokens);
          tokens = iter-rest.second;
          lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-         let rhs = ASTNil {};
+         let rhs = mk-nil();
          if lsts-parse-head(tokens) != c"}" {
             let rhs-rest = lsts-parse-expression(tokens);
             rhs = rhs-rest.first;
@@ -1294,7 +1294,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
                e-rest.first
             );
          };
-         let pats = ASTNil {};
+         let pats = mk-nil();
          lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
          while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
             let lhs-rest = lsts-parse-lhs(tokens);
@@ -1825,7 +1825,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
             lsts-parse-expect(c",", tokens); tokens = tail(tokens);
          };
       };
-      if not(non-zero(des-args)) { des-args = ASTNil {}; };
+      if not(non-zero(des-args)) { des-args = mk-nil(); };
       lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
       mk-app(
          Lit{ tag, with-location(mk-token(tag),loc) },
@@ -1932,7 +1932,7 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
          lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
          if lsts-parse-head(tokens)==c")" {
             lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-            term = ASTNil {};
+            term = mk-nil();
          } else {
             let term-rest = lsts-parse-expression-possibly-tuple(tokens);
             tokens = term-rest.second;
@@ -2072,7 +2072,7 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
          [Token{key:"("}.. rest] => (
             tokens = rest;
             if lsts-parse-head(tokens) == c")" {
-               base = mk-app(base, ASTNil);
+               base = mk-app(base, mk-nil());
             } else {
                let term2-rest = lsts-parse-expression(tokens);
                let term2 = term2-rest.first;
