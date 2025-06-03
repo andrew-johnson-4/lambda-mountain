@@ -30,39 +30,51 @@ let std-c-compile-type2-typedef-concrete(tctx: Maybe<TContext>, lhs-type: Type, 
    let opaque-alias = (td as Tag::Typedef2).opaque-alias;
    let cases = (td as Tag::Typedef2).cases;
 
-   let concrete-type = substitute(tctx, lhs-type);
-   is-cstruct-hard-compiled-index = is-cstruct-hard-compiled-index.bind(concrete-type, 1_u64);
-
-   assemble-types-section = assemble-types-section + SAtom{c"struct "} + mangle-c-type(concrete-type, td) + SAtom{c"{\n"};
-      
-   let has-cases = false;
+   let is-incomplete = false;
    for vector Tuple{case-tag=first, case-fields=second} in cases {
-      if case-tag==c"" {
-         for vector Tuple{field-name=first, field-type=second} in case-fields {
-            field-type = substitute(tctx, field-type);
-            (let pre-tt, let post-tt) = mangle-c-declaration(field-type, td);
-            assemble-types-section = assemble-types-section + SAtom{c"  "} + pre-tt + SAtom{c" "} + mangle-identifier(field-name) + post-tt + SAtom{c";\n"};
+      for vector Tuple{field-name=first, field-type=second} in case-fields {
+         field-type = substitute(tctx, field-type);
+         if is-incomplete-typedef(field-type) {
+            is-incomplete = true;
+            continue-compile-c-typedefs-concrete = cons( (tctx, lhs-type, td), continue-compile-c-typedefs-concrete );
          }
-      } else has-cases = true;
+      }
    };
 
-   if has-cases {
-      assemble-types-section = assemble-types-section + SAtom{c"unsigned int discriminator_case_tag"} + SAtom{c";\n"};
+   if not(is-incomplete) {
+      let concrete-type = substitute(tctx, lhs-type);
+      is-cstruct-hard-compiled-index = is-cstruct-hard-compiled-index.bind(concrete-type, 1_u64);
 
-      assemble-types-section = assemble-types-section + SAtom{c"  union {\n"};
+      assemble-types-section = assemble-types-section + SAtom{c"struct "} + mangle-c-type(concrete-type, td) + SAtom{c"{\n"};
+      
+      let has-cases = false;
       for vector Tuple{case-tag=first, case-fields=second} in cases {
-         if case-tag!=c"" && case-fields.length > 0 {
-            assemble-types-section = assemble-types-section + SAtom{c"    struct {\n"};
+         if case-tag==c"" {
             for vector Tuple{field-name=first, field-type=second} in case-fields {
                field-type = substitute(tctx, field-type);
                (let pre-tt, let post-tt) = mangle-c-declaration(field-type, td);
-               assemble-types-section = assemble-types-section + SAtom{c"      "} + pre-tt + SAtom{c" "} + mangle-identifier(field-name) + post-tt + SAtom{c";\n"};
-            };
-            assemble-types-section = assemble-types-section + SAtom{c"    };\n"};
-         };
+               assemble-types-section = assemble-types-section + SAtom{c"  "} + pre-tt + SAtom{c" "} + mangle-identifier(field-name) + post-tt + SAtom{c";\n"};
+            }
+         } else has-cases = true;
       };
-      assemble-types-section = assemble-types-section + SAtom{c"  };\n"};
-   };
 
-   assemble-types-section = assemble-types-section + SAtom{c"};\n"};
+      if has-cases {
+         assemble-types-section = assemble-types-section + SAtom{c"unsigned int discriminator_case_tag"} + SAtom{c";\n"};
+
+         assemble-types-section = assemble-types-section + SAtom{c"  union {\n"};
+         for vector Tuple{case-tag=first, case-fields=second} in cases {
+            if case-tag!=c"" && case-fields.length > 0 {
+               assemble-types-section = assemble-types-section + SAtom{c"    struct {\n"};
+               for vector Tuple{field-name=first, field-type=second} in case-fields {
+                  field-type = substitute(tctx, field-type);
+                  (let pre-tt, let post-tt) = mangle-c-declaration(field-type, td);
+                  assemble-types-section = assemble-types-section + SAtom{c"      "} + pre-tt + SAtom{c" "} + mangle-identifier(field-name) + post-tt + SAtom{c";\n"};
+               };
+               assemble-types-section = assemble-types-section + SAtom{c"    };\n"};
+            };
+         };
+         assemble-types-section = assemble-types-section + SAtom{c"  };\n"};
+      };
+      assemble-types-section = assemble-types-section + SAtom{c"};\n"};
+   };
 );
