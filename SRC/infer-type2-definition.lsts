@@ -77,7 +77,7 @@ let infer-type2-definition(term: AST): Nil = (
          };
       } else has-tag-case = true;
    };
-   if not(has-tag-case) then infer-type2-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, term);
+   if not(has-tag-case) then infer-type2-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, term, has-tag-case);
    add-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
    add-weaken-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
    if not(has-tag-case) then {
@@ -96,7 +96,7 @@ let infer-type2-definition(term: AST): Nil = (
          let tag-case-number = t2(c"CaseNumber", t1(to-string(case-index)));
          add-quick-prop(tag-guard, tag-guard, tag-case-number);
          add-weaken-quick-prop(tag-guard, tag-guard, tag-case-number);
-         infer-type2-yield-constructor(lhs-type, case-tag, case-index, o-case-fields, term);
+         infer-type2-yield-constructor(lhs-type, case-tag, case-index, o-case-fields, term, has-tag-case);
          case-index = case-index + 1;
       };
    };
@@ -104,7 +104,7 @@ let infer-type2-definition(term: AST): Nil = (
 
 let type-constructor-tag-ordinal-index = {} :: HashtableEq<(CString,U64,CString),U64>;
 
-let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, case-fields: List<(CString,Type)>, blame: AST): Nil = (
+let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, case-fields: List<(CString,Type)>, blame: AST, has-tag-case: U64): Nil = (
    (let base-tag, let base-arity) = base-type.ground-tag-and-arity;
    type-constructor-tag-ordinal-index = type-constructor-tag-ordinal-index.bind( (base-tag,base-arity,case-tag), case-number );
 
@@ -129,7 +129,7 @@ let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-numbe
    body = mk-cons(body, mk-app(mk-var(c"mangle-post"),mk-atype(t2(c"Type",base-type))) );
    body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
 
-   if case-number >= 0 {
+   if has-tag-case {
       body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")) );
       body = mk-cons(body, mk-lit(c".discriminator_case_tag=").ascript(t1(c"L")));
       body = mk-cons(body, mk-lit(to-string(case-number)).ascript(t1(c"L")) );
