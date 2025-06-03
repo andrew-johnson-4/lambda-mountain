@@ -15,7 +15,7 @@ specialize := λ(: key String)(: ft Type)(: unify-ctx Maybe<TContext>)(: result-
          (mark-as-special( key result-type ))
          (let special-term (substitute( unify-ctx term )))
          (infer-global-context( special-term ))
-         (let tctx-special (std-infer-expr( (: None Maybe<TContext>) special-term false Used TAny )))
+         (let tctx-special (std-infer-expr( (: None Maybe<TContext>) special-term false Used ta )))
          (set special-term (.second tctx-special))
          (set global-type-context (.bind( global-type-context key (typeof special-term) special-term )))
          (set ast-parsed-program (+( ast-parsed-program special-term )))

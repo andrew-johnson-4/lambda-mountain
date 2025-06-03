@@ -14,10 +14,37 @@ let std-c-compile-type2-typedef(td: AST): Nil = (
    for concrete-type in concrete-type-instances-index.lookup(lhs-type.ground-tag-and-arity, [] :: List<Type>) {
       assemble-header-section = assemble-header-section + SAtom{c"typedef struct "} + mangle-c-type(concrete-type, td)
                               + SAtom{c" "} + mangle-c-type(concrete-type, td) + SAtom{c";\n"};
+      let tctx = unify(lhs-type, concrete-type);
+      continue-compile-c-typedefs-concrete = cons( (tctx, lhs-type, td), continue-compile-c-typedefs-concrete );
+   };
+);
+
+let std-c-compile-type2-typedef-concrete(tctx: Maybe<TContext>, lhs-type: Type, td: AST): Nil = (
+   match td { Typedef2{} => (); };
+   let location = (td as Tag::Typedef2).location;
+   let implements = (td as Tag::Typedef2).implements;
+   let implies = (td as Tag::Typedef2).implies;
+   let constraints = (td as Tag::Typedef2).constraints;
+   let size = (td as Tag::Typedef2).size;
+   let alias = (td as Tag::Typedef2).alias;
+   let opaque-alias = (td as Tag::Typedef2).opaque-alias;
+   let cases = (td as Tag::Typedef2).cases;
+
+   let is-incomplete = false;
+   for vector Tuple{case-tag=first, case-fields=second} in cases {
+      for vector Tuple{field-name=first, field-type=second} in case-fields {
+         field-type = substitute(tctx, field-type);
+         if is-incomplete-typedef(field-type) {
+            is-incomplete = true;
+            continue-compile-c-typedefs-concrete = cons( (tctx, lhs-type, td), continue-compile-c-typedefs-concrete );
+         }
+      }
    };
 
-   for concrete-type in concrete-type-instances-index.lookup(lhs-type.ground-tag-and-arity, [] :: List<Type>) {
-      let tctx = unify(lhs-type, concrete-type);
+   if not(is-incomplete) {
+      let concrete-type = substitute(tctx, lhs-type);
+      is-cstruct-hard-compiled-index = is-cstruct-hard-compiled-index.bind(concrete-type, 1_u64);
+
       assemble-types-section = assemble-types-section + SAtom{c"struct "} + mangle-c-type(concrete-type, td) + SAtom{c"{\n"};
       
       let has-cases = false;
@@ -48,7 +75,6 @@ let std-c-compile-type2-typedef(td: AST): Nil = (
          };
          assemble-types-section = assemble-types-section + SAtom{c"  };\n"};
       };
-
       assemble-types-section = assemble-types-section + SAtom{c"};\n"};
    };
 );

@@ -1,6 +1,6 @@
 
 lm-type-of-s := λ(: compound AST). (: (
-   (let r TAny)
+   (let r ta)
    (match compound (
       ()
       ( (Lit( tt _ )) (

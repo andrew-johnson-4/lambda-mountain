@@ -27,7 +27,7 @@ let substitute(ctx: AContext, tt: Type): Type = (
                rc => ( result = result.push(rc); () );
             }
          };
-         if result.length==0 then TAny
+         if result.length==0 then ta
          else if result.length==1 then result[0]
          else tand(result)
       );

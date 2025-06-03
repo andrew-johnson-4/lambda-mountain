@@ -4,8 +4,8 @@ infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (:
    (let r 0_u64)
    (if (non-zero body) (
       (add-class-info-layout( base-type LM1Style ))
-      (add-quick-prop( (t3( 'Array_s base-type TAny )) TAny (t1 'LMStruct_s) ))
-      (add-quick-prop( base-type TAny (t1 'LMStruct_s) ))
+      (add-quick-prop( (t3( 'Array_s base-type ta )) ta (t1 'LMStruct_s) ))
+      (add-quick-prop( base-type ta (t1 'LMStruct_s) ))
    ) ())
    (match body (
       ()
@@ -28,7 +28,7 @@ infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (:
          (let and-tag (&&( base-type (t1(+( 'Tag::_s tag ))) )))
          (add-quick-prop( and-tag and-tag (t2( 'CaseNumber_s (t1(to-string case-number)) )) ))
          (if (==( case-number 0_u64 )) (
-            (add-quick-prop( (t3( 'Array_s base-type TAny )) (t3( 'Array_s base-type TAny ))
+            (add-quick-prop( (t3( 'Array_s base-type ta )) (t3( 'Array_s base-type ta ))
                (t2( 'CaseNumber_s (t1 '0_s) ))
             ))
          ) ())

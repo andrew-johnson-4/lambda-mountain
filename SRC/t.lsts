@@ -4,7 +4,7 @@ let t1(tag: CString): Type = TGround{ tag, close([] :: List<Type>) };
 let t2(tag: CString, p1: Type): Type = TGround{ tag, close([p1]) };
 let t3(tag: CString, p1: Type, p2: Type): Type = TGround{ tag, close([p2, p1]) };
 let tv(v: CString): Type = TVar{ v };
-let ta = TAny;
+let ta = TAny();
 let tand(t: Vector<Type>): Type = TAnd{t.sort};
 let $"&&"(lt: Type, rt: Type): Type = (
    match (lt, rt) {

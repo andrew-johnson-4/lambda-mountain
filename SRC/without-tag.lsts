@@ -11,21 +11,21 @@ let .without-tag(tt: Type): Type = (
                rc => ( result = result.push(rc); () );
             }
          };
-         if result.length==0 then TAny
+         if result.length==0 then ta
          else if result.length==1 then result[0]
          else tand(result)
       );
-      TGround { tag:c"Constructor" } => TAny;
-      TGround { tag:c"CaseNumber" } => TAny;
-      TGround { tag:c"C-FFI", parameters:[] } => TAny;
-      TGround { tag:c"Raw" } => TAny;
-      TGround { tag:c"LMStruct" } => TAny;
-      TGround { tag:c"Constant" } => TAny;
-      TGround { tag:c"Literal" } => TAny;
-      TGround { tag:c"LocalVariable" } => TAny;
-      TGround { tag:c"GlobalVariable" } => TAny;
-      TGround { tag:tag } => if tag.has-prefix(c"Tag::") then TAny
-                        else if tag.has-prefix(c"Field::") then TAny
+      TGround { tag:c"Constructor" } => ta;
+      TGround { tag:c"CaseNumber" } => ta;
+      TGround { tag:c"C-FFI", parameters:[] } => ta;
+      TGround { tag:c"Raw" } => ta;
+      TGround { tag:c"LMStruct" } => ta;
+      TGround { tag:c"Constant" } => ta;
+      TGround { tag:c"Literal" } => ta;
+      TGround { tag:c"LocalVariable" } => ta;
+      TGround { tag:c"GlobalVariable" } => ta;
+      TGround { tag:tag } => if tag.has-prefix(c"Tag::") then ta
+                        else if tag.has-prefix(c"Field::") then ta
                         else tt;
       _ => tt;
    }

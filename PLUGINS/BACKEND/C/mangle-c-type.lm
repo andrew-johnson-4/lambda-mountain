@@ -70,13 +70,12 @@ mangle-c-type-internal := λ(: tt Type)(: blame AST). (: (
                (set tag (.replace( tag '\s\s_s '__s )))
                (set r (SAtom tag))
             ) (
-               (let c-type-name (.lookup( index-c-type-ordinal tt 'UnknownCTypename_s )))
-               (if (==( c-type-name 'UnknownCTypename_s )) () (
+               (if (.has( index-c-type-ordinal (.ground-tag-and-arity tt) )) (
                   (set r (+(
                      (SAtom 'LM__s)
                      (mangle-identifier tt)
                   )))
-               ))
+               ) ())
             ))
          ))
       ))

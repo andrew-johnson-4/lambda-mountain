@@ -33,7 +33,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
            iter
         ))
       )) (
-         (let vs (.lookup-soft( ctx vsk TAny ASTEOF )))
+         (let vs (.lookup-soft( ctx vsk ta ASTEOF )))
          (for-each (vi in (.vararg vs)) (
             (set std-c-fragment-context (.bind( std-c-fragment-context lhs-t vi )))
             (let inner-ctx (.bind( ctx lhs (.type vs) vi )))

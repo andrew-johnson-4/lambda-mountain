@@ -1,5 +1,5 @@
 
 let type-index = mk-hashtable-is(type(AST), type(Type));
 
-let typeof(t: AST): Type = type-index.lookup(t,TAny);
+let typeof(t: AST): Type = type-index.lookup(t,ta);
 let ascript(t: AST, tt: Type): Nil = type-index = type-index.bind(t, tt);

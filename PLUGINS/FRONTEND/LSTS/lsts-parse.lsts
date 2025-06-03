@@ -233,8 +233,11 @@ let lsts-parse(tokens: List<Token>): Nil = (
             ast-parsed-program = ast-parsed-program + mk-app(
                Var{ c"macro::define-zero", with-key(constructor, c"macro::define-zero") },
                mk-cons(
-                  AType{ base-type-rest.first },
-                  Lit{ constructor.key, constructor }
+                  mk-cons(
+                     AType{ base-type-rest.first },
+                     Lit{ constructor.key, constructor }
+                  ),
+                  Lit{ c"Tag::"+constructor.key, with-key(constructor, c"Tag::"+constructor.key) }
                )
             );
          );
@@ -333,7 +336,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
       if args.length==1 then head(args) else TGround { c"Tuple", close(args) };
    } else if lsts-parse-head(tokens)==c"?" {
       lsts-parse-expect(c"?", tokens); tokens = tail(tokens);
-      TAny {}
+      ta
    } else if lsts-is-ident-head(lsts-parse-head(tokens)) && not(lsts-is-type-tag(lsts-parse-head(tokens))) {
       (let varname, tokens) = lsts-parse-identifier(tokens);
       TVar { varname }
@@ -375,7 +378,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
             let tindex-rest = lsts-parse-type(tokens);
             tokens = tindex-rest.second;
             tindex-rest.first;
-         } else { TAny {} };
+         } else { ta };
          lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
          tt = t3(c"Array", tt, index);
       } else {
@@ -752,7 +755,7 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
 let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c"type2", tokens); let loc = head(tokens).location; tokens = tail(tokens);
    let mode = c"=";
-   let misc-type = TAny;
+   let misc-type = ta;
    if lsts-parse-head(tokens)==c"opaque" {
       lsts-parse-expect(c"opaque", tokens); tokens = tail(tokens);
       lsts-parse-expect(c"alias", tokens); tokens = tail(tokens);
@@ -794,7 +797,7 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
    } else t1(typename);
    let infers = mk-vector(type(Type));
    let impls = mk-vector(type(Type));
-   let size = TAny;
+   let size = ta;
    while lsts-parse-head(tokens)==c":" || lsts-parse-head(tokens)==c"implies"
       || lsts-parse-head(tokens)==c"implements" || lsts-parse-head(tokens)==c"size" {
       if lsts-parse-head(tokens)==c":" {
@@ -832,8 +835,8 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
       };
    };
    let cases = mk-vector(type( (CString,Vector<(CString,Type)>) ));
-   let alias = TAny;
-   let opaque-alias = TAny;
+   let alias = ta;
+   let opaque-alias = ta;
    if lsts-parse-head(tokens)==c"=" {
       lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
       if mode==c"opaque" {
@@ -988,14 +991,14 @@ type LstsFnSignature = LstsFnSignature { args-list: AST, args-type: Type, return
 
 # parses:    (a: I32, b: I32): U64
 let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tuple<LstsFnSignature, List<Token>> = (
-   let out = LstsFnSignature { ASTNil, TAny, TAny };
+   let out = LstsFnSignature { ASTNil, ta, ta };
 
    lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
    while non-zero(tokens) && lsts-parse-head(tokens)!=c")" {
       lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
       let arg-name = head(tokens); tokens = tail(tokens);
       let had-type = false;
-      let arg-type = TAny;
+      let arg-type = ta;
       if lsts-parse-head(tokens)==c":" {
          had-type = true;
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
@@ -1033,7 +1036,7 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
       prop = 1;
       lsts-parse-expect(c"prop", tokens); tokens = tail(tokens);
    };
-   let misc-tt = TAny;
+   let misc-tt = ta;
    if lsts-parse-head(tokens)==c":" {
       lsts-parse-expect(c":", tokens); tokens = tail(tokens);
       (misc-tt, tokens) = lsts-parse-type(tokens);
@@ -1045,7 +1048,7 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
       name = name + lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
    };
    let args-list = ASTEOF {};
-   let return-type = TAny {};
+   let return-type = ta;
    if lsts-parse-head(tokens) == c"(" {
       let sig = lsts-parse-function-signature(tokens, loc);
       tokens = sig.second;
@@ -1065,11 +1068,11 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
    };
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    if non-zero(args-list) {
-      let attach-tt = if prop { t1(c"Prop") } else { TAny{} };
+      let attach-tt = if prop { t1(c"Prop") } else { ta };
       if name==c"quick-prop" {
          match args-list {
             App{ left:Lit{key:c":"}, right:App{right:AType{ pre=tt }} } => (
-               add-quick-prop(pre, TAny{}, return-type);
+               add-quick-prop(pre, ta, return-type);
             );
             _ => (
                print("Malformed quick-prop Argument List at \{loc}\n");
@@ -1887,7 +1890,7 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       );
    } else if lsts-parse-head(tokens)==c"fn" {
       lsts-parse-expect(c"fn", tokens); let loc = head(tokens).location; tokens = tail(tokens);
-      let misc-type = TAny;
+      let misc-type = ta;
       if lsts-parse-head(tokens)==c":" {
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          (misc-type, tokens) = lsts-parse-type(tokens);

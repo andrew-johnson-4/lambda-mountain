@@ -36,7 +36,11 @@ index-typedefs := λ(: def AST)(: index U64) . (: (
          (for-each-v (case-fields in cases) (
             (if (non-zero(.first case-fields)) (
                (index-index-of-tag( (.first case-fields) 0_u64 ))
+               (if (==( (.length(.second case-fields)) 0_u64 )) (
+                  (index-lone-tag(.first case-fields))
+               ) ())
             ) ())
+            
          ))
       ))
       ( ASTEOF () )

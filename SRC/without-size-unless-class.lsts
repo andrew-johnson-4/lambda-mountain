@@ -24,11 +24,11 @@ let without-size-unless-class-inner(tt: Type): Type = (
                rc => ( result = result.push(rc); () );
             }
          };
-         if result.length==0 then TAny
+         if result.length==0 then ta
          else if result.length==1 then result[0]
          else tand(result)
       );
-      TGround{tag:c"Sized"} => TAny;
+      TGround{tag:c"Sized"} => ta;
       TGround{tag=tag,parameters=parameters} => TGround{tag,close(without-size-unless-class(parameters))};
       _ => tt;      
    }

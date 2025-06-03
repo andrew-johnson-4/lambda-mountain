@@ -6,7 +6,7 @@ let cmp(left: Type, right: Type): Ord = (
             let c1 = cmp(ltag,rtag);
             if c1!=Equal then c1 else cmp(lparameters, rparameters)
          );
-         _ => cmp($".0"(left), $".0"(right));
+         _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
       });
       TAnd{ lconjugate=conjugate } => (match right {
          TAnd{ rconjugate=conjugate } => (
@@ -22,17 +22,17 @@ let cmp(left: Type, right: Type): Ord = (
             };
             result;
          );
-         _ => cmp($".0"(left), $".0"(right));
+         _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
       });
       TVar{ left-name=name } => (match right {
          TVar{ right-name=name } => (
             cmp(left-name,right-name)
          );
-         _ => cmp($".0"(left), $".0"(right));
+         _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
       });
       TAny{} => (match right {
          TAny{} => Equal;
-         _ => cmp($".0"(left), $".0"(right));
+         _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
       });
    }
 );
