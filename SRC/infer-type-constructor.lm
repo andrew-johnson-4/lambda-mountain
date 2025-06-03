@@ -26,16 +26,6 @@ infer-type-constructor := λ(: base-type Type)(: body AST). (: (
       ( (App( (Lit( tag _ )) args )) (
          (let atype (type-of-s-with-fields( base-type tag args 1_u64 )))
          (add-concrete-type-instance atype)
-         (if (has-forward( atype )) (
-            (print 'Size\sOf\sType\sCannot\sBe\sDetermined\sDue\sTo\sForward\sReference:\s_s)
-            (print tag)(print '\n_s)
-            (exit 1_u64)
-         ) ())
-         (if (has-infinite( base-type atype )) (
-            (print 'Size\sOf\sType\sIs\sInfinite:\s_s)
-            (print tag)(print '\n_s)
-            (exit 1_u64)
-         ) ())
          (let rtype (&&(
             base-type
             (t1( (+( 'Tag::_s tag )) ))
