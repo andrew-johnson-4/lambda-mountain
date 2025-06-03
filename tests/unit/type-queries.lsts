@@ -9,7 +9,7 @@ let t-x = tv(c"x");
 let t-Ax = t-A && t-x;
 let t-C = t2(c"C", t-x);
 let t-f = t3(c"Arrow", t-A, t-B);
-let t-g = t3(c"Array", t-f, TAny);
+let t-g = t3(c"Array", t-f, ta);
 
 # .is-t tests
 assert( t-A.is-t(c"A") );
@@ -70,12 +70,12 @@ assert( t-g.arity == 2 );
 
 # .arity synthesized field
 assert( t-A.slot(c"A") == t-A );
-assert( t-A.slot(c"B") == TAny );
-assert( t-B.slot(c"A") == TAny );
+assert( t-A.slot(c"B") == ta );
+assert( t-B.slot(c"A") == ta );
 assert( t-B.slot(c"B") == t-B );
 assert( t-AB.slot(c"A") == t-A );
 assert( t-AB.slot(c"B") == t-B );
-assert( t-x.slot(c"A") == TAny );
+assert( t-x.slot(c"A") == ta );
 assert( t-Ax.slot(c"A") == t-A );
 assert( t-C.slot(c"C") == t-C );
 assert( t-f.slot(c"Arrow") == t-f );
@@ -83,7 +83,7 @@ assert( t-g.slot(c"Array") == t-g );
 
 # .without-tag synthesized field
 assert( is(t-A.without-tag, t-A) );
-assert( is(t2(c"Constructor", t-A).without-tag, TAny) );
-assert( is(t2(c"CaseNumber", t1(c"0")).without-tag, TAny) );
-assert( is(t2(c"Raw", t-A).without-tag, TAny) );
+assert( is(t2(c"Constructor", t-A).without-tag, ta) );
+assert( is(t2(c"CaseNumber", t1(c"0")).without-tag, ta) );
+assert( is(t2(c"Raw", t-A).without-tag, ta) );
 
