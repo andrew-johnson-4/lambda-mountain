@@ -36,9 +36,11 @@ let std-c-compile-type2-typedef-concrete(tctx: Maybe<TContext>, lhs-type: Type, 
          field-type = substitute(tctx, field-type);
          if is-incomplete-typedef(field-type) {
             is-incomplete = true;
-            continue-compile-c-typedefs-concrete = cons( (tctx, lhs-type, td), continue-compile-c-typedefs-concrete );
          }
       }
+   };
+   if is-incomplete {
+      continue-compile-c-typedefs-concrete = cons( (tctx, lhs-type, td), continue-compile-c-typedefs-concrete );
    };
 
    if not(is-incomplete) {
