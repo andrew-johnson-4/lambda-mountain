@@ -5,7 +5,7 @@ meta
    ))
 ;
 mangle-identifier := λ(: k String). (: (
-   (let cs SNil)
+   (let cs (SAtom 'LM__s))
    (while (head-string k) (
       (match (head-string k) (
          ()
