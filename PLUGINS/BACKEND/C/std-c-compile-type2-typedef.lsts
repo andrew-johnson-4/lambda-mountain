@@ -33,7 +33,7 @@ let std-c-compile-type2-typedef-concrete(tctx: Maybe<TContext>, lhs-type: Type, 
    let is-incomplete = false;
    for vector Tuple{case-tag=first, case-fields=second} in cases {
       for vector Tuple{field-name=first, field-type=second} in case-fields {
-         field-type = substitute(tctx, field-type);
+         field-type = substitute(tctx, field-type).rewrite-type-alias;
          if is-incomplete-typedef(field-type) {
             is-incomplete = true;
          }
@@ -41,9 +41,7 @@ let std-c-compile-type2-typedef-concrete(tctx: Maybe<TContext>, lhs-type: Type, 
    };
    if is-incomplete {
       continue-compile-c-typedefs-concrete = cons( (tctx, lhs-type, td), continue-compile-c-typedefs-concrete );
-   };
-
-   if not(is-incomplete) {
+   } else {
       let concrete-type = substitute(tctx, lhs-type);
       is-cstruct-hard-compiled-index = is-cstruct-hard-compiled-index.bind(concrete-type, 1_u64);
 
