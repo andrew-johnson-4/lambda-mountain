@@ -769,8 +769,9 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
       lsts-parse-expect(c"phi", tokens); tokens = tail(tokens);
       misc-type = misc-type && t1(c"Phi");
    };
-   lsts-parse-expect(c"[Typename]", lsts-is-enum-head(lsts-parse-head(tokens)), tokens);
+   lsts-parse-expect(c"[Typename]", lsts-is-enum-head(lsts-parse-head(tokens)) || lsts-parse-head(tokens).has-suffix(c"_ss"), tokens);
    let typename = lsts-parse-head(tokens); tokens = tail(tokens);
+   if typename.has-suffix(c"_ss") then typename = typename.remove-suffix(c"_ss");
    let typeconstraints = mk-vector(type((CString,Type)));
    let lhs-type = if lsts-parse-head(tokens)==c"<" {
       let pars = [] :: List<Type>;
