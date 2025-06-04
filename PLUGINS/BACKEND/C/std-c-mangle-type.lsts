@@ -51,7 +51,7 @@ let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
             let pi = 0;
             for p in parameters {
                if pi > 0 then r = r + mangle-identifier(c",");
-               r = r + std-c-mangle-type-internal(p, blame);
+               r = r + mangle-identifier(clone-rope(std-c-mangle-type-internal(p, blame)));
                pi = pi + 1;
             };
             r = r + mangle-identifier(c">");
