@@ -24,3 +24,7 @@ type alias TContext = List<Tuple<CString,Type,AST>>;
 type alias AContext = List<Tuple<CString,AST>>;
 
 type2 StackToSpecialize = { key:CString, pre-type:Type, ctx:Maybe<TContext>, post-type:Type };
+
+type2 ParsePartial = PME{ term:AST , remainder:List<Token> };
+
+type2 ApplyResult = { function-type:Type , return-type:Type };
