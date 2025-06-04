@@ -1,4 +1,8 @@
 
+type List<x> = LEOF
+              | LCons{ head:x , tail:List<x>[] };
+zero List<x> = LEOF;
+
 let cmp(ls: List<x>, rs: List<x>): Ord = (
    let diff = Equal;
    while is(diff, Equal) && non-zero(ls) && non-zero(rs) {

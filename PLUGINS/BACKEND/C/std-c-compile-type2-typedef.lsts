@@ -15,12 +15,12 @@ let std-c-compile-type2-typedef(td: AST): Nil = (
       assemble-header-section = assemble-header-section + SAtom{c"typedef struct "} + mangle-c-type(concrete-type, td)
                               + SAtom{c" "} + mangle-c-type(concrete-type, td) + SAtom{c";\n"};
       let tctx = unify(lhs-type, concrete-type);
-      continue-compile-c-typedefs-concrete = cons( (tctx, lhs-type, td), continue-compile-c-typedefs-concrete );
+      continue-compile-c-typedefs-concrete = cons( (tctx, concrete-type, td), continue-compile-c-typedefs-concrete );
    };
 );
 
-let std-c-compile-type2-typedef-concrete(tctx: Maybe<TContext>, lhs-type: Type, td: AST): Nil = (
-   match td { Typedef2{} => (); _ => (fail("Invalid compile type2 \{lhs-type} \{td}\n"); ()); };
+let std-c-compile-type2-typedef-concrete(tctx: Maybe<TContext>, concrete-type: Type, td: AST): Nil = (
+   match td { Typedef2{} => (); _ => (fail("Invalid compile type2 \{concrete-type} \{td}\n"); ()); };
    let location = (td as Tag::Typedef2).location;
    let implements = (td as Tag::Typedef2).implements;
    let implies = (td as Tag::Typedef2).implies;
@@ -40,9 +40,8 @@ let std-c-compile-type2-typedef-concrete(tctx: Maybe<TContext>, lhs-type: Type, 
       }
    };
    if is-incomplete {
-      continue-compile-c-typedefs-concrete = cons( (tctx, lhs-type, td), continue-compile-c-typedefs-concrete );
+      continue-compile-c-typedefs-concrete = cons( (tctx, concrete-type, td), continue-compile-c-typedefs-concrete );
    } else {
-      let concrete-type = substitute(tctx, lhs-type);
       is-cstruct-hard-compiled-index = is-cstruct-hard-compiled-index.bind(concrete-type, 1_u64);
 
       assemble-types-section = assemble-types-section + SAtom{c"struct "} + mangle-c-type(concrete-type, td) + SAtom{c"{\n"};
