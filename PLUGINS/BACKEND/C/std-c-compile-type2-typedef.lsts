@@ -33,15 +33,15 @@ let std-c-compile-type2-typedef-concrete(tctx: Maybe<TContext>, lhs-type: Type, 
    let is-incomplete = false;
    for vector Tuple{case-tag=first, case-fields=second} in cases {
       for vector Tuple{field-name=first, field-type=second} in case-fields {
-         field-type = substitute(tctx, field-type);
+         field-type = substitute(tctx, field-type).rewrite-type-alias;
          if is-incomplete-typedef(field-type) {
             is-incomplete = true;
-            continue-compile-c-typedefs-concrete = cons( (tctx, lhs-type, td), continue-compile-c-typedefs-concrete );
          }
       }
    };
-
-   if not(is-incomplete) {
+   if is-incomplete {
+      continue-compile-c-typedefs-concrete = cons( (tctx, lhs-type, td), continue-compile-c-typedefs-concrete );
+   } else {
       let concrete-type = substitute(tctx, lhs-type);
       is-cstruct-hard-compiled-index = is-cstruct-hard-compiled-index.bind(concrete-type, 1_u64);
 
@@ -51,9 +51,10 @@ let std-c-compile-type2-typedef-concrete(tctx: Maybe<TContext>, lhs-type: Type, 
       for vector Tuple{case-tag=first, case-fields=second} in cases {
          if case-tag==c"" {
             for vector Tuple{field-name=first, field-type=second} in case-fields {
+               let mangled-field-name = c"0_" + field-name;
                field-type = substitute(tctx, field-type);
                (let pre-tt, let post-tt) = mangle-c-declaration(field-type, td);
-               assemble-types-section = assemble-types-section + SAtom{c"  "} + pre-tt + SAtom{c" "} + mangle-identifier(field-name) + post-tt + SAtom{c";\n"};
+               assemble-types-section = assemble-types-section + SAtom{c"  "} + pre-tt + SAtom{c" "} + mangle-identifier(mangled-field-name) + post-tt + SAtom{c";\n"};
             }
          } else has-cases = true;
       };
@@ -62,16 +63,19 @@ let std-c-compile-type2-typedef-concrete(tctx: Maybe<TContext>, lhs-type: Type, 
          assemble-types-section = assemble-types-section + SAtom{c"unsigned int discriminator_case_tag"} + SAtom{c";\n"};
 
          assemble-types-section = assemble-types-section + SAtom{c"  union {\n"};
+         let case-number = 0_u64;
          for vector Tuple{case-tag=first, case-fields=second} in cases {
             if case-tag!=c"" && case-fields.length > 0 {
                assemble-types-section = assemble-types-section + SAtom{c"    struct {\n"};
                for vector Tuple{field-name=first, field-type=second} in case-fields {
+                  let mangled-field-name = to-string(case-number) + c"_" + field-name;
                   field-type = substitute(tctx, field-type);
                   (let pre-tt, let post-tt) = mangle-c-declaration(field-type, td);
-                  assemble-types-section = assemble-types-section + SAtom{c"      "} + pre-tt + SAtom{c" "} + mangle-identifier(field-name) + post-tt + SAtom{c";\n"};
+                  assemble-types-section = assemble-types-section + SAtom{c"      "} + pre-tt + SAtom{c" "} + mangle-identifier(mangled-field-name) + post-tt + SAtom{c";\n"};
                };
                assemble-types-section = assemble-types-section + SAtom{c"    };\n"};
             };
+            case-number = case-number + 1;
          };
          assemble-types-section = assemble-types-section + SAtom{c"  };\n"};
       };

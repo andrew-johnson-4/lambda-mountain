@@ -24,7 +24,7 @@ config-target                := 'tmp.c_s;
 config-mode                  := (: ModeCompile CompileMode);
 config-strip-debug           := False_u8;
 preprocess-macros            := (: MEOF MacroList);
-ast-parsed-program           := (: ASTEOF AST);
+ast-parsed-program           := (: (mk-eof()) AST);
 global-ctx                   := (: FCtxEOF FContext);
 
 parse-suffixes := (: LEOF List<Tuple<String,Type>>);

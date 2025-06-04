@@ -1,6 +1,6 @@
 
 let substitute(ctx: AContext, v: Token): Token = (
-   match ctx.lookup(v.key, ASTEOF) {
+   match ctx.lookup(v.key, mk-eof()) {
       Lit{t=token} => t;
       Var{t=token} => t;
       _ => v;
@@ -9,7 +9,7 @@ let substitute(ctx: AContext, v: Token): Token = (
 
 let substitute(ctx: AContext, tt: Type): Type = (
    match tt {
-      TVar{v=name} => match ctx.lookup(v, ASTEOF) {
+      TVar{v=name} => match ctx.lookup(v, mk-eof()) {
          Lit{tv=key} => parse-type(tv);
          Var{tv=key} => parse-type(tv);
          AType{tv=tt} => tv;

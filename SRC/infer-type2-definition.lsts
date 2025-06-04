@@ -1,9 +1,10 @@
 
-let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U64): Nil = (
+let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U64, case-number: U64): Nil = (
+   let mangled-field-name = to-string(case-number) + c"_" + field-name;
    let ctx = None :: Maybe<TContext>;
-   ctx = ctx.bind( c"base-type", base-type, ASTEOF );
-   ctx = ctx.bind( c"field-type", field-type, ASTEOF );
-   ctx = ctx.bind( c"field-name", ta, mk-lit(field-name) );
+   ctx = ctx.bind( c"base-type", base-type, mk-eof() );
+   ctx = ctx.bind( c"field-type", field-type, mk-eof() );
+   ctx = ctx.bind( c"field-name", ta, mk-lit(mangled-field-name) );
    ctx = ctx.bind( c"primitive::field-get", ta, mk-var(c"."+field-name) );
    ctx = ctx.bind( c"primitive::field-set", ta, mk-var(c"set."+field-name) );
    ctx = ctx.bind( c"primitive::field-get-indirect", ta, mk-var(c"."+field-name) );
@@ -18,9 +19,9 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    infer-global-context(field-set-indirect);
 
    ctx = None :: Maybe<TContext>;
-   ctx = ctx.bind( c"base-type", base-type, ASTEOF );
-   ctx = ctx.bind( c"field-type", field-type, ASTEOF );
-   ctx = ctx.bind( c"field-name", ta, mk-lit(field-name) );
+   ctx = ctx.bind( c"base-type", base-type, mk-eof() );
+   ctx = ctx.bind( c"field-type", field-type, mk-eof() );
+   ctx = ctx.bind( c"field-name", ta, mk-lit(mangled-field-name) );
    ctx = ctx.bind( c"primitive::field-get", ta, mk-var(c"."+to-string(field-ordinal)) );
    let field-ordinal-get = substitute(ctx, find-global-callable(c"primitive::field-get", base-type, blame));
    infer-global-context(field-ordinal-get);
@@ -56,6 +57,7 @@ let infer-type2-definition(term: AST): Nil = (
    };
    if non-zero(alias) then add-type-alias(lhs-type, alias);
    if non-zero(opaque-alias) then add-opaque-type-alias(lhs-type, opaque-alias);
+   let case-number = 0_u64;
    for vector Tuple{ case-tag=first, case-fields=second } in cases {
       type2-base-type-index = type2-base-type-index.bind( lhs-type.ground-tag-and-arity, 1 );
       let field-ordinal = 0_u64;
@@ -64,9 +66,10 @@ let infer-type2-definition(term: AST): Nil = (
          let field-wrapped-type = t2(c"Field::"+field-name, field-type);
          add-quick-prop(lhs-type, guard, field-wrapped-type);
          add-weaken-quick-prop(lhs-type, guard, field-wrapped-type);
-         visit-field-template(field-name, guard, field-type, term, case-fields.length - field-ordinal);
+         visit-field-template(field-name, guard, field-type, term, case-fields.length - field-ordinal, case-number);
          field-ordinal = field-ordinal + 1;
       };
+      if case-tag!=c"" then case-number = case-number + 1;
    };
    let common-fields = [] :: List<(CString,Type)>;
    let has-tag-case = false;
@@ -77,10 +80,14 @@ let infer-type2-definition(term: AST): Nil = (
          };
       } else has-tag-case = true;
    };
-   if not(has-tag-case) then infer-type2-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, term);
-   let lm2struct = if has-tag-case then t1(c"LM2Struct") else t1(c"LM2Struct") && t1(c"LM2StructFlat");
-   add-quick-prop(lhs-type, lhs-type, lm2struct);
-   add-weaken-quick-prop(lhs-type, lhs-type, lm2struct);
+   if not(has-tag-case) then infer-type2-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, term, has-tag-case);
+   add-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
+   add-weaken-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
+   if not(has-tag-case) then {
+      let tag-case-number = t2(c"CaseNumber", t1(c"0"));
+      add-quick-prop(lhs-type, lhs-type, tag-case-number);
+      add-weaken-quick-prop(lhs-type, lhs-type, tag-case-number);
+   };
    let case-index = 0_u64;
    for vector Tuple{ case-tag=first, case-fields=second } in cases {
       if case-tag!=c"" {
@@ -92,7 +99,7 @@ let infer-type2-definition(term: AST): Nil = (
          let tag-case-number = t2(c"CaseNumber", t1(to-string(case-index)));
          add-quick-prop(tag-guard, tag-guard, tag-case-number);
          add-weaken-quick-prop(tag-guard, tag-guard, tag-case-number);
-         infer-type2-yield-constructor(lhs-type, case-tag, case-index, o-case-fields, term);
+         infer-type2-yield-constructor(lhs-type, case-tag, case-index, o-case-fields, term, has-tag-case);
          case-index = case-index + 1;
       };
    };
@@ -100,7 +107,7 @@ let infer-type2-definition(term: AST): Nil = (
 
 let type-constructor-tag-ordinal-index = {} :: HashtableEq<(CString,U64,CString),U64>;
 
-let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, case-fields: List<(CString,Type)>, blame: AST): Nil = (
+let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, case-fields: List<(CString,Type)>, blame: AST, has-tag-case: U64): Nil = (
    (let base-tag, let base-arity) = base-type.ground-tag-and-arity;
    type-constructor-tag-ordinal-index = type-constructor-tag-ordinal-index.bind( (base-tag,base-arity,case-tag), case-number );
 
@@ -109,7 +116,8 @@ let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-numbe
 
    let args = mk-eof();
    for Tuple{field-name=first, field-type=second} in case-fields.reverse {
-      let par = mk-var(field-name).ascript(field-type);
+      let mangled-field-name = to-string(case-number) + c"_" + field-name;
+      let par = mk-var(mangled-field-name).ascript(field-type);
       if non-zero(args)
       then args = mk-cons(args, par)
       else args = par
@@ -125,7 +133,7 @@ let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-numbe
    body = mk-cons(body, mk-app(mk-var(c"mangle-post"),mk-atype(t2(c"Type",base-type))) );
    body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
 
-   if case-number >= 0 {
+   if has-tag-case {
       body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")) );
       body = mk-cons(body, mk-lit(c".discriminator_case_tag=").ascript(t1(c"L")));
       body = mk-cons(body, mk-lit(to-string(case-number)).ascript(t1(c"L")) );
@@ -133,11 +141,12 @@ let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-numbe
    };
 
    for Tuple{field-name=first, field-type=second} in case-fields.reverse {
+      let mangled-field-name = to-string(case-number) + c"_" + field-name;
       body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")) );
       body = mk-cons(body, mk-lit(c".").ascript(t1(c"L")));
-      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(field-name).ascript(t1(c"L"))) );
+      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name).ascript(t1(c"L"))) );
       body = mk-cons(body, mk-lit(c"=").ascript(t1(c"L")));
-      body = mk-cons(body, mk-var(field-name) );
+      body = mk-cons(body, mk-var(mangled-field-name) );
       body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
    };
 

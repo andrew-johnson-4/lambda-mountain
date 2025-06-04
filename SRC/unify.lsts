@@ -17,7 +17,7 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TContext> = (
       Tuple{ first:TVar{name=name}, second:TGround{tag=tag} } => (
          ctx = ctx.bind(name, normalize(pt), Lit{tag, mk-token(tag)});
       );
-      Tuple{ first:TVar{name=name} } => ctx = ctx.bind(name, normalize(pt), ASTEOF);
+      Tuple{ first:TVar{name=name} } => ctx = ctx.bind(name, normalize(pt), mk-eof());
       Tuple{ first:TAnd{ lconjugate=conjugate }, second:TAnd{ rconjugate=conjugate } } => (
          let result = yes;
          let ri = 0_u64;

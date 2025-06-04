@@ -33,15 +33,20 @@ index-typedefs := λ(: def AST)(: index U64) . (: (
       ))
       ( (Typedef2( _ )) (
          (let cases (.cases(as def Tag::Typedef2)))
+         (let has-cases False_u8)
          (for-each-v (case-fields in cases) (
             (if (non-zero(.first case-fields)) (
+               (set has-cases True_u8)
                (index-index-of-tag( (.first case-fields) 0_u64 ))
                (if (==( (.length(.second case-fields)) 0_u64 )) (
                   (index-lone-tag(.first case-fields))
                ) ())
             ) ())
-            
          ))
+         (if (not has-cases) (
+            (let lhs-type (.lhs-type(as def Tag::Typedef2)))
+            (index-index-of-tag( (.simple-tag lhs-type) 0_u64 ))
+         ) ())
       ))
       ( ASTEOF () )
       ( _ (exit-error( 'Invalid\sTypedef_s def )) )

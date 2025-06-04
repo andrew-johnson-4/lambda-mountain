@@ -1,6 +1,6 @@
 
 plugins-backend-c-compile := λ . (: (
-   (let typedefs ASTEOF)
+   (let typedefs (mk-eof()))
    (for-each-v (program-term in (.unroll-seq ast-parsed-program)) (match program-term (
       ()
       ( (@( g-t (Glb( k_t rhs )) )) (

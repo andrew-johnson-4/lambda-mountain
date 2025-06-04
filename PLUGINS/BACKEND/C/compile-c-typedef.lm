@@ -116,7 +116,7 @@ compile-c-typedef-concrete := λ(: tctx Maybe<TContext>)(: base-type Type)(: bod
                (set cases (+( cases (compile-c-casedef( tctx fields case-number body )) )))
                (set has-case 1_u64)
             ))
-            (set body ASTEOF)
+            (set body (mk-eof()))
          ))
       )))
       (if incomplete (
@@ -195,7 +195,7 @@ compile-c-mark-field-as-seen := λ(: tt Type). (: (
          ))
          ( _ () )
       ))
-      (let base-body (.lookup( compile-c-type-body-of-base-type (.tag tt) (Tuple( ta ASTEOF )) )))
+      (let base-body (.lookup( compile-c-type-body-of-base-type (.tag tt) (Tuple( ta (mk-eof()) )) )))
       (let base-type (.first base-body))
       (let body (.second base-body))
       (if (&&( (non-zero body) (not(.lookup( is-cstruct-hard-compiled-index tt 0_u64 ))) )) (

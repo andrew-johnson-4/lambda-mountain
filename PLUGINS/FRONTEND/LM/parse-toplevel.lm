@@ -1,6 +1,6 @@
 
 parse-toplevel := λ(: tokens List<Token>). (: (
-   (let program ASTEOF)
+   (let program (mk-eof()))
    (while (non-zero tokens) (
       (match tokens (
          ()
