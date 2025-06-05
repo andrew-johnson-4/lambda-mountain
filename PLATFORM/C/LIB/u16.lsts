@@ -1,8 +1,5 @@
 
-type U16 => U32;
-type U16 => I32;
-type U16 => U64;
-type U16 => I64;
+type2 U16 implies U32, I32, U64, I64 implements DefaultPrintable;
 
 declare-binop( $"!=", raw-type(U16), raw-type(U16), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );
 declare-binop( $"==", raw-type(U16), raw-type(U16), raw-type(U64), ( l"("; x; l"=="; y; l")"; ) );
@@ -21,5 +18,3 @@ declare-binop( $"*", raw-type(U16), raw-type(U16), raw-type(U16), ( l"("; x; l"*
 declare-unop( not, raw-type(U16), raw-type(U64), ( l"(!"; x; l")"; ) );
 
 declare-unop( into-branch-conditional, raw-type(U16), raw-type(BranchConditional), x );
-
-type U16 implements DefaultPrintable;
