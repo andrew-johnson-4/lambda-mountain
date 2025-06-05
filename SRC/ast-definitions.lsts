@@ -2,7 +2,8 @@
 type2 SourceLocation = { filename: CString, line: U64, column: U64 };
 type2 Token = { skey: String, key: CString, nonce: U64, location: SourceLocation };
 
-type AST = ASTEOF
+type AST
+         = ASTEOF
          | ASTNil
          | App { is-cons: U64, left: AST[], right: AST[] }
          | Var { key: CString, token: Token }
@@ -15,6 +16,7 @@ type AST = ASTEOF
          | Typedef2 { location: SourceLocation, lhs-type: Type, implies: Vector<Type>, implements: Vector<Type>, constraints: Vector<(CString,Type)>,
                       size: Type, alias: Type, opaque-alias: Type, cases: Vector<(CString,Vector<(CString,Type)>)> }
          | Meta { val: AST[] };
+type AST implements DefaultFormattable;
 zero AST = ASTEOF;
 
 # constructor with a default argument
