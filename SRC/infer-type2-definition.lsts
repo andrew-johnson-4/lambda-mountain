@@ -13,10 +13,6 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    let field-set = substitute(ctx, find-global-callable(c"primitive::field-set", t3(c"Cons", base-type, field-type), blame));
    let field-get-indirect = substitute(ctx, find-global-callable(c"primitive::field-get-indirect", t3(c"Array",base-type,ta), blame));
    let field-set-indirect = substitute(ctx, find-global-callable(c"primitive::field-set-indirect", t3(c"Cons", t3(c"Array",base-type,ta), field-type), blame));
-   infer-global-context(field-get);
-   infer-global-context(field-set);
-   infer-global-context(field-get-indirect);
-   infer-global-context(field-set-indirect);
 
    ctx = None :: Maybe<TContext>;
    ctx = ctx.bind( c"base-type", base-type, mk-eof() );
@@ -24,7 +20,6 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ctx = ctx.bind( c"field-name", ta, mk-lit(mangled-field-name) );
    ctx = ctx.bind( c"primitive::field-get", ta, mk-var(c"."+to-string(field-ordinal)) );
    let field-ordinal-get = substitute(ctx, find-global-callable(c"primitive::field-get", base-type, blame));
-   infer-global-context(field-ordinal-get);
 
    ast-parsed-program = ast-parsed-program + field-get + field-set + field-get-indirect + field-set-indirect + field-ordinal-get;
 );
@@ -154,7 +149,6 @@ let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-numbe
    body = mk-cons(body, mk-lit(c";})").ascript(t1(c"L")));
 
    let constructor = mk-glb( mk-token(case-tag).with-location(blame.location), mk-abs(args, body.ascript(base-type), t1(c"Blob")) );
-   infer-global-context(constructor);
    ast-parsed-program = ast-parsed-program + constructor;
 );
 

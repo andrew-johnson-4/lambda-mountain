@@ -26,10 +26,28 @@ let infer-global-terms(term: AST): AST = (
    }; term
 );
 
-let infer-global-context(term: AST): Nil = (
+let infer-global-context-prim(term: AST): Nil = (
    match term {
       Seq{seq=seq} => (
-         for vector s in seq { infer-global-context(s) }
+         for vector s in seq { infer-global-context-prim(s) }
+      );
+      Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
+         if k.key.has-prefix(c"primitive::") then {
+            let ft = t3(c"Arrow", typeof-lhs(lhs), return-type) && misc-tt;
+            mark-global-as-seen(k.key, ft, misc-tt);
+            ascript-normal(term, ft);
+            ascript-normal(frhs, ft);
+            global-type-context = global-type-context.bind(k.key, ft, term);
+         };
+      );
+      _ => ();
+   }
+);
+
+let infer-global-context-td(term: AST): Nil = (
+   match term {
+      Seq{seq=seq} => (
+         for vector s in seq { infer-global-context-td(s) }
       );
       Typedef{ lhs:Lit{base-type=key}, case-constructors=rhs } => (
          # TODO: remove when LM frontend is removed
@@ -39,8 +57,19 @@ let infer-global-context(term: AST): Nil = (
       Typedef{ lhs:AType{bt=tt}, case-constructors=rhs } => (
          infer-type-definition(bt, case-constructors, 0);
       );
+      Typedef2{} => infer-type2-definition(term);
+      _ => ();
+   }
+);
+
+let infer-global-context(term: AST): Nil = (
+   match term {
+      Seq{seq=seq} => (
+         for vector s in seq { infer-global-context(s) }
+      );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
-         if misc-tt.is-t(c"TypedMacro") then bind-new-macro(k.key, frhs)
+         if k.key.has-prefix(c"primitive::") then ()
+         else if misc-tt.is-t(c"TypedMacro") then bind-new-macro(k.key, frhs)
          else {
             let ft = t3(c"Arrow", typeof-lhs(lhs), return-type) && misc-tt;
             mark-global-as-seen(k.key, ft, misc-tt);
@@ -53,12 +82,3 @@ let infer-global-context(term: AST): Nil = (
    }
 );
 
-let infer-global-context-2(term: AST): Nil = (
-   match term {
-      Seq{seq=seq} => (
-         for vector s in seq { infer-global-context-2(s) }
-      );
-      Typedef2{} => infer-type2-definition(term);
-      _ => ();
-   }
-);
