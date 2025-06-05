@@ -1,6 +1,4 @@
 
-type Type implements DefaultFormattable;
-
 let .into(tt: Type, tgt: Type<String>): String = (
    match tt {
       TAny{} => "?";

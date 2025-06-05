@@ -20,8 +20,8 @@ zero AST = ASTEOF;
 # constructor with a default argument
 let $"App"(left: AST[], right: AST[]): AST = App { false, left, right };
 
-type alias TContext = List<Tuple<CString,Type,AST>>;
-type alias AContext = List<Tuple<CString,AST>>;
+type2 alias TContext = List<Tuple<CString,Type,AST>>;
+type2 alias AContext = List<Tuple<CString,AST>>;
 
 type2 StackToSpecialize = { key:CString, pre-type:Type, ctx:Maybe<TContext>, post-type:Type };
 
