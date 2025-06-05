@@ -22,6 +22,8 @@ let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
          result;
       );
       TAny{} => SNil;
+      TGround{tag:c"Nil", parameters:[]} => SAtom{c"void"};
+      TGround{tag:c"Never", parameters:[]} => SAtom{c"void"};
       TGround{tag:c"Type", parameters:[inner-tt..]} => std-c-mangle-type-internal(inner-tt, blame);
       TGround{tag:c"Array", parameters:[_.. array-base..]} => (
          if array-base.is-arrow
@@ -51,7 +53,42 @@ let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
             let pi = 0;
             for p in parameters {
                if pi > 0 then r = r + mangle-identifier(c",");
-               r = r + std-c-mangle-type-internal(p, blame);
+               r = r + std-c-mangle-type-simple(p, blame);
+               pi = pi + 1;
+            };
+            r = r + mangle-identifier(c">");
+         };
+         r;
+      );
+      _ => SNil;
+   }
+);
+
+let std-c-mangle-type-simple(tt: Type, blame: AST): S = (
+   match tt {
+      TAnd{ conjugate=conjugate } => (
+         let is-c = can-unify(t2(c"C",ta), tt);
+         let result = SNil;
+         for vector c in conjugate {
+            if is-c && c.simple-tag != c"C" {} else {
+               let rt = std-c-mangle-type-internal(c, blame);
+               result = if non-zero(result) && non-zero(rt) then result + SAtom{c" "} + rt
+               else if non-zero(result) then result
+               else rt;
+            }
+         };
+         result;
+      );
+      TGround{tag:c"Nil", parameters:[]} => SAtom{c"void"};
+      TGround{tag:c"Never", parameters:[]} => SAtom{c"void"};
+      TGround{tag=tag, parameters=parameters} => (
+         let r = mangle-identifier(tag);
+         if parameters.length > 0 {
+            r = r + mangle-identifier(c"<");
+            let pi = 0;
+            for p in parameters {
+               if pi > 0 then r = r + mangle-identifier(c",");
+               r = r + std-c-mangle-type-simple(p, blame);
                pi = pi + 1;
             };
             r = r + mangle-identifier(c">");

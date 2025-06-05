@@ -1,7 +1,7 @@
 
 type StructLayout = LM1Style | CStyle | FragmentStyle | UnknownStyle;
 
-type ClassInfo = ClassInfo { layout: StructLayout, lhs: Type, cases: List<Tuple<CString,Type>> };
+type2 ClassInfo = { layout: StructLayout, lhs: Type, cases: List<Tuple<CString,Type>> };
 let class-info-index = {} :: HashtableEq<Tuple<CString,U64>,ClassInfo>;
 
 let class-info-default = ClassInfo{ UnknownStyle, ta, [] :: List<Tuple<CString,Type>> };

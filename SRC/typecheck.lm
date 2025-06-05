@@ -1,7 +1,8 @@
 
 typecheck := λ. (: (
+   (infer-global-context-prim ast-parsed-program)
+   (infer-global-context-td ast-parsed-program)
    (infer-global-context ast-parsed-program)
-   (infer-global-context-2 ast-parsed-program)
    (assert-no-infinite-types())
    (set ast-parsed-program (infer-global-terms ast-parsed-program))
    (let tctx-ast (std-infer-expr( (: None Maybe<TContext>) ast-parsed-program false Used ta )))

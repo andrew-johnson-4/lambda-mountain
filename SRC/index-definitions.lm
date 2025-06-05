@@ -9,7 +9,3 @@ type FContext FCtxEOF | (FCtxBind( remainder:FContext[] , k:String , kt:Type , k
 type Macro (Macro( AST , AST ));
 type MacroList MEOF | (MSeq( MacroList[] , Macro )); zero MacroList MEOF;
 
-type ParsePartial (PME( AST , List<Token> )); # term, remainder
-
-type ApplyResult (ApplyResult( function-type:Type , return-type:Type ));
-
