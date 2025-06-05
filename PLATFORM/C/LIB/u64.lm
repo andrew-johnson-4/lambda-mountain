@@ -1,5 +1,5 @@
 
-fragment type U64; size U64 8; atom suffix U64 _u64;
+atom suffix U64 _u64;
 
 print := λ(: io IO::File)(: x U64). (: (
    (fprintf( io '%lu_s x )) ()

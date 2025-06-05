@@ -1,5 +1,5 @@
 
-type I32 => I64;
+type2 I32 implies I64 implements DefaultPrintable;
 
 declare-binop( $"!=", raw-type(I32), raw-type(I32), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );
 declare-binop( $"==", raw-type(I32), raw-type(I32), raw-type(U64), ( l"("; x; l"=="; y; l")"; ) );
@@ -22,4 +22,3 @@ declare-unop( not, raw-type(I32), raw-type(U64), ( l"(!"; x; l")"; ) );
 
 declare-unop( into-branch-conditional, raw-type(I32), raw-type(BranchConditional), x );
 
-type I32 implements DefaultPrintable;

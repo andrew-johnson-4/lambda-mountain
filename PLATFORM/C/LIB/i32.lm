@@ -1,5 +1,5 @@
 
-fragment type I32; size I32 4; atom suffix I32 _i32;
+atom suffix I32 _i32;
 
 print := λ(: io IO::File)(: x I32). (: (
    (fprintf( io '%d_s x )) ()
