@@ -82,7 +82,7 @@ let infer-type2-definition(term: AST): Nil = (
       add-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
       add-weaken-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
    };
-   if not(has-tag-case) then {
+   if not(has-tag-case) && has-any-case then {
       let tag-case-number = t2(c"CaseNumber", t1(c"0"));
       add-quick-prop(lhs-type, lhs-type, tag-case-number);
       add-weaken-quick-prop(lhs-type, lhs-type, tag-case-number);
