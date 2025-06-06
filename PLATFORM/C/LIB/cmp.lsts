@@ -1,17 +1,17 @@
 
 
 ## order is important here because
-## [type(LessThan)].0 = 0
-## [type(Equal)].0 = 1
-## [type(GreaterThan)].0 = 2
+## [type(LessThan)].discriminator-case-tag = 0
+## [type(Equal)].discriminator-case-tag = 1
+## [type(GreaterThan)].discriminator-case-tag = 2
 type Ord = GreaterThan | Equal | LessThan;
 
-let $"=="(l: Ord, r: Ord): U64 = $".0"(l) == $".0"(r);
-let $"!="(l: Ord, r: Ord): U64 = $".0"(l) != $".0"(r);
-let $"<"(l: Ord, r: Ord): U64  = $".0"(l) <  $".0"(r);
-let $"<="(l: Ord, r: Ord): U64 = $".0"(l) <= $".0"(r);
-let $">"(l: Ord, r: Ord): U64  = $".0"(l) >  $".0"(r);
-let $">="(l: Ord, r: Ord): U64 = $".0"(l) >= $".0"(r);
+let $"=="(l: Ord, r: Ord): U64 = l.discriminator-case-tag == r.discriminator-case-tag;
+let $"!="(l: Ord, r: Ord): U64 = l.discriminator-case-tag != r.discriminator-case-tag;
+let $"<"(l: Ord, r: Ord): U64  = l.discriminator-case-tag <  r.discriminator-case-tag;
+let $"<="(l: Ord, r: Ord): U64 = l.discriminator-case-tag <= r.discriminator-case-tag;
+let $">"(l: Ord, r: Ord): U64  = l.discriminator-case-tag >  r.discriminator-case-tag;
+let $">="(l: Ord, r: Ord): U64 = l.discriminator-case-tag >= r.discriminator-case-tag;
 
 let $"=="(l: x, r: x): U64 = cmp(l, r) == Equal;
 let $"!="(l: x, r: x): U64 = cmp(l, r) != Equal;

@@ -103,11 +103,11 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                            (close(Var( '!=_s (with-key( base-type '!=_s )) )))
                            (close(App(
                               (close(App(
-                                 (close(Var( '.0_s (with-key( base-type '.0_s )) )))
+                                 (close(Var( '.discriminator-case-tag_s (with-key( base-type '.discriminator-case-tag_s )) )))
                                  (close(Var( 't_s (with-key( base-type 't_s )) )))
                               )))
                               (close(App(
-                                 (close(Var( '.0_s (with-key( base-type '.0_s )) )))
+                                 (close(Var( '.discriminator-case-tag_s (with-key( base-type '.discriminator-case-tag_s )) )))
                                  (close(App(
                                     (close(Lit( ':_s (with-key( base-type ':_s )) )))
                                     (close(App(

@@ -6,31 +6,31 @@
 # However, there are also a large number of compiler-specific extensions that are parsed but mostly ignored
 # Example: __extension__ ( f, g )
 
-type CTerm = CInteger{value:String}
-           | CCharacter{value:String}
-           | CFloating{value:String}
-           | CEnumeration{value:String}
-           | CString{value:String}
-           | CIdentifier{value:String}
-           | CType1{value:String}
-           | CList{value:List<CTerm>[]}
-           | CIList{value:List<String>[]}
-           | CMaybe{value:Maybe<CTerm>[]}
-           | CZOp{op:String}
-           | CCompound{terms:List<CTerm>[]}
-           | CPointer{qualifiers:Maybe<List<CTerm>>[], next:Maybe<CTerm>[]}
-           | CInitializer{designator:List<CTerm>[], initializer:CTerm[]}
-           | CInitializerList{terms:List<CTerm>[]}
-           | CUnaryPostfix{op:String, arg:CTerm[]}
-           | CUnaryPrefix{op:String, arg:CTerm[]}
-           | CBinaryOp{op:String, arg1:CTerm[], arg2:CTerm[]}
-           | CTernaryOp{op:String, arg1:CTerm[], arg2:CTerm[], arg3: CTerm[]}
-           | CFor{op:String, arg1:Maybe<CTerm>[], arg2:Maybe<CTerm>[], arg3: Maybe<CTerm>[], stmt:CTerm[]}
-           | CFunctionDefinition{specifiers:CTerm[], declarator:CTerm[], declaration-list:CTerm[], statement:CTerm[]}
-           | CAccessor{accessor:String, field:String, arg:CTerm[]};
+type2 CTerm = CInteger{value:String}
+            | CCharacter{value:String}
+            | CFloating{value:String}
+            | CEnumeration{value:String}
+            | CString{value:String}
+            | CIdentifier{value:String}
+            | CType1{value:String}
+            | CList{value:List<CTerm>[]}
+            | CIList{value:List<String>[]}
+            | CMaybe{value:Maybe<CTerm>[]}
+            | CZOp{op:String}
+            | CCompound{terms:List<CTerm>[]}
+            | CPointer{qualifiers:Maybe<List<CTerm>>[], next:Maybe<CTerm>[]}
+            | CInitializer{designator:List<CTerm>[], initializer:CTerm[]}
+            | CInitializerList{terms:List<CTerm>[]}
+            | CUnaryPostfix{op:String, arg:CTerm[]}
+            | CUnaryPrefix{op:String, arg:CTerm[]}
+            | CBinaryOp{op:String, arg1:CTerm[], arg2:CTerm[]}
+            | CTernaryOp{op:String, arg1:CTerm[], arg2:CTerm[], arg3: CTerm[]}
+            | CFor{op:String, arg1:Maybe<CTerm>[], arg2:Maybe<CTerm>[], arg3: Maybe<CTerm>[], stmt:CTerm[]}
+            | CFunctionDefinition{specifiers:CTerm[], declarator:CTerm[], declaration-list:CTerm[], statement:CTerm[]}
+            | CAccessor{accessor:String, field:String, arg:CTerm[]};
 
 let cmp(l: CTerm, r: CTerm): Ord = (
-   if $".0"(l) != $".0"(r) then cmp($".0"(l), $".0"(r))
+   if l.discriminator-case-tag != r.discriminator-case-tag then cmp(l.discriminator-case-tag, r.discriminator-case-tag)
    else match Tuple{l, r} {
       Tuple{ first:CInteger{lv=value}, second:CInteger{rv=value} } => cmp(lv, rv);
       Tuple{ first:CCharacter{lv=value}, second:CCharacter{rv=value} } => cmp(lv, rv);

@@ -30,7 +30,7 @@ let .is-some(m: Maybe<x>): U64 = (
 );
 
 let cmp(l: Maybe<x>, r: Maybe<x>): Ord = (
-   if $".0"(l) != $".0"(r) then cmp($".0"(l), $".0"(r))
+   if l.discriminator-case-tag != r.discriminator-case-tag then cmp(l.discriminator-case-tag, r.discriminator-case-tag)
    else if l.is-some then cmp(l.get-or-panic, r.get-or-panic)
    else Equal
 );
