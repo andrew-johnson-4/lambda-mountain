@@ -35,9 +35,7 @@ type2 CompileMode = ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
 type2 IsUsed = Used | Unused | Tail | Return | Call;
 
-type FContext = FCtxEOF | FCtxBind{ remainder:FContext[] , k:CString , kt:Type , kv:Fragment };
-zero FContext = FCtxEOF;
+type2 FContext zero FCtxEOF = FCtxEOF | FCtxBind{ remainder:FContext[] , k:CString , kt:Type , kv:Fragment };
 
 type2 Macro = { lhs:AST, rhs:AST };
-type2 MacroList = MEOF | MSeq{ k:MacroList[], v:Macro };
-zero MacroList = MEOF;
+type2 MacroList zero MEOF = MEOF | MSeq{ k:MacroList[], v:Macro };
