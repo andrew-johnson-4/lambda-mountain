@@ -39,6 +39,6 @@ type IsScoped = Scoped | Unscoped;
 type FContext = FCtxEOF | FCtxBind{ remainder:FContext[] , k:CString , kt:Type , kv:Fragment };
 zero FContext = FCtxEOF;
 
-type Macro = Macro{ lhs:AST, rhs:AST };
+type2 Macro = { lhs:AST, rhs:AST };
 type MacroList = MEOF | MSeq{ k:MacroList[], v:Macro };
 zero MacroList = MEOF;
