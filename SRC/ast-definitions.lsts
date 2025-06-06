@@ -40,5 +40,5 @@ type FContext = FCtxEOF | FCtxBind{ remainder:FContext[] , k:CString , kt:Type ,
 zero FContext = FCtxEOF;
 
 type2 Macro = { lhs:AST, rhs:AST };
-type MacroList = MEOF | MSeq{ k:MacroList[], v:Macro };
+type2 MacroList = MEOF | MSeq{ k:MacroList[], v:Macro };
 zero MacroList = MEOF;
