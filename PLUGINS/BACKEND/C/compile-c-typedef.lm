@@ -92,7 +92,7 @@ compile-c-typedef-concrete := λ(: tctx Maybe<TContext>)(: base-type Type)(: bod
    (if (.is-type2 base-type) (std-c-compile-type2-typedef-concrete( tctx base-type body )) (
       (let original-body body)
       (let case-number 0_u64)
-      (let cases SNil)
+      (let cases (SNil()))
       (let incomplete 0_u64)
       (let has-case 0_u64)
       (while (non-zero body) (match body (
@@ -221,7 +221,7 @@ compile-c-mark-field-as-seen := λ(: tt Type). (: (
 ) Nil);
 
 compile-c-casedef-fields := λ(: tctx Maybe<TContext>)(: fields Type)(: case-number U64)(: field-index U64)(: blame AST). (: (
-   (let r SNil)
+   (let r (SNil()))
    (match fields (
       ()
       ( (TGround( 'Nil_s _ )) () )

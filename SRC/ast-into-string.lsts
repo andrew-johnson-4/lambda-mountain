@@ -1,6 +1,4 @@
 
-type AST implements DefaultFormattable;
-
 let .into(t: AST, tgt: Type<String>): String = (
    match t {
       ASTEOF{} => "[EOF]";

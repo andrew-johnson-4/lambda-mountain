@@ -1,6 +1,6 @@
 
 parse-type-comma-sep := λ(: tt String). (: (
-   (let buff SNil)
+   (let buff (SNil()))
    (let depth 0_u64)
    (let base (: LEOF List<Type>))
    (while (head-string tt) (
@@ -18,7 +18,7 @@ parse-type-comma-sep := λ(: tt String). (: (
                (parse-type(clone-rope buff))
                base
             )))
-            (set buff SNil)
+            (set buff (SNil()))
          ) (
             (set buff (SCons(
                (close buff)

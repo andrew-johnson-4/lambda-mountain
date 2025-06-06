@@ -1,5 +1,5 @@
 
-fragment type I64; size I64 8; atom suffix I64 _i64;
+atom suffix I64 _i64;
 
 minimum-I64 := -2147483648_i64;
 
@@ -8,8 +8,8 @@ print := λ(: io IO::File)(: x I64). (: (
 ) Nil);
 
 to-string := λ(: i I64). (: (
-   (let sign SNil)
-   (let r SNil)
+   (let sign (SNil()))
+   (let r (SNil()))
    (if (<( i 0_i64 )) (
       (set sign (SAtom '-_s))
       (set i (-( 0_i64 i )))

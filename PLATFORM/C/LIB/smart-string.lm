@@ -15,7 +15,7 @@ intern := λ(: s SmartString). (: (
 ) SmartString);
 
 untern := λ(: s SmartString). (: (
-   (let r SNil)
+   (let r (SNil()))
    (let s-start (.start s))
    (while (<( s-start (.end s) )) (
       (set r (+(
@@ -123,7 +123,7 @@ head-string := λ(: x SmartString). (: (
 ) SmartString);
 
 .replace := λ(: base SmartString)(: pat SmartString)(: n SmartString). (: (
-   (let r SNil)
+   (let r (SNil()))
    (while (>( (.length base) 0_u64 )) (
       (if (.has-prefix( base pat )) (
          (set base (.remove-prefix( base pat )))

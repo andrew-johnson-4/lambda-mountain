@@ -6,7 +6,7 @@ parse-type := λ(: tt String). (: (
       (set is-vararg True_u8)
    ) ())
    (let depth 0_u64)
-   (let buff SNil)
+   (let buff (SNil()))
    (let base-type (t1 'Nil_s))
    (while (head-string tt) (
       (match (head-string tt) (
@@ -32,7 +32,7 @@ parse-type := λ(: tt String). (: (
                   )))
                ))
             ))
-            (set buff SNil)
+            (set buff (SNil()))
          ) (
             (set buff (SCons(
                (close buff)

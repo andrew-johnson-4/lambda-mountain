@@ -1,6 +1,6 @@
 
 compile-c-function-args := λ(: ctx FContext)(: lhs AST). (: (
-   (let r SNil)
+   (let r (SNil()))
    (match lhs (
       ()
       ( (App( rst (App( (Lit( ':_s _ )) (App( (@( v-t (Var( k _ )) )) (AType kt) )) )) )) (

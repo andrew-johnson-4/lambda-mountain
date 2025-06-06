@@ -20,7 +20,7 @@ plugins-backend-blob-compile := λ. (: (
       ))
       ( _ () )
    )))
-   (let blob SNil)
+   (let blob (SNil()))
    (for-each-v (p in (.unroll-seq ast-parsed-program)) (match p (
       ()
       ( (Glb( k_t rhs )) () )

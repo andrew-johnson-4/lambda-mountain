@@ -1,5 +1,5 @@
 
-fragment type L; size L 0; atom suffix L _l;
+atom suffix L _l;
 
 :expression := λ: Blob(: x Any). (: () L);
 :program := λ: Blob(: x Any). (: () L);

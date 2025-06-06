@@ -46,7 +46,7 @@ meta
    ))
 ;
 mangle-identifier := λ(: kt Type). (: (
-   (let r SNil)
+   (let r (SNil()))
    (match kt (
       ()
       ( TAny (set r (mangle-identifier '?_s)) )

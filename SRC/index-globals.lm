@@ -1,13 +1,13 @@
 
-assemble-header-section                  := (: SNil S);
-assemble-types-section                   := (: SNil S);
-assemble-gdecl-section                   := (: SNil S);
-assemble-text-section                    := (: SNil S);
-assemble-init-section                    := (: SNil S);
-assemble-data-section                    := (: SNil S);
-assemble-profile-onexit                  := (: SNil S);
-assemble-string-initializer-section      := (: SNil S);
-assemble-global-initializer-section      := (: SNil S);
+assemble-header-section                  := (: (SNil()) S);
+assemble-types-section                   := (: (SNil()) S);
+assemble-gdecl-section                   := (: (SNil()) S);
+assemble-text-section                    := (: (SNil()) S);
+assemble-init-section                    := (: (SNil()) S);
+assemble-data-section                    := (: (SNil()) S);
+assemble-profile-onexit                  := (: (SNil()) S);
+assemble-string-initializer-section      := (: (SNil()) S);
+assemble-global-initializer-section      := (: (SNil()) S);
 assemble-final                           := '_s;
 assemble-argv-referenced                 := False_u8;
 
@@ -23,7 +23,7 @@ config-profile-invocations   := False_u8;
 config-target                := 'tmp.c_s;
 config-mode                  := (: ModeCompile CompileMode);
 config-strip-debug           := False_u8;
-preprocess-macros            := (: MEOF MacroList);
+preprocess-macros            := (: (MEOF()) MacroList);
 ast-parsed-program           := (: (mk-eof()) AST);
 global-ctx                   := (: FCtxEOF FContext);
 

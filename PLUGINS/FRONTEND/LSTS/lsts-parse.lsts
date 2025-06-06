@@ -212,7 +212,7 @@ let lsts-parse(tokens: List<Token>): Nil = (
          [ Token{key:c"interface"}.. _] => tokens = lsts-parse-interface(tokens);
          [ Token{key:c"import"}.. rest] => (
             tokens = rest;
-            let path = SNil {};
+            let path = SNil();
             while non-zero(tokens) && lsts-parse-head(tokens) != c";" {
                path = path + SAtom { lsts-unwrap-identifier(lsts-parse-head(tokens)) };
                tokens = tail(tokens);
@@ -988,7 +988,7 @@ let lsts-parse-typedef-case(tokens: List<Token>): Tuple<AST,List<Token>> = (
    Tuple{ case, tokens }
 );
 
-type LstsFnSignature = LstsFnSignature { args-list: AST, args-type: Type, return-type: Type };
+type2 LstsFnSignature = { args-list: AST, args-type: Type, return-type: Type };
 
 # parses:    (a: I32, b: I32): U64
 let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tuple<LstsFnSignature, List<Token>> = (
@@ -1093,10 +1093,10 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
    tokens
 );
 
-type ASTOrIdent = ASTOrIdentAST { ast: AST }
-                | ASTOrIdentId  { id: AST }
-                | ASTOrIdentIgnore
-                ;
+type2 ASTOrIdent = ASTOrIdentAST { ast: AST }
+                 | ASTOrIdentId  { id: AST }
+                 | ASTOrIdentIgnore
+                 ;
 
 let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let base = mk-eof();
@@ -1574,7 +1574,7 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
             match lsts-parse-head(tokens) {
                c"_" => (
                   tokens = tail(tokens);
-                  lefts = cons(ASTOrIdentIgnore {}, lefts);
+                  lefts = cons(ASTOrIdentIgnore(), lefts);
                );
 
                c"let" => (
@@ -1667,7 +1667,7 @@ let lsts-make-lit(t: Token): AST = (
    if t.key.has-suffix(c"_ss") && t.key.contains(c"\\{") {
       let s = t.key;
       base = mk-eof();
-      let buffer = SNil{};
+      let buffer = SNil();
       while non-zero(s) && s != c"_ss" {
          if s.has-prefix(c"\\{") {
             if non-zero(buffer) {
@@ -1678,11 +1678,11 @@ let lsts-make-lit(t: Token): AST = (
                      mk-cons(base, be)
                   );
                } else { base = be; };
-               buffer = SNil {};
+               buffer = SNil();
             };
 
             s = s.remove-prefix(c"\\{");
-            let t-buffer = SNil {};
+            let t-buffer = SNil();
             while non-zero(s) && not(s.has-prefix(c"}")) {
                t-buffer = t-buffer + SAtom{clone-rope(head-string(s))};
                s = tail-string(s);

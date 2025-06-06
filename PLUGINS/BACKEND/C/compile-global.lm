@@ -23,7 +23,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
                (set e (compile-expr( ctx rhs 0_i64 Return )))
                (let program (.get( e 'expression_s )))
                (let frame (.get( e 'frame_s )))
-               (let text SNil)
+               (let text (SNil()))
 
                (let loc (.location(term)))
 
@@ -48,7 +48,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
                   (set assemble-gdecl-section (SCons( (close assemble-gdecl-section) (close text) )))
                ))
 
-               (set text SNil)
+               (set text (SNil()))
 
                (set text (SCons( (close text) (close(SAtom '\n\oline\s_s)) )))
                (set text (SCons( (close text) (close(SAtom (to-string (.line loc)) )) )))
@@ -80,7 +80,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
 
             (let e (compile-expr( ctx t 0_i64 Used )))
 
-            (let text SNil)
+            (let text (SNil()))
             (match (.slot( kt 'Array_s )) (
                ()
                ( (TGround( 'Array_s (LCons( _ (LCons(
@@ -126,7 +126,7 @@ compile-global-main := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set e (compile-expr( ctx rhs 0_i64 Unused )))
          (let program (.get( e 'expression_s )))
          (let frame (.get( e 'frame_s )))
-         (let text SNil)
+         (let text (SNil()))
 
          (let loc (.location(term)))
          (set text (SCons( (close text) (close(SAtom '\n\oline\s_s)) )))
@@ -143,7 +143,7 @@ compile-global-main := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set text (SCons( (close text) (close(SAtom '\]\:\n_s)) )))
          (set assemble-gdecl-section (SCons( (close assemble-gdecl-section) (close text) )))
 
-         (set text SNil)
+         (set text (SNil()))
 
          (set text (SCons( (close text) (close(SAtom '\n\oline\s_s)) )))
          (set text (SCons( (close text) (close(SAtom (to-string (.line loc)) )) )))

@@ -1,6 +1,4 @@
 
-type Type implements DefaultPrintable;
-
 let print(io: IO::File, tt: Type): Nil = (
    match tt {
       TAny{} => print(io, "?");

@@ -75,7 +75,7 @@ deep-hash := λ(: key String). (: (
 ) U64);
 
 .remove-suffix := λ(: base String)(: sfx String). (: (
-   (let r SNil)
+   (let r (SNil()))
    (while (head-string base) (
       (if (==( base sfx )) (
          (set base '0_s)
@@ -91,7 +91,7 @@ deep-hash := λ(: key String). (: (
 ) String);
 
 .replace := λ(: base String)(: pat String)(: n String). (: (
-   (let r SNil)
+   (let r (SNil()))
    (while (!=( (head-string base) 0_u8 )) (
       (if (.has-prefix( base pat )) (
          (set base (.remove-prefix( base pat )))

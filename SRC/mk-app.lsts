@@ -149,8 +149,8 @@ let mk-meta(l: AST): AST = (
    Meta{ close(l) }
 );
 
-let mk-nil(): AST = ASTNil{};
-let mk-eof(): AST = ASTEOF{};
+let mk-nil(): AST = ASTNil;
+let mk-eof(): AST = ASTEOF;
 
 let .is-lit(t: AST): U64 = match t { Lit{} => true; _ => false; };
 

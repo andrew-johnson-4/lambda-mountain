@@ -1,5 +1,5 @@
 
-fragment type F64; size F64 8; atom suffix F64 _f64;
+atom suffix F64 _f64;
 
 print := λ(: x F64). (: (
    (printf( '%lf_s x )) ()

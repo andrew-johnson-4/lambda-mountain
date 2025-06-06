@@ -122,7 +122,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             e = std-c-chain( e, f, true );
          };
          e = e.set(c"expression", SAtom{c"{"} + e.get(c"frame") + e.get(c"expression") + SAtom{c"}"} );
-         e = e.set(c"frame", SNil );
+         e = e.set(c"frame", SNil() );
          ctx = original-ctx;
          e
       );

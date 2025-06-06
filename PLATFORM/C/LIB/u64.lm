@@ -1,5 +1,5 @@
 
-fragment type U64; size U64 8; atom suffix U64 _u64;
+atom suffix U64 _u64;
 
 print := λ(: io IO::File)(: x U64). (: (
    (fprintf( io '%lu_s x )) ()
@@ -39,7 +39,7 @@ to-u64 := λ(: s String). (: (
 ) U64);
 
 to-hex := λ(: i U64). (: (
-   (let buff SNil)
+   (let buff (SNil()))
    (let rpt 16_u64)
    (while (>( rpt 0_u64 )) (
       (match (%( i 16_u64 )) (
