@@ -811,7 +811,7 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
          lsts-parse-expect(c"suffix", tokens); tokens = tail(tokens);
          lsts-parse-expect(c"[Suffix]", lsts-parse-head(tokens).has-prefix(c"_"), tokens);
          let sfx = lsts-parse-head(tokens); tokens = tail(tokens);
-         parse-suffixes = cons( (sfx, lhs-type), parse-suffixes );
+         parse-suffixes = cons( (sfx, lhs-type && t1(c"Constant") && t1(c"Literal")), parse-suffixes );
       };
       if lsts-parse-head(tokens)==c"size" {
          lsts-parse-expect(c"size", tokens); tokens = tail(tokens);
