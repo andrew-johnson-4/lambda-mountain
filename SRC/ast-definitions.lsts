@@ -31,7 +31,7 @@ type2 ParsePartial = PME{ term:AST , remainder:List<Token> };
 
 type2 ApplyResult = { function-type:Type , return-type:Type };
 
-type CompileMode = ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
+type2 CompileMode = ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
 type IsUsed = Used | Unused | Tail | Return | Call;
 type IsScoped = Scoped | Unscoped;

@@ -4,8 +4,8 @@ let main(argc: C_int, argv: CString[]): Nil = (
    let input = [] :: List<CString>;
    while argi < (argc as U64) {
       match argv[argi] {
-         c"--typecheck" => config-mode = ModeTypecheck;
-         c"--compile" => config-mode = ModeCompile;
+         c"--typecheck" => config-mode = ModeTypecheck();
+         c"--compile" => config-mode = ModeCompile();
          c"--stripdebug" => config-strip-debug = true;
          c"-o" => (
             argi = argi + 1;
