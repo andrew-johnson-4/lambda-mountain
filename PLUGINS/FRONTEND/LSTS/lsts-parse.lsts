@@ -800,11 +800,18 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
    let impls = mk-vector(type(Type));
    let size = ta;
    while lsts-parse-head(tokens)==c":" || lsts-parse-head(tokens)==c"implies"
-      || lsts-parse-head(tokens)==c"implements" || lsts-parse-head(tokens)==c"size" {
+      || lsts-parse-head(tokens)==c"implements" || lsts-parse-head(tokens)==c"size"
+      || lsts-parse-head(tokens)==c"suffix" {
       if lsts-parse-head(tokens)==c":" {
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          (let mt, tokens) = lsts-parse-type(tokens);
          misc-type = misc-type && mt;
+      };
+      if lsts-parse-head(tokens)==c"suffix" {
+         lsts-parse-expect(c"suffix", tokens); tokens = tail(tokens);
+         lsts-parse-expect(c"[Suffix]", lsts-parse-head(tokens).has-prefix(c"_"), tokens);
+         let sfx = lsts-parse-head(tokens); tokens = tail(tokens);
+         parse-suffixes = cons( (sfx, lhs-type), parse-suffixes );
       };
       if lsts-parse-head(tokens)==c"size" {
          lsts-parse-expect(c"size", tokens); tokens = tail(tokens);
