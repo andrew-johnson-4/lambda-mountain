@@ -68,16 +68,20 @@ let infer-type2-definition(term: AST): Nil = (
    };
    let common-fields = [] :: List<(CString,Type)>;
    let has-tag-case = false;
+   let has-any-case = false;
    for vector Tuple{ case-tag=first, case-fields=second } in cases {
       if case-tag==c"" {
          for vector Tuple{ field-name=first, field-type=second } in case-fields {
             common-fields = cons((field-name, field-type), common-fields);
          };
       } else has-tag-case = true;
+      has-any-case = true;
    };
    if not(has-tag-case) then infer-type2-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, term, has-tag-case);
-   add-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
-   add-weaken-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
+   if has-any-case {
+      add-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
+      add-weaken-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
+   };
    if not(has-tag-case) then {
       let tag-case-number = t2(c"CaseNumber", t1(c"0"));
       add-quick-prop(lhs-type, lhs-type, tag-case-number);
