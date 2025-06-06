@@ -988,7 +988,7 @@ let lsts-parse-typedef-case(tokens: List<Token>): Tuple<AST,List<Token>> = (
    Tuple{ case, tokens }
 );
 
-type LstsFnSignature = LstsFnSignature { args-list: AST, args-type: Type, return-type: Type };
+type2 LstsFnSignature = { args-list: AST, args-type: Type, return-type: Type };
 
 # parses:    (a: I32, b: I32): U64
 let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tuple<LstsFnSignature, List<Token>> = (
@@ -1093,10 +1093,10 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
    tokens
 );
 
-type ASTOrIdent = ASTOrIdentAST { ast: AST }
-                | ASTOrIdentId  { id: AST }
-                | ASTOrIdentIgnore
-                ;
+type2 ASTOrIdent = ASTOrIdentAST { ast: AST }
+                 | ASTOrIdentId  { id: AST }
+                 | ASTOrIdentIgnore
+                 ;
 
 let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let base = mk-eof();
@@ -1574,7 +1574,7 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
             match lsts-parse-head(tokens) {
                c"_" => (
                   tokens = tail(tokens);
-                  lefts = cons(ASTOrIdentIgnore {}, lefts);
+                  lefts = cons(ASTOrIdentIgnore(), lefts);
                );
 
                c"let" => (
