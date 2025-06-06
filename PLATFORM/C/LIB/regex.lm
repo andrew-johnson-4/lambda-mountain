@@ -1,6 +1,4 @@
 
-atom suffix Regex _rgx;
-
 .rm_so := λ: Blob(: t C_regmatch__t_). (: (
    (:frame( (:frame t) ))
    (:expression( '\[_l (:expression t) '.rm_so\]_l ))

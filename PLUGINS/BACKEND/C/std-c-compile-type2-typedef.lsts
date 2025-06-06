@@ -11,12 +11,13 @@ let std-c-compile-type2-typedef(td: AST): Nil = (
    let opaque-alias = (td as Tag::Typedef2).opaque-alias;
    let cases = (td as Tag::Typedef2).cases;
 
+   if cases.length > 0 {
    for concrete-type in concrete-type-instances-index.lookup(lhs-type.ground-tag-and-arity, [] :: List<Type>) {
       assemble-header-section = assemble-header-section + SAtom{c"typedef struct "} + mangle-c-type(concrete-type, td)
                               + SAtom{c" "} + mangle-c-type(concrete-type, td) + SAtom{c";\n"};
       let tctx = unify(lhs-type, concrete-type);
       continue-compile-c-typedefs-concrete = cons( (tctx, concrete-type, td), continue-compile-c-typedefs-concrete );
-   };
+   }};
 );
 
 let std-c-compile-type2-typedef-concrete(tctx: Maybe<TContext>, concrete-type: Type, td: AST): Nil = (

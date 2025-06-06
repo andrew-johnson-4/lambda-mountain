@@ -1,5 +1,5 @@
 
-type2 I32 implies I64 implements DefaultPrintable;
+type2 I32 implies I64 implements DefaultPrintable suffix _i32;
 
 declare-binop( $"!=", raw-type(I32), raw-type(I32), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );
 declare-binop( $"==", raw-type(I32), raw-type(I32), raw-type(U64), ( l"("; x; l"=="; y; l")"; ) );

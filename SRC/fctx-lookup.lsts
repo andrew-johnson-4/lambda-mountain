@@ -34,7 +34,7 @@ let .lookup(ctx: FContext, k: CString, kt: Type, sloc: AST, hard: U64): Fragment
             } else {
                r = ctx-kv;
                found = t1(c"LocalVariable");
-               ctx = FCtxEOF;
+               ctx = FCtxEOF();
             }
          } else { ctx = remainder; }
       );

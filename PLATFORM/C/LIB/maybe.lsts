@@ -1,6 +1,6 @@
 
 type Maybe<x> = Some { content:x } | None;
-zero Maybe<x> = None;
+type2 Maybe<x> zero None;
 
 let .get-or(m: Maybe<x>, default: x): x = (
    match m {

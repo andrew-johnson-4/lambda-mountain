@@ -1,2 +1,2 @@
 
-let mk-fctx(): FContext = FCtxEOF;
+let mk-fctx(): FContext = FCtxEOF();

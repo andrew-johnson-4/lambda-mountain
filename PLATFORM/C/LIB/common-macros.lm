@@ -1,6 +1,4 @@
 
-atom suffix ReservedWord _r;
-
 macro ( ('let x y) )
       ( (λ x . ()) y );
 

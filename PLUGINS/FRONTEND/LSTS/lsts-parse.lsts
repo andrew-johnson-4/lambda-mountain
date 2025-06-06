@@ -220,41 +220,6 @@ let lsts-parse(tokens: List<Token>): Nil = (
             lsts-parse-expect(c";",tokens); tokens = tail(tokens);
             frontend(clone-rope(path));
          );
-         [ Token{key:c"zero"}.. rest] => (
-            let loc = head(tokens).location;
-            tokens = rest;
-            let base-type-rest = lsts-parse-type(tokens); tokens = base-type-rest.second;
-            lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-            if not(non-zero(tokens)) || not(lsts-is-lit-head(lsts-parse-head(tokens))) { 
-               lsts-parse-expect(c"[Type Constructor]", tokens);
-            };
-            let constructor = head(tokens); tokens = tail(tokens);
-            lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-            ast-parsed-program = ast-parsed-program + mk-app(
-               Var{ c"macro::define-zero", with-key(constructor, c"macro::define-zero") },
-               mk-cons(
-                  mk-cons(
-                     AType{ base-type-rest.first },
-                     Lit{ constructor.key, constructor }
-                  ),
-                  Lit{ c"Tag::"+constructor.key, with-key(constructor, c"Tag::"+constructor.key) }
-               )
-            );
-         );
-         [ Token{key:c"atom"}.. Token{key:c"suffix"}.. rest] => (
-            tokens = rest;
-            let base-rest = lsts-parse-type(tokens); tokens = base-rest.second;
-            lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-            if not(non-zero(tokens)) || not(lsts-is-ident-head(lsts-parse-head(tokens))) { 
-               lsts-parse-expect(c"[Suffix]", tokens);
-            };
-            let suffix = head(tokens).key; tokens = tail(tokens);
-            lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-            parse-suffixes = cons(
-               Tuple{ suffix, base-rest.first && t1(c"Constant") && t1(c"Literal") },
-               parse-suffixes
-            );
-         );
          _ => (
             let term-rest = lsts-parse-small-expression(tokens);
             let term = term-rest.first;
@@ -800,11 +765,35 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
    let impls = mk-vector(type(Type));
    let size = ta;
    while lsts-parse-head(tokens)==c":" || lsts-parse-head(tokens)==c"implies"
-      || lsts-parse-head(tokens)==c"implements" || lsts-parse-head(tokens)==c"size" {
+      || lsts-parse-head(tokens)==c"implements" || lsts-parse-head(tokens)==c"size"
+      || lsts-parse-head(tokens)==c"suffix" || lsts-parse-head(tokens)==c"zero" {
       if lsts-parse-head(tokens)==c":" {
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          (let mt, tokens) = lsts-parse-type(tokens);
          misc-type = misc-type && mt;
+      };
+      if lsts-parse-head(tokens)==c"suffix" {
+         lsts-parse-expect(c"suffix", tokens); tokens = tail(tokens);
+         lsts-parse-expect(c"[Suffix]", lsts-parse-head(tokens).has-prefix(c"_"), tokens);
+         let sfx = lsts-parse-head(tokens); tokens = tail(tokens);
+         parse-suffixes = cons( (sfx, lhs-type && t1(c"Constant") && t1(c"Literal")), parse-suffixes );
+      };
+      if lsts-parse-head(tokens)==c"zero" {
+         lsts-parse-expect(c"zero", tokens); tokens = tail(tokens);
+         if not(non-zero(tokens)) || not(lsts-is-lit-head(lsts-parse-head(tokens))) {
+            lsts-parse-expect(c"[Type Constructor]", tokens);
+         };
+         let constructor = head(tokens); tokens = tail(tokens);
+         ast-parsed-program = ast-parsed-program + mk-app(
+            Var{ c"macro::define-zero", with-key(constructor, c"macro::define-zero") },
+            mk-cons(
+               mk-cons(
+                  AType{ lhs-type },
+                  Lit{ constructor.key, constructor }
+               ),
+               Lit{ c"Tag::"+constructor.key, with-key(constructor, c"Tag::"+constructor.key) }
+            )
+         );
       };
       if lsts-parse-head(tokens)==c"size" {
          lsts-parse-expect(c"size", tokens); tokens = tail(tokens);

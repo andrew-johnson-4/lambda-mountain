@@ -1,6 +1,4 @@
 
-atom suffix U32 _u32;
-
 print := λ(: io IO::File)(: x U32). (: (
    (fprintf( io '%u_s x )) ()
 ) Nil);

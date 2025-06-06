@@ -8,7 +8,7 @@ initialize-c-struct := λ(: ctx FContext)(: rval AST)(: case-number U64)(: field
             ()
             ( (App( le re )) (
                (let e2 (initialize-c-struct( ctx le case-number (+( field-index 1_u64 )) )))
-               (let e1 (compile-expr( ctx re 0_i64 Used )))
+               (let e1 (compile-expr( ctx re 0_i64 (Used()) )))
                (if (is-sized-array par1) (
                   (set e1 (.set( e1 'expression_s (
                      (+(
@@ -55,7 +55,7 @@ initialize-c-struct := λ(: ctx FContext)(: rval AST)(: case-number U64)(: field
       ( _ (
          (let par1 (typeof rval))
          (if (is-sized-array par1) (
-            (set r (compile-expr( ctx rval 0_i64 Used )))
+            (set r (compile-expr( ctx rval 0_i64 (Used()) )))
             (set r (.set( r 'expression_s (
                (+(
                   (+(
@@ -84,7 +84,7 @@ initialize-c-struct := λ(: ctx FContext)(: rval AST)(: case-number U64)(: field
                ))
             ))))
          ) (
-            (set r (compile-expr( ctx rval 0_i64 Used )))
+            (set r (compile-expr( ctx rval 0_i64 (Used()) )))
             (set r (.set( r 'expression_s (
                (+( (+( (SAtom 'rvalue.field__s)
                        (SAtom(to-string( (+( (*( case-number 1000_u64 )) field-index )) ))) ))

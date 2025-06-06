@@ -21,11 +21,11 @@ config-path                  := (: (cons(
 config-platform-prefix       := 'PLATFORM/C/_s;
 config-profile-invocations   := False_u8;
 config-target                := 'tmp.c_s;
-config-mode                  := (: ModeCompile CompileMode);
+config-mode                  := (: (ModeCompile()) CompileMode);
 config-strip-debug           := False_u8;
 preprocess-macros            := (: (MEOF()) MacroList);
 ast-parsed-program           := (: (mk-eof()) AST);
-global-ctx                   := (: FCtxEOF FContext);
+global-ctx                   := (: (FCtxEOF()) FContext);
 
 parse-suffixes := (: LEOF List<Tuple<String,Type>>);
 

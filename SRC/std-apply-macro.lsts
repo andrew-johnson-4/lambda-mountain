@@ -123,7 +123,7 @@ let std-infer-peeped-arguments(tctx: Maybe<TContext>, t: AST, peep: Type): (Type
       TAny{} => (ta, t);
       TVar{} => (ta, t);
       _ => (
-         (_, t) = std-infer-expr(tctx, t, false, Used, ta);
+         (_, t) = std-infer-expr(tctx, t, false, Used(), ta);
          (typeof(t), t);
       );
    }
