@@ -1,3 +1,2 @@
 
-type2 alias USize = U64;
-atom suffix USize = _sz;
+type2 alias USize suffix _usz = U64;

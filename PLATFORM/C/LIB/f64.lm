@@ -1,6 +1,4 @@
 
-atom suffix F64 _f64;
-
 print := λ(: x F64). (: (
    (printf( '%lf_s x )) ()
 ) Nil);

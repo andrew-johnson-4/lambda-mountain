@@ -1,4 +1,6 @@
 
+type2 ReservedWord suffix _r;
+
 typed macro macro::let(lhs: lazy, rhs: lazy): lazy = (
    (fn(lhs) = ()) (rhs)
 );

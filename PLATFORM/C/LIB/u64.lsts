@@ -43,4 +43,4 @@ let to-smart-string(i: U64): SmartString = (
    intern(to-string(i))
 );
 
-type2 U64 implements DefaultPrintable;
+type2 U64 implements DefaultPrintable suffix _u64;

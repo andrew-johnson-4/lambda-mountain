@@ -1,4 +1,6 @@
 
+type2 F64 suffix _f64;
+
 declare-binop( $"!=", raw-type(F64), raw-type(F64), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );
 declare-binop( $"==", raw-type(F64), raw-type(F64), raw-type(U64), ( l"("; x; l"=="; y; l")"; ) );
 declare-binop( $"<",  raw-type(F64), raw-type(F64), raw-type(U64), ( l"("; x; l"<"; y; l")"; ) );
