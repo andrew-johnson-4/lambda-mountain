@@ -13,7 +13,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (compile-expr( ctx t stack-offset used )))
       ))
       ( (App( (Var( 'scope_s _ )) t )) (
-         (set e (compile-expr( ctx t stack-offset Tail )))
+         (set e (compile-expr( ctx t stack-offset (Tail()) )))
          (set.context( e (close ctx) ))
       ))
       ( (App( (@( o-t (Var( 'open_s _ )) )) t )) (
@@ -22,14 +22,14 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (match (.slot( tt 'Array_s )) (
                ()
                ( (TGround( 'Array_s (LCons( _ (LCons( TAny LEOF )) )) )) (
-                  (set e (compile-expr( ctx t stack-offset Used )))
+                  (set e (compile-expr( ctx t stack-offset (Used()) )))
                ) )
                ( (TGround( 'Array_s (LCons( TAny (LCons( inner-tt LEOF )) )) )) (
                   (let fterm (var-to-def o-t))
                   (set e (std-c-compile-call( ctx 'open_s fterm t )))
                ))
                ( (TGround( 'Array_s (LCons( array-length (LCons( inner-tt LEOF )) )) )) (
-                  (set e (compile-expr( ctx t stack-offset Used )))
+                  (set e (compile-expr( ctx t stack-offset (Used()) )))
                ))
             ))
          ) (
@@ -75,10 +75,10 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
          (let rsp-offset (+( stack-offset -8_i64 )))
          (let ec (cc-blob( ctx 'into-branch-conditional_s cond rsp-offset )))
-         (let et (compile-expr( (open(.context ec)) t 0_i64 Tail )))
+         (let et (compile-expr( (open(.context ec)) t 0_i64 (Tail()) )))
          (let end-offset 0_i64)
          (set.type( et (typeof t) ))
-         (let ef (compile-expr( (open(.context ec)) f 0_i64 Tail )))
+         (let ef (compile-expr( (open(.context ec)) f 0_i64 (Tail()) )))
          (set.type( ef (typeof f) ))
          (if (.is-t( (typeof f) 'Never_s )) (
             (set ef (never-as-expr-type( ef (typeof t) term )))
@@ -111,7 +111,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set ctx (.bind( ctx lhs rtype fr )))
          (let prepost (mangle-c-declaration( rtype term )))
          (if (is-const-array rtype) (
-            (set e (compile-expr( ctx rhs stack-offset Used )))
+            (set e (compile-expr( ctx rhs stack-offset (Used()) )))
             (set e (.set( e 'frame_s (
                (+(
                   (+(
@@ -139,7 +139,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                ()
                ( (App( (Lit( ':_s _ )) (App( (Var( '__uninitialized_s _ )) (AType tt) )) )) () )
                ( _ (
-                  (set e (compile-expr( ctx rhs stack-offset Used )))
+                  (set e (compile-expr( ctx rhs stack-offset (Used()) )))
                   (set e (.set( e 'expression_s (
                      (+(
                         (+(
@@ -206,7 +206,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                   ))
                ))
                ( _ (
-                  (let call (compile-expr( ctx f stack-offset Unused )))
+                  (let call (compile-expr( ctx f stack-offset (Unused()) )))
                   (let args (compile-push-rvalue( ctx a stack-offset )))
                   (set e (fragment::chain( call args )))
                   (set e (.set( e 'expression_s (+(
@@ -216,14 +216,14 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                ))
             ))
          ) (
-            (if (is( used Unused )) (scope(
-               (let e1 (compile-expr( ctx f stack-offset Unused )))
-               (let e2 (compile-expr( (open(.context e1)) a 0_i64 Unused )))
+            (if (is( used (Unused()) )) (scope(
+               (let e1 (compile-expr( ctx f stack-offset (Unused()) )))
+               (let e2 (compile-expr( (open(.context e1)) a 0_i64 (Unused()) )))
                (set e (fragment::chain( e1 e2 )))
                (set.type( e (typeof term) ))
             )) (scope(
-               (let e1 (compile-expr( ctx f stack-offset Unused )))
-               (let e2 (compile-expr( (open(.context e1)) a 0_i64 Used )))
+               (let e1 (compile-expr( ctx f stack-offset (Unused()) )))
+               (let e2 (compile-expr( (open(.context e1)) a 0_i64 (Used()) )))
                (set e (fragment::chain( e1 e2 )))
                (set.type( e (typeof term) ))
             )))

@@ -46,7 +46,7 @@ let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandida
                      match margs {
                         App{left:Var{maybe-helper=key}, helper-args=right} => (
                            if macro-helper==maybe-helper {
-                              (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, helper-args, Used);
+                              (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, helper-args, Used());
                               if non-zero(helped)
                               then (tctx, std-direct-destructure-macro(helped, mstruct))
                               else (tctx, no)
@@ -54,7 +54,7 @@ let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandida
                         );
                         _ => (
                            if index-macro-meta.has(macro-helper) {
-                              (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, margs, Used);
+                              (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, margs, Used());
                               if non-zero(helped)
                               then (tctx, std-direct-destructure-macro(helped, mstruct))
                               else (tctx, no)

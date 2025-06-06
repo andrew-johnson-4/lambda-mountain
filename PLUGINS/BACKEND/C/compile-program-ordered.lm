@@ -13,7 +13,7 @@ compile-program-ordered := λ(: global-ctx FContext)(: program AST). (: (
       ( (Typedef _) () )
       ( (Meta _) () )
       ( t (
-         (let e (compile-expr( global-ctx t 0_i64 Used )))
+         (let e (compile-expr( global-ctx t 0_i64 (Used()) )))
          (let text (+( (+( (.get( e 'frame_s )) (.get( e 'expression_s )) )) (SAtom '\:\n_s) )))
          (set assemble-global-initializer-section (SCons( (close assemble-global-initializer-section) (close text) )))
       ))

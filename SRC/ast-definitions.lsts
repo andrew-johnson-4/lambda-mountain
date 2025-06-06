@@ -33,8 +33,7 @@ type2 ApplyResult = { function-type:Type , return-type:Type };
 
 type2 CompileMode = ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
-type IsUsed = Used | Unused | Tail | Return | Call;
-type IsScoped = Scoped | Unscoped;
+type2 IsUsed = Used | Unused | Tail | Return | Call;
 
 type FContext = FCtxEOF | FCtxBind{ remainder:FContext[] , k:CString , kt:Type , kv:Fragment };
 zero FContext = FCtxEOF;

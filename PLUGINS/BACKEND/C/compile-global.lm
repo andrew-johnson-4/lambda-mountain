@@ -20,7 +20,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
                (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 (.is-t( tlt 'Blob_s )) )))
                (let e (mk-fragment()))
                (let function-name (mangle-identifier( k kt )))
-               (set e (compile-expr( ctx rhs 0_i64 Return )))
+               (set e (compile-expr( ctx rhs 0_i64 (Return()) )))
                (let program (.get( e 'expression_s )))
                (let frame (.get( e 'frame_s )))
                (let text (SNil()))
@@ -78,7 +78,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
             (let clean-tt (.without-tag kt))
             (let mid (mangle-identifier( k clean-tt )))
 
-            (let e (compile-expr( ctx t 0_i64 Used )))
+            (let e (compile-expr( ctx t 0_i64 (Used()) )))
 
             (let text (SNil()))
             (match (.slot( kt 'Array_s )) (
@@ -123,7 +123,7 @@ compile-global-main := λ(: ctx FContext)(: k String)(: term AST). (: (
          (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 (.is-t( tlt 'Blob_s )) )))
          (let e (mk-fragment()))
          (let function-name 'main_s)
-         (set e (compile-expr( ctx rhs 0_i64 Unused )))
+         (set e (compile-expr( ctx rhs 0_i64 (Unused()) )))
          (let program (.get( e 'expression_s )))
          (let frame (.get( e 'frame_s )))
          (let text (SNil()))
