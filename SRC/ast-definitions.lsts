@@ -30,3 +30,15 @@ type2 StackToSpecialize = { key:CString, pre-type:Type, ctx:Maybe<TContext>, pos
 type2 ParsePartial = PME{ term:AST , remainder:List<Token> };
 
 type2 ApplyResult = { function-type:Type , return-type:Type };
+
+type CompileMode = ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
+
+type IsUsed = Used | Unused | Tail | Return | Call;
+type IsScoped = Scoped | Unscoped;
+
+type FContext = FCtxEOF | FCtxBind{ remainder:FContext[] , k:CString , kt:Type , kv:Fragment };
+zero FContext = FCtxEOF;
+
+type Macro = Macro{ lhs:AST, rhs:AST };
+type MacroList = MEOF | MSeq{ k:MacroList[], v:Macro };
+zero MacroList = MEOF;
