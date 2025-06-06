@@ -220,27 +220,6 @@ let lsts-parse(tokens: List<Token>): Nil = (
             lsts-parse-expect(c";",tokens); tokens = tail(tokens);
             frontend(clone-rope(path));
          );
-         [ Token{key:c"zero"}.. rest] => (
-            let loc = head(tokens).location;
-            tokens = rest;
-            let base-type-rest = lsts-parse-type(tokens); tokens = base-type-rest.second;
-            lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-            if not(non-zero(tokens)) || not(lsts-is-lit-head(lsts-parse-head(tokens))) { 
-               lsts-parse-expect(c"[Type Constructor]", tokens);
-            };
-            let constructor = head(tokens); tokens = tail(tokens);
-            lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-            ast-parsed-program = ast-parsed-program + mk-app(
-               Var{ c"macro::define-zero", with-key(constructor, c"macro::define-zero") },
-               mk-cons(
-                  mk-cons(
-                     AType{ base-type-rest.first },
-                     Lit{ constructor.key, constructor }
-                  ),
-                  Lit{ c"Tag::"+constructor.key, with-key(constructor, c"Tag::"+constructor.key) }
-               )
-            );
-         );
          _ => (
             let term-rest = lsts-parse-small-expression(tokens);
             let term = term-rest.first;
