@@ -17,7 +17,7 @@ type AST
                       size: Type, alias: Type, opaque-alias: Type, cases: Vector<(CString,Vector<(CString,Type)>)> }
          | Meta { val: AST[] };
 type AST implements DefaultFormattable;
-zero AST = ASTEOF;
+type2 AST zero ASTEOF;
 
 # constructor with a default argument
 let $"App"(left: AST[], right: AST[]): AST = App { false, left, right };
