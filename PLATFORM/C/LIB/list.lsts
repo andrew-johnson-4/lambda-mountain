@@ -1,7 +1,7 @@
 
 type List<x> = LEOF
-              | LCons{ head:x , tail:List<x>[] };
-zero List<x> = LEOF;
+             | LCons{ head:x , tail:List<x>[] };
+type2 List<x> zero LEOF;
 
 let cmp(ls: List<x>, rs: List<x>): Ord = (
    let diff = Equal;
