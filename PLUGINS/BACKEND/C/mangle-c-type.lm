@@ -13,7 +13,7 @@ mangle-c-type := λ(: tt Type)(: blame AST). (: (
 ) S);
 
 mangle-c-type-internal := λ(: tt Type)(: blame AST). (: (
-   (let r SNil)
+   (let r (SNil()))
    (match tt (
       ()
       ( (TAnd( conjugate )) (
@@ -90,8 +90,8 @@ mangle-c-declaration := λ(: tt Type)(: blame AST). (: (
 ) Tuple<S,S>);
 
 mangle-c-declaration-internal := λ(: tt Type)(: blame AST). (: (
-   (let pre SNil)
-   (let post SNil)
+   (let pre (SNil()))
+   (let post (SNil()))
    (match tt (
       ()
       ( (TGround( 'Array_s (LCons( (TGround( 'CONST_s _ )) (LCons( array-base _ )) )) )) (

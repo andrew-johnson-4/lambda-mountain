@@ -23,6 +23,6 @@ let std-c-mangle-declaration-internal(tt: Type, blame: AST): Tuple<S,S> = (
          ( returns + SAtom{c"(*"},
            SAtom{c")("} + accepts + SAtom{c")"} )
       );
-      _ => (std-c-mangle-type-internal(tt, blame), SNil);
+      _ => (std-c-mangle-type-internal(tt, blame), SNil());
    }
 );

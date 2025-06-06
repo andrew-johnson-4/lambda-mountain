@@ -134,7 +134,7 @@ print := λ(: l List<x>). (: (
 ) U64);
 
 .join :=  λ(: l List<String>)(: sep String). (: (
-   (let r SNil)
+   (let r (SNil()))
    (while (non-zero l) (
       (set r (+( r (SAtom(head l)) )))
       (set l (tail l))

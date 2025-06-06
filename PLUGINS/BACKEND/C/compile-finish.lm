@@ -4,7 +4,7 @@ compile-finish := λ. (: (
 ) Nil);
 
 compile-finish-c := λ. (: (
-   (let output SNil)
+   (let output (SNil()))
    (set output (SCons( (close output) (close(std-c-finish-forced-imports())) )))
    (set output (SCons( (close output) (close assemble-header-section) )))
    (set output (SCons( (close output) (close assemble-types-section) )))

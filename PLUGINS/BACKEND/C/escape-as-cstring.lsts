@@ -1,6 +1,6 @@
 
 let .escape-as-cstring(in: CString): S = (
-   let out = SNil;
+   let out = (SNil());
    while non-zero(in) { match in {
       c"\""..  rest => (out = out + SAtom{c"\\\\\""}; in = rest;);
       c"\\:"..  rest => (out = out + SAtom{c";"}; in = rest;);

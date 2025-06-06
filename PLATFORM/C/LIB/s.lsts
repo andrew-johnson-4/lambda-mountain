@@ -1,5 +1,5 @@
 
-type S = SNil | SAtom { atom: CString } | SCons { left: S[], right: S[] } | SPointer { pointer: U8[] };
+type2 S implements DefaultPrintable = SNil | SAtom { atom: CString } | SCons { left: S[], right: S[] } | SPointer { pointer: U8[] };
 zero S = SNil;
 
 let print(io: IO::File, x: S): Nil = (
@@ -14,7 +14,6 @@ let print(io: IO::File, x: S): Nil = (
       );
    }
 );
-type S implements DefaultPrintable;
 
 let $"+"(l: S, r: S): S = (
    if non-zero(r) then (

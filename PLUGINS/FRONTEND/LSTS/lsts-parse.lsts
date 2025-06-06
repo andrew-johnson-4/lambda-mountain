@@ -212,7 +212,7 @@ let lsts-parse(tokens: List<Token>): Nil = (
          [ Token{key:c"interface"}.. _] => tokens = lsts-parse-interface(tokens);
          [ Token{key:c"import"}.. rest] => (
             tokens = rest;
-            let path = SNil {};
+            let path = SNil();
             while non-zero(tokens) && lsts-parse-head(tokens) != c";" {
                path = path + SAtom { lsts-unwrap-identifier(lsts-parse-head(tokens)) };
                tokens = tail(tokens);
@@ -1667,7 +1667,7 @@ let lsts-make-lit(t: Token): AST = (
    if t.key.has-suffix(c"_ss") && t.key.contains(c"\\{") {
       let s = t.key;
       base = mk-eof();
-      let buffer = SNil{};
+      let buffer = SNil();
       while non-zero(s) && s != c"_ss" {
          if s.has-prefix(c"\\{") {
             if non-zero(buffer) {
@@ -1678,11 +1678,11 @@ let lsts-make-lit(t: Token): AST = (
                      mk-cons(base, be)
                   );
                } else { base = be; };
-               buffer = SNil {};
+               buffer = SNil();
             };
 
             s = s.remove-prefix(c"\\{");
-            let t-buffer = SNil {};
+            let t-buffer = SNil();
             while non-zero(s) && not(s.has-prefix(c"}")) {
                t-buffer = t-buffer + SAtom{clone-rope(head-string(s))};
                s = tail-string(s);

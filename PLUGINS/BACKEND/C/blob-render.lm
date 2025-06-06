@@ -1,7 +1,7 @@
 
 # render an expression as an S-Expression blob
 blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: offset I64). (: (
-   (let r SNil)
+   (let r (SNil()))
    (match term (
       ()
       ( ASTNil () )
@@ -62,7 +62,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
                (set r (+( r s )))
                (set rngs rst)
             ))
-            ( _ (set rngs SNil) )
+            ( _ (set rngs (SNil())) )
          )))
       ))
       ( (App( (Var( 'range_s _ )) (App( le re )) )) (

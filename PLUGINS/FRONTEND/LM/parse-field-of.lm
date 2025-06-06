@@ -2,7 +2,7 @@
 parse-field-of := λ(: type-name String). (: (
    (let tt (parse-type type-name))
    (let field-name '_s)
-   (let field-name-s SNil)
+   (let field-name-s (SNil()))
    (while (!=( (head-string type-name) 0_u8 )) (
       (if (==( (head-string type-name) 58_u8 )) (
          (set field-name (clone-rope field-name-s))

@@ -5,7 +5,7 @@ meta
    ))
 ;
 escape-string := λ(: s String). (: (
-   (let e SNil)
+   (let e (SNil()))
    (while (head-string s) (
       (if (==( (head-string s) 92_u8 )) (
          (set s (tail-string s))
@@ -40,7 +40,7 @@ meta
    ))
 ;
 escape-literal := λ(: s String). (: (
-   (let cs SNil)
+   (let cs (SNil()))
    (while (head-string s) (
       (match (head-string s) (
          ()

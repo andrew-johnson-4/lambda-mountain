@@ -11,7 +11,7 @@ is-already-tokenized := λ(: fp String). (: (
 tokenize := λ(: fp String)(: text String). (: (
    (let ast-tokenized-program (: LEOF List<Token>))
    (let in_comment False_u8)
-   (let buffer SNil)
+   (let buffer (SNil()))
    (let current-line 1_u64)
    (let current-column 1_u64)
    (let token-line 1_u64)
@@ -37,7 +37,7 @@ tokenize := λ(: fp String)(: text String). (: (
                   tk
                   (close ast-tokenized-program)
                )))
-               (set buffer SNil)
+               (set buffer (SNil()))
             ) ())
             (set token-line current-line)
             (set token-column current-column)
@@ -50,7 +50,7 @@ tokenize := λ(: fp String)(: text String). (: (
                   tk
                   (close ast-tokenized-program)
                )))
-               (set buffer SNil)
+               (set buffer (SNil()))
             ) ())
             (set token-line current-line)
             (set token-column current-column)
@@ -63,7 +63,7 @@ tokenize := λ(: fp String)(: text String). (: (
                   tk
                   (close ast-tokenized-program)
                )))
-               (set buffer SNil)
+               (set buffer (SNil()))
             ) ())
             (set token-line current-line)
             (set token-column current-column)
@@ -75,7 +75,7 @@ tokenize := λ(: fp String)(: text String). (: (
                   tk
                   (close ast-tokenized-program)
                )))
-               (set buffer SNil)
+               (set buffer (SNil()))
             ) ())
             (set token-line current-line)
             (set token-column current-column)
@@ -88,7 +88,7 @@ tokenize := λ(: fp String)(: text String). (: (
                   tk
                   (close ast-tokenized-program)
                )))
-               (set buffer SNil)
+               (set buffer (SNil()))
             ) ())
             (set parens-counter (+( parens-counter 1_i64 )))
             (let tk-2 (Token( (intern '\[_s) '\[_s (iuid()) (SourceLocation( fp token-line token-column )) )))
@@ -106,7 +106,7 @@ tokenize := λ(: fp String)(: text String). (: (
                   tk
                   (close ast-tokenized-program)
                )))
-               (set buffer SNil)
+               (set buffer (SNil()))
             ) ())
             (set parens-counter (-( parens-counter 1_i64 )))
             (let tk-2 (Token( (intern '\]_s) '\]_s (iuid()) (SourceLocation( fp token-line token-column )) )))
@@ -122,7 +122,7 @@ tokenize := λ(: fp String)(: text String). (: (
                   tk
                   (close ast-tokenized-program)
                )))
-               (set buffer SNil)
+               (set buffer (SNil()))
             ) ())
             (let tk-2 (Token( (intern '\`_s) '\`_s (iuid()) (SourceLocation( fp token-line token-column )) )))
             (set ast-tokenized-program (LCons(
@@ -137,7 +137,7 @@ tokenize := λ(: fp String)(: text String). (: (
                   tk
                   (close ast-tokenized-program)
                )))
-               (set buffer SNil)
+               (set buffer (SNil()))
             ) ())
             (let tk-2 (Token( (intern '\:_s) '\:_s (iuid()) (SourceLocation( fp token-line token-column )) )))
             (set ast-tokenized-program (LCons(
@@ -157,7 +157,7 @@ tokenize := λ(: fp String)(: text String). (: (
                   tk
                   (close ast-tokenized-program)
                )))
-               (set buffer SNil)
+               (set buffer (SNil()))
            ) ())
          )))
       ))
