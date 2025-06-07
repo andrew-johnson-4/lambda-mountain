@@ -51,7 +51,7 @@ plugins-backend-c-compile := λ . (: (
       ))
       ( (Typedef( (AType( lhs )) rhs )) (
          (compile-c-typedef-ordinal( lhs td ))
-      ))
+      ))    
       ( (Typedef2( _ )) (
          (std-c-compile-type2-typedef td)
       ))
