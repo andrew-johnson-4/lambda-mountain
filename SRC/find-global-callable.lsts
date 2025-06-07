@@ -30,15 +30,25 @@ let find-global-callable(fname: CString, arg-types: Type, blame: AST): AST = (
 
 let apply-global-constructor(fname: CString, hint: Type, blame: AST): Type = (
    let result = TAny();
-   for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
-      if not(non-zero(hint)) || can-receive(kt, hint) {
-         if non-zero(result) then fail("Ambiguous global constructor: \{fname} :: \{hint}\nAt: \{blame.location}\nFound \{result}\nAnd \{kt}\n");
-         if non-zero(hint)
-         then result = substitute(unify(kt.range,hint),kt)
-         else result = kt;
-      }
+   if non-zero(hint) && hint.is-type2 {
+      for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
+         if not(non-zero(hint)) || can-receive(kt, hint) {
+            let next = if non-zero(hint)
+            then substitute(unify(kt.range,hint),kt)
+            else kt;
+            if non-zero(result) then result = result && next else result = next;
+         }
+      };
+   } else {
+      for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
+         let next = if non-zero(hint)
+         then hint
+         else kt;
+         if non-zero(result) then result = result && next else result = next;
+      };
    };
-   if not(non-zero(result)) then fail("Unable to find appropriate global constructor: \{fname} :: \{hint}At: \{blame.location}\n");
+   if not(non-zero(result)) && non-zero(hint) && not(hint.is-type2) then result = hint
+   else if not(non-zero(result)) then fail("Unable to find appropriate global constructor: \{fname} :: \{hint}At: \{blame.location}\n");
    result
 );
 
