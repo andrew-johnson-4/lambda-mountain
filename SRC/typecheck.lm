@@ -1,12 +1,19 @@
 
 typecheck := λ. (: (
+   (print 'Infer.1\n_s)
    (infer-global-context-prim ast-parsed-program)
+   (print 'Infer.2\n_s)
    (infer-global-context-td ast-parsed-program)
+   (print 'Infer.3\n_s)
    (infer-global-context ast-parsed-program)
+   (print 'Infer.4\n_s)
    (assert-no-infinite-types())
+   (print 'Infer.5\n_s)
    (set ast-parsed-program (infer-global-terms ast-parsed-program))
+   (print 'Infer.6\n_s)
    (let tctx-ast (std-infer-expr( (: None Maybe<TContext>) ast-parsed-program false (Used()) ta )))
    (set ast-parsed-program (.second tctx-ast))
+   (print 'Infer.7\n_s)
    (while (non-zero stack-to-specialize) (match stack-to-specialize (
       ()
       ( (LCons( (StackToSpecialize( function-name ft unify-ctx special-type )) rst )) (
@@ -14,7 +21,11 @@ typecheck := λ. (: (
          (specialize( function-name ft unify-ctx special-type ))
       ))
    )))
+   (print 'Infer.8\n_s)
    (validate-interfaces())
+   (print 'Infer.9\n_s)
    (assert-well-typed ast-parsed-program)
+   (print 'Infer.10\n_s)
    (decorate-var-to-def())
+   (print 'Infer.11\n_s)
 ) Nil);

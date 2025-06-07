@@ -47,7 +47,8 @@ let infer-global-context-prim(term: AST): Nil = (
 let infer-global-context-td(term: AST): Nil = (
    match term {
       Seq{seq=seq} => (
-         for vector s in seq { infer-global-context-td(s) }
+         for vector s in seq { infer-global-context-td(s) };
+         for vector s in type2-ast-inserts { ast-parsed-program = ast-parsed-program + s; };
       );
       Typedef{ lhs:Lit{base-type=key}, case-constructors=rhs } => (
          # TODO: remove when LM frontend is removed
