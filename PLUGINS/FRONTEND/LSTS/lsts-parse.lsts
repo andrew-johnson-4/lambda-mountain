@@ -245,13 +245,9 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c"macro", tokens); tokens = tail(tokens);
 
    (let mname, tokens) = lsts-parse-identifier(tokens);
-   print("Before Margs\n");
    let margs = mk-nil();
-   print("Margs Start \{margs}\n");
    lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
    while lsts-parse-head(tokens)!=c")" {
-      print("Margs Now \{margs}\n");
-      # this comparison is failing
       if not(is(margs,mk-nil())) then { lsts-parse-expect(c",", tokens); tokens = tail(tokens); };
       (let binding, tokens) = lsts-parse-identifier(tokens);
       let mbind = mk-var(binding);

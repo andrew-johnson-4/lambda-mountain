@@ -2,7 +2,6 @@
 let type2-ast-inserts = mk-vector(type(AST));
 
 let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U64, case-number: U64): Nil = (
-   print("visit field template \{field-name}\n");
    let mangled-field-name = to-string(case-number) + c"_" + field-name;
    let ctx = None :: Maybe<TContext>;
    ctx = ctx.bind( c"base-type", base-type, mk-eof() );
@@ -40,9 +39,7 @@ let .is-type2(tt: Type): U64 = (
 );
 
 let infer-type2-definition(term: AST): Nil = (
-   print("infer \{term}\n");
    match term { Typedef2{} => (); };
-   print("infer.1\n");
    let lhs-type = (term as Tag::Typedef2).lhs-type;
    let implies = (term as Tag::Typedef2).implies;
    let implements = (term as Tag::Typedef2).implements;
@@ -51,22 +48,18 @@ let infer-type2-definition(term: AST): Nil = (
    let alias = (term as Tag::Typedef2).alias;
    let opaque-alias = (term as Tag::Typedef2).opaque-alias;
    let cases = (term as Tag::Typedef2).cases;
-   print("infer.2\n");
    for vector rhs-type in implies {
       add-quick-prop(lhs-type, lhs-type, rhs-type);
       add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
    };
-   print("infer.3\n");
    for vector rhs-type in implements {
       add-quick-prop(lhs-type, lhs-type, rhs-type);
       add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
       interface-implementors = cons( (lhs-type, rhs-type, term), interface-implementors );
    };
-   print("infer.4\n");
    if non-zero(alias) then add-type-alias(lhs-type, alias);
    if non-zero(opaque-alias) then add-opaque-type-alias(lhs-type, opaque-alias);
    let case-number = 0_u64;
-   print("infer.5\n");
    for vector Tuple{ case-tag=first, case-fields=second } in cases {
       type2-base-type-index = type2-base-type-index.bind( lhs-type.ground-tag-and-arity, 1 );
       let field-ordinal = 0_u64;
@@ -80,7 +73,6 @@ let infer-type2-definition(term: AST): Nil = (
       };
       if case-tag!=c"" then case-number = case-number + 1;
    };
-   print("infer.6\n");
    let common-fields = [] :: List<(CString,Type)>;
    let has-tag-case = false;
    let has-any-case = false;
@@ -92,20 +84,16 @@ let infer-type2-definition(term: AST): Nil = (
       } else has-tag-case = true;
       has-any-case = true;
    };
-   print("infer.7\n");
    if not(has-tag-case) && has-any-case then infer-type2-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, term, has-tag-case);
-   print("infer.8\n");
    if has-any-case {
       add-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
       add-weaken-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
    };
-   print("infer.9\n");
    if not(has-tag-case) && has-any-case then {
       let tag-case-number = t2(c"CaseNumber", t1(c"0"));
       add-quick-prop(lhs-type, lhs-type, tag-case-number);
       add-weaken-quick-prop(lhs-type, lhs-type, tag-case-number);
    };
-   print("infer.10\n");
    let case-index = 0_u64;
    for vector Tuple{ case-tag=first, case-fields=second } in cases {
       if case-tag!=c"" {
@@ -121,13 +109,11 @@ let infer-type2-definition(term: AST): Nil = (
          case-index = case-index + 1;
       };
    };
-   print("infer.11\n");
 );
 
 let type-constructor-tag-ordinal-index = {} :: HashtableEq<(CString,U64,CString),U64>;
 
 let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, case-fields: List<(CString,Type)>, blame: AST, has-tag-case: U64): Nil = (
-   print("infer.constructor \{case-tag}\n");
    (let base-tag, let base-arity) = base-type.ground-tag-and-arity;
    type-constructor-tag-ordinal-index = type-constructor-tag-ordinal-index.bind( (base-tag,base-arity,case-tag), case-number );
 
