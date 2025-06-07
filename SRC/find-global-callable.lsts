@@ -28,6 +28,20 @@ let find-global-callable(fname: CString, arg-types: Type, blame: AST): AST = (
    result
 );
 
+let apply-global-constructor(fname: CString, hint: Type, blame: AST): Type = (
+   let result = TAny();
+   for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
+      if not(non-zero(hint)) || can-receive(kt, hint) {
+         if non-zero(result) then fail("Ambiguous global constructor: \{fname} :: \{hint}\nAt: \{blame.location}\nFound \{result}\nAnd \{kt}\n");
+         if non-zero(hint)
+         then result = substitute(unify(kt.range,hint),kt)
+         else result = kt;
+      }
+   };
+   if not(non-zero(result)) then fail("Unable to find appropriate global constructor: \{fname} :: \{hint}At: \{blame.location}\n");
+   result
+);
+
 let apply-global-callable(fname: CString, arg-types: Type, blame: AST): Type = apply-global-callable(fname,arg-types,blame,true);
 let maybe-apply-global-callable(fname: CString, arg-types: Type, blame: AST): Type = apply-global-callable(fname,arg-types,blame,false);
 

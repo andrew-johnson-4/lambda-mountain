@@ -108,12 +108,12 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          mark-var-to-def-todo(tctx, key, ta, term);
       );
       Lit{key=key, token=token} => (
-         if not(non-zero(typeof(term))) {
-            let tt = typeof-tag(key);
-            if non-zero(tt) {
-               if non-zero(hint) then tt = hint;
-               ascript-normal(term,tt);
-            }
+         print("Literal \{key} : \{typeof(term)}\n");
+         print("Hint \{hint}\n");
+         if hint.is-t(c"Literal") {
+            ascript-normal(term,hint);
+         } else if not(non-zero(typeof(term))) {
+            ascript-normal(term,apply-global-constructor(key, hint, term));
          }
       );
       Abs{lhs=lhs, rhs=rhs:App{asc=left:Lit{key:c":"},right:App{inner-rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} => (
