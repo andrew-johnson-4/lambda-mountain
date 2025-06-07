@@ -1,4 +1,6 @@
 
+let type2-ast-inserts = mk-vector(type(AST));
+
 let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U64, case-number: U64): Nil = (
    let mangled-field-name = to-string(case-number) + c"_" + field-name;
    let ctx = None :: Maybe<TContext>;
@@ -21,7 +23,12 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ctx = ctx.bind( c"primitive::field-get", ta, mk-var(c"."+to-string(field-ordinal)) );
    let field-ordinal-get = substitute(ctx, find-global-callable(c"primitive::field-get", base-type, blame));
 
-   ast-parsed-program = ast-parsed-program + field-get + field-set + field-get-indirect + field-set-indirect + field-ordinal-get;
+   type2-ast-inserts = type2-ast-inserts.push(field-get);
+   type2-ast-inserts = type2-ast-inserts.push(field-set);
+   type2-ast-inserts = type2-ast-inserts.push(field-get-indirect);
+   type2-ast-inserts = type2-ast-inserts.push(field-set-indirect);
+   type2-ast-inserts = type2-ast-inserts.push(field-ordinal-get);
+   ()
 );
 
 let type2-base-type-index = {} :: HashtableEq<(CString,U64),U64>;
@@ -77,7 +84,7 @@ let infer-type2-definition(term: AST): Nil = (
       } else has-tag-case = true;
       has-any-case = true;
    };
-   if not(has-tag-case) then infer-type2-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, term, has-tag-case);
+   if not(has-tag-case) && has-any-case then infer-type2-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, term, has-tag-case);
    if has-any-case {
       add-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
       add-weaken-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
@@ -130,7 +137,7 @@ let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-numbe
    body = mk-cons(body, mk-lit(c" ").ascript(t1(c"L")));
    body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")));
    body = mk-cons(body, mk-app(mk-var(c"mangle-post"),mk-atype(t2(c"Type",base-type))) );
-   body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
+   body = mk-cons(body, mk-lit(c"={};").ascript(t1(c"L")));
 
    if has-tag-case {
       body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")) );
@@ -153,6 +160,6 @@ let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-numbe
    body = mk-cons(body, mk-lit(c";})").ascript(t1(c"L")));
 
    let constructor = mk-glb( mk-token(case-tag).with-location(blame.location), mk-abs(args, body.ascript(base-type), t1(c"Blob")) );
-   ast-parsed-program = ast-parsed-program + constructor;
+   type2-ast-inserts = type2-ast-inserts.push(constructor); ()
 );
 
