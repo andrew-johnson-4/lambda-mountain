@@ -16,8 +16,7 @@ type AST
          | Typedef2 { location: SourceLocation, lhs-type: Type, implies: Vector<Type>, implements: Vector<Type>, constraints: Vector<(CString,Type)>,
                       size: Type, alias: Type, opaque-alias: Type, cases: Vector<(CString,Vector<(CString,Type)>)> }
          | Meta { val: AST[] };
-type AST implements DefaultFormattable;
-type2 AST zero ASTEOF;
+type2 AST zero ASTEOF implements DefaultFormattable;
 
 # constructor with a default argument
 let $"App"(left: AST[], right: AST[]): AST = App { false, left, right };
