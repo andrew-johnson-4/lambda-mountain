@@ -66,7 +66,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                guid = uuid();
                compile-smart-string-index = compile-smart-string-index.bind(val,guid);
                let lit = mk-lit(val); ascript-normal(lit, t1(c"String"));
-               let intern-ss = std-c-compile-call(ctx, c"intern", find-global-callable(c"intern", t1(c"String"), t), lit);
+               let intern-ss = std-c-compile-call(ctx, c"intern", find-global-callable(c"intern", t1(c"String"), t), ta, lit);
                assemble-header-section = assemble-header-section +
                mangle-c-type(typeof(t), t) + SAtom{c" "} + SAtom{guid} + SAtom{c";\n"};
                assemble-string-initializer-section = assemble-string-initializer-section +
@@ -129,8 +129,8 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       App{ is-cons=is-cons, left=left, right=right } => (
           if not(is-cons) && typeof(left).is-arrow {
              match left {
-                Var{fname=key} => std-c-compile-call(ctx, fname, left, right);
-                App{ left:Var{fname=key}, right:App{ inner-term=left, right:AType{tt=tt} } } => std-c-compile-call(ctx, fname, left, inner-term);
+                Var{fname=key} => std-c-compile-call(ctx, fname, left, ta, right);
+                App{ left:Var{fname=key}, right:App{ inner-term=left, right:AType{tt=tt} } } => std-c-compile-call(ctx, fname, left, ta, inner-term);
                 Lit{fname=key} => std-c-compile-constructor(ctx, fname, left, right);
                 App{ left:Lit{fname=key}, right:App{ inner-term=left, right:AType{tt=tt} } } => std-c-compile-constructor(ctx, fname, left, inner-term);
                 _ => (
