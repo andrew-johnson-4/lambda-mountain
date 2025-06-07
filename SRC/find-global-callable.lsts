@@ -28,6 +28,48 @@ let find-global-callable(fname: CString, arg-types: Type, blame: AST): AST = (
    result
 );
 
+let find-global-constructor(fname: CString, hint: Type, arg-types: Type, blame: AST): AST = (
+   hint = denormalize(hint);
+   arg-types = denormalize-strong(arg-types);
+   let result = ASTEOF();
+   for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
+      if not(kt.is-open) && (not(non-zero(hint)) || can-receive(kt, hint)) && can-apply(kt, arg-types) {
+         if non-zero(result) then fail("Duplicate global constructor: \{fname} :: \{hint} (\{arg-types})At: \{blame.location}\n1: \{result}\n2: \{t}\n");
+         result = t;
+      }
+   };
+   if not(non-zero(result)) then {
+      fail("Unable to find appropriate global constructor: \{fname} :: \{hint} (\{arg-types})At: \{blame.location}\n");
+   };
+   result
+);
+
+let apply-global-constructor(fname: CString, hint: Type, arg-types: Type, blame: AST): Type = (
+   hint = denormalize(hint);
+   arg-types = denormalize-strong(arg-types);
+   let result = TAny();
+   if non-zero(hint) && hint.is-type2 {
+      for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
+         if not(non-zero(hint)) || can-receive(kt, hint) {
+            let next = if non-zero(hint)
+            then substitute(unify(kt.range,hint),kt)
+            else kt;
+            if non-zero(result) then result = result && next else result = next;
+         }
+      };
+   } else {
+      for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
+         let next = if non-zero(hint)
+         then hint
+         else kt;
+         if non-zero(result) then result = result && next else result = next;
+      };
+   };
+   if not(non-zero(result)) && non-zero(hint) && not(hint.is-type2) then result = hint
+   else if not(non-zero(result)) then fail("Unable to find appropriate global constructor: \{fname} :: \{hint}At: \{blame.location}\n");
+   result
+);
+
 let apply-global-callable(fname: CString, arg-types: Type, blame: AST): Type = apply-global-callable(fname,arg-types,blame,true);
 let maybe-apply-global-callable(fname: CString, arg-types: Type, blame: AST): Type = apply-global-callable(fname,arg-types,blame,false);
 

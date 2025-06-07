@@ -1,2 +1,3 @@
 
 let can-apply(ft: Type, pt: Type): U64 = can-unify(ft.domain, pt);
+let can-receive(ft: Type, pt: Type): U64 = can-unify(ft.range, pt);

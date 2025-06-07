@@ -43,13 +43,8 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
          add-concrete-type-instance(tt);
-         match t {
-            Lit{} => ();
-            _ => (
-               (tctx, let new-t) = std-infer-expr(tctx, t, false, Tail(), tt);
-               if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
-            );
-         };
+         (tctx, let new-t) = std-infer-expr(tctx, t, false, Tail(), tt);
+         if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
          ascript-normal(t, tt);
          ascript-normal(term, tt);
          if tt.is-t(c"SmartString") then maybe-apply-global-callable(c"intern", tt, term);
@@ -113,12 +108,10 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          mark-var-to-def-todo(tctx, key, ta, term);
       );
       Lit{key=key, token=token} => (
-         if not(non-zero(typeof(term))) {
-            let tt = typeof-tag(key);
-            if non-zero(tt) {
-               if non-zero(hint) then tt = hint;
-               ascript-normal(term,tt);
-            }
+         if hint.is-t(c"Literal") {
+            ascript-normal(term,hint);
+         } else if not(non-zero(typeof(term))) {
+            ascript-normal(term,apply-global-constructor(key, hint, ta, term));
          }
       );
       Abs{lhs=lhs, rhs=rhs:App{asc=left:Lit{key:c":"},right:App{inner-rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} => (
@@ -173,7 +166,10 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
                   (tctx, let new-r) = std-infer-expr(tctx, r, false, Used(), ta);
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
                };
-               rt = if typeof(l).is-arrow && non-zero(var-name-if-var-or-lit(l)) {
+               rt = if typeof(l).is-arrow && non-zero(hint-if-hint(l)) && non-zero(lit-name-if-lit(l)) {
+                  let direct-hint = hint-if-hint(l);
+                  apply-global-constructor(lit-name-if-lit(l), hint, typeof(r), term);
+               } else if typeof(l).is-arrow && non-zero(var-name-if-var-or-lit(l)) {
                   apply-global-callable(var-name-if-var-or-lit(l), typeof(r), term);
                } else {
                   t3(c"Cons", typeof(l), typeof(r))

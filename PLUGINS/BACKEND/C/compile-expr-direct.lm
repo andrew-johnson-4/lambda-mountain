@@ -26,7 +26,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                ) )
                ( (TGround( 'Array_s (LCons( TAny (LCons( inner-tt LEOF )) )) )) (
                   (let fterm (var-to-def o-t))
-                  (set e (std-c-compile-call( ctx 'open_s fterm t )))
+                  (set e (std-c-compile-call( ctx 'open_s fterm ta t )))
                ))
                ( (TGround( 'Array_s (LCons( array-length (LCons( inner-tt LEOF )) )) )) (
                   (set e (compile-expr( ctx t stack-offset (Used()) )))
@@ -34,7 +34,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             ))
          ) (
             (let fterm (var-to-def o-t))
-            (set e (std-c-compile-call( ctx 'open_s fterm t )))
+            (set e (std-c-compile-call( ctx 'open_s fterm ta t )))
          ))
       ))
       ( (App( (Var( 'sizeof_s _ )) (AType tt) )) (
@@ -185,13 +185,13 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                ()
                ( (Var( fname _ )) (
                   (let fterm (var-to-def f))
-                  (set e (std-c-compile-call( ctx fname fterm a )))
+                  (set e (std-c-compile-call( ctx fname fterm ta a )))
                ))
                ( (Lit( fname _ )) (
                   (let return-type (normalize(typeof term)))
                   (if (.has( type2-base-type-index (.ground-tag-and-arity return-type) )) (
                      (let fterm (var-to-def f))
-                     (set e (std-c-compile-call( ctx fname fterm a )))
+                     (set e (std-c-compile-call( ctx fname fterm return-type a )))
                   ) (
                      (set e (compile-constructor( ctx fname (typeof term) (typeof a) a stack-offset )))
                   ))
@@ -200,7 +200,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                   (let return-type (normalize(typeof term)))
                   (if (.has( type2-base-type-index (.ground-tag-and-arity return-type) )) (
                      (let fterm (var-to-def f))
-                     (set e (std-c-compile-call( ctx fname fterm a )))
+                     (set e (std-c-compile-call( ctx fname fterm return-type a )))
                   ) (
                      (set e (compile-constructor( ctx fname (typeof term) (typeof a) a stack-offset )))
                   ))

@@ -307,7 +307,7 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
                ast-parsed-program = ast-parsed-program + Glb{
                   mk-token(uuid()), close(
                      mk-lit(c"struct " + cname + c"{\n" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
-                        t1(c"C-Fragment") && t1(c"C-FFI")
+                        t1(c"C-Fragment") && t1(c"C-FFI") && t1(c"Literal")
                      )
                   )
                };
@@ -323,7 +323,7 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
                ast-parsed-program = ast-parsed-program + Glb{
                   mk-token(uuid()), close(
                      mk-lit(c"union " + cname + c"{\n" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
-                        t1(c"C-Fragment") && t1(c"C-FFI")
+                        t1(c"C-Fragment") && t1(c"C-FFI") && t1(c"Literal")
                      )
                   )
                };
