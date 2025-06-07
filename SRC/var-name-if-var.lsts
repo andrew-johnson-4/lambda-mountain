@@ -13,3 +13,18 @@ let var-name-if-var-or-lit(t: AST): CString = (
       _ => c"";
    }
 );
+
+let lit-name-if-lit(t: AST): CString = (
+   match t {
+      Lit{key=key} => key;
+      App{ left:Lit{key:c":"}, right:App{ left:Lit{key=key}, right:AType{} } } => key;
+      _ => c"";
+   }
+);
+
+let hint-if-hint(t: AST): Type = (
+   match t {
+      App{ left:Lit{key:c":"}, right:App{ right:AType{hint=tt} } } => hint;
+      _ => ta;
+   }
+);
