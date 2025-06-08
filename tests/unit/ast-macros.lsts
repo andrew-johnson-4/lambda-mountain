@@ -18,7 +18,7 @@ assert( ast-macros-test-add(2_i64, 3_i64) == 5_i64 );
    print(x);
 );
 
-type A = A{a:U64};
+type A = {a:U64};
 (
    let a = A{1};
    $"macro::set"($"macro::lhs-field"(a,a), 2);
@@ -95,7 +95,7 @@ type ABCD = AB{ab:U64} | CD{cd:U64};
 match2 AB{1} { AB{ab=ab} => print(ab); };
 match2 CD{1} { CD{cd=cd} => print(cd); };
 
-type ABC = ABC{ a:U64, b:U64, c:U64 };
+type ABC = { a:U64, b:U64, c:U64 };
 match2 ABC{1,2,3} { ABC{a:1, b=b, let c=c} => print("1\{b}\{c}"); };
 
 print(match2 ABC{1,2,3} {
