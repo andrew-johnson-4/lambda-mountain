@@ -1,38 +1,39 @@
 
-type SmartString implements Collection<U8>;
+type2 SmartString implements Collection<U8> suffix _ss
+                = { data:U8[] , start:U8[] , end:U8[] , data-end:U8[] };
 
 let cmp(l: CString, r: String): Ord = (
    cmp( intern(l), r )
 );
-let $"=="(l: CString, r: String): U64 = cmp(l, r) == Equal;
-let $"!="(l: CString, r: String): U64 = cmp(l, r) != Equal;
-let $"<"(l: CString, r: String): U64 = cmp(l, r)  <  Equal;
-let $"<="(l: CString, r: String): U64 = cmp(l, r) <= Equal;
-let $">"(l: CString, r: String): U64 = cmp(l, r)  >  Equal;
-let $">="(l: CString, r: String): U64 = cmp(l, r) >= Equal;
+let $"=="(l: CString, r: String): U64 = cmp(l, r) == Equal();
+let $"!="(l: CString, r: String): U64 = cmp(l, r) != Equal();
+let $"<"(l: CString, r: String): U64 = cmp(l, r)  <  Equal();
+let $"<="(l: CString, r: String): U64 = cmp(l, r) <= Equal();
+let $">"(l: CString, r: String): U64 = cmp(l, r)  >  Equal();
+let $">="(l: CString, r: String): U64 = cmp(l, r) >= Equal();
 
 let cmp(l: String, r: CString): Ord = (
    cmp( l, intern(r) )
 );
-let $"=="(l: String, r: CString): U64 = cmp(l, r) == Equal;
-let $"!="(l: String, r: CString): U64 = cmp(l, r) != Equal;
-let $"<"(l: String, r: CString): U64 = cmp(l, r)  <  Equal;
-let $"<="(l: String, r: CString): U64 = cmp(l, r) <= Equal;
-let $">"(l: String, r: CString): U64 = cmp(l, r)  >  Equal;
-let $">="(l: String, r: CString): U64 = cmp(l, r) >= Equal;
+let $"=="(l: String, r: CString): U64 = cmp(l, r) == Equal();
+let $"!="(l: String, r: CString): U64 = cmp(l, r) != Equal();
+let $"<"(l: String, r: CString): U64 = cmp(l, r)  <  Equal();
+let $"<="(l: String, r: CString): U64 = cmp(l, r) <= Equal();
+let $">"(l: String, r: CString): U64 = cmp(l, r)  >  Equal();
+let $">="(l: String, r: CString): U64 = cmp(l, r) >= Equal();
 
 let cmp(x: String, y: String): Ord = (
-   let r = Equal;
+   let r = Equal();
    if not(is( x, y )) {
       let x-start = x.start;
       let y-start = y.start;
       while x-start < x.end && y-start < y.end {
          if x-start[0_u64] < y-start[0_u64] {
-            r = LessThan;
+            r = LessThan();
             x-start = x.end;
             y-start = y.end;
          } else if x-start[0_u64] > y-start[0_u64] {
-            r = GreaterThan;
+            r = GreaterThan();
             x-start = x.end;
             y-start = y.end;
          } else {
@@ -40,8 +41,8 @@ let cmp(x: String, y: String): Ord = (
             y-start = y-start + 1_u64;
          }
       };
-      if x-start < x.end { r = GreaterThan };
-      if y-start < y.end { r = LessThan };
+      if x-start < x.end { r = GreaterThan() };
+      if y-start < y.end { r = LessThan() };
    };
    r
 );

@@ -44,7 +44,7 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                   ( (PME( e2 r2 )) (
                      (set program (+( program (Typedef( (close e1) (close e2) )) )))
                      (let base-type (lm-type-of-s e1))
-                     (add-class-info-layout( base-type FragmentStyle ))
+                     (add-class-info-layout( base-type (FragmentStyle()) ))
                      (set tokens r2)
                   ))
                )))

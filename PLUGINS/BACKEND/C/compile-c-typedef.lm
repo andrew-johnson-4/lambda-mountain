@@ -146,7 +146,7 @@ compile-c-typedef := λ(: base-type Type)(: body AST). (: (
    (set compile-c-type-body-of-base-type (.bind( compile-c-type-body-of-base-type (.tag base-type) (Tuple( base-type body )) )))
    (if (.is-lm-struct base-type) (
       (if (.is-open base-type) () (
-         (compile-c-typedef-concrete( (: None Maybe<TContext>) base-type body ))
+         (compile-c-typedef-concrete( ((: None Maybe<TContext>)()) base-type body ))
       ))
       (match base-type (
          ()

@@ -10,7 +10,7 @@ let infer-global-terms(term: AST): AST = (
       );
       Glb{val:Abs{}} => ();
       Glb{k=key, rhs=val} => (
-         (_, let new-rhs) = std-infer-expr((None :: TContext?), rhs, false, Used(), ta);
+         (_, let new-rhs) = std-infer-expr((None :: TContext?)(), rhs, false, Used(), ta);
          if not(is(rhs,new-rhs)) then {
             let new-term = mk-glb(k, new-rhs);
             mark-var-to-def(new-term, term);

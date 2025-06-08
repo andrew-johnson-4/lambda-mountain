@@ -1,6 +1,6 @@
 
-type2 Tuple<x,y> = { first: x, second: y };
-type2 Tuple<x,y,z> = { first: x, second: y, third: z };
+type2 Tuple<x,y> implements DefaultPrintable = { first: x, second: y };
+type2 Tuple<x,y,z> implements DefaultPrintable = { first: x, second: y, third: z };
 type2 Tuple<w,x,y,z> = { first: w, second: x, third: y, fourth: z };
 
 let cmp(l: Tuple<x,y>, r: Tuple<x,y>): Ord = (
@@ -14,12 +14,10 @@ let deep-hash(l: Tuple<x,y>): U64 = (
 let print(io: IO::File, l: Tuple<x,y>): Nil = (
    print(io, "("); print(io, l.first); print(io, ","); print(io, l.second); print(io, ")");
 );
-type Tuple<x,y> implements DefaultPrintable;
 
 let print(io: IO::File, l: Tuple<x,y,z>): Nil = (
    print(io, "("); print(io, l.first); print(io, ","); print(io, l.second); print(io, ","); print(io, l.third); print(io, ")");
 );
-type Tuple<x,y,z> implements DefaultPrintable;
 
 let cmp(l: Tuple<x,y,z>, r: Tuple<x,y,z>): Ord = (
    cmp(l.first, r.first) && cmp(l.second, r.second) && cmp(l.third, r.third)

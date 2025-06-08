@@ -1,6 +1,6 @@
 
 try-destructure-macro := λ(: loc SourceLocation)(: lhs AST)(: term AST). (: (
-   (let r (: None Maybe<AContext>))
+   (let r ((: None Maybe<AContext>)()))
    (let yes (Some(: LEOF AContext)))
    (match (Tuple( lhs term )) (
       ()

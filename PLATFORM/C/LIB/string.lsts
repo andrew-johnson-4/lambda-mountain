@@ -1,5 +1,5 @@
 
-type String implements Collection<U8>;
+type2 String implements Collection<U8> suffix _s;
 
 # TODO: instead do U8 iterator for S
 
@@ -35,9 +35,9 @@ let clone-rope-impl(s: S, out: Vector<U8>): Vector<U8> = (
 
 let cmp(l: CString, r: CString): Ord = (
    let c = strcmp( (l as U8[]), (r as U8[]) );
-   if c < 0_i32 { LessThan }
-   else if c > 0_i32 { GreaterThan }
-   else { Equal }
+   if c < 0_i32 { LessThan() }
+   else if c > 0_i32 { GreaterThan() }
+   else { Equal() }
 );
 
 let print(io: IO::File, x: CString): Nil = (
