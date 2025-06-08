@@ -187,7 +187,7 @@ let std-c-parse-external-declaration(tokens: List<Token>): List<Token> = (
 let std-c-parse-attribute(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    # https://gcc.gnu.org/onlinedocs/gcc/Attribute-Syntax.html
    # just ignore attributes for now
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    while std-c-can-take(tokens, "__attribute__") || std-c-can-take(tokens, "__asm__") {
       if std-c-can-take(tokens, "__attribute__") {
          tokens = std-c-take-expect(tokens, "__attribute__");
@@ -215,7 +215,7 @@ let std-c-parse-attribute(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> 
 
 let std-c-parse-function-definition(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let original-tokens = tokens;
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let declaration-specifiers = std-c-parse-declaration-specifiers(tokens); tokens = declaration-specifiers.second;
    let return = if declaration-specifiers.first.is-some {
       let declarator = std-c-parse-declarator(tokens); tokens = declarator.second;
@@ -250,7 +250,7 @@ let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>
 );
 
 let std-c-parse-declaration-specifiers(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let attr = std-c-parse-attribute(tokens); tokens = attr.second;
    let spec = std-c-parse-declaration-specifier(tokens); tokens = spec.second;
    if spec.first.is-some {
@@ -274,7 +274,7 @@ let std-c-parse-declaration-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,L
 );
 
 let std-c-parse-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let pointer = std-c-parse-pointer(tokens); tokens = pointer.second;
    let dd = std-c-parse-direct-declarator(tokens); tokens = dd.second;
    if pointer.first.is-some && dd.first.is-some
@@ -283,7 +283,7 @@ let std-c-parse-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>>
 );
 
 let std-c-parse-declaration-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let declaration = std-c-parse-declaration(tokens); tokens = declaration.second;
    if declaration.first.is-some {
       let decls = [declaration.first.get-or-panic];
@@ -297,7 +297,7 @@ let std-c-parse-declaration-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<T
 );
 
 let std-c-parse-compound-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "{") {
       let stmts = [] :: List<CTerm>;
       tokens = std-c-take-expect(tokens, "{");
@@ -317,7 +317,7 @@ let std-c-parse-declaration-or-statement(tokens: List<Token>): Tuple<Maybe<CTerm
 );
 
 let std-c-parse-init-declarator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let id = std-c-parse-init-declarator(tokens);
    if id.first.is-some {
       let ids = [id.first.get-or-panic];
@@ -345,7 +345,7 @@ let std-c-parse-init-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<To
 );
 
 let std-c-parse-static-assert-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "_Static_assert") {
       let op = head(tokens).skey;
       tokens = std-c-take-expect(tokens, "_Static_assert");
@@ -362,7 +362,7 @@ let std-c-parse-static-assert-declaration(tokens: List<Token>): Tuple<Maybe<CTer
 );
 
 let std-c-parse-storage-class-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "typedef") then (tokens = std-c-take-expect(tokens, "typedef"); Tuple{Some{CType1{"typedef"}}, tokens} )
    else if std-c-can-take(tokens, "__extension__") then (tokens = std-c-take-expect(tokens, "__extension__"); Tuple{Some{CType1{"__extension__"}}, tokens} )
    else if std-c-can-take(tokens, "extern") then (tokens = std-c-take-expect(tokens, "extern"); Tuple{Some{CType1{"extern"}}, tokens} )
@@ -374,7 +374,7 @@ let std-c-parse-storage-class-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>
 );
 
 let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "const") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "const"); Tuple{Some{CType1{t}}, tokens} )
    else if std-c-can-take(tokens, "restrict") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "restrict"); Tuple{Some{CType1{t}}, tokens} )
    else if std-c-can-take(tokens, "__restrict") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "__restrict"); Tuple{Some{CType1{t}}, tokens} )
@@ -385,7 +385,7 @@ let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Tok
 );
 
 let std-c-parse-function-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "inline") {
       let spec = head(tokens).skey; tokens = std-c-take-expect(tokens, "inline");
       Tuple{ Some{CType1{spec}}, tokens }
@@ -396,7 +396,7 @@ let std-c-parse-function-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 );
 
 let std-c-parse-alignment-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "_Alignas") then {
       tokens = std-c-take-expect(tokens, "_Alignas");
       tokens = std-c-take-expect(tokens, "(");
@@ -409,7 +409,7 @@ let std-c-parse-alignment-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 
 let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let yes = Some{CIdentifier{""}} :: Maybe<CTerm>; # syntax extension: in parameter lists the identifier can be empty
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let original-tokens = tokens;
    let be = if std-c-can-take(tokens, "identifier") then {
       let id = head(tokens).skey; tokens = std-c-take-expect(tokens, "identifier");
@@ -471,7 +471,7 @@ let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
          else {be = Tuple{ no, tokens }}
       } else if std-c-can-take(tokens,"(") {
          tokens = std-c-take-expect(tokens, "(");
-         let te = None :: Maybe<CTerm>;
+         let te = (None :: Maybe<CTerm>)();
          let ptl = std-c-parse-parameter-type-list(tokens);
          if ptl.first.is-some {
             te = ptl.first;
@@ -492,7 +492,7 @@ let std-c-parse-direct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
 );
 
 let std-c-parse-identifier-list(tokens: List<Token>): Tuple<Maybe<List<String>>,List<Token>> = (
-   let no = None :: Maybe<List<String>>;
+   let no = (None :: Maybe<List<String>>)();
    if std-c-can-take(tokens, "identifier") then {
       let ids = [head(tokens).skey];
       tokens = std-c-take-expect(tokens, "identifier");
@@ -508,7 +508,7 @@ let std-c-parse-identifier-list(tokens: List<Token>): Tuple<Maybe<List<String>>,
 );
 
 let std-c-parse-designative-initializer(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let designation = std-c-parse-designation(tokens); tokens = designation.second;
    let initializer = std-c-parse-initializer(tokens); tokens = initializer.second;
    if designation.first.is-some && initializer.first.is-some
@@ -519,7 +519,7 @@ let std-c-parse-designative-initializer(tokens: List<Token>): Tuple<Maybe<CTerm>
 );
 
 let std-c-parse-initializer-list(tokens: List<Token>): Tuple<Maybe<List<CTerm>>,List<Token>> = (
-   let no = None :: Maybe<List<CTerm>>;
+   let no = (None :: Maybe<List<CTerm>>)();
    let di = std-c-parse-designative-initializer(tokens); tokens = di.second;
    if di.first.is-some {
       let dis = [di.first.get-or-panic];
@@ -533,7 +533,7 @@ let std-c-parse-initializer-list(tokens: List<Token>): Tuple<Maybe<List<CTerm>>,
 );
 
 let std-c-parse-initializer(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "{") {
       tokens = std-c-take-expect(tokens, "{");
       let initializer-list = std-c-parse-initializer-list(tokens); tokens = initializer-list.second;
@@ -548,7 +548,7 @@ let std-c-parse-initializer(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>
 );
 
 let std-c-parse-atomic-type-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "_Atomic") && std-c-can-take(tail(tokens), "(") then {
       let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "_Atomic");
       tokens = std-c-take-expect(tokens, "(");
@@ -561,7 +561,7 @@ let std-c-parse-atomic-type-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,L
 );
 
 let std-c-parse-struct-or-union-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "struct") || std-c-can-take(tokens, "union") {
       let op = head(tokens).skey; tokens = tail(tokens);
       let attr = std-c-parse-attribute(tokens); tokens = attr.second;
@@ -583,7 +583,7 @@ let std-c-parse-struct-or-union-specifier(tokens: List<Token>): Tuple<Maybe<CTer
 );
 
 let std-c-parse-struct-declaration-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let sq = std-c-parse-struct-declaration(tokens);
    if sq.first.is-some {
       let sql = [sq.first.get-or-panic];
@@ -612,7 +612,7 @@ let std-c-parse-struct-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 );
 
 let std-c-parse-enumerator-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "enum") {
       let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "enum");
       let id = if std-c-can-take(tokens, "identifier") {
@@ -650,7 +650,7 @@ let std-c-parse-enumerator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<To
 let std-c-enumeration-constant-index = {} :: HashtableEq<String,Bool>;
 
 let std-c-parse-enumerator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "identifier") {
       let ec = head(tokens).skey; tokens = std-c-take-expect(tokens, "identifier");
       std-c-enumeration-constant-index = std-c-enumeration-constant-index.bind(ec, true);
@@ -665,7 +665,7 @@ let std-c-parse-enumerator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>>
 );
 
 let std-c-parse-type-name(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let sql = std-c-parse-specifier-qualifier-list(tokens);
    if sql.first.is-some then {
       tokens = sql.second;
@@ -675,7 +675,7 @@ let std-c-parse-type-name(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> 
 );
 
 let std-c-parse-specifier-qualifier-list(tokens: List<Token>): Tuple<Maybe<List<CTerm>>,List<Token>> = (
-   let no = None :: Maybe<List<CTerm>>;
+   let no = (None :: Maybe<List<CTerm>>)();
    let sq = std-c-parse-specifier-qualifier(tokens);
    if sq.first.is-some {
       let sql = [sq.first.get-or-panic];
@@ -703,7 +703,7 @@ let std-c-typedef-name-index = {} :: HashtableEq<String,Bool>;
 std-c-typedef-name-index = std-c-typedef-name-index.bind("__builtin_va_list", true);
 
 let std-c-parse-typedef-name(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if non-zero(tokens) && std-c-typedef-name-index.has(head(tokens).skey) {
       Tuple{ Some{CType1{head(tokens).skey}}, tail(tokens) }
    } else Tuple{ no, tokens }
@@ -729,7 +729,7 @@ let std-c-parse-type-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Tok
 );
 
 let std-c-parse-pointer(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "*") then {
       tokens = std-c-take-expect(tokens, "*");
       let type-qualifier-list = std-c-parse-type-qualifier-list(tokens); tokens = type-qualifier-list.second;
@@ -739,7 +739,7 @@ let std-c-parse-pointer(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = 
 );
 
 let std-c-parse-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let p = std-c-parse-pointer(tokens); tokens = p.second;
    let dac = std-c-parse-direct-abstract-declarator(tokens); tokens = dac.second;
    if p.first.is-some && dac.first.is-some
@@ -763,7 +763,7 @@ let std-c-parse-direct-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTe
 #                           | direct-abstract-declarator, '[', assignment-expression, ']'
 #                           | direct-abstract-declarator, '(', parameter-type-list, ')'
 #                           | direct-abstract-declarator, '(', ')';
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let original-tokens = tokens;
    if std-c-can-take(tokens, "(") then {
       let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "(");
@@ -792,7 +792,7 @@ let std-c-parse-direct-abstract-declarator(tokens: List<Token>): Tuple<Maybe<CTe
 );
 
 let std-c-parse-type-qualifier-list(tokens: List<Token>): Tuple<Maybe<List<CTerm>>,List<Token>> = (
-   let no = None :: Maybe<List<CTerm>>;
+   let no = (None :: Maybe<List<CTerm>>)();
    let tq = std-c-parse-type-qualifier(tokens);
    if tq.first.is-some {
       tokens = tq.second;
@@ -806,7 +806,7 @@ let std-c-parse-type-qualifier-list(tokens: List<Token>): Tuple<Maybe<List<CTerm
 );
 
 let std-c-parse-parameter-type-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let ptl = std-c-parse-parameter-list(tokens);
    if ptl.first.is-some {
       tokens = ptl.second;
@@ -819,7 +819,7 @@ let std-c-parse-parameter-type-list(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 );
 
 let std-c-parse-struct-declarator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let sq = std-c-parse-struct-declarator(tokens);
    if sq.first.is-some {
       let sql = [sq.first.get-or-panic];
@@ -837,7 +837,7 @@ let std-c-parse-struct-declarator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,
 );
 
 let std-c-parse-struct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, ":") {
       let op = head(tokens).skey; tokens = std-c-take-expect(tokens, ":");
       let ce = std-c-parse-constant-expression(tokens);
@@ -860,7 +860,7 @@ let std-c-parse-struct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
 );
 
 let std-c-parse-assignment-operator(tokens: List<Token>): Tuple<Maybe<String>,List<Token>> = (
-   let no = None :: Maybe<String>;
+   let no = (None :: Maybe<String>)();
    if not(non-zero(tokens)) then Tuple{ no, tokens }
    else if head(tokens).skey == "=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
    else if head(tokens).skey == "*=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
@@ -877,7 +877,7 @@ let std-c-parse-assignment-operator(tokens: List<Token>): Tuple<Maybe<String>,Li
 );
 
 let std-c-parse-struct-or-union(tokens: List<Token>): Tuple<Maybe<String>,List<Token>> = (
-   let no = None :: Maybe<String>;
+   let no = (None :: Maybe<String>)();
    if not(non-zero(tokens)) then Tuple{ no, tokens }
    else if head(tokens).skey == "struct" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
    else if head(tokens).skey == "union" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
@@ -885,13 +885,13 @@ let std-c-parse-struct-or-union(tokens: List<Token>): Tuple<Maybe<String>,List<T
 );
 
 let std-c-parse-identifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "identifier") then Tuple{ Some{CIdentifier{head(tokens).skey}}, tail(tokens) }
    else Tuple{ no, tokens }
 );
 
 let std-c-parse-constant(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "integer") then Tuple{ Some{CInteger{head(tokens).skey}}, tail(tokens) }
    else if std-c-can-take(tokens, "character") then Tuple{ Some{CCharacter{head(tokens).skey}}, tail(tokens) }
    else if std-c-can-take(tokens, "floating") then Tuple{ Some{CFloating{head(tokens).skey}}, tail(tokens) }
@@ -900,14 +900,14 @@ let std-c-parse-constant(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> =
 );
 
 let std-c-parse-string(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "string") then Tuple{ Some{CString{head(tokens).skey}}, tail(tokens) }
    else if std-c-can-take(tokens, "__func__") then Tuple{ Some{CString{head(tokens).skey}}, tail(tokens) }
    else Tuple{ no, tokens }
 );
 
 let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let original-tokens = tokens;
    let ts = std-c-parse-generic-selection(tokens);
    if ts.first.is-none then (ts = std-c-parse-constant(tokens));
@@ -925,7 +925,7 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 );
 
 let std-c-parse-parameter-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let ptl = std-c-parse-parameter-declaration(tokens);
    if ptl.first.is-some {
       let pts = [ptl.first.get-or-panic];
@@ -940,7 +940,7 @@ let std-c-parse-parameter-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Tok
 );
 
 let std-c-parse-parameter-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let ds = std-c-parse-declaration-specifiers(tokens);
    if ds.first.is-some {
       tokens = ds.second;
@@ -1226,7 +1226,7 @@ let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 );
 
 let std-c-parse-argument-expression-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let sq = std-c-parse-assignment-expression(tokens);
    if sq.first.is-some {
       let sql = [sq.first.get-or-panic];
@@ -1244,7 +1244,7 @@ let std-c-parse-argument-expression-list(tokens: List<Token>): Tuple<Maybe<CTerm
 );
 
 let std-c-parse-generic-selection(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "_Generic") {
       let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "_Generic");
       tokens = std-c-take-expect(tokens, "(");
@@ -1259,7 +1259,7 @@ let std-c-parse-generic-selection(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
 );
 
 let std-c-parse-generic-assoc-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    let ga = std-c-parse-generic-association(tokens);
    if ga.first.is-some then {
       tokens = ga.second;
@@ -1274,7 +1274,7 @@ let std-c-parse-generic-assoc-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List
 );
 
 let std-c-parse-generic-association(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "default") {
       tokens = std-c-take-expect(tokens, "default");
       tokens = std-c-take-expect(tokens, ":");
@@ -1293,7 +1293,7 @@ let std-c-parse-generic-association(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 );
 
 let std-c-parse-designator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "[") {
       let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "[");
       let ce = std-c-parse-constant-expression(tokens); tokens = ce.second;
@@ -1309,7 +1309,7 @@ let std-c-parse-designator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>>
 );
 
 let std-c-parse-designator-list(tokens: List<Token>): Tuple<Maybe<List<CTerm>>,List<Token>> = (
-   let no = None :: Maybe<List<CTerm>>;
+   let no = (None :: Maybe<List<CTerm>>)();
    let des = std-c-parse-designator(tokens); tokens = des.second;
    if des.first.is-some {
       let dess = [des.first.get-or-panic];
@@ -1322,7 +1322,7 @@ let std-c-parse-designator-list(tokens: List<Token>): Tuple<Maybe<List<CTerm>>,L
 );
 
 let std-c-parse-designation(tokens: List<Token>): Tuple<Maybe<List<CTerm>>,List<Token>> = (
-   let no = None :: Maybe<List<CTerm>>;
+   let no = (None :: Maybe<List<CTerm>>)();
    let dl = std-c-parse-designator-list(tokens); tokens = dl.second;
    if dl.first.is-some { tokens = std-c-take-expect(tokens, "="); };
    if dl.first.is-some then Tuple{ Some{dl.first.get-or-panic}, tokens }
@@ -1351,7 +1351,7 @@ let std-c-parse-expression-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,Li
 );
 
 let std-c-parse-labeled-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "identifier") && std-c-can-take(tail(tokens), ":") {
       let lname = head(tokens).skey; tokens = std-c-take-expect(tokens, "identifier");
       let op = "c::label"; tokens = std-c-take-expect(tokens, ":");
@@ -1381,7 +1381,7 @@ let std-c-parse-labeled-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
 );
 
 let std-c-parse-selection-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "if") {
       let op = "c::if"; tokens = tail(tokens);
       tokens = std-c-take-expect(tokens, "(");
@@ -1408,7 +1408,7 @@ let std-c-parse-selection-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 );
 
 let std-c-parse-iteration-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "while") {
       let op = "c::while"; tokens = tail(tokens);
       tokens = std-c-take-expect(tokens, "(");
@@ -1451,7 +1451,7 @@ let std-c-parse-iteration-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 );
 
 let std-c-parse-jump-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   let no = None :: Maybe<CTerm>;
+   let no = (None :: Maybe<CTerm>)();
    if std-c-can-take(tokens, "goto") {
       let op = intern(c"c::goto"); tokens = tail(tokens);
       let id = head(tokens).skey; tokens = std-c-take-expect(tokens, "identifier");

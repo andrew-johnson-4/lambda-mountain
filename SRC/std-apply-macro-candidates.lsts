@@ -18,7 +18,7 @@ let std-apply-macro-candidates(tctx: TContext?, mname: CString, margs: AST, cand
 );
 
 let std-try-destructure-macro(tctx: TContext?, margs: AST, mtype: Type, mcandidate: AST): (TContext?, AContext?) = (
-   let no = None :: AContext?;
+   let no = (None :: AContext?)();
    if let Abs{lhs=lhs, rhs=rhs} = mcandidate then std-try-destructure-macro(tctx, margs, mtype, lhs)
    else {
       match mtype {

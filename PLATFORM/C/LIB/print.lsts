@@ -25,5 +25,5 @@ interface self implements DefaultFormattable {
    let .into( f: self, tgt: Type<String> ): String;
 }
 
-type DefaultFormattable => DefaultPrintable;
+type2 DefaultFormattable implies DefaultPrintable;
 

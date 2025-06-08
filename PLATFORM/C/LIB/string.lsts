@@ -1,5 +1,5 @@
 
-type String implements Collection<U8>;
+type2 String implements Collection<U8> suffix _s;
 
 # TODO: instead do U8 iterator for S
 

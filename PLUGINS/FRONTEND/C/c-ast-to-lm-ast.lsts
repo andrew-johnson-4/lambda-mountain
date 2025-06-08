@@ -35,7 +35,7 @@ let std-c-declare(t: CTerm): Nil = (
                };
             });
             CUnaryPrefix{op:c"Declarator(", arg=arg} => (
-               (let name, let body) = std-c-sig-of-declarator(return-type, arg, ta, None :: Maybe<CTerm>);
+               (let name, let body) = std-c-sig-of-declarator(return-type, arg, ta, (None :: Maybe<CTerm>)());
                if not(std-c-declare-dedup-index.has(name.into(type(String)))) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name.into(type(String)), true);
                   if can-unify( t2(c"C",t1(c"typedef")), return-type ) {
