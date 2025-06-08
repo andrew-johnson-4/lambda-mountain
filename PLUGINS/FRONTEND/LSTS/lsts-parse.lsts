@@ -743,21 +743,25 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
       let pars = [] :: List<Type>;
       lsts-parse-expect(c"<", tokens); tokens = tail(tokens);
       (let v, tokens) = lsts-parse-identifier(tokens);
+      let pt = tv(v);
       if lsts-parse-head(tokens)==c":" {
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          (let vt, tokens) = lsts-parse-type(tokens);
+         pt = pt && vt;
          typeconstraints = typeconstraints.push((v,vt));
       };
-      pars = cons(tv(v), pars);
+      pars = cons(pt, pars);
       while lsts-parse-head(tokens)==c"," {
          lsts-parse-expect(c",", tokens); tokens = tail(tokens);
          (v, tokens) = lsts-parse-identifier(tokens);
+         pt = tv(v);
          if lsts-parse-head(tokens)==c":" {
             lsts-parse-expect(c":", tokens); tokens = tail(tokens);
             (let vt, tokens) = lsts-parse-type(tokens);
+            pt = pt && vt;
             typeconstraints = typeconstraints.push((v,vt));
          };
-         pars = cons(tv(v), pars);
+         pars = cons(pt, pars);
       };
       lsts-parse-expect(c">", tokens); tokens = tail(tokens);
       ts(typename, pars);
