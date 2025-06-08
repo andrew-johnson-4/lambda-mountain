@@ -45,8 +45,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
          add-concrete-type-instance(tt);
          (tctx, let new-t) = std-infer-expr(tctx, t, false, Tail(), tt);
          if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
-         ascript-normal(t, tt);
-         ascript-normal(term, tt);
+         ascript-normal(term, typeof(t));
          if tt.is-t(c"SmartString") then maybe-apply-global-callable(c"intern", tt, term);
       );
       App{asc=left:Var{key:c"as"}, right:App{t=left,right:AType{tt=tt}}} => (
@@ -166,9 +165,9 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
                   (tctx, let new-r) = std-infer-expr(tctx, r, false, Used(), ta);
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
                };
-               rt = if typeof(l).is-arrow && non-zero(hint-if-hint(l)) && non-zero(lit-name-if-lit(l)) {
+               rt = if typeof(l).is-arrow && non-zero(lit-name-if-lit(l)) {
                   let direct-hint = hint-if-hint(l);
-                  apply-global-constructor(lit-name-if-lit(l), hint, typeof(r), term);
+                  apply-global-constructor(lit-name-if-lit(l), direct-hint, typeof(r), term);
                } else if typeof(l).is-arrow && non-zero(var-name-if-var-or-lit(l)) {
                   apply-global-callable(var-name-if-var-or-lit(l), typeof(r), term);
                } else {
@@ -179,7 +178,7 @@ let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUs
             };
          };
 
-         if not(is-macro) && not(is-cons) && typeof(l).is-arrow && (non-zero(var-name-if-var(l)) || typeof(term).is-type2) {
+         if not(is-macro) && not(is-cons) && typeof(l).is-arrow && non-zero(var-name-if-var(l)) {
             mark-var-to-def-todo(tctx, var-name-if-var(l), typeof(r), l);
             apply-global-callable(var-name-if-var(l),typeof(r),term);
          };
