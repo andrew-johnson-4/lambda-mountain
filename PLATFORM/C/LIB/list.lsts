@@ -4,16 +4,16 @@ type2 List<x> zero LEOF
              | LCons{ head:x , tail:List<x>[] };
 
 let cmp(ls: List<x>, rs: List<x>): Ord = (
-   let diff = Equal;
-   while is(diff, Equal) && non-zero(ls) && non-zero(rs) {
+   let diff = Equal();
+   while is(diff, Equal()) && non-zero(ls) && non-zero(rs) {
       diff = cmp(head(ls), head(rs));
       ls = tail(ls);
       rs = tail(rs);
    };
-   if not(is(diff,Equal)) then diff else
-   if not(non-zero(ls)) && non-zero(rs) then LessThan else
-   if non-zero(ls) && not(non-zero(rs)) then GreaterThan else
-   Equal
+   if not(is(diff,Equal())) then diff else
+   if not(non-zero(ls)) && non-zero(rs) then LessThan() else
+   if non-zero(ls) && not(non-zero(rs)) then GreaterThan() else
+   Equal()
 );
 
 let to-smart-string(ls: List<x>): String = (

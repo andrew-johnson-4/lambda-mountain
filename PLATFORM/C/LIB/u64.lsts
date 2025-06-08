@@ -23,7 +23,7 @@ declare-unop( not, raw-type(U64), raw-type(U64), ( l"(!"; x; l")"; ) );
 
 declare-unop( into-branch-conditional, raw-type(U64), raw-type(BranchConditional), x );
 
-let cmp(l: U64, r: U64): Ord = if l==r then Equal else if l<r then LessThan else GreaterThan;
+let cmp(l: U64, r: U64): Ord = if l==r then Equal() else if l<r then LessThan() else GreaterThan();
 
 let to-string(i: U64): CString = (
    let out = mk-vector(type(U8), 19);

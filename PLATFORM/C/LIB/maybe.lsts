@@ -32,7 +32,7 @@ let .is-some(m: Maybe<x>): U64 = (
 let cmp(l: Maybe<x>, r: Maybe<x>): Ord = (
    if l.discriminator-case-tag != r.discriminator-case-tag then cmp(l.discriminator-case-tag, r.discriminator-case-tag)
    else if l.is-some then cmp(l.get-or-panic, r.get-or-panic)
-   else Equal
+   else Equal()
 );
 
 let to-smart-string(l: Maybe<x>): String = (
