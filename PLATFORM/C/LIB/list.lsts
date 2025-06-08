@@ -1,5 +1,5 @@
 
-type List<x> = LEOF
+type2 List<x> = LEOF
              | LCons{ head:x , tail:List<x>[] };
 type2 List<x> zero LEOF;
 
