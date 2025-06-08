@@ -3,7 +3,7 @@ infer-type-definition := λ(: base-type Type)(: body AST)(: case-number U64). (:
    # This works but is too slow
    (let r 0_u64)
    (if (non-zero body) (
-      (add-class-info-layout( base-type LM1Style ))
+      (add-class-info-layout( base-type (LM1Style()) ))
       (add-quick-prop( (t3( 'Array_s base-type ta )) ta (t1 'LMStruct_s) ))
       (add-quick-prop( base-type ta (t1 'LMStruct_s) ))
    ) ())
