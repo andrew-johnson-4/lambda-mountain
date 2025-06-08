@@ -14,6 +14,7 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TContext> = (
    match (Tuple{fpt, pt}) {
       Tuple{ first:TAny{} } => ctx = yes;
       Tuple{ first:TGround{tag:c"Any"} } => ctx = yes;
+      Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => no;
       Tuple{ first:TVar{name=name}, second:TGround{tag=tag} } => (
          ctx = ctx.bind(name, normalize(pt), Lit{tag, mk-token(tag)});
       );
