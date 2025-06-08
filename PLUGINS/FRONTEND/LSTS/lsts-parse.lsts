@@ -738,28 +738,38 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c"[Typename]", lsts-is-enum-head(lsts-parse-head(tokens)) || lsts-parse-head(tokens).has-suffix(c"_ss"), tokens);
    let typename = lsts-parse-head(tokens); tokens = tail(tokens);
    if typename.has-suffix(c"_ss") then typename = typename.remove-suffix(c"_ss");
-   let typeconstraints = mk-vector(type((CString,Type)));
    let lhs-type = if lsts-parse-head(tokens)==c"<" {
       let pars = [] :: List<Type>;
       lsts-parse-expect(c"<", tokens); tokens = tail(tokens);
-      (let v, tokens) = lsts-parse-identifier(tokens);
-      let pt = tv(v);
-      if lsts-parse-head(tokens)==c":" {
-         lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+      let pt = ta;
+      if lsts-is-enum-head(lsts-parse-head(tokens)) || lsts-parse-head(tokens).has-suffix(c"_ss") {
+         pt = tv(uuid());
          (let vt, tokens) = lsts-parse-type(tokens);
          pt = pt && vt;
-         typeconstraints = typeconstraints.push((v,vt));
-      };
-      pars = cons(pt, pars);
-      while lsts-parse-head(tokens)==c"," {
-         lsts-parse-expect(c",", tokens); tokens = tail(tokens);
-         (v, tokens) = lsts-parse-identifier(tokens);
+      } else {
+         (let v, tokens) = lsts-parse-identifier(tokens);
          pt = tv(v);
          if lsts-parse-head(tokens)==c":" {
             lsts-parse-expect(c":", tokens); tokens = tail(tokens);
             (let vt, tokens) = lsts-parse-type(tokens);
             pt = pt && vt;
-            typeconstraints = typeconstraints.push((v,vt));
+         };
+      };
+      pars = cons(pt, pars);
+      while lsts-parse-head(tokens)==c"," {
+         lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+         if lsts-is-enum-head(lsts-parse-head(tokens)) || lsts-parse-head(tokens).has-suffix(c"_ss") {
+            pt = tv(uuid());
+            (let vt, tokens) = lsts-parse-type(tokens);
+            pt = pt && vt;
+         } else {
+            (let v, tokens) = lsts-parse-identifier(tokens);
+            pt = tv(v);
+            if lsts-parse-head(tokens)==c":" {
+               lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+               (let vt, tokens) = lsts-parse-type(tokens);
+               pt = pt && vt;
+            };
          };
          pars = cons(pt, pars);
       };
@@ -859,7 +869,7 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
       }
    };
    let td = mk-typedef2(loc, lhs-type).with-implies(infers).with-implements(impls)
-            .with-constraints(typeconstraints).with-size(size).with-alias(alias).with-opaque-alias(opaque-alias)
+            .with-size(size).with-alias(alias).with-opaque-alias(opaque-alias)
             .with-cases(cases);
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    (td, tokens);

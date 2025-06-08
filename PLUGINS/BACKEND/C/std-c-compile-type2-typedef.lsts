@@ -5,7 +5,6 @@ let std-c-compile-type2-typedef(td: AST): Nil = (
    let lhs-type = (td as Tag::Typedef2).lhs-type;
    let implements = (td as Tag::Typedef2).implements;
    let implies = (td as Tag::Typedef2).implies;
-   let constraints = (td as Tag::Typedef2).constraints;
    let size = (td as Tag::Typedef2).size;
    let alias = (td as Tag::Typedef2).alias;
    let opaque-alias = (td as Tag::Typedef2).opaque-alias;
@@ -25,7 +24,6 @@ let std-c-compile-type2-typedef-concrete(tctx: Maybe<TContext>, concrete-type: T
    let location = (td as Tag::Typedef2).location;
    let implements = (td as Tag::Typedef2).implements;
    let implies = (td as Tag::Typedef2).implies;
-   let constraints = (td as Tag::Typedef2).constraints;
    let size = (td as Tag::Typedef2).size;
    let alias = (td as Tag::Typedef2).alias;
    let opaque-alias = (td as Tag::Typedef2).opaque-alias;
