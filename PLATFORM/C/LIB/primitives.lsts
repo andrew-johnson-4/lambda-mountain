@@ -1,10 +1,10 @@
 
 # TODO remove after porting to new C frontend
-type2 "C_regex__t_*_" implies C<"regex_t">[];
-type2 "C_char_*" implies C<"char">[];
-type2 "C_size__t_" implies C<"size_t">;
-type2 "C_regmatch__t_*" implies C<"regmatch_t">[];
-type2 "C_int" implies C<"int32_t">;
+type "C_regex__t_*_" implies C<"regex_t">[];
+type "C_char_*" implies C<"char">[];
+type "C_size__t_" implies C<"size_t">;
+type "C_regmatch__t_*" implies C<"regmatch_t">[];
+type "C_int" implies C<"int32_t">;
 
 declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs), raw-type(Nil), ( l"({"; y; l"="; x; l";({});})"; ) );
 

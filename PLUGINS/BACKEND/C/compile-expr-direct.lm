@@ -189,7 +189,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                ))
                ( (Lit( fname _ )) (
                   (let return-type (normalize(typeof term)))
-                  (if (.has( type2-base-type-index (.ground-tag-and-arity return-type) )) (
+                  (if (.has( type-base-type-index (.ground-tag-and-arity return-type) )) (
                      (let fterm (find-global-constructor( fname ta (typeof a) term )))
                      (set e (std-c-compile-call( ctx fname fterm return-type a )))
                   ) (
@@ -198,7 +198,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                ))
                ( (App( (Lit( ':_s _ )) (App( (Lit( fname _ )) (AType ft) )) )) (
                   (let return-type (normalize(typeof term)))
-                  (if (.has( type2-base-type-index (.ground-tag-and-arity return-type) )) (
+                  (if (.has( type-base-type-index (.ground-tag-and-arity return-type) )) (
                      (let fterm (find-global-constructor( fname ft (typeof a) term )))
                      (set e (std-c-compile-call( ctx fname fterm return-type a )))
                   ) (

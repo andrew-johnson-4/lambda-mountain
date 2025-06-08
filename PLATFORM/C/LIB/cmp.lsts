@@ -4,7 +4,7 @@
 ## [type(LessThan)].discriminator-case-tag = 0
 ## [type(Equal)].discriminator-case-tag = 1
 ## [type(GreaterThan)].discriminator-case-tag = 2
-type2 Ord = LessThan | Equal | GreaterThan;
+type Ord = LessThan | Equal | GreaterThan;
 
 let $"=="(l: Ord, r: Ord): U64 = l.discriminator-case-tag == r.discriminator-case-tag;
 let $"!="(l: Ord, r: Ord): U64 = l.discriminator-case-tag != r.discriminator-case-tag;

@@ -50,7 +50,7 @@ let apply-global-constructor(fname: CString, hint: Type, arg-types: Type, blame:
    hint = hint.rewrite-type-alias;
    let result = ta;
    let simple = ta;
-   if non-zero(hint) && hint.is-type2 {
+   if non-zero(hint) && hint.is-type {
       for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
          if (not(non-zero(hint)) || can-receive(ot, hint)) && (not(non-zero(arg-types)) || can-apply(ot, arg-types)) {
             let next = if non-zero(hint)
@@ -71,7 +71,7 @@ let apply-global-constructor(fname: CString, hint: Type, arg-types: Type, blame:
          }
       };
    };
-   if not(non-zero(result)) && non-zero(hint) && not(hint.is-type2) then result = hint
+   if not(non-zero(result)) && non-zero(hint) && not(hint.is-type) then result = hint
    else if not(non-zero(result)) then fail("Unable to apply appropriate global constructor: \{fname} :: \{hint}At: \{blame.location}\n");
    if result.is-arrow && non-zero(arg-types) {
       let tctx = if non-zero(hint)

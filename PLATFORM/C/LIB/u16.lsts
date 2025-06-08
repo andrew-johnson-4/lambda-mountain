@@ -1,5 +1,5 @@
 
-type2 U16 implies U32, I32, U64, I64 implements DefaultPrintable suffix _u16;
+type U16 implies U32, I32, U64, I64 implements DefaultPrintable suffix _u16;
 
 declare-binop( $"!=", raw-type(U16), raw-type(U16), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );
 declare-binop( $"==", raw-type(U16), raw-type(U16), raw-type(U64), ( l"("; x; l"=="; y; l")"; ) );

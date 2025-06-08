@@ -204,7 +204,7 @@ let lsts-parse(tokens: List<Token>): Nil = (
             (let td, tokens) = lsts-parse-typedef2(tokens);
             ast-parsed-program = ast-parsed-program + td;
          );
-         [ Token{key:c"type2"}.. _] => (
+         [ Token{key:c"type"}.. _] => (
             (let td, tokens) = lsts-parse-typedef2(tokens);
             ast-parsed-program = ast-parsed-program + td;
          );
@@ -726,7 +726,7 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
    if lsts-parse-head(tokens)==c"type" {
       lsts-parse-expect(c"type", tokens); tokens = tail(tokens);
    } else {
-      lsts-parse-expect(c"type2", tokens); tokens = tail(tokens);
+      lsts-parse-expect(c"type", tokens); tokens = tail(tokens);
    };
    let mode = c"=";
    let misc-type = ta;
@@ -1000,7 +1000,7 @@ let lsts-parse-typedef-case(tokens: List<Token>): Tuple<AST,List<Token>> = (
    Tuple{ case, tokens }
 );
 
-type2 LstsFnSignature = { args-list: AST, args-type: Type, return-type: Type };
+type LstsFnSignature = { args-list: AST, args-type: Type, return-type: Type };
 
 # parses:    (a: I32, b: I32): U64
 let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tuple<LstsFnSignature, List<Token>> = (
@@ -1105,7 +1105,7 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
    tokens
 );
 
-type2 ASTOrIdent = ASTOrIdentAST { ast: AST }
+type ASTOrIdent = ASTOrIdentAST { ast: AST }
                  | ASTOrIdentId  { id: AST }
                  | ASTOrIdentIgnore
                  ;

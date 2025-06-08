@@ -61,7 +61,7 @@ mangle-c-type-internal := λ(: tt Type)(: blame AST). (: (
          (set r (SAtom td-id))
       ))
       ( (TGround( tag _ )) (
-         (if (.has( type2-base-type-index (.ground-tag-and-arity tt) )) (
+         (if (.has( type-base-type-index (.ground-tag-and-arity tt) )) (
             (set r (std-c-mangle-type-internal( tt blame )))
          ) (
             (if (.has-prefix( tag 'C__s )) (

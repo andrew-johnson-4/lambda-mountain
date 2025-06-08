@@ -1,3 +1,3 @@
 
-type2 Fragment = { term: AST, keyvals: List<Tuple<CString,S>>[], type: Type, context: FContext[], vararg: List<Fragment[]> };
+type Fragment = { term: AST, keyvals: List<Tuple<CString,S>>[], type: Type, context: FContext[], vararg: List<Fragment[]> };
 

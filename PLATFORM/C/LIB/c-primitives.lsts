@@ -55,38 +55,38 @@ let :Blob $"c::break"(): Nil = l"break";
 let :Blob $"c::return"(): Nil = l"return";
 
 # for 64 bit machines: TODO replace with architecture specific types
-type2 alias C<"int"> = C<"int32_t">;
-type2 opaque alias C<"int32_t"> = C<"int">;
+type alias C<"int"> = C<"int32_t">;
+type opaque alias C<"int32_t"> = C<"int">;
 
 # U8
-type2 C<"uint8_t"> implies C<"int16_t">;
-type2 C<"uint8_t"> implies C<"uint16_t">;
-type2 C<"uint8_t"> implies C<"int32_t">;
-type2 C<"uint8_t"> implies C<"uint32_t">;
-type2 C<"uint8_t"> implies C<"int64_t">;
-type2 C<"uint8_t"> implies C<"uint64_t">;
+type C<"uint8_t"> implies C<"int16_t">;
+type C<"uint8_t"> implies C<"uint16_t">;
+type C<"uint8_t"> implies C<"int32_t">;
+type C<"uint8_t"> implies C<"uint32_t">;
+type C<"uint8_t"> implies C<"int64_t">;
+type C<"uint8_t"> implies C<"uint64_t">;
 
 # I8
-type2 C<"int8_t"> implies C<"int16_t">;
-type2 C<"int8_t"> implies C<"int32_t">;
-type2 C<"int8_t"> implies C<"int64_t">;
+type C<"int8_t"> implies C<"int16_t">;
+type C<"int8_t"> implies C<"int32_t">;
+type C<"int8_t"> implies C<"int64_t">;
 
 # U16
-type2 C<"uint16_t"> implies C<"int32_t">;
-type2 C<"uint16_t"> implies C<"uint32_t">;
-type2 C<"uint16_t"> implies C<"int64_t">;
-type2 C<"uint16_t"> implies C<"uint64_t">;
+type C<"uint16_t"> implies C<"int32_t">;
+type C<"uint16_t"> implies C<"uint32_t">;
+type C<"uint16_t"> implies C<"int64_t">;
+type C<"uint16_t"> implies C<"uint64_t">;
 
 # I16
-type2 C<"int16_t"> implies C<"int32_t">;
-type2 C<"int16_t"> implies C<"int64_t">;
+type C<"int16_t"> implies C<"int32_t">;
+type C<"int16_t"> implies C<"int64_t">;
 
 # U32
-type2 C<"uint32_t"> implies C<"int64_t">;
-type2 C<"uint32_t"> implies C<"uint64_t">;
+type C<"uint32_t"> implies C<"int64_t">;
+type C<"uint32_t"> implies C<"uint64_t">;
 
 # I32
-type2 C<"int32_t"> implies C<"int64_t">;
+type C<"int32_t"> implies C<"int64_t">;
 
 let :Blob $"+"(x: C<"uint8_t">, y: C<"uint8_t">): C<"uint8_t"> = (l"("; x; l"+"; y; l")";);
 let :Blob $"+"(x: C<"int8_t">, y: C<"int8_t">): C<"int8_t"> = (l"("; x; l"+"; y; l")";);

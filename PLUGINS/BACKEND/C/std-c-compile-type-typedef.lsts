@@ -1,5 +1,5 @@
 
-let std-c-compile-type2-typedef(td: AST): Nil = (
+let std-c-compile-type-typedef(td: AST): Nil = (
    match td { Typedef2{} => (); };
    let location = (td as Tag::Typedef2).location;
    let lhs-type = (td as Tag::Typedef2).lhs-type;
@@ -19,8 +19,8 @@ let std-c-compile-type2-typedef(td: AST): Nil = (
    }};
 );
 
-let std-c-compile-type2-typedef-concrete(tctx: Maybe<TContext>, concrete-type: Type, td: AST): Nil = (
-   match td { Typedef2{} => (); _ => (fail("Invalid compile type2 \{concrete-type} \{td}\n"); ()); };
+let std-c-compile-type-typedef-concrete(tctx: Maybe<TContext>, concrete-type: Type, td: AST): Nil = (
+   match td { Typedef2{} => (); _ => (fail("Invalid compile type \{concrete-type} \{td}\n"); ()); };
    let location = (td as Tag::Typedef2).location;
    let implements = (td as Tag::Typedef2).implements;
    let implies = (td as Tag::Typedef2).implies;

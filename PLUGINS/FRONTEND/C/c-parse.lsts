@@ -6,7 +6,7 @@
 # However, there are also a large number of compiler-specific extensions that are parsed but mostly ignored
 # Example: __extension__ ( f, g )
 
-type2 CTerm = CInteger{value:String}
+type CTerm = CInteger{value:String}
             | CCharacter{value:String}
             | CFloating{value:String}
             | CEnumeration{value:String}

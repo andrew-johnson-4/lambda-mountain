@@ -28,7 +28,7 @@ let .into(t: AST, tgt: Type<String>): String = (
       );
       Typedef{lhs=lhs,rhs=rhs} => "type \{lhs} = \{rhs};";
       Typedef2{lhs-type=lhs-type} => (
-         let r = "type2";
+         let r = "type";
          if non-zero(lhs-type) then r = r + " " + lhs-type.into(type(String));
          r = r + ";"; r
       );

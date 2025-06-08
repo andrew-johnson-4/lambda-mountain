@@ -33,9 +33,9 @@
 ## - maybe null-terminate the string if, any only if, it is stored as [type(UmbraLong)]
 ## - maybe padd the short array with zeros
 
-type2 UmbraShortLong = UmbraShort { arr: U8[12] } | UmbraLong { prefix: U8[4], ptr: U8[] };
+type UmbraShortLong = UmbraShort { arr: U8[12] } | UmbraLong { prefix: U8[4], ptr: U8[] };
 
-type2 Umbra = { len: U32, backing: UmbraShortLong };
+type Umbra = { len: U32, backing: UmbraShortLong };
 
 let .length(s: Umbra[]): U64 = (
     s.len as U64

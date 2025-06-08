@@ -8,7 +8,7 @@ add-concrete-type-instance := λ(: tt Type). (: (
    (if (non-zero tt) (match tt (
       ()
       ( (TGround( tag LEOF )) (
-         (if (&&( (.is-type2 tt) (not(does-concrete-type-instance-exist tt)) )) (
+         (if (&&( (.is-type tt) (not(does-concrete-type-instance-exist tt)) )) (
             (let k (Tuple( tag 0_u64 )))
             (set concrete-type-instances-index (.bind(
                concrete-type-instances-index k

@@ -53,7 +53,7 @@ plugins-backend-c-compile := λ . (: (
          (compile-c-typedef-ordinal( lhs td ))
       ))    
       ( (Typedef2( _ )) (
-         (std-c-compile-type2-typedef td)
+         (std-c-compile-type-typedef td)
       ))
    )))
    (for-each-v (td in (.unroll-seq typedefs)) (match td (
