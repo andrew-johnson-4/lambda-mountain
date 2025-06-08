@@ -200,7 +200,10 @@ let lsts-parse(tokens: List<Token>): Nil = (
       let prev-tokens = tokens;
       match tokens {
          [ Token{key:c"let"}.. _] => tokens = lsts-parse-let(tokens);
-         [ Token{key:c"type"}.. _] => tokens = lsts-parse-typedef(tokens);
+         [ Token{key:c"type"}.. _] => (
+            (let td, tokens) = lsts-parse-typedef2(tokens);
+            ast-parsed-program = ast-parsed-program + td;
+         );
          [ Token{key:c"type2"}.. _] => (
             (let td, tokens) = lsts-parse-typedef2(tokens);
             ast-parsed-program = ast-parsed-program + td;
@@ -719,7 +722,12 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
 );
 
 let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
-   lsts-parse-expect(c"type2", tokens); let loc = head(tokens).location; tokens = tail(tokens);
+   let loc = head(tokens).location;
+   if lsts-parse-head(tokens)==c"type" {
+      lsts-parse-expect(c"type", tokens); tokens = tail(tokens);
+   } else {
+      lsts-parse-expect(c"type2", tokens); tokens = tail(tokens);
+   };
    let mode = c"=";
    let misc-type = ta;
    if lsts-parse-head(tokens)==c"opaque" {
