@@ -1,36 +1,36 @@
 
 import LIB/default.lsts;
 
-assert( LessThan == LessThan );
-assert( LessThan != Equal );
-assert( LessThan != GreaterThan );
-assert( Equal != LessThan );
-assert( Equal == Equal );
-assert( Equal != GreaterThan );
-assert( GreaterThan != LessThan );
-assert( GreaterThan != Equal );
-assert( GreaterThan == GreaterThan );
+assert( LessThan() == LessThan() );
+assert( LessThan() != Equal() );
+assert( LessThan() != GreaterThan() );
+assert( Equal() != LessThan() );
+assert( Equal() == Equal() );
+assert( Equal() != GreaterThan() );
+assert( GreaterThan() != LessThan() );
+assert( GreaterThan() != Equal() );
+assert( GreaterThan() == GreaterThan() );
 
-assert( LessThan < Equal );
-assert( LessThan < GreaterThan );
-assert( Equal < GreaterThan );
+assert( LessThan() < Equal() );
+assert( LessThan() < GreaterThan() );
+assert( Equal() < GreaterThan() );
 
-assert( LessThan <= LessThan );
-assert( LessThan <= Equal );
-assert( LessThan <= GreaterThan );
-assert( Equal <= Equal );
-assert( Equal <= GreaterThan );
-assert( GreaterThan <= GreaterThan );
+assert( LessThan() <= LessThan() );
+assert( LessThan() <= Equal() );
+assert( LessThan() <= GreaterThan() );
+assert( Equal() <= Equal() );
+assert( Equal() <= GreaterThan() );
+assert( GreaterThan() <= GreaterThan() );
 
-assert( GreaterThan > LessThan );
-assert( GreaterThan > Equal );
-assert( Equal > LessThan );
+assert( GreaterThan() > LessThan() );
+assert( GreaterThan() > Equal() );
+assert( Equal() > LessThan() );
 
-assert( GreaterThan >= LessThan );
-assert( GreaterThan >= Equal );
-assert( GreaterThan >= GreaterThan );
-assert( Equal >= LessThan );
-assert( Equal >= Equal );
-assert( LessThan >= LessThan );
+assert( GreaterThan() >= LessThan() );
+assert( GreaterThan() >= Equal() );
+assert( GreaterThan() >= GreaterThan() );
+assert( Equal() >= LessThan() );
+assert( Equal() >= Equal() );
+assert( LessThan() >= LessThan() );
 
 print("Success\n");
