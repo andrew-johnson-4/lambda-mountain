@@ -39,6 +39,9 @@ let find-global-constructor(fname: CString, hint: Type, arg-types: Type, blame: 
       }
    };
    if not(non-zero(result)) then {
+      for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
+         print("Candidate \{fname} : \{kt}\n");
+      };
       fail("Unable to find appropriate global constructor: \{fname} :: \{hint} (\{arg-types})At: \{blame.location}\n");
    };
    result
@@ -47,31 +50,36 @@ let find-global-constructor(fname: CString, hint: Type, arg-types: Type, blame: 
 let apply-global-constructor(fname: CString, hint: Type, arg-types: Type, blame: AST): Type = (
    hint = denormalize(hint);
    arg-types = denormalize-strong(arg-types);
-   let result = TAny();
+   let result = ta;
+   let simple = ta;
    if non-zero(hint) && hint.is-type2 {
       for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
-         if not(non-zero(hint)) || can-receive(kt, hint) && (not(non-zero(arg-types)) || can-apply(kt, arg-types)) {
+         if (not(non-zero(hint)) || can-receive(kt, hint)) && (not(non-zero(arg-types)) || can-apply(kt, arg-types)) {
             let next = if non-zero(hint)
             then substitute(unify(kt.range,hint),kt)
             else kt;
+            simple = ot;
             if non-zero(result) then result = result && next else result = next;
          }
       };
    } else {
       for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
-         let next = if non-zero(hint)
-         then hint
-         else kt;
-         if non-zero(result) then result = result && next else result = next;
+         if not(non-zero(arg-types)) || can-apply(kt, arg-types) {
+            let next = if non-zero(hint)
+            then hint
+            else kt;
+            simple = ot;
+            if non-zero(result) then result = result && next else result = next;
+         }
       };
    };
    if not(non-zero(result)) && non-zero(hint) && not(hint.is-type2) then result = hint
    else if not(non-zero(result)) then fail("Unable to apply appropriate global constructor: \{fname} :: \{hint}At: \{blame.location}\n");
    if result.is-arrow && non-zero(arg-types) {
       let tctx = unify(result.domain, arg-types);
-      let closed-type = substitute(tctx, result);
+      let closed-type = substitute(tctx, simple);
       print("Constructor \{fname} (\{arg-types}) = \{closed-type}\n");
-      if result.is-open then try-specialize(fname, result, tctx, closed-type);
+      if result.is-open then try-specialize(fname, simple, tctx, closed-type);
       result = substitute(tctx, result.range);
    };
    result

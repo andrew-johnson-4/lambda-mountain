@@ -17,4 +17,5 @@ typecheck := λ. (: (
    (validate-interfaces())
    (assert-well-typed ast-parsed-program)
    (decorate-var-to-def())
+   (print 'End\sTypecheck\n_s)
 ) Nil);
