@@ -1,8 +1,8 @@
 
 import LIB/default.lsts;
 
-type U64 => NonceABC;
-type I64 => NonceABC;
+type U64 implies NonceABC;
+type I64 implies NonceABC;
 
 let a(x: U8): Nil = print(x);
 let b(x: I8): Nil = print(x);

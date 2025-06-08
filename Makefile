@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -O3 -march=native -mtune=native -ferror-limit=50
 
 dev: install-production
-	lm t.lsts
+	lm tests/regress/interface.lsts
 	cc tmp.c
 	./a.out
 
