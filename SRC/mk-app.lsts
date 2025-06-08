@@ -153,4 +153,9 @@ let mk-nil(): AST = ASTNil();
 let mk-eof(): AST = ASTEOF();
 
 let .is-lit(t: AST): U64 = match t { Lit{} => true; _ => false; };
-
+let .is-ascript(t: AST): U64 = (
+   match t {
+      App{ left:Lit{key:c":"}, right:App{ left:Lit{key=key}, right:AType{} } } => true;
+      _ => false;
+   }
+);

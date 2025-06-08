@@ -50,7 +50,7 @@ let apply-global-constructor(fname: CString, hint: Type, arg-types: Type, blame:
    let result = TAny();
    if non-zero(hint) && hint.is-type2 {
       for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
-         if not(non-zero(hint)) || can-receive(kt, hint) {
+         if not(non-zero(hint)) || can-receive(kt, hint) && (not(non-zero(arg-types)) || can-apply(kt, arg-types)) {
             let next = if non-zero(hint)
             then substitute(unify(kt.range,hint),kt)
             else kt;
@@ -66,7 +66,14 @@ let apply-global-constructor(fname: CString, hint: Type, arg-types: Type, blame:
       };
    };
    if not(non-zero(result)) && non-zero(hint) && not(hint.is-type2) then result = hint
-   else if not(non-zero(result)) then fail("Unable to find appropriate global constructor: \{fname} :: \{hint}At: \{blame.location}\n");
+   else if not(non-zero(result)) then fail("Unable to apply appropriate global constructor: \{fname} :: \{hint}At: \{blame.location}\n");
+   if result.is-arrow && non-zero(arg-types) {
+      let tctx = unify(result.domain, arg-types);
+      let closed-type = substitute(tctx, result);
+      print("Constructor \{fname} (\{arg-types}) = \{closed-type}\n");
+      if result.is-open then try-specialize(fname, result, tctx, closed-type);
+      result = substitute(tctx, result.range);
+   };
    result
 );
 
