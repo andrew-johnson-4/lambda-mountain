@@ -578,8 +578,8 @@ let std-c-parse-struct-or-union-specifier(tokens: List<Token>): Tuple<Maybe<CTer
          tokens = std-c-take-expect(tokens, "}");
       };
       let attr2 = std-c-parse-attribute(tokens); tokens = attr2.second;
-      Tuple{ Some{CBinaryOp{op, close(CIdentifier{id}), close(CMaybe{close(sdl)})}}, tokens }
-   } else Tuple{ no, tokens }
+      Tuple( Some(CBinaryOp(op, close(CIdentifier(id)), close(CMaybe(close(sdl))))), tokens )
+   } else Tuple( no, tokens )
 );
 
 let std-c-parse-struct-declaration-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
@@ -595,8 +595,8 @@ let std-c-parse-struct-declaration-list(tokens: List<Token>): Tuple<Maybe<CTerm>
             tokens = sq.second;
          };
       };
-      Tuple{ Some{CList{close(sql.reverse)}}, tokens }
-   } else Tuple { no, tokens }
+      Tuple( Some(CList(close(sql.reverse))), tokens )
+   } else Tuple ( no, tokens )
 );
 
 let std-c-parse-struct-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
@@ -606,8 +606,8 @@ let std-c-parse-struct-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List
       let sdl = std-c-parse-struct-declarator-list(tokens); tokens = sdl.second;
       tokens = std-c-take-expect(tokens, ";");
       if sdl.first.is-some
-      then Tuple{ Some{CBinaryOp{ "StructDeclaration", close(CList{close(sql.first.get-or-panic)}), close(sdl.first.get-or-panic) }}, tokens }
-      else Tuple{ Some{CUnaryPrefix{ "StructDeclaration", close(CList{close(sql.first.get-or-panic)}) }}, tokens }
+      then Tuple( Some(CBinaryOp( "StructDeclaration", close(CList(close(sql.first.get-or-panic))), close(sdl.first.get-or-panic) )), tokens )
+      else Tuple( Some(CUnaryPrefix( "StructDeclaration", close(CList(close(sql.first.get-or-panic))) )), tokens )
    } else std-c-parse-static-assert-declaration(tokens);
 );
 
@@ -627,8 +627,8 @@ let std-c-parse-enumerator-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,Li
          then el.first.get-or-panic
          else CList{close([] :: List<CTerm>)};
       } else CList{close([] :: List<CTerm>)};
-      Tuple{ Some{CBinaryOp{op, close(CIdentifier{id}), close(es) }}, tokens }
-   } else Tuple{ no, tokens }
+      Tuple( Some(CBinaryOp(op, close(CIdentifier(id)), close(es) )), tokens )
+   } else Tuple( no, tokens )
 );
 
 let std-c-parse-enumerator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
@@ -642,7 +642,7 @@ let std-c-parse-enumerator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<To
          tokens = e.second;
          if e.first.is-some { es = cons( e.first.get-or-panic, es ); };
       };
-      e = Tuple{ Some{CList{close(es)}}, tokens };
+      e = Tuple( Some(CList(close(es))), tokens );
    };
    e
 );
