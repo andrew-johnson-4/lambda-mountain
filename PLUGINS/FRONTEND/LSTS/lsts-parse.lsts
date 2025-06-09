@@ -1883,6 +1883,8 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
             };
             if non-zero(fields) {
                term = mk-app(term, fields);
+            } else if not(tag.key.contains(c"_")) && tag.key!=c"LEOF" && tag.key!=c"HashtableEqEOF" {
+               term = mk-app(term, mk-nil());
             };
          } else {
             lsts-parse-expect(c"[Atom]", tokens);
@@ -1909,10 +1911,20 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
             tokens = rest;
             let type-rest = lsts-parse-type(tokens);
             tokens = type-rest.second;
-            base = mk-app(
-               Lit{ c":", with-location(mk-token(":"),loc) },
-               mk-cons(base, mk-atype(type-rest.first))
-            );
+            match base {
+               App{ constructor=left:Lit{}, right:ASTNil{} } => (
+                  base = mk-app(mk-app(
+                     Lit{ c":", with-location(mk-token(":"),loc) },
+                     mk-cons(constructor, mk-atype(type-rest.first))
+                  ), mk-nil());
+               );
+               _ => (
+                  base = mk-app(
+                     Lit{ c":", with-location(mk-token(":"),loc) },
+                     mk-cons(base, mk-atype(type-rest.first))
+                  );
+               );
+            };
          );
          [Token{key:"."}.. rest] => (
             tokens = rest;
@@ -1981,8 +1993,8 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
          );
          [Token{key:"("}.. rest] => (
             tokens = rest;
-            if lsts-parse-head(tokens) == c")" {
-               base = mk-app(base, mk-nil());
+            let args = if lsts-parse-head(tokens) == c")" {
+               mk-nil();
             } else {
                let term2-rest = lsts-parse-expression(tokens);
                let term2 = term2-rest.first;
@@ -1993,7 +2005,12 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
                   tokens = term3-rest.second;
                   term2 = mk-cons(term2, term3-rest.first);
                };
-               base = mk-app(base, term2);
+               term2
+            };
+            base = match base {
+               App{ constructor=left:Lit{}, right:ASTNil{} } => mk-app(constructor,args);
+               App{ constructor=left:App{ left:Lit{key:c":"}, right:App{ left:Lit{}, right:AType{} } }, right:ASTNil{} } => mk-app(constructor,args);
+                _ => mk-app(base,args);
             };
             lsts-parse-expect( c")", tokens ); tokens = tail(tokens);
          );
