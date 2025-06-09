@@ -12,8 +12,8 @@ let std-c-compile-type-typedef(td: AST): Nil = (
 
    if cases.length > 0 {
    for concrete-type in concrete-type-instances-index.lookup(lhs-type.ground-tag-and-arity, [] :: List<Type>) {
-      assemble-header-section = assemble-header-section + SAtom{c"typedef struct "} + mangle-c-type(concrete-type, td)
-                              + SAtom{c" "} + mangle-c-type(concrete-type, td) + SAtom{c";\n"};
+      assemble-header-section = assemble-header-section + SAtom(c"typedef struct ") + mangle-c-type(concrete-type, td)
+                              + SAtom(c" ") + mangle-c-type(concrete-type, td) + SAtom(c";\n");
       let tctx = unify(lhs-type, concrete-type);
       continue-compile-c-typedefs-concrete = cons( (tctx, concrete-type, td), continue-compile-c-typedefs-concrete );
    }};
@@ -43,7 +43,7 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TContext>, concrete-type: Ty
    } else {
       is-cstruct-hard-compiled-index = is-cstruct-hard-compiled-index.bind(concrete-type, 1_u64);
 
-      assemble-types-section = assemble-types-section + SAtom{c"struct "} + mangle-c-type(concrete-type, td) + SAtom{c"{\n"};
+      assemble-types-section = assemble-types-section + SAtom(c"struct ") + mangle-c-type(concrete-type, td) + SAtom(c"{\n");
       
       let has-cases = false;
       for vector Tuple{case-tag=first, case-fields=second} in cases {
@@ -52,31 +52,31 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TContext>, concrete-type: Ty
                let mangled-field-name = c"0_" + field-name;
                field-type = substitute(tctx, field-type);
                (let pre-tt, let post-tt) = mangle-c-declaration(field-type, td);
-               assemble-types-section = assemble-types-section + SAtom{c"  "} + pre-tt + SAtom{c" "} + mangle-identifier(mangled-field-name) + post-tt + SAtom{c";\n"};
+               assemble-types-section = assemble-types-section + SAtom(c"  ") + pre-tt + SAtom(c" ") + mangle-identifier(mangled-field-name) + post-tt + SAtom(c";\n");
             }
          } else has-cases = true;
       };
 
       if has-cases {
-         assemble-types-section = assemble-types-section + SAtom{c"unsigned int discriminator_case_tag"} + SAtom{c";\n"};
+         assemble-types-section = assemble-types-section + SAtom(c"unsigned int discriminator_case_tag") + SAtom(c";\n");
 
-         assemble-types-section = assemble-types-section + SAtom{c"  union {\n"};
+         assemble-types-section = assemble-types-section + SAtom(c"  union {\n");
          let case-number = 0_u64;
          for vector Tuple{case-tag=first, case-fields=second} in cases {
             if case-tag!=c"" && case-fields.length > 0 {
-               assemble-types-section = assemble-types-section + SAtom{c"    struct {\n"};
+               assemble-types-section = assemble-types-section + SAtom(c"    struct {\n");
                for vector Tuple{field-name=first, field-type=second} in case-fields {
                   let mangled-field-name = to-string(case-number) + c"_" + field-name;
                   field-type = substitute(tctx, field-type);
                   (let pre-tt, let post-tt) = mangle-c-declaration(field-type, td);
-                  assemble-types-section = assemble-types-section + SAtom{c"      "} + pre-tt + SAtom{c" "} + mangle-identifier(mangled-field-name) + post-tt + SAtom{c";\n"};
+                  assemble-types-section = assemble-types-section + SAtom(c"      ") + pre-tt + SAtom(c" ") + mangle-identifier(mangled-field-name) + post-tt + SAtom(c";\n");
                };
-               assemble-types-section = assemble-types-section + SAtom{c"    };\n"};
+               assemble-types-section = assemble-types-section + SAtom(c"    };\n");
             };
             case-number = case-number + 1;
          };
-         assemble-types-section = assemble-types-section + SAtom{c"  };\n"};
+         assemble-types-section = assemble-types-section + SAtom(c"  };\n");
       };
-      assemble-types-section = assemble-types-section + SAtom{c"};\n"};
+      assemble-types-section = assemble-types-section + SAtom(c"};\n");
    };
 );
