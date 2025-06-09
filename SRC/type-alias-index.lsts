@@ -2,17 +2,17 @@
 let type-alias-index = {} :: HashtableEq<Tuple<CString,U64>,Tuple<Type,Type>>;
 
 let add-type-alias(lt: Type, rt: Type): Nil = (
-   type-alias-index = type-alias-index.bind( lt.ground-tag-and-arity, Tuple{ lt, rt } );
+   type-alias-index = type-alias-index.bind( lt.ground-tag-and-arity, Tuple( lt, rt ) );
 );
 let .rewrite-type-alias(lt: Type): Type = (
    match lt {
       TGround{ tag=tag, parameters=parameters } => (
-         let lt-rt = type-alias-index.lookup( lt.ground-tag-and-arity, Tuple{ ta, ta } );
+         let lt-rt = type-alias-index.lookup( lt.ground-tag-and-arity, Tuple( ta, ta ) );
          if non-zero(lt-rt.first) {
             let tctx = unify(lt-rt.first, lt);
             if non-zero(tctx) { lt = substitute(tctx, lt-rt.second); };
          } else {
-            lt = TGround{ tag, close(parameters.rewrite-type-alias) };
+            lt = TGround( tag, close(parameters.rewrite-type-alias) );
          };
          lt
       );
@@ -42,17 +42,17 @@ let .rewrite-type-alias(lt: List<Type>): List<Type> = (
 let opaque-type-alias-index = {} :: HashtableEq<Tuple<CString,U64>,Tuple<Type,Type>>;
 
 let add-opaque-type-alias(lt: Type, rt: Type): Nil = (
-   opaque-type-alias-index = opaque-type-alias-index.bind( lt.ground-tag-and-arity, Tuple{ lt, rt } );
+   opaque-type-alias-index = opaque-type-alias-index.bind( lt.ground-tag-and-arity, Tuple( lt, rt ) );
 );
 let .rewrite-opaque-type-alias(lt: Type): Type = (
    match lt {
       TGround{ tag=tag, parameters=parameters } => (
-         let lt-rt = opaque-type-alias-index.lookup( lt.ground-tag-and-arity, Tuple{ ta, ta } );
+         let lt-rt = opaque-type-alias-index.lookup( lt.ground-tag-and-arity, Tuple( ta, ta ) );
          if non-zero(lt-rt.first) {
             let tctx = unify(lt-rt.first, lt);
             if non-zero(tctx) { lt = substitute(tctx, lt-rt.second); };
          } else {
-            lt = TGround{ tag, close(parameters.rewrite-opaque-type-alias) };
+            lt = TGround( tag, close(parameters.rewrite-opaque-type-alias) );
          };
          lt
       );

@@ -3,7 +3,7 @@ let extract-uuids(term: AST): AContext = (
    match term {
       App{left:Var{key:c"uuid"}, right:Var{x=key,xtk=token}} => (
          let id = uuid();
-         [Tuple{x, Var{id, with-key(xtk,id)}}]
+         [Tuple(x, Var(id, with-key(xtk,id)))]
       );
       App{left=left, right=right} => extract-uuids(left) + extract-uuids(right);
       Seq{seq=seq} => (

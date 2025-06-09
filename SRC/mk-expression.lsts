@@ -1,6 +1,6 @@
 
 let mk-expression(val: CString): Fragment = (
-   mk-fragment().set(c"expression", SAtom{val})
+   mk-fragment().set(c"expression", SAtom(val))
 );
 
 let mk-expression(val: S): Fragment = (

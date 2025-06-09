@@ -11,7 +11,7 @@ let can-unify(fpt: List<Type>, pt: List<Type>): U64 = (
 );
 
 let can-unify(fpt: Type, pt: Type): U64 = (
-   match (Tuple{fpt, pt}) {
+   match (Tuple(fpt, pt)) {
       Tuple{ first:TAny{} } => true;
       Tuple{ first:TGround{tag:c"Any"} } => true;
       Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => false;
