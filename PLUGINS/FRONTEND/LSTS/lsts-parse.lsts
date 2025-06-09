@@ -200,8 +200,7 @@ let lsts-parse(tokens: List<Token>): Nil = (
       let prev-tokens = tokens;
       match tokens {
          [ Token{key:c"let"}.. _] => tokens = lsts-parse-let(tokens);
-         [ Token{key:c"type"}.. _] => tokens = lsts-parse-typedef(tokens);
-         [ Token{key:c"type2"}.. _] => (
+         [ Token{key:c"type"}.. _] => (
             (let td, tokens) = lsts-parse-typedef2(tokens);
             ast-parsed-program = ast-parsed-program + td;
          );
@@ -719,7 +718,8 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
 );
 
 let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
-   lsts-parse-expect(c"type2", tokens); let loc = head(tokens).location; tokens = tail(tokens);
+   let loc = head(tokens).location;
+   lsts-parse-expect(c"type", tokens); tokens = tail(tokens);
    let mode = c"=";
    let misc-type = ta;
    if lsts-parse-head(tokens)==c"opaque" {
@@ -738,26 +738,40 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c"[Typename]", lsts-is-enum-head(lsts-parse-head(tokens)) || lsts-parse-head(tokens).has-suffix(c"_ss"), tokens);
    let typename = lsts-parse-head(tokens); tokens = tail(tokens);
    if typename.has-suffix(c"_ss") then typename = typename.remove-suffix(c"_ss");
-   let typeconstraints = mk-vector(type((CString,Type)));
    let lhs-type = if lsts-parse-head(tokens)==c"<" {
       let pars = [] :: List<Type>;
       lsts-parse-expect(c"<", tokens); tokens = tail(tokens);
-      (let v, tokens) = lsts-parse-identifier(tokens);
-      if lsts-parse-head(tokens)==c":" {
-         lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+      let pt = ta;
+      if lsts-is-enum-head(lsts-parse-head(tokens)) || lsts-parse-head(tokens).has-suffix(c"_ss") {
+         pt = tv(uuid());
          (let vt, tokens) = lsts-parse-type(tokens);
-         typeconstraints = typeconstraints.push((v,vt));
-      };
-      pars = cons(tv(v), pars);
-      while lsts-parse-head(tokens)==c"," {
-         lsts-parse-expect(c",", tokens); tokens = tail(tokens);
-         (v, tokens) = lsts-parse-identifier(tokens);
+         pt = pt && vt;
+      } else {
+         (let v, tokens) = lsts-parse-identifier(tokens);
+         pt = tv(v);
          if lsts-parse-head(tokens)==c":" {
             lsts-parse-expect(c":", tokens); tokens = tail(tokens);
             (let vt, tokens) = lsts-parse-type(tokens);
-            typeconstraints = typeconstraints.push((v,vt));
+            pt = pt && vt;
          };
-         pars = cons(tv(v), pars);
+      };
+      pars = cons(pt, pars);
+      while lsts-parse-head(tokens)==c"," {
+         lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+         if lsts-is-enum-head(lsts-parse-head(tokens)) || lsts-parse-head(tokens).has-suffix(c"_ss") {
+            pt = tv(uuid());
+            (let vt, tokens) = lsts-parse-type(tokens);
+            pt = pt && vt;
+         } else {
+            (let v, tokens) = lsts-parse-identifier(tokens);
+            pt = tv(v);
+            if lsts-parse-head(tokens)==c":" {
+               lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+               (let vt, tokens) = lsts-parse-type(tokens);
+               pt = pt && vt;
+            };
+         };
+         pars = cons(pt, pars);
       };
       lsts-parse-expect(c">", tokens); tokens = tail(tokens);
       ts(typename, pars);
@@ -855,7 +869,7 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
       }
    };
    let td = mk-typedef2(loc, lhs-type).with-implies(infers).with-implements(impls)
-            .with-constraints(typeconstraints).with-size(size).with-alias(alias).with-opaque-alias(opaque-alias)
+            .with-size(size).with-alias(alias).with-opaque-alias(opaque-alias)
             .with-cases(cases);
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    (td, tokens);
@@ -883,102 +897,7 @@ let lsts-parse-typedef2-case-body(tokens: List<Token>): (Vector<(CString, Type)>
    (fields, tokens)
 );
 
-let lsts-parse-typedef(tokens: List<Token>): List<Token> = (
-   lsts-parse-expect(c"type", tokens); let blame = Var{head(tokens).key, head(tokens)}; tokens = tail(tokens);
-   let mode = c"=";
-   if lsts-parse-head(tokens)==c"opaque" {
-      lsts-parse-expect(c"opaque", tokens); tokens = tail(tokens);
-      lsts-parse-expect(c"alias", tokens); tokens = tail(tokens);
-      mode = c"opaque";
-   } else if lsts-parse-head(tokens)==c"alias" {
-      lsts-parse-expect(c"alias", tokens); tokens = tail(tokens);
-      mode = c"alias";
-   };
-   let base-rest = lsts-parse-type(tokens);
-   tokens = base-rest.second;
-   match tokens {
-      [Token{key:c"="}.. Token{key:c">"}.. rest] => (
-         tokens = rest;
-         let rt-rest = lsts-parse-type(tokens);
-         tokens = rt-rest.second;
-         lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-         add-quick-prop(base-rest.first, base-rest.first, rt-rest.first);
-         add-weaken-quick-prop(base-rest.first, base-rest.first, rt-rest.first);
-      );
-      [Token{key:c"implements"}.. rest] => (
-         tokens = rest;
-         (let rt, tokens) = lsts-parse-type(tokens);
-         lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-         add-quick-prop(base-rest.first, base-rest.first, rt);
-         add-weaken-quick-prop(base-rest.first, base-rest.first, rt);
-         interface-implementors = cons((base-rest.first, rt, blame), interface-implementors);
-      );
-      _ => (
-         if mode==c"=" {
-            lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-            let case-rest = lsts-parse-typedef-case(tokens);
-            let cases = case-rest.first;
-            tokens = case-rest.second;
-            while non-zero(tokens) && lsts-parse-head(tokens)!=c";" {
-               lsts-parse-expect(c"|", tokens); let bar = head(tokens); tokens = tail(tokens);
-               case-rest = lsts-parse-typedef-case(tokens);
-               tokens = case-rest.second;
-               cases = mk-cons(mk-cons(cases, Var{ bar.key, bar }), case-rest.first);
-            };
-            lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-            ast-parsed-program = ast-parsed-program + mk-typedef(AType{ base-rest.first }, cases);
-         } else if mode==c"alias" {
-            lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-            let case-rest = lsts-parse-type(tokens);
-            tokens = case-rest.second;
-            lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-            add-type-alias(base-rest.first, case-rest.first);
-         } else if mode==c"opaque" {
-            lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-            let case-rest = lsts-parse-type(tokens);
-            tokens = case-rest.second;
-            lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-            add-opaque-type-alias(base-rest.first, case-rest.first);
-         };
-      );
-   };
-   tokens
-);
-
-let lsts-parse-typedef-case(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   lsts-parse-expect(c"[Type Case Tag]", lsts-is-lit-head(lsts-parse-head(tokens)), tokens);
-   let tag = head(tokens); tokens = tail(tokens);
-   let fields = mk-eof();
-   if lsts-parse-head(tokens) == c"{" {
-      lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-      while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
-         lsts-parse-expect(c"[Field Name]", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
-         let field-name = head(tokens); tokens = tail(tokens);
-         lsts-parse-expect(c":", tokens); tokens = tail(tokens);
-         let type-rest = lsts-parse-type(tokens);
-         let field-type = type-rest.first;
-         tokens = type-rest.second;
-         if non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
-            lsts-parse-expect(c",", tokens); tokens = tail(tokens);
-         };
-         let fkv = mk-cons(Var{ field-name.key, field-name }, mk-atype(field-type));
-         if non-zero(fields) {
-            fields = mk-cons(fields, fkv);
-         } else {
-            fields = fkv;
-         };
-      };
-      lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-   };
-   let case = if non-zero(fields) {
-      mk-cons(Lit{ tag.key, tag }, fields)
-   } else {
-      Lit{ tag.key, tag }
-   };
-   Tuple{ case, tokens }
-);
-
-type2 LstsFnSignature = { args-list: AST, args-type: Type, return-type: Type };
+type LstsFnSignature = { args-list: AST, args-type: Type, return-type: Type };
 
 # parses:    (a: I32, b: I32): U64
 let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tuple<LstsFnSignature, List<Token>> = (
@@ -1083,7 +1002,7 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
    tokens
 );
 
-type2 ASTOrIdent = ASTOrIdentAST { ast: AST }
+type ASTOrIdent = ASTOrIdentAST { ast: AST }
                  | ASTOrIdentId  { id: AST }
                  | ASTOrIdentIgnore
                  ;

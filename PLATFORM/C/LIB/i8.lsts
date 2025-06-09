@@ -1,5 +1,5 @@
 
-type2 I8 implies I16, I32, I64 implements DefaultPrintable suffix _i8;
+type I8 implies I16, I32, I64 implements DefaultPrintable suffix _i8;
 
 declare-binop( $"!=", raw-type(I8), raw-type(I8), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );
 declare-binop( $"==", raw-type(I8), raw-type(I8), raw-type(U64), ( l"("; x; l"=="; y; l")"; ) );

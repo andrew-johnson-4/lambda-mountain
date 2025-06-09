@@ -1,11 +1,11 @@
 
 import LIB/default.lsts;
 
-type "A" => "B";
+type "A" implies "B";
 
-type A = A{};
+type A = {};
 
 let f(b: A+B): A+B = b;
 
-f(A);
+f(A());
 

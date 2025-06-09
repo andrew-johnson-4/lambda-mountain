@@ -1,5 +1,5 @@
 
-let type2-ast-inserts = mk-vector(type(AST));
+let type-ast-inserts = mk-vector(type(AST));
 
 let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U64, case-number: U64): Nil = (
    let mangled-field-name = to-string(case-number) + c"_" + field-name;
@@ -23,27 +23,26 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ctx = ctx.bind( c"primitive::field-get", ta, mk-var(c"."+to-string(field-ordinal)) );
    let field-ordinal-get = substitute(ctx, find-global-callable(c"primitive::field-get", base-type, blame));
 
-   type2-ast-inserts = type2-ast-inserts.push(field-get);
-   type2-ast-inserts = type2-ast-inserts.push(field-set);
-   type2-ast-inserts = type2-ast-inserts.push(field-get-indirect);
-   type2-ast-inserts = type2-ast-inserts.push(field-set-indirect);
-   type2-ast-inserts = type2-ast-inserts.push(field-ordinal-get);
+   type-ast-inserts = type-ast-inserts.push(field-get);
+   type-ast-inserts = type-ast-inserts.push(field-set);
+   type-ast-inserts = type-ast-inserts.push(field-get-indirect);
+   type-ast-inserts = type-ast-inserts.push(field-set-indirect);
+   type-ast-inserts = type-ast-inserts.push(field-ordinal-get);
    ()
 );
 
-let type2-base-type-index = {} :: HashtableEq<(CString,U64),U64>;
+let type-base-type-index = {} :: HashtableEq<(CString,U64),U64>;
 
-let .is-type2(tt: Type): U64 = (
+let .is-type(tt: Type): U64 = (
    let gta = normalize(tt).ground-tag-and-arity;
-   type2-base-type-index.has(gta)
+   type-base-type-index.has(gta)
 );
 
-let infer-type2-definition(term: AST): Nil = (
+let infer-type-definition(term: AST): Nil = (
    match term { Typedef2{} => (); };
    let lhs-type = (term as Tag::Typedef2).lhs-type;
    let implies = (term as Tag::Typedef2).implies;
    let implements = (term as Tag::Typedef2).implements;
-   let constraints = (term as Tag::Typedef2).constraints;
    let size = (term as Tag::Typedef2).size;
    let alias = (term as Tag::Typedef2).alias;
    let opaque-alias = (term as Tag::Typedef2).opaque-alias;
@@ -61,7 +60,7 @@ let infer-type2-definition(term: AST): Nil = (
    if non-zero(opaque-alias) then add-opaque-type-alias(lhs-type, opaque-alias);
    let case-number = 0_u64;
    for vector Tuple{ case-tag=first, case-fields=second } in cases {
-      type2-base-type-index = type2-base-type-index.bind( lhs-type.ground-tag-and-arity, 1 );
+      type-base-type-index = type-base-type-index.bind( lhs-type.ground-tag-and-arity, 1 );
       let field-ordinal = 0_u64;
       for vector Tuple{ field-name=first, field-type=second } in case-fields {
          let guard = lhs-type && (if non-zero(case-tag) then t1(c"Tag::"+case-tag) else ta);
@@ -84,7 +83,7 @@ let infer-type2-definition(term: AST): Nil = (
       } else has-tag-case = true;
       has-any-case = true;
    };
-   if not(has-tag-case) && has-any-case then infer-type2-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, term, has-tag-case);
+   if not(has-tag-case) && has-any-case then infer-type-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, term, has-tag-case);
    if has-any-case {
       add-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
       add-weaken-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
@@ -105,7 +104,7 @@ let infer-type2-definition(term: AST): Nil = (
          let tag-case-number = t2(c"CaseNumber", t1(to-string(case-index)));
          add-quick-prop(tag-guard, tag-guard, tag-case-number);
          add-weaken-quick-prop(tag-guard, tag-guard, tag-case-number);
-         infer-type2-yield-constructor(lhs-type, case-tag, case-index, o-case-fields, term, has-tag-case);
+         infer-type-yield-constructor(lhs-type, case-tag, case-index, o-case-fields, term, has-tag-case);
          case-index = case-index + 1;
       };
    };
@@ -113,7 +112,7 @@ let infer-type2-definition(term: AST): Nil = (
 
 let type-constructor-tag-ordinal-index = {} :: HashtableEq<(CString,U64,CString),U64>;
 
-let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, case-fields: List<(CString,Type)>, blame: AST, has-tag-case: U64): Nil = (
+let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, case-fields: List<(CString,Type)>, blame: AST, has-tag-case: U64): Nil = (
    (let base-tag, let base-arity) = base-type.ground-tag-and-arity;
    type-constructor-tag-ordinal-index = type-constructor-tag-ordinal-index.bind( (base-tag,base-arity,case-tag), case-number );
 
@@ -160,6 +159,6 @@ let infer-type2-yield-constructor(base-type: Type, case-tag: CString, case-numbe
    body = mk-cons(body, mk-lit(c";})").ascript(t1(c"L")));
 
    let constructor = mk-glb( mk-token(case-tag).with-location(blame.location), mk-abs(args, body.ascript(base-type), t1(c"Blob")) );
-   type2-ast-inserts = type2-ast-inserts.push(constructor); ()
+   type-ast-inserts = type-ast-inserts.push(constructor); ()
 );
 

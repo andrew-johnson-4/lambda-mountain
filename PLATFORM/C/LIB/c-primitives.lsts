@@ -59,34 +59,34 @@ type alias C<"int"> = C<"int32_t">;
 type opaque alias C<"int32_t"> = C<"int">;
 
 # U8
-type C<"uint8_t"> => C<"int16_t">;
-type C<"uint8_t"> => C<"uint16_t">;
-type C<"uint8_t"> => C<"int32_t">;
-type C<"uint8_t"> => C<"uint32_t">;
-type C<"uint8_t"> => C<"int64_t">;
-type C<"uint8_t"> => C<"uint64_t">;
+type C<"uint8_t"> implies C<"int16_t">;
+type C<"uint8_t"> implies C<"uint16_t">;
+type C<"uint8_t"> implies C<"int32_t">;
+type C<"uint8_t"> implies C<"uint32_t">;
+type C<"uint8_t"> implies C<"int64_t">;
+type C<"uint8_t"> implies C<"uint64_t">;
 
 # I8
-type C<"int8_t"> => C<"int16_t">;
-type C<"int8_t"> => C<"int32_t">;
-type C<"int8_t"> => C<"int64_t">;
+type C<"int8_t"> implies C<"int16_t">;
+type C<"int8_t"> implies C<"int32_t">;
+type C<"int8_t"> implies C<"int64_t">;
 
 # U16
-type C<"uint16_t"> => C<"int32_t">;
-type C<"uint16_t"> => C<"uint32_t">;
-type C<"uint16_t"> => C<"int64_t">;
-type C<"uint16_t"> => C<"uint64_t">;
+type C<"uint16_t"> implies C<"int32_t">;
+type C<"uint16_t"> implies C<"uint32_t">;
+type C<"uint16_t"> implies C<"int64_t">;
+type C<"uint16_t"> implies C<"uint64_t">;
 
 # I16
-type C<"int16_t"> => C<"int32_t">;
-type C<"int16_t"> => C<"int64_t">;
+type C<"int16_t"> implies C<"int32_t">;
+type C<"int16_t"> implies C<"int64_t">;
 
 # U32
-type C<"uint32_t"> => C<"int64_t">;
-type C<"uint32_t"> => C<"uint64_t">;
+type C<"uint32_t"> implies C<"int64_t">;
+type C<"uint32_t"> implies C<"uint64_t">;
 
 # I32
-type C<"int32_t"> => C<"int64_t">;
+type C<"int32_t"> implies C<"int64_t">;
 
 let :Blob $"+"(x: C<"uint8_t">, y: C<"uint8_t">): C<"uint8_t"> = (l"("; x; l"+"; y; l")";);
 let :Blob $"+"(x: C<"int8_t">, y: C<"int8_t">): C<"int8_t"> = (l"("; x; l"+"; y; l")";);

@@ -1,7 +1,7 @@
 
 import LIB/default.lsts;
 
-type A = A { length: U8 };
+type A = { length: U8 };
 
 interface self implements HasLength {
    let .length(self: self): U64;

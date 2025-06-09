@@ -1,5 +1,5 @@
 
-type2 ReservedWord suffix _r;
+type ReservedWord suffix _r;
 
 typed macro macro::let(lhs: lazy, rhs: lazy): lazy = (
    (fn(lhs) = ()) (rhs)
@@ -255,7 +255,7 @@ typed macro macro::lhs-raw-struct-field(bind: lazy, field: lazy, val: lazy): laz
 typed macro macro::lhs-struct(case: lazy, rest: lazy): lazy = (case; rest);
 
 typed macro macro::lhs-struct-post(tag-name tag-ordinal tag-type: macro::tag, rest: lazy, term: lazy): lazy = (
-   $"if"(term.discriminator-case-tag == tag-ordinal)
+   $"if"(term.discriminator-case-tag == (term as tag-type).discriminator-case-tag)
         (macro::match-arm( rest, $"as"(term, tag-type) ))
         (false)
 );

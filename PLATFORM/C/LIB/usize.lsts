@@ -1,2 +1,2 @@
 
-type2 alias USize suffix _sz = U64;
+type alias USize suffix _sz = U64;

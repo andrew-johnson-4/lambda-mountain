@@ -1,6 +1,6 @@
 
 ## faster than [type(List<t>)]. should be used when you append or remove data a lot
-type2 Vector<t> implements Collection<t>
+type Vector<t> implements Collection<t>
                 = { data: t[], _length: U32, capacity: U32 };
 
 let .length(v: Vector<t>): U64 = (

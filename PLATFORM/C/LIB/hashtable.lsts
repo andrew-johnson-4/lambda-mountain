@@ -1,6 +1,6 @@
 
-type2 HashtableIs<k,v> = { occupied:U64, capacity:U64, contents:Tuple<k,v>[] };
-type2 HashtableEq<k,v> = HashtableEq { occupied: U64, capacity: U64, contents: Tuple<k,v>[] }
+type HashtableIs<k,v> = { occupied:U64, capacity:U64, contents:Tuple<k,v>[] };
+type HashtableEq<k,v> = HashtableEq { occupied: U64, capacity: U64, contents: Tuple<k,v>[] }
                        | HashtableEqEOF;
 
 let .lookup(table: HashtableEq<k,v>, key: k, default: v): v = (
