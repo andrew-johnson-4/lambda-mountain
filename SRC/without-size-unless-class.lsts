@@ -1,14 +1,14 @@
 
 let without-size-unless-class(tt: List<Type>): List<Type> = (
    match tt {
-      LCons{head=head,tail=tail} => LCons{without-size-unless-class(head),close(without-size-unless-class(tail))};
+      LCons{head=head,tail=tail} => LCons(without-size-unless-class(head),close(without-size-unless-class(tail)));
       _ => tt;
    }
 );
 
 let without-size-unless-class(tt: Type): Type = (
    match tt {
-      TGround{tag=tag,parameters=parameters} => TGround{tag,close(without-size-unless-class(parameters))};
+      TGround{tag=tag,parameters=parameters} => TGround(tag,close(without-size-unless-class(parameters)));
       _ => without-size-unless-class-inner(tt);
    }
 );
@@ -29,7 +29,7 @@ let without-size-unless-class-inner(tt: Type): Type = (
          else tand(result)
       );
       TGround{tag:c"Sized"} => ta;
-      TGround{tag=tag,parameters=parameters} => TGround{tag,close(without-size-unless-class(parameters))};
+      TGround{tag=tag,parameters=parameters} => TGround(tag,close(without-size-unless-class(parameters)));
       _ => tt;      
    }
 );

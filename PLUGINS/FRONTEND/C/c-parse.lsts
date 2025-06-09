@@ -919,7 +919,7 @@ let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
       if ts.first.is-some {
          ts.second = std-c-take-expect(ts.second, ")");
          ts;
-      } else Tuple{ no, original-tokens };
+      } else Tuple( no, original-tokens );
    };
    ts
 );
@@ -935,8 +935,8 @@ let std-c-parse-parameter-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Tok
          ptl = std-c-parse-parameter-declaration(tokens); tokens = ptl.second;
          if ptl.first.is-some { pts = cons( ptl.first.get-or-panic, pts ); };
       };
-      Tuple{ Some{CList{close(pts.reverse)}}, tokens }
-   } else Tuple{ no, tokens }
+      Tuple( Some(CList(close(pts.reverse))), tokens )
+   } else Tuple( no, tokens )
 );
 
 let std-c-parse-parameter-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
@@ -948,9 +948,9 @@ let std-c-parse-parameter-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,L
       if declarator.first.is-none { declarator = std-c-parse-abstract-declarator(tokens); };
       tokens = declarator.second;
       if declarator.first.is-some {
-         Tuple{ Some{CBinaryOp{"ParameterDeclaration", close(ds.first.get-or-panic), close(declarator.first.get-or-panic) }}, tokens }
-      } else Tuple{ Some{CUnaryPrefix{"ParameterDeclaration", close(ds.first.get-or-panic) }}, tokens };
-   } else Tuple{ no, tokens }
+         Tuple( Some(CBinaryOp("ParameterDeclaration", close(ds.first.get-or-panic), close(declarator.first.get-or-panic) )), tokens )
+      } else Tuple( Some(CUnaryPrefix("ParameterDeclaration", close(ds.first.get-or-panic) )), tokens );
+   } else Tuple( no, tokens )
 );
 
 let std-c-parse-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
@@ -961,7 +961,7 @@ let std-c-parse-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>>
       let op = head(tokens).skey; tokens = tail(tokens);
       let re = std-c-parse-assignment-expression(tokens); tokens = re.second;
       let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
-      expression = Tuple{ Some{e}, tokens };
+      expression = Tuple( Some(e), tokens );
    };
    expression
 );
@@ -983,7 +983,7 @@ let std-c-parse-assignment-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,L
       let op = head(ue.second).skey;
       let rest = std-c-parse-assignment-expression(tail(ue.second));
       if rest.first.is-some {
-         Tuple{ Some{CBinaryOp{op, close(ue.first.get-or-panic), close(rest.first.get-or-panic)}}, rest.second }
+         Tuple( Some(CBinaryOp(op, close(ue.first.get-or-panic), close(rest.first.get-or-panic))), rest.second )
       } else std-c-parse-conditional-expression(tokens);
    } else std-c-parse-conditional-expression(tokens);
 );
@@ -999,7 +999,7 @@ let std-c-parse-conditional-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,
       (let e1, tokens) = std-c-parse-expression(tokens);
       tokens = std-c-take-expect(tokens, ":");
       (let e2, tokens) = std-c-parse-conditional-expression(tokens);
-      base = Tuple{ Some{CTernaryOp{op, close(base.first.get-or-panic), close(e1.get-or-panic), close(e2.get-or-panic)}}, tokens };
+      base = Tuple( Some(CTernaryOp(op, close(base.first.get-or-panic), close(e1.get-or-panic), close(e2.get-or-panic))), tokens );
    };
    base
 );
@@ -1011,8 +1011,8 @@ let std-c-parse-logical-or-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,L
    ) {
       let op = head(tokens).skey; tokens = tail(tokens);
       let re = std-c-parse-logical-and-expression(tokens); tokens = re.second;
-      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
-      expression = Tuple{ Some{e}, tokens };
+      let e = CBinaryOp( op, close(expression.first.get-or-panic), close(re.first.get-or-panic) );
+      expression = Tuple( Some(e), tokens );
    };
    expression
 );
@@ -1024,8 +1024,8 @@ let std-c-parse-logical-and-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,
    ) {
       let op = head(tokens).skey; tokens = tail(tokens);
       let re = std-c-parse-inclusive-or-expression(tokens); tokens = re.second;
-      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
-      expression = Tuple{ Some{e}, tokens };
+      let e = CBinaryOp( op, close(expression.first.get-or-panic), close(re.first.get-or-panic) );
+      expression = Tuple( Some(e), tokens );
    };
    expression
 );
@@ -1037,8 +1037,8 @@ let std-c-parse-inclusive-or-expression(tokens: List<Token>): Tuple<Maybe<CTerm>
    ) {
       let op = head(tokens).skey; tokens = tail(tokens);
       let re = std-c-parse-exclusive-or-expression(tokens); tokens = re.second;
-      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
-      expression = Tuple{ Some{e}, tokens };
+      let e = CBinaryOp( op, close(expression.first.get-or-panic), close(re.first.get-or-panic) );
+      expression = Tuple( Some(e), tokens );
    };
    expression
 );
@@ -1050,8 +1050,8 @@ let std-c-parse-exclusive-or-expression(tokens: List<Token>): Tuple<Maybe<CTerm>
    ) {
       let op = head(tokens).skey; tokens = tail(tokens);
       let re = std-c-parse-and-expression(tokens); tokens = re.second;
-      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
-      expression = Tuple{ Some{e}, tokens };
+      let e = CBinaryOp( op, close(expression.first.get-or-panic), close(re.first.get-or-panic) );
+      expression = Tuple( Some(e), tokens );
    };
    expression
 );
@@ -1063,8 +1063,8 @@ let std-c-parse-and-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Tok
    ) {
       let op = head(tokens).skey; tokens = tail(tokens);
       let re = std-c-parse-equality-expression(tokens); tokens = re.second;
-      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
-      expression = Tuple{ Some{e}, tokens };
+      let e = CBinaryOp( op, close(expression.first.get-or-panic), close(re.first.get-or-panic) );
+      expression = Tuple( Some(e), tokens );
    };
    expression
 );
@@ -1076,8 +1076,8 @@ let std-c-parse-equality-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
    ) {
       let op = head(tokens).skey; tokens = tail(tokens);
       let re = std-c-parse-relational-expression(tokens); tokens = re.second;
-      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
-      expression = Tuple{ Some{e}, tokens };
+      let e = CBinaryOp( op, close(expression.first.get-or-panic), close(re.first.get-or-panic) );
+      expression = Tuple( Some(e), tokens );
    };
    expression
 );
@@ -1090,8 +1090,8 @@ let std-c-parse-relational-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,L
    ) {
       let op = head(tokens).skey; tokens = tail(tokens);
       let re = std-c-parse-shift-expression(tokens); tokens = re.second;
-      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
-      expression = Tuple{ Some{e}, tokens };
+      let e = CBinaryOp( op, close(expression.first.get-or-panic), close(re.first.get-or-panic) );
+      expression = Tuple( Some(e), tokens );
    };
    expression
 );
@@ -1103,8 +1103,8 @@ let std-c-parse-shift-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<T
    ) {
       let op = head(tokens).skey; tokens = tail(tokens);
       let re = std-c-parse-additive-expression(tokens); tokens = re.second;
-      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
-      expression = Tuple{ Some{e}, tokens };
+      let e = CBinaryOp( op, close(expression.first.get-or-panic), close(re.first.get-or-panic) );
+      expression = Tuple( Some(e), tokens );
    };
    expression
 );
@@ -1116,8 +1116,8 @@ let std-c-parse-additive-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
    ) {
       let op = head(tokens).skey; tokens = tail(tokens);
       let re = std-c-parse-multiplicative-expression(tokens); tokens = re.second;
-      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
-      expression = Tuple{ Some{e}, tokens };
+      let e = CBinaryOp( op, close(expression.first.get-or-panic), close(re.first.get-or-panic) );
+      expression = Tuple( Some(e), tokens );
    };
    expression
 );
@@ -1129,8 +1129,8 @@ let std-c-parse-multiplicative-expression(tokens: List<Token>): Tuple<Maybe<CTer
    ) {
       let op = head(tokens).skey; tokens = tail(tokens);
       let re = std-c-parse-cast-expression(tokens); tokens = re.second;
-      let e = CBinaryOp{ op, close(expression.first.get-or-panic), close(re.first.get-or-panic) };
-      expression = Tuple{ Some{e}, tokens };
+      let e = CBinaryOp( op, close(expression.first.get-or-panic), close(re.first.get-or-panic) );
+      expression = Tuple( Some(e), tokens );
    };
    expression
 );

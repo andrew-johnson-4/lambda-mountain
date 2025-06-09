@@ -76,7 +76,7 @@ let .bind-eq(contents: Tuple<k,v>[], capacity: U64, key: k, value: v): U64 = (
       old-kv = contents[ki];
       if mem-is-non-zero(old-kv) && old-kv.first==key { replacing = true; };
    };
-   contents[ki] = Tuple { key, value };
+   contents[ki] = Tuple ( key, value );
    replacing
 );
 
