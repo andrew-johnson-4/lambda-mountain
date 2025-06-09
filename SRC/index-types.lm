@@ -8,9 +8,6 @@ import SRC/global-is-seen.lm;
 import SRC/index-of-tag.lm;
 import SRC/is-sized-array.lsts;
 
-import SRC/has-infinite.lm;
-import SRC/has-forward.lm;
-
 import SRC/typeof-lhs.lm;
 import SRC/apply.lm;
 import SRC/try-specialize.lm;
