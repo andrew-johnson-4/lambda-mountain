@@ -26,7 +26,6 @@ let .into(t: AST, tgt: Type<String>): String = (
          for vector s in seq { if non-zero(ret) then ret = ret + "\n"; ret = ret + s.into(type(String)) };
          ret
       );
-      Typedef{lhs=lhs,rhs=rhs} => "type \{lhs} = \{rhs};";
       Typedef2{lhs-type=lhs-type} => (
          let r = "type";
          if non-zero(lhs-type) then r = r + " " + lhs-type.into(type(String));

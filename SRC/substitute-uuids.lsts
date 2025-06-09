@@ -9,9 +9,6 @@ let substitute-uuids(ctx: AContext, term: AST): AST = (
          for vector s in seq { ret = ret.push(substitute-uuids(ctx,s)) };
          Seq{ret}
       );
-      Typedef{lhs=lhs,rhs=rhs} => (
-         Typedef{close(substitute-uuids(ctx,lhs)), close(substitute-uuids(ctx,rhs))}
-      );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => (
          Abs{close(substitute-uuids(ctx,lhs)), close(substitute-uuids(ctx,rhs)), tt}
       );

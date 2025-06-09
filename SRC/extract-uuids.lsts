@@ -12,7 +12,6 @@ let extract-uuids(term: AST): AContext = (
          ret
       );
       Abs{lhs=lhs, rhs=rhs} => extract-uuids(lhs) + extract-uuids(rhs);
-      Typedef{lhs=lhs, rhs=rhs} => extract-uuids(lhs) + extract-uuids(rhs);
       Glb{val=val} => extract-uuids(val);
       _ => [] :: AContext;
    }

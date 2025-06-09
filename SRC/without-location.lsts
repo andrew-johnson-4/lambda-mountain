@@ -12,7 +12,6 @@ let without-location(term: AST): AST = (
          Seq{ret}
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => Abs{close(without-location(lhs)),close(without-location(rhs)),tt};
-      Typedef{lhs=lhs,rhs=rhs} => Typedef{close(without-location(lhs)),close(without-location(rhs))};
       Glb{key=key,val=val} => Glb{key,close(without-location(val))};
       _ => term;
    }
