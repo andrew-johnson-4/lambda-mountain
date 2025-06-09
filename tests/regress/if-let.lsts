@@ -3,5 +3,5 @@ import LIB/default.lsts;
 
 type A = A { x: U64 };
 
-if let A{x:5}=A{5} then print("5\n");
-if let A{x:5}=A{6} then print("5\n") else print("not 5\n");
+if let A{x:5}=A(5) then print("5\n");
+if let A{x:5}=A(6) then print("5\n") else print("not 5\n");
