@@ -223,14 +223,14 @@ let std-c-parse-function-definition(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
       let attr = std-c-parse-attribute(tokens); tokens = attr.second;
       let compound-statement = std-c-parse-compound-statement(tokens); tokens = compound-statement.second;
       if declarator.first.is-some && compound-statement.first.is-some
-      then Tuple{ Some{CFunctionDefinition{
+      then Tuple( Some(CFunctionDefinition(
          close(declaration-specifiers.first.get-or-panic),
          close(declarator.first.get-or-panic),
-         close(CMaybe{close(declaration-list.first)}),
-         close(compound-statement.first.get-or-panic),
-      }}, tokens }
-      else Tuple{ no, original-tokens }
-   } else Tuple{ no, original-tokens };
+         close(CMaybe(close(declaration-list.first))),
+         close(compound-statement.first.get-or-panic)
+      )), tokens )
+      else Tuple( no, original-tokens )
+   } else Tuple( no, original-tokens );
    return
 );
 
@@ -241,11 +241,11 @@ let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>
       let init-declarator-list = std-c-parse-init-declarator-list(tokens); tokens = init-declarator-list.second;
       let attr = std-c-parse-attribute(tokens); tokens = attr.second;
       tokens = std-c-take-expect(tokens, ";");
-      Tuple{ Some{CBinaryOp{"Declaration", close(declaration-specifiers.first.get-or-panic), close(CMaybe{close(init-declarator-list.first)}) }}, tokens }
+      Tuple( Some(CBinaryOp("Declaration", close(declaration-specifiers.first.get-or-panic), close(CMaybe(close(init-declarator-list.first))) )), tokens )
    } else {
       let ad = std-c-parse-static-assert-declaration(tokens); tokens = ad.second;
       tokens = std-c-take-maybe(tokens, ";");
-      Tuple{ ad.first, tokens }
+      Tuple( ad.first, tokens )
    };
 );
 
@@ -260,8 +260,8 @@ let std-c-parse-declaration-specifiers(tokens: List<Token>): Tuple<Maybe<CTerm>,
          spec = std-c-parse-declaration-specifier(tokens); tokens = spec.second;
          if spec.first.is-some { specs = cons( spec.first.get-or-panic, specs ); };
       };
-      Tuple{ Some{CList{close(specs.reverse)}}, tokens }
-   } else Tuple{ no, tokens }
+      Tuple( Some(CList(close(specs.reverse))), tokens )
+   } else Tuple( no, tokens )
 );
 
 let std-c-parse-declaration-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
@@ -278,7 +278,7 @@ let std-c-parse-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>>
    let pointer = std-c-parse-pointer(tokens); tokens = pointer.second;
    let dd = std-c-parse-direct-declarator(tokens); tokens = dd.second;
    if pointer.first.is-some && dd.first.is-some
-   then Tuple{ Some{CBinaryOp{"Declarator*", close(pointer.first.get-or-panic), close(dd.first.get-or-panic)}}, tokens }
+   then Tuple( Some(CBinaryOp("Declarator*", close(pointer.first.get-or-panic), close(dd.first.get-or-panic))), tokens )
    else dd
 );
 
@@ -292,8 +292,8 @@ let std-c-parse-declaration-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<T
          decls = cons(declaration.first.get-or-panic, decls);
          declaration = std-c-parse-declaration(tokens); tokens = declaration.second;
       };
-      Tuple{ Some{CList{close(decls)}}, tokens }
-   } else Tuple{ no, tokens }
+      Tuple( Some(CList(close(decls))), tokens )
+   } else Tuple( no, tokens )
 );
 
 let std-c-parse-compound-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
@@ -307,8 +307,8 @@ let std-c-parse-compound-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List
          declaration-or-statement = std-c-parse-declaration-or-statement(tokens); tokens = declaration-or-statement.second;
       };
       tokens = std-c-take-expect(tokens, "}");
-      Tuple{ Some{CCompound{close(stmts.reverse)}}, tokens };
-   } else Tuple{ no, tokens}
+      Tuple( Some(CCompound(close(stmts.reverse))), tokens );
+   } else Tuple( no, tokens)
 );
 
 let std-c-parse-declaration-or-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
@@ -327,8 +327,8 @@ let std-c-parse-init-declarator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,Li
          id = std-c-parse-init-declarator(tokens); tokens = id.second;
          if id.first.is-some { ids = cons( id.first.get-or-panic, ids ) };
       };
-      Tuple{ Some{CList{close(ids.reverse)}}, tokens }
-   } else Tuple{no, tokens};
+      Tuple( Some(CList(close(ids.reverse))), tokens )
+   } else Tuple(no, tokens);
 );
 
 let std-c-parse-init-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
@@ -339,7 +339,7 @@ let std-c-parse-init-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<To
          let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "=");
          let initializer = std-c-parse-initializer(tokens); tokens = initializer.second;
          if initializer.first.is-none then std-c-take-expect(tokens, "[Initializer]");
-         Tuple{ Some{CBinaryOp{ op, close(declarator.first.get-or-panic), close(initializer.first.get-or-panic) }}, tokens }
+         Tuple( Some(CBinaryOp( op, close(declarator.first.get-or-panic), close(initializer.first.get-or-panic) )), tokens )
       } else declarator
    } else declarator
 );
@@ -357,8 +357,8 @@ let std-c-parse-static-assert-declaration(tokens: List<Token>): Tuple<Maybe<CTer
       tokens = std-c-take-expect(tokens, "string");
       tokens = std-c-take-expect(tokens, ")");
       tokens = std-c-take-expect(tokens, ";");
-      Tuple{ Some{CBinaryOp{ op, close(constant-expression.first.get-or-panic), close(CString{s}) }}, tokens }
-   } else Tuple{ no, tokens }
+      Tuple( Some(CBinaryOp( op, close(constant-expression.first.get-or-panic), close(CString{s}) )), tokens )
+   } else Tuple( no, tokens )
 );
 
 let std-c-parse-storage-class-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (

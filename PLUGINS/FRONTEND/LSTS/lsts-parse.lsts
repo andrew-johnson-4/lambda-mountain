@@ -1864,26 +1864,7 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
          if lsts-is-enum-head(lsts-parse-head(tokens)) {
             let tag = head(tokens); tokens = tail(tokens);
             term = Lit { tag.key, tag };
-            let fields = mk-eof();
-            if lsts-parse-head(tokens) == c"{" {
-               lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-               while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
-                  let field-rest = lsts-parse-small-expression(tokens);
-                  tokens = field-rest.second;
-                  if non-zero(fields) {
-                     fields = mk-cons(fields, field-rest.first);
-                  } else { fields = field-rest.first; };
-                  if lsts-parse-head(tokens)==c"," {
-                     tokens = tail(tokens);
-                  } else {
-                     lsts-parse-expect(c"}", tokens);
-                  };
-               };
-               lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-            };
-            if non-zero(fields) {
-               term = mk-app(term, fields);
-            } else if not(tag.key.contains(c"_")) && tag.key!=c"LEOF" && tag.key!=c"HashtableEqEOF" {
+            if not(tag.key.contains(c"_")) && tag.key!=c"LEOF" && tag.key!=c"HashtableEqEOF" {
                term = mk-app(term, mk-nil());
             };
          } else {
