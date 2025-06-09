@@ -17,7 +17,7 @@ let print(io: IO::File, x: S): Nil = (
 let $"+"(l: S, r: S): S = (
    if non-zero(r) then (
       if non-zero(l)
-      then (l = SCons{close(l), close(r)})
+      then (l = SCons(close(l), close(r)))
       else (l = r);
    ); l
 );

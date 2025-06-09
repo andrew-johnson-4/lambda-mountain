@@ -3,10 +3,10 @@ let uuid-counter = 0_u64;
 
 let uuid(): CString = (
    uuid-counter = uuid-counter + 1;
-   clone-rope(SCons{
+   clone-rope(SCons(
       close(SAtom{ c"uuid__" }),
       close(SAtom{ to-hex(uuid-counter) })
-   })
+   ))
 );
 
 let iuid(): U64 = (
