@@ -2,7 +2,6 @@
 plugins-backend-blob-compile := λ. (: (
    (for-each-v (p in (.unroll-seq ast-parsed-program)) (match p (
       ()
-      ( (Typedef( lhs rhs )) () )
       ( (Glb( k_t rhs )) (
          (match rhs (
             ()
@@ -24,7 +23,6 @@ plugins-backend-blob-compile := λ. (: (
    (for-each-v (p in (.unroll-seq ast-parsed-program)) (match p (
       ()
       ( (Glb( k_t rhs )) () )
-      ( (Typedef( lhs rhs )) () )
       ( (Meta( _ )) () )
       ( expr (
          (let cs (blob-render-simple( global-ctx 'expression_s expr 0_i64 )))

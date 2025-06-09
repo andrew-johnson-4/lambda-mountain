@@ -6,7 +6,6 @@ let denormalize(tt: Type): Type = (
    if non-zero(ct) then ct else (
       ct = tt.rewrite-type-alias;
       ct = with-size(ct);
-      ct = with-tag(ct);
       ct = enrich-quick-prop(ct);
       denormalize-cache = denormalize-cache.bind(tt, ct);
       ct

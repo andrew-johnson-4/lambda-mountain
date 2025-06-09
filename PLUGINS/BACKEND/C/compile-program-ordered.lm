@@ -10,7 +10,6 @@ compile-program-ordered := λ(: global-ctx FContext)(: program AST). (: (
       ( ASTEOF () )
       ( ASTNil () )
       ( (AType _) () )
-      ( (Typedef _) () )
       ( (Meta _) () )
       ( t (
          (let e (compile-expr( global-ctx t 0_i64 (Used()) )))

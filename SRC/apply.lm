@@ -31,12 +31,6 @@ apply := λ(: ctx AContext)(: term AST). (: (
             (set return (+( return (apply( ctx s )) )))
          ))
       ))
-      ( (Typedef( vl vr )) (
-         (set return (Typedef(
-            (close(apply( ctx vl )))
-            (close(apply( ctx vr )))
-         )))
-      ))
       ( (Glb( k vr )) (
          (set return (Glb(
             (substitute( ctx k ))

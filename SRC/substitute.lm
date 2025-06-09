@@ -119,12 +119,6 @@ substitute := λ(: tctx Maybe<TContext>)(: t AST). (: (
             (close(substitute( tctx rt )))
          )))
       ))
-      ( (Typedef( lt rt )) (
-         (set t (Typedef(
-            (close(substitute( tctx lt )))
-            (close(substitute( tctx rt )))
-         )))
-      ))
       ( _ (exit-error( 'Unexpected\sSubstitution\sTerm:_s t )) )
    ))
    t
