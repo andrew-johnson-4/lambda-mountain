@@ -1,4 +1,4 @@
 
 let mk-atype(tt: Type): AST = (
-   AType{tt}
+   AType(tt)
 );

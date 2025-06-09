@@ -1,4 +1,4 @@
 
 let mk-location(): SourceLocation = (
-   SourceLocation { c"Unknown", 0, 0 }
+   SourceLocation ( c"Unknown", 0, 0 )
 );

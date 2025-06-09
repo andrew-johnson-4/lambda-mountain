@@ -1143,7 +1143,7 @@ let std-c-parse-cast-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<To
       scan-tokens = std-c-take-expect(scan-tokens, ")");
       (let ca, scan-tokens) = std-c-parse-cast-expression(scan-tokens);
       if tt.is-some && ca.is-some
-      then Tuple{ Some{CBinaryOp{"cast", close(tt.get-or-panic), close(ca.get-or-panic)}}, scan-tokens }
+      then Tuple( Some(CBinaryOp("cast", close(tt.get-or-panic), close(ca.get-or-panic))), scan-tokens )
       else std-c-parse-unary-expression(tokens);
    } else std-c-parse-unary-expression(tokens);
 );
@@ -1154,7 +1154,7 @@ let std-c-parse-unary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<T
    || std-c-can-take(tokens, "&") || std-c-can-take(tokens, "*") || std-c-can-take(tokens,"!") || std-c-can-take(tokens, "~") {
       let op = head(tokens).skey; tokens = tail(tokens);
       let inner = std-c-parse-cast-expression(tokens);
-      if inner.first.is-some then Tuple{ Some{CUnaryPrefix{op, close(inner.first.get-or-panic)}}, inner.second }
+      if inner.first.is-some then Tuple( Some(CUnaryPrefix(op, close(inner.first.get-or-panic))), inner.second )
       else inner;
    } else if std-c-can-take(tokens, "sizeof") {
       let op = head(tokens).skey; tokens = tail(tokens);
@@ -1162,11 +1162,11 @@ let std-c-parse-unary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<T
          tokens = std-c-take-expect(tokens, "(");
          (let tt, tokens) = std-c-parse-type-name(tokens);
          tokens = std-c-take-expect(tokens, ")");
-         if tt.is-some then Tuple{ Some{CUnaryPrefix{op, close(tt.get-or-panic)}}, tokens }
-         else Tuple{ tt, tokens };
+         if tt.is-some then Tuple( Some(CUnaryPrefix(op, close(tt.get-or-panic))), tokens )
+         else Tuple( tt, tokens );
       } else {
          let inner = std-c-parse-unary-expression(tokens);
-         if inner.first.is-some then Tuple{ Some{CUnaryPrefix{op, close(inner.first.get-or-panic)}}, inner.second }
+         if inner.first.is-some then Tuple( Some(CUnaryPrefix(op, close(inner.first.get-or-panic))), inner.second )
          else inner;
       };
    } else if std-c-can-take(tokens, "alignof") || std-c-can-take(tokens, "_Alignof") {
@@ -1175,11 +1175,11 @@ let std-c-parse-unary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<T
          tokens = std-c-take-expect(tokens, "(");
          (let tt, tokens) = std-c-parse-type-name(tokens);
          tokens = std-c-take-expect(tokens, ")");
-         if tt.is-some then Tuple{ Some{CUnaryPrefix{"alignof", close(tt.get-or-panic)}}, tokens }
-         else Tuple{ tt, tokens };
+         if tt.is-some then Tuple( Some(CUnaryPrefix("alignof", close(tt.get-or-panic))), tokens )
+         else Tuple( tt, tokens );
       } else {
          let inner = std-c-parse-unary-expression(tokens);
-         if inner.first.is-some then Tuple{ Some{CUnaryPrefix{"alignof", close(inner.first.get-or-panic)}}, inner.second }
+         if inner.first.is-some then Tuple( Some(CUnaryPrefix("alignof", close(inner.first.get-or-panic))), inner.second )
          else inner;
       };
    } else std-c-parse-postfix-expression(tokens)
@@ -1196,27 +1196,27 @@ let std-c-parse-postfix-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List
       if std-c-can-take(tokens, "++") || std-c-can-take(tokens, "--") {
          let e = CUnaryPostfix{ head(tokens).skey, close(expression.first.get-or-panic) };
          tokens = tail(tokens);
-         expression = Tuple{ Some{e}, tokens };
+         expression = Tuple( Some(e), tokens );
       } else if std-c-can-take(tokens, ".") || std-c-can-take(tokens, "->") {
          let accessor = head(tokens).skey; tokens = tail(tokens);
          if non-zero(tokens) {
-            let e = CAccessor{ accessor, head(tokens).skey, close(expression.first.get-or-panic) };
+            let e = CAccessor( accessor, head(tokens).skey, close(expression.first.get-or-panic) );
             tokens = std-c-take-expect(tokens, "identifier");
-            expression = Tuple{ Some{e}, tokens };
+            expression = Tuple( Some(e), tokens );
          } else std-c-take-expect(tokens, "identifier");
       } else if std-c-can-take(tokens,"[") {
          let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "[");
          (let inner, tokens) = std-c-parse-expression(tokens);
          tokens = std-c-take-expect(tokens, "]");
          if inner.is-some {
-            expression = Tuple{ Some{CBinaryOp{"[]", close(expression.first.get-or-panic), close(inner.get-or-panic)}}, tokens };
+            expression = Tuple( Some(CBinaryOp("[]", close(expression.first.get-or-panic), close(inner.get-or-panic))), tokens );
          };
       } else {
          let op = head(tokens).skey; tokens = std-c-take-expect(tokens, "(");
          (let inner, tokens) = std-c-parse-argument-expression-list(tokens);
          tokens = std-c-take-expect(tokens, ")");
          if inner.is-some {
-            expression = Tuple{ Some{CBinaryOp{op, close(expression.first.get-or-panic), close(inner.get-or-panic)}}, tokens };
+            expression = Tuple( Some(CBinaryOp(op, close(expression.first.get-or-panic), close(inner.get-or-panic))), tokens );
          };
       };
    };
@@ -1239,8 +1239,8 @@ let std-c-parse-argument-expression-list(tokens: List<Token>): Tuple<Maybe<CTerm
             tokens = sq.second;
          };
       };
-      Tuple{ Some{CList{close(sql.reverse)}}, tokens }
-   } else Tuple { no, tokens }
+      Tuple( Some(CList(close(sql.reverse))), tokens )
+   } else Tuple ( no, tokens )
 );
 
 let std-c-parse-generic-selection(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
@@ -1253,9 +1253,9 @@ let std-c-parse-generic-selection(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
       let ga = std-c-parse-generic-assoc-list(tokens); tokens = ga.second;
       tokens = std-c-take-expect(tokens, ")");
       if ae.first.is-some && ga.first.is-some
-      then Tuple{ Some{CBinaryOp{op, close(ae.first.get-or-panic), close(ga.first.get-or-panic)}}, tokens }
-      else Tuple{ no, tokens }
-   } else Tuple{ no, tokens }
+      then Tuple( Some(CBinaryOp(op, close(ae.first.get-or-panic), close(ga.first.get-or-panic))), tokens )
+      else Tuple( no, tokens )
+   } else Tuple( no, tokens )
 );
 
 let std-c-parse-generic-assoc-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
