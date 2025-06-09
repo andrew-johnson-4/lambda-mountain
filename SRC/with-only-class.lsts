@@ -7,7 +7,7 @@ let .with-only-class(tt: Type): Type = (
          result;
       );
       TGround{ tag=tag, parameters=parameters } => (
-         if tt.is-class && not(tt.is-fragment) then tt else ta
+         if tt.is-class then tt else ta
       );
       _ => ta;
    }
