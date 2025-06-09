@@ -842,8 +842,8 @@ let std-c-parse-struct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
       let op = head(tokens).skey; tokens = std-c-take-expect(tokens, ":");
       let ce = std-c-parse-constant-expression(tokens);
       if ce.first.is-some
-      then Tuple{ Some{CUnaryPrefix{"StructDeclarator:", close(ce.first.get-or-panic)}}, tokens }
-      else Tuple{ no, tokens }
+      then Tuple( Some(CUnaryPrefix("StructDeclarator:", close(ce.first.get-or-panic))), tokens )
+      else Tuple( no, tokens )
    } else {
       let decl = std-c-parse-declarator(tokens); tokens = decl.second;
       let ce = if std-c-can-take(tokens,":") {
@@ -852,58 +852,58 @@ let std-c-parse-struct-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<
          ce-next.first;
       } else no;
       if decl.first.is-some && ce.is-some
-      then Tuple{ Some{CBinaryOp{"StructDeclarator:", close(decl.first.get-or-panic), close(ce.get-or-panic)}}, tokens }
+      then Tuple( Some(CBinaryOp("StructDeclarator:", close(decl.first.get-or-panic), close(ce.get-or-panic))), tokens )
       else if decl.first.is-some
-      then Tuple{ Some{CUnaryPrefix{"StructDeclarator", close(decl.first.get-or-panic)}}, tokens }
-      else Tuple{ no, tokens }
+      then Tuple( Some(CUnaryPrefix("StructDeclarator", close(decl.first.get-or-panic))), tokens )
+      else Tuple( no, tokens )
    }
 );
 
 let std-c-parse-assignment-operator(tokens: List<Token>): Tuple<Maybe<String>,List<Token>> = (
    let no = (None :: Maybe<String>)();
-   if not(non-zero(tokens)) then Tuple{ no, tokens }
-   else if head(tokens).skey == "=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else if head(tokens).skey == "*=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else if head(tokens).skey == "/=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else if head(tokens).skey == "%=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else if head(tokens).skey == "+=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else if head(tokens).skey == "-=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else if head(tokens).skey == "<<=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else if head(tokens).skey == ">>=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else if head(tokens).skey == "&=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else if head(tokens).skey == "^=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else if head(tokens).skey == "|=" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else Tuple{ no, tokens }
+   if not(non-zero(tokens)) then Tuple( no, tokens )
+   else if head(tokens).skey == "=" then Tuple( Some(head(tokens).skey), tail(tokens) )
+   else if head(tokens).skey == "*=" then Tuple( Some(head(tokens).skey), tail(tokens) )
+   else if head(tokens).skey == "/=" then Tuple( Some(head(tokens).skey), tail(tokens) )
+   else if head(tokens).skey == "%=" then Tuple( Some(head(tokens).skey), tail(tokens) )
+   else if head(tokens).skey == "+=" then Tuple( Some(head(tokens).skey), tail(tokens) )
+   else if head(tokens).skey == "-=" then Tuple( Some(head(tokens).skey), tail(tokens) )
+   else if head(tokens).skey == "<<=" then Tuple( Some(head(tokens).skey), tail(tokens) )
+   else if head(tokens).skey == ">>=" then Tuple( Some(head(tokens).skey), tail(tokens) )
+   else if head(tokens).skey == "&=" then Tuple( Some(head(tokens).skey), tail(tokens) )
+   else if head(tokens).skey == "^=" then Tuple( Some(head(tokens).skey), tail(tokens) )
+   else if head(tokens).skey == "|=" then Tuple( Some(head(tokens).skey), tail(tokens) )
+   else Tuple( no, tokens )
 );
 
 let std-c-parse-struct-or-union(tokens: List<Token>): Tuple<Maybe<String>,List<Token>> = (
    let no = (None :: Maybe<String>)();
-   if not(non-zero(tokens)) then Tuple{ no, tokens }
-   else if head(tokens).skey == "struct" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else if head(tokens).skey == "union" then Tuple{ Some{head(tokens).skey}, tail(tokens) }
-   else Tuple{ no, tokens }
+   if not(non-zero(tokens)) then Tuple( no, tokens )
+   else if head(tokens).skey == "struct" then Tuple( Some(head(tokens).skey), tail(tokens) )
+   else if head(tokens).skey == "union" then Tuple( Some(head(tokens).skey), tail(tokens) )
+   else Tuple( no, tokens )
 );
 
 let std-c-parse-identifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = (None :: Maybe<CTerm>)();
-   if std-c-can-take(tokens, "identifier") then Tuple{ Some{CIdentifier{head(tokens).skey}}, tail(tokens) }
-   else Tuple{ no, tokens }
+   if std-c-can-take(tokens, "identifier") then Tuple( Some(CIdentifier(head(tokens).skey)), tail(tokens) )
+   else Tuple( no, tokens )
 );
 
 let std-c-parse-constant(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = (None :: Maybe<CTerm>)();
-   if std-c-can-take(tokens, "integer") then Tuple{ Some{CInteger{head(tokens).skey}}, tail(tokens) }
-   else if std-c-can-take(tokens, "character") then Tuple{ Some{CCharacter{head(tokens).skey}}, tail(tokens) }
-   else if std-c-can-take(tokens, "floating") then Tuple{ Some{CFloating{head(tokens).skey}}, tail(tokens) }
-   else if std-c-can-take(tokens, "enumeration") then Tuple{ Some{CEnumeration{head(tokens).skey}}, tail(tokens) }
-   else Tuple{ no, tokens }
+   if std-c-can-take(tokens, "integer") then Tuple( Some(CInteger(head(tokens).skey)), tail(tokens) )
+   else if std-c-can-take(tokens, "character") then Tuple( Some(CCharacter(head(tokens).skey)), tail(tokens) )
+   else if std-c-can-take(tokens, "floating") then Tuple( Some(CFloating(head(tokens).skey)), tail(tokens) )
+   else if std-c-can-take(tokens, "enumeration") then Tuple( Some(CEnumeration(head(tokens).skey)), tail(tokens) )
+   else Tuple( no, tokens )
 );
 
 let std-c-parse-string(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = (None :: Maybe<CTerm>)();
-   if std-c-can-take(tokens, "string") then Tuple{ Some{CString{head(tokens).skey}}, tail(tokens) }
-   else if std-c-can-take(tokens, "__func__") then Tuple{ Some{CString{head(tokens).skey}}, tail(tokens) }
-   else Tuple{ no, tokens }
+   if std-c-can-take(tokens, "string") then Tuple( Some(CString(head(tokens).skey)), tail(tokens) )
+   else if std-c-can-take(tokens, "__func__") then Tuple( Some(CString(head(tokens).skey)), tail(tokens) )
+   else Tuple( no, tokens )
 );
 
 let std-c-parse-primary-expression(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
