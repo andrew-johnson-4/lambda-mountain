@@ -8,10 +8,10 @@ let f(): Tuple<U8,U8> = (
 );
 
 let main(): Nil = (
-   (let a, let b) = Tuple { 1, 2 };
+   (let a, let b) = Tuple ( 1, 2 );
    assert(a == 1);
    assert(b == 2);
-   (a, _) = Tuple { 2, 1 };
+   (a, _) = Tuple ( 2, 1 );
    assert(a == 2);
    (a, b) = f();
    assert(a == 6);
