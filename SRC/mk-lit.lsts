@@ -1,12 +1,12 @@
 
 let mk-lit(val: CString): AST = (
-   Lit{ val, mk-token(val) }
+   Lit( val, mk-token(val) )
 );
 
 let mk-lit(val: SmartString): AST = (
-   Lit{ untern(val), mk-token(val) }
+   Lit( untern(val), mk-token(val) )
 );
 
 let mk-lit(val: Token): AST = (
-   Lit{ val.key, val }
+   Lit( val.key, val )
 );

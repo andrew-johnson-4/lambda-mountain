@@ -2,8 +2,8 @@
 import LIB/default.lsts;
 
 assert( SNil() == SNil() );
-assert( SNil() != SAtom{ c"A" } );
-assert( SAtom{ c"A" } == SAtom{ c"A" } );
-assert( SAtom{ c"A" } != SAtom{ c"B" } );
+assert( SNil() != SAtom( c"A" ) );
+assert( SAtom( c"A" ) == SAtom( c"A" ) );
+assert( SAtom( c"A" ) != SAtom( c"B" ) );
 
 print("Success\n");

@@ -14,7 +14,7 @@ let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
          for vector c in conjugate {
             if is-c && c.simple-tag != c"C" {} else {
                let rt = std-c-mangle-type-internal(c, blame);
-               result = if non-zero(result) && non-zero(rt) then result + SAtom{c" "} + rt
+               result = if non-zero(result) && non-zero(rt) then result + SAtom(c" ") + rt
                else if non-zero(result) then result
                else rt;
             }
@@ -22,29 +22,29 @@ let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
          result;
       );
       TAny{} => SNil();
-      TGround{tag:c"Nil", parameters:[]} => SAtom{c"void"};
-      TGround{tag:c"Never", parameters:[]} => SAtom{c"void"};
+      TGround{tag:c"Nil", parameters:[]} => SAtom(c"void");
+      TGround{tag:c"Never", parameters:[]} => SAtom(c"void");
       TGround{tag:c"Type", parameters:[inner-tt..]} => std-c-mangle-type-internal(inner-tt, blame);
       TGround{tag:c"Array", parameters:[_.. array-base..]} => (
          if array-base.is-arrow
          then std-c-mangle-type-internal(array-base, blame)
-         else ( std-c-mangle-type-internal(array-base, blame) + SAtom{c"*"} );
+         else ( std-c-mangle-type-internal(array-base, blame) + SAtom(c"*") );
       );
       TGround{tag:c"Arrow"} => (
          (let pre, let post) = std-c-mangle-declaration-internal(tt, blame);
          let td-id = uuid();
          assemble-header-section = assemble-header-section
-                                 + SAtom{c"typedef "}
+                                 + SAtom(c"typedef ")
                                  + pre
-                                 + SAtom{c" "}
-                                 + SAtom{td-id}
-                                 + SAtom{c" "}
+                                 + SAtom(c" ")
+                                 + SAtom(td-id)
+                                 + SAtom(c" ")
                                  + post
-                                 + SAtom{c";\n"};
-         SAtom{td-id}
+                                 + SAtom(c";\n");
+         SAtom(td-id)
       );
       TGround{tag:c"C", parameters:[TGround{tag1=tag}..]} => (
-         SAtom{tag1}
+         SAtom(tag1)
       );
       TGround{tag=tag, parameters=parameters} => (
          let r = mangle-identifier(tag);
@@ -72,15 +72,15 @@ let std-c-mangle-type-simple(tt: Type, blame: AST): S = (
          for vector c in conjugate {
             if is-c && c.simple-tag != c"C" {} else {
                let rt = std-c-mangle-type-internal(c, blame);
-               result = if non-zero(result) && non-zero(rt) then result + SAtom{c" "} + rt
+               result = if non-zero(result) && non-zero(rt) then result + SAtom(c" ") + rt
                else if non-zero(result) then result
                else rt;
             }
          };
          result;
       );
-      TGround{tag:c"Nil", parameters:[]} => SAtom{c"void"};
-      TGround{tag:c"Never", parameters:[]} => SAtom{c"void"};
+      TGround{tag:c"Nil", parameters:[]} => SAtom(c"void");
+      TGround{tag:c"Never", parameters:[]} => SAtom(c"void");
       TGround{tag=tag, parameters=parameters} => (
          let r = mangle-identifier(tag);
          if parameters.length > 0 {

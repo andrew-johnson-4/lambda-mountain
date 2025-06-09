@@ -40,7 +40,7 @@ let .has(table: HashtableEq<k,v>, key: k): U64 = (
 
 let .bind(table: HashtableEq<k,v>, key: k, value: v): HashtableEq<k,v> = (
    if is(table, (HashtableEqEOF :: HashtableEq<k,v>)) {
-      table = HashtableEq { 0_u64, 0_u64, (0_u64 as Tuple<k,v>[]) };
+      table = HashtableEq( 0_u64, 0_u64, (0_u64 as Tuple<k,v>[]) );
    };
    let occupied = (table as Tag::HashtableEq).occupied;
    let capacity = (table as Tag::HashtableEq).capacity;
@@ -63,7 +63,7 @@ let .bind(table: HashtableEq<k,v>, key: k, value: v): HashtableEq<k,v> = (
    };
    let replacing = contents.bind-eq( capacity, key, value );
    if not(replacing) { occupied = occupied + 1_u64; };
-   HashtableEq { occupied, capacity, contents } 
+   HashtableEq( occupied, capacity, contents )
 );
 
 let .bind-eq(contents: Tuple<k,v>[], capacity: U64, key: k, value: v): U64 = (
@@ -76,7 +76,7 @@ let .bind-eq(contents: Tuple<k,v>[], capacity: U64, key: k, value: v): U64 = (
       old-kv = contents[ki];
       if mem-is-non-zero(old-kv) && old-kv.first==key { replacing = true; };
    };
-   contents[ki] = Tuple { key, value };
+   contents[ki] = Tuple ( key, value );
    replacing
 );
 

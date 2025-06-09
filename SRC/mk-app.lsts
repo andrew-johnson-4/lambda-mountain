@@ -1,27 +1,27 @@
 
 let mk-app(f: AST, a: AST): AST = (
-   App{ close(f), close(a) }
+   App( close(f), close(a) )
 );
 
 let mk-cons-or-app(is-cons: U64, f: AST, a: AST): AST = (
-   App{ is-cons, close(f), close(a) }
+   App( is-cons, close(f), close(a) )
 );
 
 let mk-cons(f: AST, a: AST): AST = (
-   App{ true, close(f), close(a) }
+   App( true, close(f), close(a) )
 );
 
 let mk-glb(k: Token, v: AST): AST = (
-   Glb{ k, close(v) }
+   Glb( k, close(v) )
 );
 
 let mk-seq(): AST = (
-   Seq{ mk-vector(type(AST)) }
+   Seq( mk-vector(type(AST)) )
 );
 
 let mk-typedef2(loc: SourceLocation, lhs-type: Type): AST = (
-   Typedef2{ loc, lhs-type, mk-vector(type(Type)), mk-vector(type(Type)),
-             ta, ta, ta, mk-vector(type((CString,Vector<(CString,Type)>))) }
+   Typedef2( loc, lhs-type, mk-vector(type(Type)), mk-vector(type(Type)),
+             ta, ta, ta, mk-vector(type((CString,Vector<(CString,Type)>))) )
 );
 
 let .with-implies(term: AST, implies: Vector<Type>): AST = (
@@ -34,7 +34,7 @@ let .with-implies(term: AST, implies: Vector<Type>): AST = (
          let alias = (term as Tag::Typedef2).alias;
          let opaque-alias = (term as Tag::Typedef2).opaque-alias;
          let cases = (term as Tag::Typedef2).cases;
-         Typedef2{ location, lhs-type, implies, implements, size, alias, opaque-alias, cases };
+         Typedef2( location, lhs-type, implies, implements, size, alias, opaque-alias, cases );
       );
       _ => term;
    }
@@ -49,7 +49,7 @@ let .with-implements(term: AST, implements: Vector<Type>): AST = (
          let alias = (term as Tag::Typedef2).alias;
          let opaque-alias = (term as Tag::Typedef2).opaque-alias;
          let cases = (term as Tag::Typedef2).cases;
-         Typedef2{ location, lhs-type, implies, implements, size, alias, opaque-alias, cases };
+         Typedef2( location, lhs-type, implies, implements, size, alias, opaque-alias, cases );
       );
       _ => term;
    }
@@ -64,7 +64,7 @@ let .with-size(term: AST, size: Type): AST = (
          let alias = (term as Tag::Typedef2).alias;
          let opaque-alias = (term as Tag::Typedef2).opaque-alias;
          let cases = (term as Tag::Typedef2).cases;
-         Typedef2{ location, lhs-type, implies, implements, size, alias, opaque-alias, cases };
+         Typedef2( location, lhs-type, implies, implements, size, alias, opaque-alias, cases );
       );
       _ => term;
    }
@@ -79,7 +79,7 @@ let .with-alias(term: AST, alias: Type): AST = (
          let size = (term as Tag::Typedef2).size;
          let opaque-alias = (term as Tag::Typedef2).opaque-alias;
          let cases = (term as Tag::Typedef2).cases;
-         Typedef2{ location, lhs-type, implies, implements, size, alias, opaque-alias, cases };
+         Typedef2( location, lhs-type, implies, implements, size, alias, opaque-alias, cases );
       );
       _ => term;
    }
@@ -94,7 +94,7 @@ let .with-opaque-alias(term: AST, opaque-alias: Type): AST = (
          let size = (term as Tag::Typedef2).size;
          let alias = (term as Tag::Typedef2).alias;
          let cases = (term as Tag::Typedef2).cases;
-         Typedef2{ location, lhs-type, implies, implements, size, alias, opaque-alias, cases };
+         Typedef2( location, lhs-type, implies, implements, size, alias, opaque-alias, cases );
       );
       _ => term;
    }
@@ -109,18 +109,18 @@ let .with-cases(term: AST, cases: Vector<(CString,Vector<(CString,Type)>)>): AST
          let size = (term as Tag::Typedef2).size;
          let alias = (term as Tag::Typedef2).alias;
          let opaque-alias = (term as Tag::Typedef2).opaque-alias;
-         Typedef2{ location, lhs-type, implies, implements, size, alias, opaque-alias, cases };
+         Typedef2( location, lhs-type, implies, implements, size, alias, opaque-alias, cases );
       );
       _ => term;
    }
 );
 
 let mk-abs(l: AST, r: AST, t: Type): AST = (
-   Abs{ close(l), close(r), t }
+   Abs( close(l), close(r), t )
 );
 
 let mk-meta(l: AST): AST = (
-   Meta{ close(l) }
+   Meta( close(l) )
 );
 
 let mk-nil(): AST = ASTNil();

@@ -1,4 +1,4 @@
 
 let .bind(ctx: Maybe<AContext>, key: CString, val: AST): Maybe<AContext> = (
-   Some{ cons( Tuple{key,val}, ctx.get-or([] :: AContext) ) }
+   Some( cons( Tuple(key,val), ctx.get-or([] :: AContext) ) )
 );

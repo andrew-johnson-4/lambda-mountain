@@ -17,7 +17,7 @@ type AST zero ASTEOF implements DefaultFormattable
                       size: Type, alias: Type, opaque-alias: Type, cases: Vector<(CString,Vector<(CString,Type)>)> };
 
 # constructor with a default argument
-let $"App"(left: AST[], right: AST[]): AST = App { false, left, right };
+let $"App"(left: AST[], right: AST[]): AST = App ( false, left, right );
 
 type alias TContext = List<Tuple<CString,Type,AST>>;
 type alias AContext = List<Tuple<CString,AST>>;

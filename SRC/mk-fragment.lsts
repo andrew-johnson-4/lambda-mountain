@@ -1,9 +1,9 @@
 
 let mk-fragment(): Fragment = (
-   Fragment {
+   Fragment (
       mk-eof(), close([] :: List<Tuple<CString,S>>),
       ta, close(mk-fctx()), ([] :: List<Fragment[]>)
-   }
+   )
 );
 
 let non-zero(f: Fragment): U64 = (

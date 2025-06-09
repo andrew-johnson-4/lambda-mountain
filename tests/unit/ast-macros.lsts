@@ -20,7 +20,7 @@ assert( ast-macros-test-add(2_i64, 3_i64) == 5_i64 );
 
 type A = {a:U64};
 (
-   let a = A{1};
+   let a = A(1);
    $"macro::set"($"macro::lhs-field"(a,a), 2);
    print(a.a);
 );

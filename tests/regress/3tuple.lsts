@@ -1,10 +1,10 @@
 
 import LIB/default.lsts;
 
-let t2 = Tuple{ 1, 2 };
+let t2 = Tuple( 1, 2 );
 print(t2);
-let t3 = Tuple{ 1, 2, 3 };
+let t3 = Tuple( 1, 2, 3 );
 print(t3);
 
-let t4 = Tuple{ Tuple{1, 2}, 3 };
-let t5 = Tuple{ 1, Tuple{2, 3} };
+let t4 = Tuple( Tuple(1, 2), 3 );
+let t5 = Tuple( 1, Tuple(2, 3) );

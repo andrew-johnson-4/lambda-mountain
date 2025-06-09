@@ -9,7 +9,7 @@ let .length(v: Vector<t>): U64 = (
 
 let mk-vector(type: Type<t>, capacity: U64): Vector<t> = (
    let ptr = if (capacity == 0_u64) then (0_u64 as t[]) else (safe-alloc(capacity, type(t)));
-   Vector { ptr, 0_u32, capacity as U32 }
+   Vector( ptr, 0_u32, capacity as U32 )
 );
 
 let mk-vector(ty: Type<t>): Vector<t> = (
@@ -29,7 +29,7 @@ let fill-vector(value: t, len: U64): Vector<t> = (
 ## does not change the length length, or destroy old elements!
 let .realloc(v: Vector<t>, target-capacity: U64): Vector<t> = (
    let newp = if (target-capacity == 0_u64) then (0_u64 as t[]) else (safe-realloc(v.data, target-capacity, type(t)));
-   Vector { newp, v.length as U32, target-capacity as U32 }
+   Vector( newp, v.length as U32, target-capacity as U32 )
 );
 
 ## reserve additional num elements to the current length
@@ -110,7 +110,7 @@ let .pop-front(v: Vector<t>): Tuple<t, Vector<t>> = (
     let x = v[0];
     v = v.remove-front(1);
 
-    Tuple { x, v }
+    Tuple ( x, v )
 );
 
 ## INPUT VECTOR GETS POISONED
@@ -123,7 +123,7 @@ let .pop(v: Vector<t>): Tuple<t, Vector<t>> = (
     let last = v[lasti as U64];
     v = v.remove-back(1);
 
-    Tuple { last, v }
+    Tuple ( last, v )
 );
 
 let $"[]"( v: Vector<t>, i: U64 ): t = (
