@@ -7,5 +7,5 @@ type A = {};
 
 let f(b: A+B): A+B = b;
 
-f(A);
+f(A());
 
