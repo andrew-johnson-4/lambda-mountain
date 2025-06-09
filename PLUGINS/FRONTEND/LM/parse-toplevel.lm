@@ -36,32 +36,6 @@ parse-toplevel := λ(: tokens List<Token>). (: (
                ))
             ))
          ))
-         ( (LCons( 'fragment_t (LCons( 'type_t remainder )) )) (
-            (match (parse-one-expression remainder) (
-               ()
-               ( (PME( e1 r1 )) (match (parse-many-expressions r1) (
-                  ()
-                  ( (PME( e2 r2 )) (
-                     (set program (+( program (Typedef( (close e1) (close e2) )) )))
-                     (let base-type (lm-type-of-s e1))
-                     (add-class-info-layout( base-type (FragmentStyle()) ))
-                     (set tokens r2)
-                  ))
-               )))
-            ))
-         ))
-         ( (LCons( 'type_t remainder )) (
-            (match (parse-one-expression remainder) (
-               ()
-               ( (PME( e1 r1 )) (match (parse-many-expressions r1) (
-                  ()
-                  ( (PME( e2 r2 )) (
-                     (set program (+( program (Typedef( (close e1) (close e2) )) )))
-                     (set tokens r2)
-                  ))
-               )))
-            ))
-         ))
          ( (LCons( 'atom_t (LCons( 'suffix_t
                    (LCons( atype_t (LCons( suffix_t remainder )) ))
            )) )) (
@@ -81,49 +55,8 @@ parse-toplevel := λ(: tokens List<Token>). (: (
             ()
             (set tokens remainder)
          ))
-         ( (LCons( 'size_t (LCons( class_t (LCons( sz_t remainder )) )) )) (
-            (set tokens remainder)
-         ))
          ( (LCons( 'import_t (LCons( relative-path_t remainder )) )) (
             (frontend relative-path)
-            (set tokens remainder)
-         ))
-         ( (LCons( 'zero_t (LCons( base-type (LCons( tag-type_t remainder )) )) )) (
-            (set program (+(
-               program
-               (Glb( (with-key( base-type 'non-zero_s )) (close(Abs(
-                  (close(App(
-                     (close(Lit( ':_s (with-key( base-type ':_s )) )))
-                     (close(App( (close(Var( 't_s (with-key( base-type 't_s )) ))) (close(AType(parse-type(.key base-type)))) )))
-                  )))
-                  (close(App(
-                     (close(Lit( ':_s (with-key( base-type ':_s )) )))
-                     (close(App(
-                        (close(App(
-                           (close(Var( '!=_s (with-key( base-type '!=_s )) )))
-                           (close(App(
-                              (close(App(
-                                 (close(Var( '.discriminator-case-tag_s (with-key( base-type '.discriminator-case-tag_s )) )))
-                                 (close(Var( 't_s (with-key( base-type 't_s )) )))
-                              )))
-                              (close(App(
-                                 (close(Var( '.discriminator-case-tag_s (with-key( base-type '.discriminator-case-tag_s )) )))
-                                 (close(App(
-                                    (close(Lit( ':_s (with-key( base-type ':_s )) )))
-                                    (close(App(
-                                       (close(Lit( tag-type (with-key( base-type tag-type)) )))
-                                       (close(AType(parse-type(.key base-type))))
-                                    )))
-                                 )))
-                              )))
-                           )))
-                        )))
-                        (close(AType(t1 'U64_s)))
-                     )))
-                  )))
-                  ta
-               ))) ))
-            )))
             (set tokens remainder)
          ))
          ( (LCons( key (LCons( ':=_t remainder )) )) (
