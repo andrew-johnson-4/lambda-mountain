@@ -13,7 +13,6 @@ let .lookup(ctx: FContext, k: CString, kt: Type, sloc: AST, hard: U64): Fragment
    let original-ctx = ctx;
    let found = ta;
    let r = mk-fragment();
-   k = find-alias(k, kt);
    kt = denormalize-strong(kt);
    while non-zero(ctx) { match ctx {
       FCtxBind { remainder=remainder, ctx-k=k, ctx-kt=kt, ctx-kv=kv } => (
