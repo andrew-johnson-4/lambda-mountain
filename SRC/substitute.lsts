@@ -16,7 +16,7 @@ let substitute(ctx: AContext, tt: Type): Type = (
          _ => tt;
       };
       TGround{tag=tag,parameters=parameters} => (
-         TGround{ tag, close(substitute(ctx,parameters)) }
+         TGround( tag, close(substitute(ctx,parameters)) )
       );
       TAnd{conjugate=conjugate} => (
          let result = mk-vector(type(Type), 0_u64);
@@ -50,7 +50,7 @@ let substitute(ctx: AContext, term: AST): AST = (
       Seq{seq=seq} => (
          let ret = mk-vector(type(AST), seq.length);
          for vector s in seq { ret = ret.push(substitute(ctx,s)) };
-         Seq{ret}
+         Seq(ret)
       );
       App{is-cons=is-cons,left=left,right=right} => mk-cons-or-app(is-cons,substitute(ctx,left),substitute(ctx,right));
       Abs{lhs=lhs,rhs=rhs,tt=tt} => mk-abs(substitute(ctx,lhs), substitute(ctx,rhs), tt);
