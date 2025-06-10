@@ -557,6 +557,16 @@ let lsts-parse-cmp(tokens: List<Token>): Tuple<AST,List<Token>> = (
    Tuple ( term, tokens )
 );
 
+let lsts-parse-ascript(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   (let term, tokens) = lsts-parse-andor(tokens);
+   while lsts-parse-head(tokens)==c":" && non-zero(tokens) && lsts-parse-head(tail(tokens)) != c":" {
+      tokens = tail(tokens);
+      (let tt, tokens) = lsts-parse-type(tokens);
+      term = term.ascript(tt);
+   };
+   Tuple ( term, tokens )
+);
+
 let lsts-parse-andor(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let term-rest = lsts-parse-cmp(tokens);
    let term = term-rest.first;
@@ -1066,7 +1076,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
       );
       [Token{key:c"if"}.. rest] => (
          let loc = head(tokens).location; tokens = rest;
-         let c-rest = lsts-parse-andor(tokens);
+         let c-rest = lsts-parse-ascript(tokens);
          let c = c-rest.first;
          tokens = c-rest.second;
          if lsts-parse-head(tokens) != c"{" {
@@ -1428,7 +1438,7 @@ let lsts-parse-match2-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
    };
    if lsts-parse-head(tokens)==c"where" {
       lsts-parse-expect(c"where", tokens); tokens = tail(tokens);
-      (let cond, tokens) = lsts-parse-andor(tokens);
+      (let cond, tokens) = lsts-parse-ascript(tokens);
       lhs = mk-app( mk-var(c"macro::lhs-guard"), mk-cons(lhs,cond) );
    };
    (lhs, tokens)
@@ -1563,7 +1573,7 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
          );
       };
    } else {
-      let base-rest = lsts-parse-andor(tokens);
+      let base-rest = lsts-parse-ascript(tokens);
       base = base-rest.first;
       tokens = base-rest.second;
    };
@@ -1944,7 +1954,7 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
             let term1 = if lsts-parse-head(tokens)==c":" {
                Lit( c"0_i64", with-location(mk-token("0_i64"),loc) )
             } else {
-               let term1-rest = lsts-parse-small-expression(tokens);
+               let term1-rest = lsts-parse-andor(tokens);
                tokens = term1-rest.second;
                term1-rest.first;
             };
@@ -1954,7 +1964,7 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
                term2 = if lsts-parse-head(tokens)==c"]" {
                   Var( c"minimum-I64", with-location(mk-token("minimum-I64"),loc) )
                } else {
-                  let term2-rest = lsts-parse-small-expression(tokens);
+                  let term2-rest = lsts-parse-andor(tokens);
                   tokens = term2-rest.second;
                   term2-rest.first;
                };
