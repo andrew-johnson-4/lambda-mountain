@@ -5,7 +5,7 @@ typecheck := λ. (: (
    (infer-global-context ast-parsed-program)
    (assert-no-infinite-types())
    (set ast-parsed-program (infer-global-terms ast-parsed-program))
-   (let tctx-ast (std-infer-expr( ((: None Maybe<TContext>)()) ast-parsed-program false (Used()) ta )))
+   (let tctx-ast (std-infer-expr( ((: None Maybe<TypeContext>)()) ast-parsed-program false (Used()) ta )))
    (set ast-parsed-program (.second tctx-ast))
    (while (non-zero stack-to-specialize) (match stack-to-specialize (
       ()

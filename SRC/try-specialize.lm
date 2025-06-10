@@ -1,6 +1,6 @@
 
 
-try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx Maybe<TContext>)(: result-type Type). (: (
+try-specialize := λ(: function-name String)(: ft Type)(: unify-ctx Maybe<TypeContext>)(: result-type Type). (: (
    (for-each ((Tuple( kt _ t )) in (.lookup( global-type-context function-name (: LEOF List<Tuple<Type,Type,AST>>) ))) (
       (if (==( kt ft )) (
          (if (is-special( function-name result-type )) () (

@@ -19,7 +19,7 @@ let std-c-compile-type-typedef(td: AST): Nil = (
    }};
 );
 
-let std-c-compile-type-typedef-concrete(tctx: Maybe<TContext>, concrete-type: Type, td: AST): Nil = (
+let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type: Type, td: AST): Nil = (
    match td { Typedef2{} => (); _ => (fail("Invalid compile type \{concrete-type} \{td}\n"); ()); };
    let location = (td as Tag::Typedef2).location;
    let implements = (td as Tag::Typedef2).implements;

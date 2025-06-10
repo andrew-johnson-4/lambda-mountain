@@ -1,7 +1,7 @@
 
-let decorate-var-to-def-todo = mk-vector(type((Maybe<TContext>,CString,Type,AST))) :: Vector<(Maybe<TContext>,CString,Type,AST)>;
+let decorate-var-to-def-todo = mk-vector(type((Maybe<TypeContext>,CString,Type,AST))) :: Vector<(Maybe<TypeContext>,CString,Type,AST)>;
 
-let mark-var-to-def-todo(tctx: Maybe<TContext>, k: CString, tt: Type, t: AST): Nil = (
+let mark-var-to-def-todo(tctx: Maybe<TypeContext>, k: CString, tt: Type, t: AST): Nil = (
    decorate-var-to-def-todo = decorate-var-to-def-todo.push( (tctx, k, tt, t) );
 );
 

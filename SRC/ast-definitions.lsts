@@ -19,10 +19,10 @@ type AST zero ASTEOF implements DefaultFormattable
 # constructor with a default argument
 let $"App"(left: AST[], right: AST[]): AST = App ( false, left, right );
 
-type alias TContext = List<Tuple<CString,Type,AST>>;
+type alias TypeContext = List<Tuple<CString,Type,AST>>;
 type alias AContext = List<Tuple<CString,AST>>;
 
-type StackToSpecialize = { key:CString, pre-type:Type, ctx:Maybe<TContext>, post-type:Type };
+type StackToSpecialize = { key:CString, pre-type:Type, ctx:Maybe<TypeContext>, post-type:Type };
 
 type ParsePartial = PME{ term:AST , remainder:List<Token> };
 
