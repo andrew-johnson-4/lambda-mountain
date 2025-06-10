@@ -1,9 +1,9 @@
 
-let quick-prop = {} :: HashtableEq<(CString,U64),List<(Type,Type)>>;
+let quick-prop = {} : HashtableEq<(CString,U64),List<(Type,Type)>>;
 
 let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
    let key = pre.ground-tag-and-arity;
-   let val = quick-prop.lookup(key, ([] :: List<(Type,Type)>));
+   let val = quick-prop.lookup(key, ([] : List<(Type,Type)>));
    val = cons( (pat,post), val );
    quick-prop = quick-prop.bind( key, val );
 );
@@ -19,7 +19,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
    let original-pre = pre;
    match pre {
       TGround {} => (
-         for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ) {
+         for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
             if can-unify(lt, base) then (
                let tctx = unify(lt, base);
                let post = substitute(tctx, rt);
@@ -47,7 +47,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
    pre
 );
 
-let weaken-quick-prop-index = {} :: HashtableEq<(CString,U64),List<(Type,Type)>>;
+let weaken-quick-prop-index = {} : HashtableEq<(CString,U64),List<(Type,Type)>>;
 
 # core implicit weakening rules
 add-weaken-quick-prop( t2(c"Phi",ta), t2(c"Phi",ta), t2(c"Phi",ta) );
@@ -56,7 +56,7 @@ add-weaken-quick-prop( t2(c"CaseNumber",ta), t2(c"CaseNumber",ta), t2(c"CaseNumb
 
 let add-weaken-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
    let key = pre.ground-tag-and-arity;
-   let val = weaken-quick-prop-index.lookup(key, ([] :: List<(Type,Type)>));
+   let val = weaken-quick-prop-index.lookup(key, ([] : List<(Type,Type)>));
    val = cons( (pat,post), val );
    weaken-quick-prop-index = weaken-quick-prop-index.bind( key, val );
 );
@@ -69,7 +69,7 @@ let weaken-quick-prop(base: Type): Type = (
 let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
    match pre {
       TGround {} => (
-         for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, ([] :: List<(Type,Type)>) ) {
+         for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
             if can-unify(lt, original-base) then (
                base = remove-info(base, rt);
             );

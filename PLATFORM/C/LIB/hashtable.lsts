@@ -39,7 +39,7 @@ let .has(table: HashtableEq<k,v>, key: k): U64 = (
 );
 
 let .bind(table: HashtableEq<k,v>, key: k, value: v): HashtableEq<k,v> = (
-   if is(table, (HashtableEqEOF :: HashtableEq<k,v>)) {
+   if is(table, (HashtableEqEOF : HashtableEq<k,v>)) {
       table = HashtableEq( 0_u64, 0_u64, (0_u64 as Tuple<k,v>[]) );
    };
    let occupied = (table as Tag::HashtableEq).occupied;

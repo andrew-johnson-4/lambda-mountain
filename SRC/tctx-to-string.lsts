@@ -1,7 +1,7 @@
 
 let .into(tctx: Maybe<TypeContext>, tt: Type<String>): String = (
    let result = "";
-   for Tuple{first=first,second=second} in tctx.get-or([] :: TypeContext) {
+   for Tuple{first=first,second=second} in tctx.get-or([] : TypeContext) {
       result = result + "\{first} : \{second}\n";
    };
    result
@@ -11,7 +11,7 @@ let to-smart-string(tctx: Maybe<TypeContext>): String = tctx.into(type(String));
 
 let .into(ctx: Maybe<AContext>, tt: Type<String>): String = (
    let result = "";
-   for Tuple{first=first,second=second} in ctx.get-or([] :: AContext) {
+   for Tuple{first=first,second=second} in ctx.get-or([] : AContext) {
       result = result + "\{first} : \{second}\n";
    };
    result
