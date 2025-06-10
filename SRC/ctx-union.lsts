@@ -1,7 +1,7 @@
 
 let union(ctx: FContext, tctx: Maybe<TypeContext>): FContext = (
    let r = ctx;
-   for Tuple{ k=first, vt=second } in tctx.get-or([] :: TypeContext) {
+   for Tuple{ k=first, vt=second } in tctx.get-or([] : TypeContext) {
       r = r.bind( k, ta, mk-fragment() );
    };
    r

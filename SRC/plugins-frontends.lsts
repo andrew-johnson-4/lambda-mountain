@@ -1,5 +1,5 @@
 
-let plugins-frontends-index = {} :: HashtableEq<CString,CString -> Nil>;
+let plugins-frontends-index = {} : HashtableEq<CString,CString -> Nil>;
 
 let plugin-null-frontend(fp: CString): Nil = (
    print("Unable to find a suitable frontend: \{fp}\n");

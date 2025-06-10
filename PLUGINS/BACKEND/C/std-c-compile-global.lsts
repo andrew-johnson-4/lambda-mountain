@@ -1,5 +1,5 @@
 
-let std-c-force-imports = {} :: HashtableEq<CString,Bool>;
+let std-c-force-imports = {} : HashtableEq<CString,Bool>;
 
 let std-c-force-import-clib(lib: CString): Nil = (
    std-c-force-imports = std-c-force-imports.bind(lib, true);

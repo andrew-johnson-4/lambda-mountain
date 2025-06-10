@@ -3,7 +3,7 @@ let type-ast-inserts = mk-vector(type(AST));
 
 let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U64, case-number: U64): Nil = (
    let mangled-field-name = to-string(case-number) + c"_" + field-name;
-   let ctx = (None :: Maybe<TypeContext>)();
+   let ctx = (None : Maybe<TypeContext>)();
    ctx = ctx.bind( c"base-type", base-type, mk-eof() );
    ctx = ctx.bind( c"field-type", field-type, mk-eof() );
    ctx = ctx.bind( c"field-name", ta, mk-lit(mangled-field-name) );
@@ -16,7 +16,7 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    let field-get-indirect = substitute(ctx, find-global-callable(c"primitive::field-get-indirect", t3(c"Array",base-type,ta), blame));
    let field-set-indirect = substitute(ctx, find-global-callable(c"primitive::field-set-indirect", t3(c"Cons", t3(c"Array",base-type,ta), field-type), blame));
 
-   ctx = (None :: Maybe<TypeContext>)();
+   ctx = (None : Maybe<TypeContext>)();
    ctx = ctx.bind( c"base-type", base-type, mk-eof() );
    ctx = ctx.bind( c"field-type", field-type, mk-eof() );
    ctx = ctx.bind( c"field-name", ta, mk-lit(mangled-field-name) );
@@ -31,7 +31,7 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ()
 );
 
-let type-base-type-index = {} :: HashtableEq<(CString,U64),U64>;
+let type-base-type-index = {} : HashtableEq<(CString,U64),U64>;
 
 let .is-type(tt: Type): U64 = (
    let gta = normalize(tt).ground-tag-and-arity;
@@ -72,7 +72,7 @@ let infer-type-definition(term: AST): Nil = (
       };
       if case-tag!=c"" then case-number = case-number + 1;
    };
-   let common-fields = [] :: List<(CString,Type)>;
+   let common-fields = [] : List<(CString,Type)>;
    let has-tag-case = false;
    let has-any-case = false;
    for vector Tuple{ case-tag=first, case-fields=second } in cases {
@@ -110,7 +110,7 @@ let infer-type-definition(term: AST): Nil = (
    };
 );
 
-let type-constructor-tag-ordinal-index = {} :: HashtableEq<(CString,U64,CString),U64>;
+let type-constructor-tag-ordinal-index = {} : HashtableEq<(CString,U64,CString),U64>;
 
 let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, case-fields: List<(CString,Type)>, blame: AST, has-tag-case: U64): Nil = (
    (let base-tag, let base-arity) = base-type.ground-tag-and-arity;

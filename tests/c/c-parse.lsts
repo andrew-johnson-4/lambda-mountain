@@ -27,7 +27,7 @@ if true then {
 # assignment operators
 if true then { 
    let abc = std-c-tokenize-string("ab", "ab");
-   assert( std-c-parse-assignment-operator(abc).first == None :: Maybe<String> );
+   assert( std-c-parse-assignment-operator(abc).first == None : Maybe<String> );
    if true then {
       let tokens = std-c-tokenize-string("[=]", "=");
       assert( std-c-parse-assignment-operator(tokens).first == Some{"="} );
@@ -76,7 +76,7 @@ if true then {
 
 if true then { 
    let abc = std-c-tokenize-string("ab", "ab");
-   assert( std-c-parse-unary-operator(abc).first == None :: Maybe<String> );
+   assert( std-c-parse-unary-operator(abc).first == None : Maybe<String> );
    if true then {
       let tokens = std-c-tokenize-string("[&]", "&");
       assert( std-c-parse-unary-operator(tokens).first == Some{"&"} );
@@ -105,7 +105,7 @@ if true then {
 
 if true then { 
    let abc = std-c-tokenize-string("ab", "ab");
-   assert( std-c-parse-struct-or-union(abc).first == None :: Maybe<String> );
+   assert( std-c-parse-struct-or-union(abc).first == None : Maybe<String> );
    if true then {
       let tokens = std-c-tokenize-string("[struct]", "struct");
       assert( std-c-parse-struct-or-union(tokens).first == Some{"struct"} );
@@ -131,13 +131,13 @@ if true then {
    };
    if true then {
       let tokens = std-c-tokenize-string("[int]", "int");
-      assert( std-c-parse-identifier(tokens).first == None :: Maybe<CTerm> );
+      assert( std-c-parse-identifier(tokens).first == None : Maybe<CTerm> );
    };
 };
 
 if true then { 
    let abc = std-c-tokenize-string("ab", "ab");
-   assert( std-c-parse-constant(abc).first == None :: Maybe<CTerm> );
+   assert( std-c-parse-constant(abc).first == None : Maybe<CTerm> );
    if true then {
       let tokens = std-c-tokenize-string("[0123456789]", "0123456789");
       assert( std-c-parse-constant(tokens).first == Some{CInteger{"0123456789"}} );
@@ -808,7 +808,7 @@ if true then {
    assert( std-c-parse-type-specifier(std-c-tokenize-string("_Complex", "_Complex")).first == Some{CType1{"_Complex"}} );
    assert( std-c-parse-type-specifier(std-c-tokenize-string("_Imaginary", "_Imaginary")).first == Some{CType1{"_Imaginary"}} );
    assert( std-c-parse-type-specifier(std-c-tokenize-string("td1", "td1")).first == Some{CType1{"td1"}} );
-   assert( std-c-parse-type-specifier(std-c-tokenize-string("td2", "td2")).first == (None :: Maybe<CTerm>) );
+   assert( std-c-parse-type-specifier(std-c-tokenize-string("td2", "td2")).first == (None : Maybe<CTerm>) );
 };
 
 if true then {
@@ -820,7 +820,7 @@ if true then {
 };
 
 if true then {
-   assert( std-c-parse-specifier-qualifier-list(std-c-tokenize-string("td2", "td2")).first == (None :: Maybe<List<CTerm>>) );
+   assert( std-c-parse-specifier-qualifier-list(std-c-tokenize-string("td2", "td2")).first == (None : Maybe<List<CTerm>>) );
    assert( std-c-parse-specifier-qualifier-list(std-c-tokenize-string("void", "void")).first == Some{[CType1{"void"}]} );
    assert( std-c-parse-specifier-qualifier-list(std-c-tokenize-string("void void", "void void")).first == Some{[CType1{"void"},CType1{"void"}]} );
 };
@@ -859,7 +859,7 @@ if true then {
 };
 
 if true then {
-   assert( std-c-parse-statement(std-c-tokenize-string("{}", "{}")).first == Some{CCompound{close([] :: List<CTerm>)}} );
+   assert( std-c-parse-statement(std-c-tokenize-string("{}", "{}")).first == Some{CCompound{close([] : List<CTerm>)}} );
    assert( std-c-parse-statement(std-c-tokenize-string("{a;}", "{a;}")).first == Some{CCompound{close([CIdentifier{"a"}])}} );
    assert( std-c-parse-statement(std-c-tokenize-string("{a; b;}", "{a; b;}")).first == Some{CCompound{close([CIdentifier{"a"},CIdentifier{"b"}])}} );
 };
@@ -867,8 +867,8 @@ if true then {
 if true then {
    assert( std-c-parse-initializer(std-c-tokenize-string("{a,b}", "{a,b}")).first ==
       Some{CInitializerList{close([
-         CInitializer{ close([] :: List<CTerm>), close(CIdentifier{"a"}) },
-         CInitializer{ close([] :: List<CTerm>), close(CIdentifier{"b"}) }
+         CInitializer{ close([] : List<CTerm>), close(CIdentifier{"a"}) },
+         CInitializer{ close([] : List<CTerm>), close(CIdentifier{"b"}) }
       ])}}
    );
    assert( std-c-parse-initializer(std-c-tokenize-string("{.a[b]=c}", "{.a[b]=c}")).first ==
@@ -883,14 +883,14 @@ if true then {
 
 if true then {
    assert( std-c-parse-pointer(std-c-tokenize-string("*", "*")).first ==
-      Some{CPointer{ close(None :: Maybe<List<CTerm>>), close(None :: Maybe<CTerm>) }}
+      Some{CPointer{ close(None : Maybe<List<CTerm>>), close(None : Maybe<CTerm>) }}
    );
    assert( std-c-parse-pointer(std-c-tokenize-string("*const", "*const")).first ==
-      Some{CPointer{ close(Some{[ CType1("const") ]}), close(None :: Maybe<CTerm>) }}
+      Some{CPointer{ close(Some{[ CType1("const") ]}), close(None : Maybe<CTerm>) }}
    );
    assert( std-c-parse-pointer(std-c-tokenize-string("*const*", "*const*")).first ==
       Some{CPointer{ close(Some{[ CType1("const") ]}), close(
-         Some{CPointer{ close(None :: Maybe<List<CTerm>>), close(None :: Maybe<CTerm>) }}
+         Some{CPointer{ close(None : Maybe<List<CTerm>>), close(None : Maybe<CTerm>) }}
       )}}
    );
 };
@@ -902,7 +902,7 @@ if true then {
    }} );
    assert( std-c-parse-abstract-declarator(std-c-tokenize-string("*()", "*()")).first == Some{CBinaryOp{
       "AbstractDeclarator",
-      close(CPointer{ close(None :: Maybe<List<CTerm>>), close(None :: Maybe<CTerm>) }),
+      close(CPointer{ close(None : Maybe<List<CTerm>>), close(None : Maybe<CTerm>) }),
       close(CUnaryPrefix{"AbstractDeclarator", close(CZOp{"("}) })
    }} );
    assert( std-c-parse-abstract-declarator(std-c-tokenize-string("[]", "[]")).first == Some{CUnaryPrefix{
@@ -920,7 +920,7 @@ if true then {
    assert( std-c-parse-type-name(std-c-tokenize-string("short int", "short int")).first == Some{CBinaryOp{
       "TypeName",
       close(CList{close([ CType1{"short"}, CType1{"int"} ])}),
-      close(CMaybe{close( None :: Maybe<CTerm> )})
+      close(CMaybe{close( None : Maybe<CTerm> )})
    }} );
 };
 
@@ -933,11 +933,11 @@ if true then {
             close(CBinaryOp{
                "TypeName",
                close(CList{close([ CType1{"short"}, CType1{"int"} ])}),
-               close(CMaybe{close( None :: Maybe<CTerm> )})
+               close(CMaybe{close( None : Maybe<CTerm> )})
             })
          }
       ])}),
-      close(CMaybe{close( None :: Maybe<CTerm> )})
+      close(CMaybe{close( None : Maybe<CTerm> )})
    }});
 };
 
@@ -951,7 +951,7 @@ if true then {
       close(CBinaryOp{
          "TypeName",
          close(CList{close([ CType1{"short"}, CType1{"int"} ])}),
-         close(CMaybe{close( None :: Maybe<CTerm> )})
+         close(CMaybe{close( None : Maybe<CTerm> )})
       }),
       close(CIdentifier{"a"})
    }} );
@@ -967,7 +967,7 @@ if true then {
       close(CBinaryOp{
          "TypeName",
          close(CList{close([ CType1{"short"}, CType1{"int"} ])}),
-         close(CMaybe{close( None :: Maybe<CTerm> )})
+         close(CMaybe{close( None : Maybe<CTerm> )})
       }),
       close(CIdentifier{"a"})
    }} );
@@ -993,7 +993,7 @@ if true then {
             close(CBinaryOp{
                "TypeName",
                close(CList{close([ CType1{"short"}, CType1{"int"} ])}),
-               close(CMaybe{close( None :: Maybe<CTerm> )})
+               close(CMaybe{close( None : Maybe<CTerm> )})
             }),
             close(CIdentifier{"a"})
          },
@@ -1021,6 +1021,6 @@ if true then {
    assert( std-c-parse-enumerator(std-c-tokenize-string("abc", "abc")).first == Some{CBinaryOp{
       "Enumerator",
       close(CIdentifier{"abc"}),
-      close(CMaybe{close( None :: Maybe<CTerm> )})
+      close(CMaybe{close( None : Maybe<CTerm> )})
    }} );
 };

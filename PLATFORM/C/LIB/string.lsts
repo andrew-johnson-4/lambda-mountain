@@ -68,7 +68,7 @@ let .into(s: CString, tgt: Type<String>): String = intern(s);
 let .into(s: String, tgt: Type<CString>): CString = untern(s);
 
 let .split(s: String, sep: String): List<String> = (
-   let r = [] :: List<String>;
+   let r = [] : List<String>;
    let start-index = 0_u64;
    let current-index = 0_u64;
    while current-index < s.length {

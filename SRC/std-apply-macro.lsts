@@ -65,7 +65,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
    else if mname==c"macro::constant" then (tctx, result) = std-apply-macro-constant(tctx, mname, margs)
    else if mname==c"macro::tag" then (tctx, result) = std-apply-macro-tag(tctx, mname, margs)
    else {
-      let row = index-macro-table.lookup(mname, [] :: List<(Type,Type,AST)>);
+      let row = index-macro-table.lookup(mname, [] : List<(Type,Type,AST)>);
       let peep-holes = ta;
       let peeped = ta;
       for Tuple{mtype=first, peep=second, mterm=third} in row {
@@ -78,13 +78,13 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
       };
       (let peeped-type, margs) = std-infer-peeped-arguments(tctx, margs, peep-holes);
 
-      let matched = [] :: List<(Type,AST)>;
+      let matched = [] : List<(Type,AST)>;
       for Tuple{mtype=first, mterm=third} in row {
          if can-unify(mtype, peeped-type) then matched = cons( (mtype,mterm), matched );
       }; 
 
       let dominant-type = ta;
-      let candidates = [] :: List<(Type,AST)>;
+      let candidates = [] : List<(Type,AST)>;
       for Tuple{mtype=first, mterm=second} in matched {
          if non-zero(dominant-type) {
             if can-unify(mtype,dominant-type) && can-unify(dominant-type,mtype) {

@@ -1,5 +1,5 @@
 
-let plugins-backends-index = {} :: HashtableEq<CString,(Nil -> Nil)[]>;
+let plugins-backends-index = {} : HashtableEq<CString,(Nil -> Nil)[]>;
 
 let plugin-null-backend(): Nil = (
    print("Cannot Compile: No Backend Was Specified\n");

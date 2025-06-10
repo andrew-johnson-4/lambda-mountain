@@ -64,7 +64,7 @@ let lsts-parse-doc-wordf(tokens: List<Token>, begin: CString, end: CString): Tup
 );
 
 let lsts-parse-doc-expr(tokens: List<Token>): Tuple<AST, List<(CString, AST)>, List<Token>> = (
-   let tags = [] :: List<(CString, AST)>;
+   let tags = [] : List<(CString, AST)>;
    let val = match lsts-parse-head(tokens) {
       c"__" => (
          (let s, tokens) = lsts-parse-doc-wordf(tokens, c"__", c"__");
@@ -109,7 +109,7 @@ let lsts-parse-doc(tokens: List<Token>): Tuple<AST, List<Token>> = (
    let ast = mk-eof();
    let para = mk-eof();
 
-   let tags = [] :: List<(CString, AST)>;
+   let tags = [] : List<(CString, AST)>;
 
    while lsts-parse-head(tokens) == c"##" {
       tokens = tail(tokens);
@@ -153,17 +153,17 @@ let lsts-has-assign(tokens: List<Token>): U64 = (
       [Token{key:c"]"} .. rest] => (depth = depth - 1_i64; tokens = rest;);
       [Token{key:c"}"} .. rest] => (depth = depth - 1_i64; tokens = rest;);
       [Token{key:c")"} .. rest] => (depth = depth - 1_i64; tokens = rest;);
-      [Token{key:c";"} .. rest] => (if depth <= 0_i64 {tokens = [] :: List<Token>} else {tokens = rest;});
-      [Token{key:c","} .. rest] => (if depth <= 0_i64 {tokens = [] :: List<Token>} else {tokens = rest;});
-      [Token{key:c"."}.. Token{key:c"."} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
-      [Token{key:c"="}.. Token{key:c">"} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
-      [Token{key:c"="} .. rest] => (if depth == 0_i64 {has-assign = 1; tokens = [] :: List<Token>;} else {tokens = rest;});
-      [Token{key:c"if"} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
-      [Token{key:c"then"} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
-      [Token{key:c"else"} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
-      [Token{key:c"fn"} .. rest] => (if depth == 0_i64 {tokens = [] :: List<Token>;} else {tokens = rest;});
+      [Token{key:c";"} .. rest] => (if depth <= 0_i64 {tokens = [] : List<Token>} else {tokens = rest;});
+      [Token{key:c","} .. rest] => (if depth <= 0_i64 {tokens = [] : List<Token>} else {tokens = rest;});
+      [Token{key:c"."}.. Token{key:c"."} .. rest] => (if depth == 0_i64 {tokens = [] : List<Token>;} else {tokens = rest;});
+      [Token{key:c"="}.. Token{key:c">"} .. rest] => (if depth == 0_i64 {tokens = [] : List<Token>;} else {tokens = rest;});
+      [Token{key:c"="} .. rest] => (if depth == 0_i64 {has-assign = 1; tokens = [] : List<Token>;} else {tokens = rest;});
+      [Token{key:c"if"} .. rest] => (if depth == 0_i64 {tokens = [] : List<Token>;} else {tokens = rest;});
+      [Token{key:c"then"} .. rest] => (if depth == 0_i64 {tokens = [] : List<Token>;} else {tokens = rest;});
+      [Token{key:c"else"} .. rest] => (if depth == 0_i64 {tokens = [] : List<Token>;} else {tokens = rest;});
+      [Token{key:c"fn"} .. rest] => (if depth == 0_i64 {tokens = [] : List<Token>;} else {tokens = rest;});
       [_ .. rest] => tokens = rest;
-   }; if depth < 0_i64 { tokens = [] :: List<Token>; }; };
+   }; if depth < 0_i64 { tokens = [] : List<Token>; }; };
    has-assign
 );
 
@@ -320,7 +320,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          base = base + c"::" + lsts-substitute-type-aliases(lsts-parse-head(tokens));
          tokens = tail(tokens);
       };
-      let args = [] :: List<Type>;
+      let args = [] : List<Type>;
       if lsts-parse-head(tokens) == c"<" {
          lsts-parse-expect(c"<", tokens); tokens = tail(tokens);
          let targs-rest = lsts-parse-type(tokens);
@@ -557,6 +557,21 @@ let lsts-parse-cmp(tokens: List<Token>): Tuple<AST,List<Token>> = (
    Tuple ( term, tokens )
 );
 
+let lsts-parse-ascript(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   (let term, tokens) = lsts-parse-andor(tokens);
+   while lsts-parse-head(tokens)==c":" && non-zero(tokens) && lsts-parse-head(tail(tokens)) != c":" {
+      tokens = tail(tokens);
+      (let tt, tokens) = lsts-parse-type(tokens);
+      match term {
+         App{ constructor=left:Lit{}, right:ASTNil{} } => (
+            term = mk-app(constructor.ascript(tt), mk-nil());
+         );
+         _ => term = term.ascript(tt);
+      }
+   };
+   Tuple ( term, tokens )
+);
+
 let lsts-parse-andor(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let term-rest = lsts-parse-cmp(tokens);
    let term = term-rest.first;
@@ -597,7 +612,7 @@ let lsts-parse-map(tokens: List<Token>): Tuple<AST,List<Token>> = (
    } else {
       if lsts-parse-head(tokens) != c"}" {
          while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
-            let item-rest = lsts-parse-expression(tokens);
+            let item-rest = lsts-parse-andor(tokens);
             let item = item-rest.first;
             tokens = item-rest.second;
             let mapped = if non-zero(tokens) && lsts-parse-head(tokens)==c":" {
@@ -646,7 +661,7 @@ let lsts-parse-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
       fail("TODO List Comprehension at \{loc}")
    } else {
       if lsts-parse-head(tokens)!=c"]" {
-         let add-items = [] :: List<AST>;
+         let add-items = [] : List<AST>;
          while non-zero(tokens) && lsts-parse-head(tokens)!=c"]" {
             let item-rest = lsts-parse-expression(tokens);
             tokens = item-rest.second;
@@ -699,7 +714,7 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
       let args-list = sig.first.args-list;
       let return-type = sig.first.return-type;
 
-      let shapes = interface-shape-index.lookup(interface-type.ground-tag-and-arity,[] :: List<(CString,Type,Type)>);
+      let shapes = interface-shape-index.lookup(interface-type.ground-tag-and-arity,[] : List<(CString,Type,Type)>);
       shapes = cons( (name, args-type, return-type), shapes );
       interface-shape-index = interface-shape-index.bind(interface-type.ground-tag-and-arity, shapes);
 
@@ -739,7 +754,7 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
    let typename = lsts-parse-head(tokens); tokens = tail(tokens);
    if typename.has-suffix(c"_ss") then typename = typename.remove-suffix(c"_ss");
    let lhs-type = if lsts-parse-head(tokens)==c"<" {
-      let pars = [] :: List<Type>;
+      let pars = [] : List<Type>;
       lsts-parse-expect(c"<", tokens); tokens = tail(tokens);
       let pt = ta;
       if lsts-is-enum-head(lsts-parse-head(tokens)) || lsts-parse-head(tokens).has-suffix(c"_ss") {
@@ -1066,7 +1081,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
       );
       [Token{key:c"if"}.. rest] => (
          let loc = head(tokens).location; tokens = rest;
-         let c-rest = lsts-parse-andor(tokens);
+         let c-rest = lsts-parse-ascript(tokens);
          let c = c-rest.first;
          tokens = c-rest.second;
          if lsts-parse-head(tokens) != c"{" {
@@ -1243,7 +1258,7 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
       let loc = head(tokens).location;
       lsts-parse-expect(c"[", tokens); tokens = tail(tokens);
       expr = mk-app(mk-var(c"macro::lhs-tail").with-location(loc), mk-nil());
-      let seq = [] :: List<AST>;
+      let seq = [] : List<AST>;
       while non-zero(tokens) && lsts-parse-head(tokens)!=c"]" {
          (let head, tokens) = lsts-parse-match2-lhs-one-bind(tokens);
          if lsts-parse-head(tokens)==c"." && lsts-parse-head(tail(tokens))==c"." {
@@ -1428,7 +1443,7 @@ let lsts-parse-match2-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
    };
    if lsts-parse-head(tokens)==c"where" {
       lsts-parse-expect(c"where", tokens); tokens = tail(tokens);
-      (let cond, tokens) = lsts-parse-andor(tokens);
+      (let cond, tokens) = lsts-parse-ascript(tokens);
       lhs = mk-app( mk-var(c"macro::lhs-guard"), mk-cons(lhs,cond) );
    };
    (lhs, tokens)
@@ -1445,7 +1460,7 @@ let lsts-parse-match2(tokens: List<Token>): Tuple<AST,List<Token>> = (
       mk-app(mk-var(c"macro::location"),mk-var(c"here").with-location(loc))
    ));
    lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-   let cases = [] :: List<(AST,AST)>;
+   let cases = [] : List<(AST,AST)>;
    while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
       (let lhs, tokens) = lsts-parse-match2-lhs(tokens);
       lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
@@ -1476,7 +1491,7 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
       if lsts-parse-head(tokens) == c"(" {
          lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
 
-         let lefts = [] :: List<ASTOrIdent>;
+         let lefts = [] : List<ASTOrIdent>;
 
          let loop = true;
          while loop {
@@ -1563,7 +1578,7 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
          );
       };
    } else {
-      let base-rest = lsts-parse-andor(tokens);
+      let base-rest = lsts-parse-ascript(tokens);
       base = base-rest.first;
       tokens = base-rest.second;
    };
@@ -1884,29 +1899,9 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
    while lsts-parse-head(tokens) == c"[" ||
          lsts-parse-head(tokens) == c"(" ||
          lsts-parse-head(tokens) == c"." ||
-         lsts-parse-head(tokens) == c"as" ||
-         (lsts-parse-head(tokens) == c":" && non-zero(tokens) && lsts-parse-head(tail(tokens)) == c":") {
+         lsts-parse-head(tokens) == c"as" {
       let loc = head(tokens).location;
       match tokens {
-         [Token{key:c":"}.. Token{key:c":"}.. rest] => (
-            tokens = rest;
-            let type-rest = lsts-parse-type(tokens);
-            tokens = type-rest.second;
-            match base {
-               App{ constructor=left:Lit{}, right:ASTNil{} } => (
-                  base = mk-app(mk-app(
-                     Lit( c":", with-location(mk-token(":"),loc) ),
-                     mk-cons(constructor, mk-atype(type-rest.first))
-                  ), mk-nil());
-               );
-               _ => (
-                  base = mk-app(
-                     Lit( c":", with-location(mk-token(":"),loc) ),
-                     mk-cons(base, mk-atype(type-rest.first))
-                  );
-               );
-            };
-         );
          [Token{key:"."}.. rest] => (
             tokens = rest;
             lsts-parse-expect( c"[Identifier]", lsts-is-ident-head(lsts-parse-head(tokens)), tokens );
@@ -1944,7 +1939,7 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
             let term1 = if lsts-parse-head(tokens)==c":" {
                Lit( c"0_i64", with-location(mk-token("0_i64"),loc) )
             } else {
-               let term1-rest = lsts-parse-small-expression(tokens);
+               let term1-rest = lsts-parse-andor(tokens);
                tokens = term1-rest.second;
                term1-rest.first;
             };
@@ -1954,7 +1949,7 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
                term2 = if lsts-parse-head(tokens)==c"]" {
                   Var( c"minimum-I64", with-location(mk-token("minimum-I64"),loc) )
                } else {
-                  let term2-rest = lsts-parse-small-expression(tokens);
+                  let term2-rest = lsts-parse-andor(tokens);
                   tokens = term2-rest.second;
                   term2-rest.first;
                };

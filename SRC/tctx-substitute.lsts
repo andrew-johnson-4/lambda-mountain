@@ -23,7 +23,7 @@ let substitute(tctx: Maybe<TypeContext>, tt: Type): Type = (
       );
       TGround{tag=tag,parameters=parameters} => TGround(tag,close(substitute(tctx,parameters)));
       TVar{name=name} => (
-         let ta = tctx.get-or([] :: List<Tuple<CString,Type,AST>>).lookup(name,Tuple(ta,mk-eof()));
+         let ta = tctx.get-or([] : List<Tuple<CString,Type,AST>>).lookup(name,Tuple(ta,mk-eof()));
          if non-zero(ta.first) then ta.first else tt;
       );
       _ => tt;

@@ -1,6 +1,6 @@
 
 let std-direct-destructure-macro(margs: AST, mstruct: AST): AContext? = (
-   let no = (None :: AContext?)();
+   let no = (None : AContext?)();
    match (margs, mstruct) {
       Tuple{ val=first, second:Var{key=key} } => Some([(key,val)]);
       Tuple{ first:App{lrest=left, val=right}, second:App{rrest=left, right:Var{key=key}} } => (

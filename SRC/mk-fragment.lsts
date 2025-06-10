@@ -1,8 +1,8 @@
 
 let mk-fragment(): Fragment = (
    Fragment (
-      mk-eof(), close([] :: List<Tuple<CString,S>>),
-      ta, close(mk-fctx()), ([] :: List<Fragment[]>)
+      mk-eof(), close([] : List<Tuple<CString,S>>),
+      ta, close(mk-fctx()), ([] : List<Fragment[]>)
    )
 );
 

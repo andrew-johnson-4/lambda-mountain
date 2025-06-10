@@ -1,5 +1,5 @@
 
-let smart-token-path-index = {} :: HashtableEq<U64,String>;
+let smart-token-path-index = {} : HashtableEq<U64,String>;
 
 let .location(t: String): SourceLocation = (
    let file-path = smart-token-path-index.lookup( t.data as U64, "[Unknown File]" );

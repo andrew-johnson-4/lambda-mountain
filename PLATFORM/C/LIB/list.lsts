@@ -31,7 +31,7 @@ let to-smart-string(ls: List<x>): String = (
 );
 
 let .unique(ls: List<x>): List<x> = (
-   let rs = [] :: List<x>;
+   let rs = [] : List<x>;
    for l in ls {
       if not(rs.contains(l)) {
          rs = cons(l, rs);
@@ -46,7 +46,7 @@ let .next(ls: Array<List<x>,?>): Maybe<x> = (
          ls[0_u64] = rst;
          Some(i)
       );
-      [] => (None :: Maybe<x>)();
+      [] => (None : Maybe<x>)();
    };
 );
 

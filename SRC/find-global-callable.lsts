@@ -2,7 +2,7 @@
 let find-global-callable(fname: CString, arg-types: Type, blame: AST): AST = (
    arg-types = denormalize-strong(arg-types);
    let match-set = mk-vector(type((Type,AST)), 16);
-   for Tuple{kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
+   for Tuple{kt=second, t=third} in global-type-context.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
       if can-apply(kt, arg-types) {
          match-set = match-set.push( (kt, t) );
       }
@@ -30,14 +30,14 @@ let find-global-callable(fname: CString, arg-types: Type, blame: AST): AST = (
 let find-global-constructor(fname: CString, hint: Type, arg-types: Type, blame: AST): AST = (
    hint = hint.rewrite-type-alias;
    let result = ASTEOF();
-   for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
+   for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
       if not(ot.is-open) && (not(non-zero(hint)) || can-receive(ot, hint)) && can-apply(ot, arg-types) {
          if non-zero(result) then fail("Duplicate global constructor: \{fname} :: \{hint} (\{arg-types})At: \{blame.location}\n1: \{result}\n2: \{t}\n");
          result = t;
       }
    };
    if not(non-zero(result)) then {
-      for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
+      for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
          print("Candidate \{fname} : \{kt}\n");
       };
       fail("Unable to find appropriate global constructor: \{fname} :: \{hint} (\{arg-types})At: \{blame.location}\n");
@@ -50,7 +50,7 @@ let apply-global-constructor(fname: CString, hint: Type, arg-types: Type, blame:
    let result = ta;
    let simple = ta;
    if non-zero(hint) && hint.is-type {
-      for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
+      for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
          if (not(non-zero(hint)) || can-receive(ot, hint)) && (not(non-zero(arg-types)) || can-apply(ot, arg-types)) {
             let next = if non-zero(hint)
             then substitute(unify(ot.range,hint),kt)
@@ -60,7 +60,7 @@ let apply-global-constructor(fname: CString, hint: Type, arg-types: Type, blame:
          }
       };
    } else {
-      for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
+      for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
          if not(non-zero(arg-types)) || can-apply(ot, arg-types) {
             let next = if non-zero(hint)
             then hint
@@ -89,7 +89,7 @@ let maybe-apply-global-callable(fname: CString, arg-types: Type, blame: AST): Ty
 let apply-global-callable(fname: CString, arg-types: Type, blame: AST, can-fail: Bool): Type = (
    arg-types = denormalize-strong(arg-types);
    let match-set = mk-vector(type((Type,Type,AST)), 16);
-   for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] :: List<Tuple<Type,Type,AST>>) {
+   for Tuple{ot=first, kt=second, t=third} in global-type-context.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
       if can-apply(kt, arg-types) {
          match-set = match-set.push( (ot, kt, t) );
       }

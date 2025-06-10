@@ -6,7 +6,7 @@ let std-c-tokenize-string(file-path: CString, text: CString): List<Token> = (
 let std-c-tokenize-string(file-path: String, text: String): List<Token> = (
    smart-token-path-index = smart-token-path-index.bind( text.data as U64, file-path );
 
-   let tokens = [] :: List<String>;
+   let tokens = [] : List<String>;
    while non-zero(text) {match text {
       "\s".. rest => text = rest;
       "\t".. rest => text = rest;
@@ -103,7 +103,7 @@ let std-c-tokenize-string(file-path: String, text: String): List<Token> = (
       rest => ( fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0_u64])}"); );
    }; };
 
-   let internal-tokens = [] :: List<Token>;
+   let internal-tokens = [] : List<Token>;
    for t in tokens {
       internal-tokens = cons( mk-token(t), internal-tokens );
    };

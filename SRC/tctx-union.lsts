@@ -1,5 +1,5 @@
 
 let union(lctx: Maybe<TypeContext>, rctx: Maybe<TypeContext>): Maybe<TypeContext> = (
-   Some( rctx.get-or([] :: TypeContext) +
-         lctx.get-or([] :: TypeContext) )
+   Some( rctx.get-or([] : TypeContext) +
+         lctx.get-or([] : TypeContext) )
 );
