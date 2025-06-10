@@ -1,5 +1,5 @@
 
-let std-infer-expr(tctx: Maybe<TContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TContext?, AST) = (
+let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
    match term {
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
          if typeof-var-raw(term, tctx, lname).is-t(c"LocalVariable")

@@ -1,12 +1,12 @@
 
-let substitute(tctx: Maybe<TContext>, tt: List<Type>): List<Type> = (
+let substitute(tctx: Maybe<TypeContext>, tt: List<Type>): List<Type> = (
    match tt {
       LCons{head=head,tail=tail} => cons( substitute(tctx,head), substitute(tctx,tail) );
       _ => tt;
    }
 );
 
-let substitute(tctx: Maybe<TContext>, tt: Type): Type = (
+let substitute(tctx: Maybe<TypeContext>, tt: Type): Type = (
    match tt {
       TAnd{conjugate=conjugate} => (
          let result = mk-vector(type(Type), 0_u64);

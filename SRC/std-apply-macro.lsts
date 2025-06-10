@@ -1,5 +1,5 @@
 
-let std-apply-macro(tctx: Maybe<TContext>, t: AST, used: IsUsed): (TContext?, AST) = (
+let std-apply-macro(tctx: Maybe<TypeContext>, t: AST, used: IsUsed): (TypeContext?, AST) = (
    match t {
       App{left:Var{mname=key}, margs=right} => (
          std-apply-macro(tctx, mname, margs, used);
@@ -7,31 +7,31 @@ let std-apply-macro(tctx: Maybe<TContext>, t: AST, used: IsUsed): (TContext?, AS
    }
 );
 
-let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, used: IsUsed): (TContext?, AST) = std-apply-macro(tctx, mname, margs, used, true);
-let std-apply-macro-weak(tctx: Maybe<TContext>, mname: CString, margs: AST, used: IsUsed): (TContext?, AST) = std-apply-macro(tctx, mname, margs, used, false);
+let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, true);
+let std-apply-macro-weak(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, false);
 
-let std-apply-macro-concat(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
+let std-apply-macro-concat(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
       App{ left:Var{left-key=key}, right:Var{right-key=key} } => (tctx, mk-var(left-key + right-key));
       _ => (tctx, mk-eof());
    }
 );
 
-let std-apply-macro-variable(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
+let std-apply-macro-variable(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
       Var{} => (tctx, margs);
       _ => (tctx, mk-eof());
    }
 );
 
-let std-apply-macro-underscore(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
+let std-apply-macro-underscore(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
       Var{key:c"_"} => (tctx, margs);
       _ => (tctx, mk-eof());
    }
 );
 
-let std-apply-macro-tag(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
+let std-apply-macro-tag(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
       Lit{key=key} => (
          if index-of-tag(key)==unknown-index-of-tag then (tctx, mk-eof()) else {
@@ -45,18 +45,18 @@ let std-apply-macro-tag(tctx: Maybe<TContext>, mname: CString, margs: AST): (TCo
    }
 );
 
-let std-apply-macro-constant(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
+let std-apply-macro-constant(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
       App{ left:Lit{key:c":"}, right:App{left:Lit{},right:AType{}} } => (tctx, margs);
       _ => (tctx, mk-eof());
    }
 );
 
-let std-apply-macro-location(tctx: Maybe<TContext>, mname: CString, margs: AST): (TContext?, AST) = (
+let std-apply-macro-location(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    (tctx, mk-lit(to-smart-string(margs.location)).ascript(t1(c"SmartString") && t1(c"Literal")))
 );
 
-let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, used: IsUsed, strong: Bool): (TContext?, AST) = (
+let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed, strong: Bool): (TypeContext?, AST) = (
    let result = mk-eof();
    if mname==c"macro::concat" then (tctx, result) = std-apply-macro-concat(tctx, mname, margs)
    else if mname==c"macro::location" then (tctx, result) = std-apply-macro-location(tctx, mname, margs)
@@ -106,7 +106,7 @@ let std-apply-macro(tctx: Maybe<TContext>, mname: CString, margs: AST, used: IsU
    (tctx, result)
 );
 
-let std-infer-peeped-arguments(tctx: Maybe<TContext>, t: AST, peep: Type): (Type, AST) = (
+let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type): (Type, AST) = (
    match peep {
       TGround{tag:c"Cons", parameters:[p2.. p1..]} => (
          match t {

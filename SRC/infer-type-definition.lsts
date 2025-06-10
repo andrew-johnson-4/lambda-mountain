@@ -3,7 +3,7 @@ let type-ast-inserts = mk-vector(type(AST));
 
 let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U64, case-number: U64): Nil = (
    let mangled-field-name = to-string(case-number) + c"_" + field-name;
-   let ctx = (None :: Maybe<TContext>)();
+   let ctx = (None :: Maybe<TypeContext>)();
    ctx = ctx.bind( c"base-type", base-type, mk-eof() );
    ctx = ctx.bind( c"field-type", field-type, mk-eof() );
    ctx = ctx.bind( c"field-name", ta, mk-lit(mangled-field-name) );
@@ -16,7 +16,7 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    let field-get-indirect = substitute(ctx, find-global-callable(c"primitive::field-get-indirect", t3(c"Array",base-type,ta), blame));
    let field-set-indirect = substitute(ctx, find-global-callable(c"primitive::field-set-indirect", t3(c"Cons", t3(c"Array",base-type,ta), field-type), blame));
 
-   ctx = (None :: Maybe<TContext>)();
+   ctx = (None :: Maybe<TypeContext>)();
    ctx = ctx.bind( c"base-type", base-type, mk-eof() );
    ctx = ctx.bind( c"field-type", field-type, mk-eof() );
    ctx = ctx.bind( c"field-name", ta, mk-lit(mangled-field-name) );

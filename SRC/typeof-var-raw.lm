@@ -1,5 +1,5 @@
 
-typeof-var-raw := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String). (: (
+typeof-var-raw := λ(: sloc AST)(: tctx Maybe<TypeContext>)(: vname String). (: (
    (let found ta)
    (let continue 1_u64)
    (for-each ( (Tuple( k vt _ )) in 
@@ -31,7 +31,7 @@ typeof-var-raw := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String). (: (
    (denormalize found)
 ) Type);
 
-defof-var := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String). (: (
+defof-var := λ(: sloc AST)(: tctx Maybe<TypeContext>)(: vname String). (: (
    (let found (mk-eof()))
    (let continue 1_u64)
    (for-each ( (Tuple( k vt def )) in
@@ -53,7 +53,7 @@ defof-var := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String). (: (
    found
 ) AST);
 
-defof-var := λ(: sloc AST)(: tctx Maybe<TContext>)(: vname String)(: tt Type). (: (
+defof-var := λ(: sloc AST)(: tctx Maybe<TypeContext>)(: vname String)(: tt Type). (: (
    (let found (mk-eof()))
    (let found-type ta)
    (let continue 1_u64)
