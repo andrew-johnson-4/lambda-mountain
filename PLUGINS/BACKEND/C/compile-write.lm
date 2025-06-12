@@ -1,4 +1,0 @@
-
-compile-write := λ. (: (
-   (write-file( config-target assemble-final ))
-) Nil);

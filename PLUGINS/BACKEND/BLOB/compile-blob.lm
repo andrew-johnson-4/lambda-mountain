@@ -34,7 +34,7 @@ plugins-backend-blob-compile := λ. (: (
       ))
    )))
    (set assemble-final (clone-rope(escape-string blob)))
-   (compile-write())
+   (std-c-compile-write())
 ) Nil);
 
 
