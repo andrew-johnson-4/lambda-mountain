@@ -11,7 +11,7 @@ compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I6
             ) (
                (set kt (&&( (normalize kt) (t1 'LocalVariable_s) )))
             ))
-            (let fragment (fragment::local-variable( 0_i64 kt )))
+            (let fragment (mk-expression(uuid())))
             (set ctx (.bind(
                ctx k kt fragment
             )))
@@ -24,7 +24,7 @@ compile-destructure-args := λ(: tt Type)(: ctx FContext)(: lhs AST)(: offset I6
          ) (
             (set kt (&&( (normalize kt) (t1 'LocalVariable_s) )))
          ))
-         (let fragment (fragment::local-variable( 0_i64 kt )))
+         (let fragment (mk-expression(uuid())))
          (set ctx (.bind(
             ctx k kt fragment
          )))
