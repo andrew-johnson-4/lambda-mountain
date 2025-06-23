@@ -1,0 +1,15 @@
+
+let std-c-compile-finish(): Nil = (
+   let output = SNil
+              + std-c-finish-forced-imports()
+              + assemble-header-section
+              + assemble-types-section
+              + assemble-gdecl-section
+              + assemble-text-section
+              + (if compile-global-c-has-main then SNil else 
+                SAtom(c"int main(){\n")
+              + assemble-string-initializer-section
+              + assemble-global-initializer-section
+              + SAtom(c"return 0;}\n"));
+   assemble-final = clone-rope(escape-string(output));
+);

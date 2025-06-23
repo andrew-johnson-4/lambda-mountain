@@ -53,6 +53,6 @@ plugins-backend-c-compile := λ . (: (
    )))
    (try-continue-compile-c-typedefs())
    (compile-program-ordered( global-ctx ast-parsed-program ))
-   (compile-finish())
-   (compile-write())
+   (std-c-compile-finish())
+   (std-c-compile-write())
 ) Nil);

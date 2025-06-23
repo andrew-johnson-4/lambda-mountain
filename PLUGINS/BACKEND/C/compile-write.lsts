@@ -1,0 +1,4 @@
+
+let std-c-compile-write(): Nil = (
+   write-file( config-target, assemble-final ); ()
+);
