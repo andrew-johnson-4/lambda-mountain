@@ -13,7 +13,7 @@ compile-push-rvalue := λ(: ctx FContext)(: rval AST)(: offset I64)(: count U64)
             ( (App( le re )) (
                (let e1 (compile-push-rvalue( ctx le offset count left-assoc )))
                (let e2 (compile-expr( ctx re 0_i64 (Used()) )))
-               (set r (fragment::chain( e1 e2 )))
+               (set r (std-c-chain( e1 e2 false )))
                (if left-assoc (
                   (set r (.set( r 'expression_s (
                      (+( (+( (.get( e1 'expression_s )) (SAtom ',_s) )) (.get( e2 'expression_s )) ))

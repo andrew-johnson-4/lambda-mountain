@@ -16,7 +16,6 @@ import PLUGINS/BACKEND/C/cc-blob.lm;
 import PLUGINS/BACKEND/C/blob-render.lm;
 import PLUGINS/BACKEND/C/mangle-c-type.lm;
 import PLUGINS/BACKEND/C/mangle-identifier.lm;
-import PLUGINS/BACKEND/C/fragment-chain.lm;
 import PLUGINS/BACKEND/C/register-hook.lsts;
 import PLUGINS/BACKEND/C/std-c-compile-global.lsts;
 import PLUGINS/BACKEND/C/std-c-mangle-type.lsts;
