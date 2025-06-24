@@ -110,31 +110,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set std-c-fragment-context (.bind( std-c-fragment-context lhs-t fr )))
          (set ctx (.bind( ctx lhs rtype fr )))
          (let prepost (mangle-c-declaration( rtype term )))
-         (if (.is-const-array rtype) (
-            (set e (compile-expr( ctx rhs stack-offset (Used()) )))
-            (set e (.set( e 'frame_s (
-               (+(
-                  (+(
-                     (.first prepost)
-                     (SAtom '\s_s)
-                  ))
-                  (+(
-                     (.get( fr 'expression_s ))
-                     (+(
-                        (+(
-                           (.second prepost)
-                           (SAtom '=_s)
-                        ))
-                        (+(
-                           (.get( e 'expression_s ))
-                           (SAtom '\:\n_s)
-                        ))
-                     ))
-                  ))
-               ))
-            ))))
-            (set e (.set( e 'expression_s (SNil()) )))
-         ) (
+         (if false () (
             (match rhs (
                ()
                ( (App( (Lit( ':_s _ )) (App( (Var( '__uninitialized_s _ )) (AType tt) )) )) () )
