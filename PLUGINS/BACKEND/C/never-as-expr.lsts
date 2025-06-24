@@ -1,0 +1,10 @@
+
+let never-as-expr(e: Fragment, et: Type, blame: AST): Fragment = (
+   let into = mangle-c-type(et, blame);
+   if into != SAtom(c"void") {
+      e = e.set(c"expression",
+          SAtom(c"({") + e.get(c"expression") + SAtom(c";")
+        + into + SAtom(c" rvalue; rvalue;})"));
+   };
+   e
+);
