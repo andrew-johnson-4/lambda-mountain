@@ -12,7 +12,6 @@ import PLUGINS/BACKEND/C/compile-c-typedef.lm;
 import PLUGINS/BACKEND/C/compile-finish.lsts;
 import PLUGINS/BACKEND/C/compile-program-ordered.lm;
 import PLUGINS/BACKEND/C/compile-write.lsts;
-import PLUGINS/BACKEND/C/cc-args.lm;
 import PLUGINS/BACKEND/C/cc-blob.lm;
 import PLUGINS/BACKEND/C/blob-render.lm;
 import PLUGINS/BACKEND/C/mangle-c-type.lm;

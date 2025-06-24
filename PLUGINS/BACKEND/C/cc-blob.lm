@@ -8,9 +8,9 @@ cc-blob := λ(: caller-ctx FContext)(: function-name String)(: args AST)(: offse
    (match f (
       ()
       ( (Glb( _ (Abs( lhs rhs tlt )) )) (
-         (let e1 (cc-args( global-ctx caller-ctx lhs args offset )))
-         (set offset (.2 e1))
-         (let tmp-cc-e1 (.1 e1)) (let callee-ctx (.2 tmp-cc-e1)) (set caller-ctx (.1 tmp-cc-e1))
+         (let e1 (std-c-compile-args( global-ctx caller-ctx lhs args )))
+         (let callee-ctx (.first e1))
+         (set caller-ctx (.second e1))
          (set r (blob-render( callee-ctx rhs r offset )))
          (set.type( r (.range(typeof f)) ))
          (set.context( r (close caller-ctx) ))
