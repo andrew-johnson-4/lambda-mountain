@@ -17,7 +17,7 @@ compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
          ) (
             (if (||( (.is-open kt) (||( (.is-t( tlt 'Blob_s )) (||( (.is-t( tlt 'FFI_s )) (.is-t( tlt 'Prop_s )) )) )) )) () (
                (let args-type (.domain kt))
-               (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 (.is-t( tlt 'Blob_s )) )))
+               (set ctx (std-c-compile-destructure-args( ctx lhs (.is-t( tlt 'Blob_s )) )))
                (let e (mk-fragment()))
                (let function-name (mangle-identifier( k kt )))
                (set e (compile-expr( ctx rhs 0_i64 (Return()) )))
@@ -120,7 +120,8 @@ compile-global-main := λ(: ctx FContext)(: k String)(: term AST). (: (
          (let kt (typeof term))
 
          (let args-type (.domain kt))
-         (set ctx (compile-destructure-args( args-type ctx lhs 0_i64 (.is-t( tlt 'Blob_s )) )))
+
+         (set ctx (std-c-compile-destructure-args( ctx lhs (.is-t( tlt 'Blob_s )) )))
          (let e (mk-fragment()))
          (let function-name 'main_s)
          (set e (compile-expr( ctx rhs 0_i64 (Unused()) )))

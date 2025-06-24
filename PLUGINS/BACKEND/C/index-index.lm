@@ -5,8 +5,6 @@ import PLUGINS/BACKEND/C/compile-expr-direct.lm;
 import PLUGINS/BACKEND/C/compile-expr-direct.lm;
 import PLUGINS/BACKEND/C/compile-global.lm;
 import PLUGINS/BACKEND/C/compile-push-rvalue.lm;
-import PLUGINS/BACKEND/C/translate-local-variables.lm;
-import PLUGINS/BACKEND/C/compile-destructure-args.lm;
 import PLUGINS/BACKEND/C/compile-expr.lm;
 import PLUGINS/BACKEND/C/never-as-expr.lsts;
 import PLUGINS/BACKEND/C/compile-c-function-args.lm;
