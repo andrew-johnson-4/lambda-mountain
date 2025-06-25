@@ -40,7 +40,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ( (App( (Var( 'sizeof_s _ )) (AType tt) )) (
          (set e (mk-expression(
             (+( (SAtom '\[sizeof\[_s)
-                (+( (mangle-c-type( tt term )) (SAtom '\]\]_s) ))
+                (+( (std-c-mangle-type( tt term )) (SAtom '\]\]_s) ))
             ))
          )))
          (let et (&&(
@@ -60,7 +60,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (+(
                (+(
                   (SAtom '\[\[_s)
-                  (mangle-c-type( (typeof term) term ))
+                  (std-c-mangle-type( (typeof term) term ))
                ))
                (+(
                   (SAtom '\]\[_s)
