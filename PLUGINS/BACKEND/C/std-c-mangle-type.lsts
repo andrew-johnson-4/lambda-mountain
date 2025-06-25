@@ -36,6 +36,7 @@ let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
       TGround{tag:c"I16", parameters:[]} => SAtom(c"signed short");
       TGround{tag:c"I32", parameters:[]} => SAtom(c"signed int");
       TGround{tag:c"I64", parameters:[]} => SAtom(c"signed long");
+      TGround{tag:c"F64", parameters:[]} => SAtom(c"double");
       TGround{tag:c"String", parameters:[]} => SAtom(c"char*");
       TGround{tag:c"File", parameters:[]} => SAtom(c"FILE");
       TGround{tag:c"IO::File", parameters:[]} => SAtom(c"FILE*");
