@@ -1,6 +1,6 @@
 
 let never-as-expr(e: Fragment, et: Type, blame: AST): Fragment = (
-   let into = mangle-c-type(et, blame);
+   let into = std-c-mangle-type(et, blame);
    if into != SAtom(c"void") {
       e = e.set(c"expression",
           SAtom(c"({") + e.get(c"expression") + SAtom(c";")
