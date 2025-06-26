@@ -10,21 +10,48 @@ let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
    match tt {
       TAnd{ conjugate=conjugate } => (
          let is-c = can-unify(t2(c"C",ta), tt);
+         let modifiers = SNil();
          let result = SNil();
          for vector c in conjugate {
             if is-c && c.simple-tag != c"C" {} else {
-               let rt = std-c-mangle-type-internal(c, blame);
-               result = if non-zero(result) && non-zero(rt) then result + SAtom(c" ") + rt
-               else if non-zero(result) then result
-               else rt;
+               if c.simple-tag == c"C" {
+                  let rt = std-c-mangle-type-internal(c, blame);
+                  if non-zero(rt) then modifiers = modifiers + SAtom(c" ") + rt;
+               } else {
+                  let rt = std-c-mangle-type-internal(c, blame);
+                  if non-zero(rt) then result = rt;
+               }
             }
          };
-         result;
+         modifiers + result;
       );
       TAny{} => SNil();
       TGround{tag:c"Nil", parameters:[]} => SAtom(c"void");
       TGround{tag:c"Never", parameters:[]} => SAtom(c"void");
-      TGround{tag:c"Type", parameters:[inner-tt..]} => std-c-mangle-type-internal(inner-tt, blame);
+      TGround{tag:c"U8", parameters:[]} => SAtom(c"char");
+      TGround{tag:c"U16", parameters:[]} => SAtom(c"unsigned short");
+      TGround{tag:c"U32", parameters:[]} => SAtom(c"unsigned int");
+      TGround{tag:c"U64", parameters:[]} => SAtom(c"unsigned long");
+      TGround{tag:c"I8", parameters:[]} => SAtom(c"signed char");
+      TGround{tag:c"I16", parameters:[]} => SAtom(c"signed short");
+      TGround{tag:c"I32", parameters:[]} => SAtom(c"signed int");
+      TGround{tag:c"I64", parameters:[]} => SAtom(c"signed long");
+      TGround{tag:c"F64", parameters:[]} => SAtom(c"double");
+      TGround{tag:c"String", parameters:[]} => SAtom(c"char*");
+      TGround{tag:c"File", parameters:[]} => SAtom(c"FILE");
+      TGround{tag:c"IO::File", parameters:[]} => SAtom(c"FILE*");
+      TGround{tag:c"PID", parameters:[]} => SAtom(c"pid_t");
+      TGround{tag:c"Regex", parameters:[]} => SAtom(c"regex_t");
+      TGround{tag:c"C_regex__t_*_", parameters:[]} => SAtom(c"regex_t*");
+      TGround{tag:c"C_char", parameters:[]} => SAtom(c"char");
+      TGround{tag:c"C_int", parameters:[]} => SAtom(c"int");
+      TGround{tag:c"C_char_*", parameters:[]} => SAtom(c"char*");
+      TGround{tag:c"C_size__t_", parameters:[]} => SAtom(c"size_t");
+      TGround{tag:c"C_regmatch__t_*", parameters:[]} => SAtom(c"regmatch_t*");
+      TGround{tag:c"C_regmatch__t_", parameters:[]} => SAtom(c"regmatch_t");
+      TGround{tag:c"DefaultPrintable", parameters:[]} => SNil;
+      TGround{tag:c"Type", parameters:[inner-tt..]} => SAtom(c"int");
+      TGround{tag:c"Array", parameters:[_.. TAny{}..]} => SAtom(c"void*");
       TGround{tag:c"Array", parameters:[_.. array-base..]} => (
          if array-base.is-arrow
          then std-c-mangle-type-internal(array-base, blame)

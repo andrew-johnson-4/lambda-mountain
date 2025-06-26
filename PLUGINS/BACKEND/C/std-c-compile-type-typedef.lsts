@@ -12,8 +12,8 @@ let std-c-compile-type-typedef(td: AST): Nil = (
 
    if cases.length > 0 {
    for concrete-type in concrete-type-instances-index.lookup(lhs-type.ground-tag-and-arity, [] : List<Type>) {
-      assemble-header-section = assemble-header-section + SAtom(c"typedef struct ") + mangle-c-type(concrete-type, td)
-                              + SAtom(c" ") + mangle-c-type(concrete-type, td) + SAtom(c";\n");
+      assemble-header-section = assemble-header-section + SAtom(c"typedef struct ") + std-c-mangle-type(concrete-type, td)
+                              + SAtom(c" ") + std-c-mangle-type(concrete-type, td) + SAtom(c";\n");
       let tctx = unify(lhs-type, concrete-type);
       continue-compile-c-typedefs-concrete = cons( (tctx, concrete-type, td), continue-compile-c-typedefs-concrete );
    }};
@@ -43,7 +43,7 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
    } else {
       is-cstruct-hard-compiled-index = is-cstruct-hard-compiled-index.bind(concrete-type, 1_u64);
 
-      assemble-types-section = assemble-types-section + SAtom(c"struct ") + mangle-c-type(concrete-type, td) + SAtom(c"{\n");
+      assemble-types-section = assemble-types-section + SAtom(c"struct ") + std-c-mangle-type(concrete-type, td) + SAtom(c"{\n");
       
       let has-cases = false;
       for vector Tuple{case-tag=first, case-fields=second} in cases {
@@ -51,7 +51,7 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
             for vector Tuple{field-name=first, field-type=second} in case-fields {
                let mangled-field-name = c"0_" + field-name;
                field-type = substitute(tctx, field-type);
-               (let pre-tt, let post-tt) = mangle-c-declaration(field-type, td);
+               (let pre-tt, let post-tt) = std-c-mangle-declaration(field-type, td);
                assemble-types-section = assemble-types-section + SAtom(c"  ") + pre-tt + SAtom(c" ") + mangle-identifier(mangled-field-name) + post-tt + SAtom(c";\n");
             }
          } else has-cases = true;
@@ -68,7 +68,7 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
                for vector Tuple{field-name=first, field-type=second} in case-fields {
                   let mangled-field-name = to-string(case-number) + c"_" + field-name;
                   field-type = substitute(tctx, field-type);
-                  (let pre-tt, let post-tt) = mangle-c-declaration(field-type, td);
+                  (let pre-tt, let post-tt) = std-c-mangle-declaration(field-type, td);
                   assemble-types-section = assemble-types-section + SAtom(c"      ") + pre-tt + SAtom(c" ") + mangle-identifier(mangled-field-name) + post-tt + SAtom(c";\n");
                };
                assemble-types-section = assemble-types-section + SAtom(c"    };\n");
