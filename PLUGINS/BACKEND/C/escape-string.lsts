@@ -1,0 +1,35 @@
+
+let escape-string(s: CString): CString = (
+   let e = SNil;
+   while head-string(s) {
+      if head-string(s) == 92 {
+         s = tail-string(s);
+         match head-string(s) {
+            58 => e = e + SAtom(c";");   # \: -> ;
+            91 => e = e + SAtom(c"(");   # \[ -> (
+            92 => e = e + SAtom(c"\\");  # \\ -> \
+            93 => e = e + SAtom(c")");   # \] -> )
+            96 => e = e + SAtom(c"'");   # \` -> '
+            110 => e = e + SAtom(c"\n"); # \n -> [newline]
+            111 => e = e + SAtom(c"#");  # \o -> #
+            116 => e = e + SAtom(c"\t"); # \t -> [tab]
+            115 => e = e + SAtom(c" ");  # \s -> [space]
+            c => fail("Illegal Escape Sequence In String: \{c}\n");
+         };
+         s = tail-string(s);
+      } else {
+         e = e + SAtom(clone-rope(head-string(s)));
+         s = tail-string(s);
+      }
+   };
+   clone-rope(e)
+);
+
+let escape-string(s: S): S = (
+   match s {
+      SAtom{atom=atom} => SAtom(escape-string(atom));
+      SCons{left=left, right=right} => escape-string(left) + escape-string(right);
+      _ => SNil;
+   }
+);
+
