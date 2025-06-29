@@ -9,7 +9,7 @@ import PLUGINS/BACKEND/C/compile-expr.lm;
 import PLUGINS/BACKEND/C/never-as-expr.lsts;
 import PLUGINS/BACKEND/C/compile-c-typedef.lm;
 import PLUGINS/BACKEND/C/compile-finish.lsts;
-import PLUGINS/BACKEND/C/compile-program-ordered.lm;
+import PLUGINS/BACKEND/C/compile-program-ordered.lsts;
 import PLUGINS/BACKEND/C/compile-write.lsts;
 import PLUGINS/BACKEND/C/cc-blob.lm;
 import PLUGINS/BACKEND/C/blob-render.lm;

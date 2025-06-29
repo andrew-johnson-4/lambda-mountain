@@ -1,0 +1,18 @@
+
+let compile-program-ordered(global-ctx: FContext, program: AST): Nil = (
+   for vector g in program.unroll-seq { match g {
+      Glb{ key=key, val=val } => (
+         if not(typeof(def-to-sym(g)).is-open) then compile-global(global-ctx, key.key, val);
+      );
+      ASTEOF{} => ();
+      ASTNil{} => ();
+      AType{} => ();
+      Meta{} => ();
+      t => (
+         let e = compile-expr(global-ctx, t, 0, Used);
+         let text = e.get(c"frame") + e.get(c"expression") + SAtom(c";\n");
+         assemble-global-initializer-section = assemble-global-initializer-section + text;
+      );
+   }};
+   if non-zero(compile-global-c-main-term) then compile-global-main(global-ctx, c"main", compile-global-c-main-term);
+);
