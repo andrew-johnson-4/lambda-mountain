@@ -1,9 +1,9 @@
 
-let std-c-compile-call(ctx: FContext, fname: CString, fterm: AST, return-hint-if-constructor: Type, args: AST): Fragment = (
-   if non-zero(return-hint-if-constructor) {
-      fterm = find-global-constructor(fname, return-hint-if-constructor, typeof(args), args);
+let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor: Type, args: AST): Fragment = (
+   let fterm = if non-zero(return-hint-if-constructor) {
+      find-global-constructor(fname, return-hint-if-constructor, typeof(args), args);
    } else {
-      fterm = find-global-callable(fname, typeof(args), args);
+      find-global-callable(fname, typeof(args), args);
    };
    if not(non-zero(fterm)) then fail("std-c-compile-call Function was null: \{fterm}\nArguments: \{typeof(args)}\n");
    if typeof(fterm).is-t(c"Blob") {
@@ -34,4 +34,5 @@ let std-c-compile-call(ctx: FContext, fname: CString, fterm: AST, return-hint-if
       }; r
    }
 );
+
 

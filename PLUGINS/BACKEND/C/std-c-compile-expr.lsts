@@ -66,7 +66,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                guid = uuid();
                compile-smart-string-index = compile-smart-string-index.bind(val,guid);
                let lit = mk-lit(val); ascript-normal(lit, t1(c"String"));
-               let intern-ss = std-c-compile-call(ctx, c"intern", find-global-callable(c"intern", t1(c"String"), t), ta, lit);
+               let intern-ss = std-c-compile-call(ctx, c"intern", ta, lit);
                assemble-header-section = assemble-header-section +
                std-c-mangle-type(typeof(t), t) + SAtom(c" ") + SAtom(guid) + SAtom(c";\n");
                assemble-string-initializer-section = assemble-string-initializer-section +
@@ -82,11 +82,9 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             val.escape-as-cstring + SAtom(c", REG_EXTENDED); if(return_code){ fprintf(stderr,\"Could not compile regex.\"); exit(1);}};\n");
             mk-expression(rgx-id);
          } else if tt.is-type && tt.is-t(c"List") && val==c"LEOF" {
-            let fterm = find-global-constructor(val, typeof(t), t1(c"Nil"), t);
-            std-c-compile-call(ctx, val, fterm, typeof(t), mk-nil());
+            std-c-compile-call(ctx, val, typeof(t), mk-nil());
          } else if tt.is-type && tt.is-t(c"HashtableEq") && val==c"HashtableEqEOF" {
-            let fterm = find-global-constructor(val, typeof(t), t1(c"Nil"), t);
-            std-c-compile-call(ctx, val, fterm, typeof(t), mk-nil());
+            std-c-compile-call(ctx, val, typeof(t), mk-nil());
          } else { match val {
             c"True" => mk-expression(c"(1)");
             c"False" => mk-expression(c"(0)");
@@ -129,8 +127,8 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       App{ is-cons=is-cons, left=left, right=right } => (
           if not(is-cons) && typeof(left).is-arrow {
              match left {
-                Var{fname=key} => std-c-compile-call(ctx, fname, left, ta, right);
-                App{ left:Var{fname=key}, right:App{ inner-term=left, right:AType{tt=tt} } } => std-c-compile-call(ctx, fname, left, ta, inner-term);
+                Var{fname=key} => std-c-compile-call(ctx, fname, ta, right);
+                App{ left:Var{fname=key}, right:App{ inner-term=left, right:AType{tt=tt} } } => std-c-compile-call(ctx, fname, ta, inner-term);
                 Lit{fname=key} => std-c-compile-constructor(ctx, fname, left, right);
                 App{ left:Lit{fname=key}, right:App{ inner-term=left, right:AType{tt=tt} } } => std-c-compile-constructor(ctx, fname, left, inner-term);
                 _ => (

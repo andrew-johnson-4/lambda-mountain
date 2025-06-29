@@ -25,16 +25,14 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                   (set e (compile-expr( ctx t stack-offset (Used()) )))
                ) )
                ( (TGround( 'Array_s (LCons( TAny (LCons( inner-tt LEOF )) )) )) (
-                  (let fterm (var-to-def o-t))
-                  (set e (std-c-compile-call( ctx 'open_s fterm ta t )))
+                  (set e (std-c-compile-call( ctx 'open_s ta t )))
                ))
                ( (TGround( 'Array_s (LCons( array-length (LCons( inner-tt LEOF )) )) )) (
                   (set e (compile-expr( ctx t stack-offset (Used()) )))
                ))
             ))
          ) (
-            (let fterm (var-to-def o-t))
-            (set e (std-c-compile-call( ctx 'open_s fterm ta t )))
+            (set e (std-c-compile-call( ctx 'open_s ta t )))
          ))
       ))
       ( (App( (Var( 'sizeof_s _ )) (AType tt) )) (
@@ -160,18 +158,15 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (match f (
                ()
                ( (Var( fname _ )) (
-                  (let fterm (var-to-def f))
-                  (set e (std-c-compile-call( ctx fname fterm ta a )))
+                  (set e (std-c-compile-call( ctx fname ta a )))
                ))
                ( (Lit( fname _ )) (
                   (let return-type (normalize(typeof term)))
-                  (let fterm (find-global-constructor( fname ta (typeof a) term )))
-                  (set e (std-c-compile-call( ctx fname fterm return-type a )))
+                  (set e (std-c-compile-call( ctx fname return-type a )))
                ))
                ( (App( (Lit( ':_s _ )) (App( (Lit( fname _ )) (AType ft) )) )) (
                   (let return-type (normalize(typeof term)))
-                  (let fterm (find-global-constructor( fname ft (typeof a) term )))
-                  (set e (std-c-compile-call( ctx fname fterm return-type a )))
+                  (set e (std-c-compile-call( ctx fname return-type a )))
                ))
                ( _ (
                   (let call (compile-expr( ctx f stack-offset (Unused()) )))
