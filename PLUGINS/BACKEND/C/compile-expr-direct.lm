@@ -25,16 +25,14 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
                   (set e (compile-expr( ctx t stack-offset (Used()) )))
                ) )
                ( (TGround( 'Array_s (LCons( TAny (LCons( inner-tt LEOF )) )) )) (
-                  (let fterm (var-to-def o-t))
-                  (set e (std-c-compile-call( ctx 'open_s fterm ta t )))
+                  (set e (std-c-compile-call( ctx 'open_s t )))
                ))
                ( (TGround( 'Array_s (LCons( array-length (LCons( inner-tt LEOF )) )) )) (
                   (set e (compile-expr( ctx t stack-offset (Used()) )))
                ))
             ))
          ) (
-            (let fterm (var-to-def o-t))
-            (set e (std-c-compile-call( ctx 'open_s fterm ta t )))
+            (set e (std-c-compile-call( ctx 'open_s t )))
          ))
       ))
       ( (App( (Var( 'sizeof_s _ )) (AType tt) )) (
@@ -74,7 +72,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
       ))
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
          (let rsp-offset (+( stack-offset -8_i64 )))
-         (let ec (cc-blob( ctx 'into-branch-conditional_s cond rsp-offset )))
+         (let ec (std-c-compile-call( ctx 'into-branch-conditional_s cond )))
          (let et (compile-expr( (open(.context ec)) t 0_i64 (Tail()) )))
          (let end-offset 0_i64)
          (set.type( et (typeof t) ))
@@ -99,7 +97,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (t1 'BranchConditional_s)
          )))
 
-         (set e (cc-blob( ctx 'primitive::if_s a-tt stack-offset term )))
+         (set e (cc-blob( ctx 'primitive::if_s a-tt term )))
 
          (set.context( e (.context et) ))
          (set.type( e (typeof term) ))
@@ -160,18 +158,15 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
             (match f (
                ()
                ( (Var( fname _ )) (
-                  (let fterm (var-to-def f))
-                  (set e (std-c-compile-call( ctx fname fterm ta a )))
+                  (set e (std-c-compile-call( ctx fname a )))
                ))
                ( (Lit( fname _ )) (
                   (let return-type (normalize(typeof term)))
-                  (let fterm (find-global-constructor( fname ta (typeof a) term )))
-                  (set e (std-c-compile-call( ctx fname fterm return-type a )))
+                  (set e (std-c-compile-call( ctx fname return-type a )))
                ))
                ( (App( (Lit( ':_s _ )) (App( (Lit( fname _ )) (AType ft) )) )) (
                   (let return-type (normalize(typeof term)))
-                  (let fterm (find-global-constructor( fname ft (typeof a) term )))
-                  (set e (std-c-compile-call( ctx fname fterm return-type a )))
+                  (set e (std-c-compile-call( ctx fname return-type a )))
                ))
                ( _ (
                   (let call (compile-expr( ctx f stack-offset (Unused()) )))

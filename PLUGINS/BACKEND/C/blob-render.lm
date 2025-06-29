@@ -185,7 +185,7 @@ blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: off
                      (let e1 (blob-render-simple( ctx (tail-string fname) a offset )))
                      (set r (.1 e1))
                   ) (
-                     (let e (cc-blob( ctx fname a offset )))
+                     (let e (std-c-compile-call( ctx fname a )))
                      (set r (.get( e context-key )))
                   ))
                ))
