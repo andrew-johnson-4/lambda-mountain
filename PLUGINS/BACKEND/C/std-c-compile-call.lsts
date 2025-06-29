@@ -1,4 +1,6 @@
 
+let std-c-compile-call(ctx: FContext, fname: CString, args: AST): Fragment = std-c-compile-call(ctx, fname, ta, args);
+
 let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor: Type, args: AST): Fragment = (
    let fterm = if non-zero(return-hint-if-constructor) {
       find-global-constructor(fname, return-hint-if-constructor, typeof(args), args);
