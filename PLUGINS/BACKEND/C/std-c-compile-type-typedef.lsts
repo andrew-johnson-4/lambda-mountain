@@ -80,3 +80,43 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
       assemble-types-section = assemble-types-section + SAtom(c"};\n");
    };
 );
+
+let is-incomplete-typedef(tt: Type): U64 = (
+   match tt {
+      TAnd{conjugate=conjugate} => (
+         let r = 0_u64;
+         for vector c in conjugate { r = r || is-incomplete-typedef(c) };
+         r
+      );
+      TAny{} => false;
+      TVar{} => false;
+      TGround{tag:"Array"} => false;
+      TGround{} => complex-type-index.lookup(tt.ground-tag-and-arity,false)
+                && not(is-cstruct-hard-compiled-index.lookup(tt, false));
+   }
+);
+
+let continue-compile-c-typedefs-concrete = [] : List<(TypeContext?,Type,AST)>;
+let continue-compile-c-typedefs-count = 0_u64;
+let is-cstruct-hard-compiled-index = {} : HashtableEq<Type,U64>;
+
+let try-continue-compile-c-typedefs(): Nil = (
+   let continue = continue-compile-c-typedefs-concrete;
+   continue-compile-c-typedefs-concrete = [] : List<(TypeContext?,Type,AST)>;
+   while non-zero(continue) {
+      continue-compile-c-typedefs-count = continue-compile-c-typedefs-count + 1;
+      if continue-compile-c-typedefs-count > 100
+      then (
+         eprint("Unable To Resolve Circular Type Dependency During Compilation\n");
+         for Tuple{base-type=second} in continue {
+            eprint("Typedef: \{base-type}\n")
+         };
+         exit(1);
+      );
+      for Tuple{tctx=first, base-type=second, body=third} in continue {
+         if not(base-type.is-open) then std-c-compile-type-typedef-concrete(tctx, base-type, body);
+      };
+      continue = continue-compile-c-typedefs-concrete;
+      continue-compile-c-typedefs-concrete = [] : List<(TypeContext?,Type,AST)>;
+   }
+);
