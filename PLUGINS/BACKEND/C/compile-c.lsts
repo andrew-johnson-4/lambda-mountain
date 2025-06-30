@@ -1,0 +1,39 @@
+
+let plugins-backend-c-compile(): Nil = (
+   for vector program-term in ast-parsed-program.unroll-seq { match program-term {
+      Glb{ key=key, rhs=val } => (
+         if key.key==c"main" then assemble-argv-referenced = true;
+         let fragment = mk-fragment();
+         let kt = typeof(rhs);
+         if not(kt.is-open) {
+            if kt.is-t(c"Blob") {
+               fragment.term = rhs;
+               global-ctx = global-ctx.bind(key.key, kt, fragment);
+               std-c-fragment-context = std-c-fragment-context.bind(def-to-sym(program-term), fragment);
+            } else {
+               let clean-tt = kt.without-tag;
+               let mid = mangle-identifier(key.key, clean-tt);
+               fragment = fragment.set(c"fragment-type", SAtom(c"Global"));
+               fragment = fragment.set(c"expression", SAtom(mid));
+               if kt.is-arrow {
+                  global-ctx = global-ctx.bind(key.key, kt, fragment);
+                  std-c-fragment-context = std-c-fragment-context.bind(def-to-sym(program-term), fragment);
+               } else {
+                  let repr-tt = clean-tt && t1(c"GlobalVariable");
+                  global-ctx = global-ctx.bind(key.key, repr-tt, fragment);
+                  std-c-fragment-context = std-c-fragment-context.bind(def-to-sym(program-term), fragment);
+               }
+            }
+         }
+      );
+      _ => ();
+   }};
+   for vector program-term in ast-parsed-program.unroll-seq { match program-term {
+      Typedef2{} => std-c-compile-type-typedef(program-term);
+      _ => ();
+   }};
+   try-continue-compile-c-typedefs();
+   compile-program-ordered(global-ctx, ast-parsed-program);
+   std-c-compile-finish();
+   std-c-compile-write();
+);
