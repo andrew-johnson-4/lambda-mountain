@@ -23,40 +23,5 @@ try-continue-compile-c-typedefs := λ. (: (
    ))
 ) Nil);
 
-is-incomplete-typedef := λ(: tt Type). (: (
-   (let r 0_u64)
-   (match tt (
-      ()
-      ( (TGround( 'Cons_s (LCons( p1 (LCons( p2 LEOF )) )) )) (
-         (set r (||( (is-incomplete-typedef p1) (is-incomplete-typedef p2) )))
-      ))
-      ( (TAnd( conjugate )) (
-         (for-each-v (c in conjugate) (set r (||( r (is-incomplete-typedef c) ))))
-      ))
-      ( TAny () )
-      ( (TVar _) () )
-      ( (TGround( 'Nil_s _ )) () )
-      ( (TGround( 'Never_s _ )) () )
-      ( (TGround( 'U8_s _ )) () )
-      ( (TGround( 'U16_s _ )) () )
-      ( (TGround( 'U32_s _ )) () )
-      ( (TGround( 'U64_s _ )) () )
-      ( (TGround( 'I8_s _ )) () )
-      ( (TGround( 'I16_s _ )) () )
-      ( (TGround( 'I32_s _ )) () )
-      ( (TGround( 'I64_s _ )) () )
-      ( (TGround( 'String_s _ )) () )
-      ( (TGround( 'File_s _ )) () )
-      ( (TGround( 'Array_s _ )) () )
-      ( (TGround( 'Arrow_s _ )) () )
-      ( (TGround( _ _ )) (
-         (if (.lookup( is-cstruct-hard-compiled-index tt 0_u64 )) () (
-            (set r 1_u64)
-         ))
-      ))
-   ))
-   r
-) U64);
-
 is-cstruct-hard-compiled-index := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<Type,U64>[]) )) HashtableEq<Type,U64>);
 

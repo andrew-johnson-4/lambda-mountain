@@ -80,3 +80,18 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
       assemble-types-section = assemble-types-section + SAtom(c"};\n");
    };
 );
+
+let is-incomplete-typedef(tt: Type): U64 = (
+   match tt {
+      TAnd{conjugate=conjugate} => (
+         let r = 0_u64;
+         for vector c in conjugate { r = r || is-incomplete-typedef(c) };
+         r
+      );
+      TAny{} => false;
+      TVar{} => false;
+      TGround{tag:"Array"} => false;
+      TGround{} => complex-type-index.lookup(tt.ground-tag-and-arity,false)
+                && not(is-cstruct-hard-compiled-index.lookup(tt, false));
+   }
+);
