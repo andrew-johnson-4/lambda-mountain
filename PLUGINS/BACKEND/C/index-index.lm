@@ -6,7 +6,6 @@ import PLUGINS/BACKEND/C/compile-expr-direct.lm;
 import PLUGINS/BACKEND/C/compile-global.lm;
 import PLUGINS/BACKEND/C/compile-expr.lm;
 import PLUGINS/BACKEND/C/never-as-expr.lsts;
-import PLUGINS/BACKEND/C/compile-c-typedef.lm;
 import PLUGINS/BACKEND/C/compile-finish.lsts;
 import PLUGINS/BACKEND/C/compile-program-ordered.lsts;
 import PLUGINS/BACKEND/C/compile-write.lsts;

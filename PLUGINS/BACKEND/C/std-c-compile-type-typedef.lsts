@@ -95,3 +95,28 @@ let is-incomplete-typedef(tt: Type): U64 = (
                 && not(is-cstruct-hard-compiled-index.lookup(tt, false));
    }
 );
+
+let continue-compile-c-typedefs-concrete = [] : List<(TypeContext?,Type,AST)>;
+let continue-compile-c-typedefs-count = 0_u64;
+let is-cstruct-hard-compiled-index = {} : HashtableEq<Type,U64>;
+
+let try-continue-compile-c-typedefs(): Nil = (
+   let continue = continue-compile-c-typedefs-concrete;
+   continue-compile-c-typedefs-concrete = [] : List<(TypeContext?,Type,AST)>;
+   while non-zero(continue) {
+      continue-compile-c-typedefs-count = continue-compile-c-typedefs-count + 1;
+      if continue-compile-c-typedefs-count > 100
+      then (
+         eprint("Unable To Resolve Circular Type Dependency During Compilation\n");
+         for Tuple{base-type=second} in continue {
+            eprint("Typedef: \{base-type}\n")
+         };
+         exit(1);
+      );
+      for Tuple{tctx=first, base-type=second, body=third} in continue {
+         if not(base-type.is-open) then std-c-compile-type-typedef-concrete(tctx, base-type, body);
+      };
+      continue = continue-compile-c-typedefs-concrete;
+      continue-compile-c-typedefs-concrete = [] : List<(TypeContext?,Type,AST)>;
+   }
+);
