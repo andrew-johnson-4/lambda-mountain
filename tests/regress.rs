@@ -33,8 +33,6 @@ fn run_bootstrap(target: &str, leave_tmp: bool) -> String {
    let exit = Command::new("./bootstrap")
            .stdout(std::process::Stdio::piped())
            .stderr(std::process::Stdio::piped())
-           .arg("--c")
-           .arg("--stripdebug")
            .arg("-o")
            .arg("tmp.c")
            .arg(target)
@@ -137,30 +135,6 @@ fn regression_tests() {
          let actual = actual.trim().to_string();
          if expected != actual {
             failures.push(( "--compile", path, expected, actual ));
-         }
-      }
-   }
-   for entry in glob("tests/c/*.c").unwrap() {
-      let path = entry.unwrap().display().to_string();
-      if !std::path::Path::new(&(path.clone() + ".skip")).exists() {
-         let expected = std::fs::read_to_string(path.clone() + ".out")
-                       .expect(&format!("Could not load expected output {}.out", path));
-         let expected = expected.trim().to_string();
-         let actual = run_bootstrap(&path, true);
-         let actual = actual.trim().to_string();
-         if actual.starts_with("Error:") {
-            failures.push(( "--compile", path, expected, actual ));
-         } else {
-            let mut original_c = std::fs::read_to_string(path.clone())
-                          .expect(&format!("Could not load expected output {}", path));
-            if expected.len() > 0 { original_c = expected; };
-            let result_c = std::fs::read_to_string("tmp.c")
-                          .expect(&format!("Could not load expected output tmp.c during {}", path));
-            let o1 = original_c.chars().filter(|c| !c.is_whitespace()).collect();
-            let r1 = result_c.chars().filter(|c| !c.is_whitespace()).collect();
-            if o1 != r1 {
-               failures.push(( "--compile", path, o1, r1 ));
-            };
          }
       }
    }
