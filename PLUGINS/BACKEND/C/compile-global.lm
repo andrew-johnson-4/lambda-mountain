@@ -1,24 +1,7 @@
 
-compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
-   (compile-global-c( ctx k term ))
-) Nil);
-
 compile-global-c-has-main := 0_u64;
 
 compile-global-c-main-term := (mk-eof());
-
-compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
-   (let kt (typeof term))
-   (match term (
-      ()
-      ( (Abs( lhs rhs tlt )) (
-         (std-c-compile-global( ctx k term ))
-      ))
-      ( t (
-         (std-c-compile-global( ctx k term ))
-      ))
-   ))
-) Nil);
 
 compile-global-main := λ(: ctx FContext)(: k String)(: term AST). (: (
    (match term (
