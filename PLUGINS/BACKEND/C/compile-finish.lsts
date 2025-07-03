@@ -6,7 +6,7 @@ let std-c-compile-finish(): Nil = (
               + assemble-types-section
               + assemble-gdecl-section
               + assemble-text-section
-              + (if compile-global-c-has-main then SNil else 
+              + (if non-zero(compile-global-c-main-term) then SNil else 
                 SAtom(c"int main(){\n")
               + assemble-string-initializer-section
               + assemble-global-initializer-section

@@ -12,10 +12,9 @@ let std-c-finish-forced-imports(): S = (
    (if std-c-force-imports.has(c"string.h") then SAtom(c"#include <string.h>\n") else SNil())
 );
 
+let compile-global-c-main-term = mk-eof();
+
 let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
-   if k == c"main" {
-      compile-global-c-has-main = true;
-   };
    std-c-force-import-clib(c"string.h");
    if k==c"div_t" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"ldiv_t" then std-c-force-import-clib(c"stdlib.h")
@@ -38,8 +37,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    else if k==c"qsort" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"__compar_fn_t" then std-c-force-import-clib(c"stdlib.h")
    else if typeof(term).is-open || typeof(term).is-t(c"Blob") || typeof(term).is-t(c"FFI") || typeof(term).is-t(c"Prop") then ()
-   else if k==c"main" then {
-      compile-global-c-has-main = true;
+   else if k==c"main" && not(non-zero(compile-global-c-main-term)) then {
       compile-global-c-main-term = term;
    } else match term {
       App{left:Lit{key:c":"}, right:App{left:Var{key:c"__uninitialized"}, right:AType{tt=tt}}} => (
@@ -91,7 +89,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          }
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => (
-         if not(typeof(term).is-t(c"C-FFI_s")) {
+         if k!=c"main" && not(typeof(term).is-t(c"C-FFI_s")) {
             k = mangle-identifier(k, typeof(term));
          };
          ctx = std-c-compile-destructure-args( ctx, lhs, false );
@@ -109,7 +107,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
                text = text + SAtom(loc.filename);
                text = text + SAtom(c"\"\n");
             };
-            text = text + std-c-mangle-type(typeof(rhs), term);
+            if k==c"main" then text = text + SAtom(c"int")
+            else text = text + std-c-mangle-type(typeof(rhs), term);
             text = text + SAtom(c" ");
             text = text + SAtom(k);
             text = text + SAtom(c"(");
@@ -131,21 +130,19 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
                text = text + SAtom(loc.filename);
                text = text + SAtom(c"\"\n");
             };
-            text = text + std-c-mangle-type(typeof(rhs), term);
+            if k==c"main" then text = text + SAtom(c"int")
+            else text = text + std-c-mangle-type(typeof(rhs), term);
             text = text + SAtom(c" ");
             text = text + SAtom(k);
             text = text + SAtom(c"(");
             text = text + std-c-compile-function-args(ctx, lhs);
             text = text + SAtom(c")");
             
-            let inner-expr = if tt.is-t(c"C-FFI_s") {
-               std-c-compile-expr( ctx, rhs, false )
-            } else {
-               let e = compile-expr( ctx, rhs, 0, Return );
-               e = e.set(c"expression", SAtom(c"{") + e.get(c"frame") + e.get(c"expression") + SAtom(c"}"));
-               e
-            };
-            text = text + inner-expr.get(c"expression");
+            let e = compile-expr( ctx, rhs, 0, Return );
+            text = text + SAtom(c"{");
+            if k==c"main" then text = text + assemble-string-initializer-section + assemble-global-initializer-section;
+            text = text + e.get(c"frame") + e.get(c"expression") + SAtom(c"}");
+
             assemble-text-section = assemble-text-section + text + SAtom(c"\n");
          };
       );

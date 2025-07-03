@@ -14,5 +14,5 @@ let compile-program-ordered(global-ctx: FContext, program: AST): Nil = (
          assemble-global-initializer-section = assemble-global-initializer-section + text;
       );
    }};
-   if non-zero(compile-global-c-main-term) then compile-global-main(global-ctx, c"main", compile-global-c-main-term);
+   if non-zero(compile-global-c-main-term) then std-c-compile-global(global-ctx, c"main", compile-global-c-main-term);
 );
