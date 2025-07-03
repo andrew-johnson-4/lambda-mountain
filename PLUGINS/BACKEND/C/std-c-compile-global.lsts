@@ -43,6 +43,10 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
       compile-global-c-main-term = term;
    } else match term {
       App{left:Lit{key:c":"}, right:App{left:Var{key:c"__uninitialized"}, right:AType{tt=tt}}} => (
+         if not(tt.is-t(c"C-FFI")) && not(tt.is-t(c"C-Fragment")) {
+            let clean-tt = typeof(term).without-tag;
+            k = mangle-identifier(k, clean-tt);
+         };
          (let pre-decl, let post-decl) = std-c-mangle-declaration(tt, term);
          let text = SNil();
          text = text + pre-decl;
@@ -53,6 +57,10 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          assemble-gdecl-section = assemble-gdecl-section + text;
       );
       App{left:Lit{key:c":"}, right:App{t=left, right:AType{tt=tt}}} => (
+         if not(tt.is-t(c"C-FFI")) && not(tt.is-t(c"C-Fragment")) {
+            let clean-tt = typeof(term).without-tag;
+            k = mangle-identifier(k, clean-tt);
+         };
          let gend = false;
          if tt.is-t(c"C-Fragment") {
             match t {
@@ -70,14 +78,15 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             text = text + SAtom(c" ");
             text = text + SAtom(k);
             text = text + post-decl;
-            text = text + SAtom(c" = ");
-            let inner-expr = std-c-compile-expr( ctx, t, false );
-            text = text + inner-expr.get(c"expression");
             text = text + SAtom(c";\n");
+
+            let inner-expr = compile-expr( ctx, t, 0, Used );
             if can-unify(t2(c"C",t1(c"typedef")), tt) {
                assemble-header-section = assemble-header-section + text;
             } else {
                assemble-gdecl-section = assemble-gdecl-section + text;
+               text = SAtom(k) + SAtom(c" = ") + inner-expr.get(c"expression") + SAtom(c";\n");
+               assemble-global-initializer-section = assemble-global-initializer-section + text;
             }
          }
       );
@@ -141,7 +150,23 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          };
       );
       t => (
-         print("Unknown std-c-compile-global "); std-c-print(t); print("\n");
+         let tt = typeof(term);
+         if not(typeof(term).is-t(c"C-FFI")) && not(tt.is-t(c"C-Fragment")) {
+            k = mangle-identifier(k, tt);
+         };
+
+         (let pre-decl, let post-decl) = std-c-mangle-declaration(tt, term);
+         let text = SNil();
+         text = text + pre-decl;
+         text = text + SAtom(c" ");
+         text = text + SAtom(k);
+         text = text + post-decl;
+         text = text + SAtom(c";\n");
+         assemble-gdecl-section = assemble-gdecl-section + text;
+
+         let inner-expr = compile-expr( ctx, t, 0, Used );
+         text = SAtom(k) + SAtom(c" = ") + inner-expr.get(c"expression") + SAtom(c";\n");
+         assemble-global-initializer-section = assemble-global-initializer-section + text;
       );
    }
 );

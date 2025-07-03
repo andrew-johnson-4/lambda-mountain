@@ -2,7 +2,7 @@
 let compile-program-ordered(global-ctx: FContext, program: AST): Nil = (
    for vector g in program.unroll-seq { match g {
       Glb{ key=key, val=val } => (
-         if not(typeof(def-to-sym(g)).is-open) then compile-global(global-ctx, key.key, val);
+         if not(typeof(def-to-sym(g)).is-open) then std-c-compile-global(global-ctx, key.key, val);
       );
       ASTEOF{} => ();
       ASTNil{} => ();

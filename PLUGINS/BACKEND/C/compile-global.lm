@@ -1,60 +1,7 @@
 
-compile-global := λ(: ctx FContext)(: k String)(: term AST). (: (
-   (compile-global-c( ctx k term ))
-) Nil);
-
 compile-global-c-has-main := 0_u64;
 
 compile-global-c-main-term := (mk-eof());
-
-compile-global-c := λ(: ctx FContext)(: k String)(: term AST). (: (
-   (let kt (typeof term))
-   (match term (
-      ()
-      ( (Abs( lhs rhs tlt )) (
-         (std-c-compile-global( ctx k term ))
-      ))
-      ( t (
-         (if (.is-t( (typeof t) 'C-FFI_s )) (
-            (std-c-compile-global( ctx k term ))
-         ) (
-            (let clean-tt (.without-tag kt))
-            (let mid (mangle-identifier( k clean-tt )))
-
-            (let e (compile-expr( ctx t 0_i64 (Used()) )))
-
-            (let text (SNil()))
-            (match (.slot( kt 'Array_s )) (
-               ()
-               ( (TGround( 'Array_s (LCons( _ (LCons(
-                    (TGround( 'Arrow_s (LCons( ranget (LCons( domaint _ )) )) )) _
-                 )) )) )) (
-                  (set text (SCons( (close text) (close(std-c-mangle-type( ranget term ))) )))
-                  (set text (SCons( (close text) (close(SAtom '\s\[*_s)) )))
-                  (set text (SCons( (close text) (close(SAtom mid)) )))
-                  (set text (SCons( (close text) (close(SAtom '\]\[_s)) )))
-                  (set text (SCons( (close text) (close(std-c-mangle-type( domaint term ))) )))
-                  (set text (SCons( (close text) (close(SAtom '\]\:\n_s)) )))
-                  (set assemble-gdecl-section (SCons( (close assemble-gdecl-section) (close text) )))
-               ))
-               ( _ (
-                  (set text (SCons( (close text) (close(std-c-mangle-type( clean-tt term ))) )))
-                  (set text (SCons( (close text) (close(SAtom '\s_s)) )))
-                  (set text (SCons( (close text) (close(SAtom mid)) )))
-                  (set text (SCons( (close text) (close(SAtom '\:\n_s)) )))
-                  (set assemble-gdecl-section (SCons( (close assemble-gdecl-section) (close text) )))
-               ))
-            ))
-
-            (set text (SAtom mid))
-            (set text (SCons( (close text) (close(SAtom '=_s)) )))
-            (set text (SCons( (close text) (close(.get( e 'expression_s ))) )))
-            (set text (SCons( (close text) (close(SAtom '\:\n_s)) )))
-            (set assemble-global-initializer-section (SCons( (close assemble-global-initializer-section) (close text) )))
-         ))
-      ))
-   ))
-) Nil);
 
 compile-global-main := λ(: ctx FContext)(: k String)(: term AST). (: (
    (match term (
