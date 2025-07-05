@@ -22,36 +22,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (std-c-compile-expr( ctx term false )))
       ))
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
-         (let rsp-offset (+( stack-offset -8_i64 )))
-         (let ec (std-c-compile-call( ctx 'into-branch-conditional_s cond )))
-         (let et (compile-expr( (open(.context ec)) t 0_i64 (Tail()) )))
-         (let end-offset 0_i64)
-         (set.type( et (typeof t) ))
-         (let ef (compile-expr( (open(.context ec)) f 0_i64 (Tail()) )))
-         (set.type( ef (typeof f) ))
-         (if (.is-t( (typeof f) 'Never_s )) (
-            (set ef (never-as-expr( ef (typeof t) term )))
-         ) ())
-
-         (let ictx (mk-fragment()))
-         (set.type( ictx (t1( 'ImplicitContext_s )) ))
-        
-         (set ctx (.bind( ctx 'ictx_s (t1 'ImplicitContext_s) ictx )))
-         (set ctx (.bind( ctx 'c_s (t1 'BranchConditional_s) ec )))
-         (set ctx (.bind( ctx 't_s (typeof t) et )))
-         (set ctx (.bind( ctx 'f_s (typeof f) ef )))
-         (let a-tt (t3( 'Cons_s 
-            (t3( 'Cons_s 
-               (t3( 'Cons_s (t1 'ImplicitContext_s) (typeof f) ))
-               (typeof t)
-            ))
-            (t1 'BranchConditional_s)
-         )))
-
-         (set e (cc-blob( ctx 'primitive::if_s a-tt term )))
-
-         (set.context( e (.context et) ))
-         (set.type( e (typeof term) ))
+         (set e (std-c-compile-expr( ctx term false )))
       ))
       ( (App( (Abs( (@( lhs-t (Var( lhs _ )) )) ASTNil tlt )) rhs )) (
          (let rtype (.without-modifiers(typeof lhs-t)))
