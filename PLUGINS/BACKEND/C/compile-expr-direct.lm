@@ -6,66 +6,6 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
    (set.context( e (close ctx) ))
    (match term (
       ()
-      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
-         (set e (std-c-compile-expr( ctx term false )))
-      ))
-      ( (App( (Var( 'scope_s _ )) t )) (
-         (set e (std-c-compile-expr( ctx term false )))
-      ))
-      ( (App( (@( o-t (Var( 'open_s _ )) )) t )) (
-         (set e (std-c-compile-expr( ctx term false )))
-      ))
-      ( (App( (Var( 'sizeof_s _ )) (AType tt) )) (
-         (set e (std-c-compile-expr( ctx term false )))
-      ))
-      ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
-         (set e (std-c-compile-expr( ctx term false )))
-      ))
-      ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
-         (set e (std-c-compile-expr( ctx term false )))
-      ))
-      ( (App( (Abs( (@( lhs-t (Var( lhs _ )) )) ASTNil tlt )) rhs )) (
-         (set e (std-c-compile-expr( ctx term false )))
-      ))
-      ( (App( is-cons f a )) (
-         (if (&&( (not is-cons) (.is-arrow(typeof f)) )) (
-            (match f (
-               ()
-               ( (Var( fname _ )) (
-                  (set e (std-c-compile-call( ctx fname a )))
-               ))
-               ( (Lit( fname _ )) (
-                  (let return-type (normalize(typeof term)))
-                  (set e (std-c-compile-call( ctx fname return-type a )))
-               ))
-               ( (App( (Lit( ':_s _ )) (App( (Lit( fname _ )) (AType ft) )) )) (
-                  (let return-type (normalize(typeof term)))
-                  (set e (std-c-compile-call( ctx fname return-type a )))
-               ))
-               ( _ (
-                  (let call (compile-expr( ctx f stack-offset (Unused()) )))
-                  (let args (std-c-compile-push-args( ctx a )))
-                  (set e (std-c-chain( call args false )))
-                  (set e (.set( e 'expression_s (+(
-                     (+( (.get( call 'expression_s )) (SAtom '\[_s) ))
-                     (+( (.get( args 'expression_s )) (SAtom '\]_s) ))
-                  )))))
-               ))
-            ))
-         ) (
-            (if (is( used (Unused()) )) (scope(
-               (let e1 (compile-expr( ctx f stack-offset (Unused()) )))
-               (let e2 (compile-expr( (open(.context e1)) a 0_i64 (Unused()) )))
-               (set e (std-c-chain( e1 e2 false )))
-               (set.type( e (typeof term) ))
-            )) (scope(
-               (let e1 (compile-expr( ctx f stack-offset (Unused()) )))
-               (let e2 (compile-expr( (open(.context e1)) a 0_i64 (Used()) )))
-               (set e (std-c-chain( e1 e2 false )))
-               (set.type( e (typeof term) ))
-            )))
-         ))
-      ))
       ( _ (set e (std-c-compile-expr( ctx term false ))) )
    ))
    e
