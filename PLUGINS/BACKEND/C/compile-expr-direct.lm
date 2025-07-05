@@ -25,55 +25,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (std-c-compile-expr( ctx term false )))
       ))
       ( (App( (Abs( (@( lhs-t (Var( lhs _ )) )) ASTNil tlt )) rhs )) (
-         (let rtype (.without-modifiers(typeof lhs-t)))
-         (let fr (mk-expression(uuid())))
-         (set std-c-fragment-context (.bind( std-c-fragment-context lhs-t fr )))
-         (set ctx (.bind( ctx lhs rtype fr )))
-         (let prepost (std-c-mangle-declaration( rtype term )))
-         (if false () (
-            (match rhs (
-               ()
-               ( (App( (Lit( ':_s _ )) (App( (Var( '__uninitialized_s _ )) (AType tt) )) )) () )
-               ( _ (
-                  (set e (compile-expr( ctx rhs stack-offset (Used()) )))
-                  (set e (.set( e 'expression_s (
-                     (+(
-                        (+(
-                           (SAtom '\[{_s)
-                           (.get( fr 'expression_s ))
-                        ))
-                        (+(
-                           (SAtom '=_s)
-                           (+(
-                              (.get( e 'expression_s ))
-                              (SAtom '\:\[{}\]\:}\]\n_s)
-                           ))
-                        ))
-                     ))
-                  ))))
-               ))
-            ))
-            (set e (.set( e 'frame_s (
-               (+(
-                  (.get( e 'frame_s ))
-                  (+(
-                     (+(
-                        (.first prepost)
-                        (SAtom '\s_s)
-                     ))
-                     (+(
-                        (.get( fr 'expression_s ))
-                        (+(
-                           (.second prepost)
-                           (SAtom '\:\n_s)
-                        ))
-                     ))
-                  ))
-               ))
-            ))))
-         ))
-         (set.context( e (close ctx) ))
-         (set.type( e (typeof term) ))
+         (set e (std-c-compile-expr( ctx term false )))
       ))
       ( (App( is-cons f a )) (
          (if (&&( (not is-cons) (.is-arrow(typeof f)) )) (

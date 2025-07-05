@@ -16,7 +16,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          }
       );
       App{ left:Abs{lhs=lhs:Var{name=key}, rhs:ASTNil{}}, rhs=right } => (
-         let lt = typeof(lhs);
+         let lt = typeof(lhs).without-modifiers;
          let v = mk-fragment().set(c"expression",if std-c-is-ctype(lt) then SAtom(name) else SAtom(uuid()));
          let f = mk-fragment();
          std-c-fragment-context = std-c-fragment-context.bind( lhs, v );
@@ -32,14 +32,14 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          match rhs {
             App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{tt=tt} } } => ();
             _ => (
-               let rf = std-c-compile-expr(ctx, rhs, false);
+               let rf = compile-expr(ctx, rhs, 0, Used);
                f = f.set(c"frame", f.get(c"frame") + rf.get(c"frame"));
-               f = f.set(c"expression", SAtom(c"(")
+               f = f.set(c"expression", SAtom(c"({")
                  + v.get(c"expression")
-                 + SAtom(c"=") + rf.get(c"expression") + SAtom(c")"));
+                 + SAtom(c"=") + rf.get(c"expression") + SAtom(c";({});})"));
             );
          };
-         f
+         f.context = close(ctx); f
       );
       App{ left:Var{key:c"as"}, right:App{ inner=left, right:AType{tt=tt} } } => (
          let f = compile-expr(ctx, inner, 0, Used);
