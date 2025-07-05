@@ -19,23 +19,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (std-c-compile-expr( ctx term false )))
       ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
-         (set e (compile-expr( ctx t stack-offset used )))
-         (set.type( e (typeof term) ))
-         (set e (.set( e 'expression_s (
-            (+(
-               (+(
-                  (SAtom '\[\[_s)
-                  (std-c-mangle-type( (typeof term) term ))
-               ))
-               (+(
-                  (SAtom '\]\[_s)
-                  (+(
-                     (.get( e 'expression_s ))
-                     (SAtom '\]\]_s)
-                  ))
-               ))
-            ))
-         ))))
+         (set e (std-c-compile-expr( ctx term false )))
       ))
       ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
          (let rsp-offset (+( stack-offset -8_i64 )))
