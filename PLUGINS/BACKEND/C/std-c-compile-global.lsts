@@ -78,7 +78,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             text = text + post-decl;
             text = text + SAtom(c";\n");
 
-            let inner-expr = compile-expr( ctx, t, 0, Used );
+            let inner-expr = std-c-compile-expr( ctx, t, false );
             if can-unify(t2(c"C",t1(c"typedef")), tt) {
                assemble-header-section = assemble-header-section + text;
             } else {
@@ -138,7 +138,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             text = text + std-c-compile-function-args(ctx, lhs);
             text = text + SAtom(c")");
             
-            let e = compile-expr( ctx, rhs, 0, Return );
+            let e = std-c-compile-call(ctx, c"cdecl::return", rhs);
             text = text + SAtom(c"{");
             if k==c"main" then text = text + assemble-string-initializer-section + assemble-global-initializer-section;
             text = text + e.get(c"frame") + e.get(c"expression") + SAtom(c"}");
@@ -161,7 +161,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom(c";\n");
          assemble-gdecl-section = assemble-gdecl-section + text;
 
-         let inner-expr = compile-expr( ctx, t, 0, Used );
+         let inner-expr = std-c-compile-expr( ctx, t, false );
          text = SAtom(k) + SAtom(c" = ") + inner-expr.get(c"expression") + SAtom(c";\n");
          assemble-global-initializer-section = assemble-global-initializer-section + text;
       );
