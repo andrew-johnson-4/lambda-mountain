@@ -16,20 +16,7 @@ compile-expr-direct := λ(: ctx FContext)(: term AST)(: stack-offset I64)(: used
          (set e (std-c-compile-expr( ctx term false )))
       ))
       ( (App( (Var( 'sizeof_s _ )) (AType tt) )) (
-         (set e (mk-expression(
-            (+( (SAtom '\[sizeof\[_s)
-                (+( (std-c-mangle-type( tt term )) (SAtom '\]\]_s) ))
-            ))
-         )))
-         (let et (&&(
-            (t1 'Literal_s)
-            (&&(
-               (t1 'Constant_s)
-               (t1 'U64_s)
-            ))
-         )))
-         (set.type( e et ))
-         (set.context( e (close ctx) ))
+         (set e (std-c-compile-expr( ctx term false )))
       ))
       ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
          (set e (compile-expr( ctx t stack-offset used )))

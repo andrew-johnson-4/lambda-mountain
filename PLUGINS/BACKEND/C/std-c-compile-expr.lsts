@@ -55,6 +55,10 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             TGround{ tag:c"Array", parameters:[array-length..inner-tt..] } => compile-expr(ctx, inner-term, 0, Used);
          }} else std-c-compile-call(ctx, c"open", inner-term)
       );
+      App{ o-t=left:Var{key:c"sizeof"}, right:AType{tt=tt} } => (
+         let f = mk-expression( SAtom(c"(sizeof(") + std-c-mangle-type(tt, t) + SAtom(c"))") );
+         f.context = close(ctx); f
+      );
       Lit{val=key} => (
          let tt = typeof(t);
          if tt.is-t(c"C") && tt.r1.is-t(c"uint8_t") then mk-expression(val)
