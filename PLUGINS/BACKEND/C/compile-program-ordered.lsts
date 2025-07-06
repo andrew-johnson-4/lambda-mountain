@@ -9,7 +9,7 @@ let compile-program-ordered(global-ctx: FContext, program: AST): Nil = (
       AType{} => ();
       Meta{} => ();
       t => (
-         let e = compile-expr(global-ctx, t, 0, Used);
+         let e = std-c-compile-expr(global-ctx, t, false);
          let text = e.get(c"frame") + e.get(c"expression") + SAtom(c";\n");
          assemble-global-initializer-section = assemble-global-initializer-section + text;
       );
