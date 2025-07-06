@@ -1,4 +1,6 @@
 
+let compile-smart-string-index = {} : HashtableEq<CString,CString>;
+
 let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
    let f = match t {
       Var{ key=key } => (
@@ -32,7 +34,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          match rhs {
             App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{tt=tt} } } => ();
             _ => (
-               let rf = compile-expr(ctx, rhs, 0, Used);
+               let rf = std-c-compile-expr(ctx, rhs, false);
                f = f.set(c"frame", f.get(c"frame") + rf.get(c"frame"));
                f = f.set(c"expression", SAtom(c"({")
                  + v.get(c"expression")
@@ -42,15 +44,15 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          f.context = close(ctx); f
       );
       App{ left:Var{key:c"as"}, right:App{ inner=left, right:AType{tt=tt} } } => (
-         let f = compile-expr(ctx, inner, 0, Used);
+         let f = std-c-compile-expr(ctx, inner, false);
          f.set(c"expression", SAtom(c"((") + std-c-mangle-type(typeof(t), t) + SAtom(c")") +
             f.get(c"expression") + SAtom(c")")
          );
       );
       App{ left:App{left:App{left:Var{key:c"if"}, cond=right}, tr=right}, fa=right } => (
          let ec = std-c-compile-call(ctx, c"into-branch-conditional", cond);
-         let et = compile-expr( open(ec.context), tr, 0, Tail );
-         let ef = compile-expr( open(ec.context), fa, 0, Tail );
+         let et = std-c-compile-expr( open(ec.context), tr, false );
+         let ef = std-c-compile-expr( open(ec.context), fa, false );
          if typeof(fa).is-t(c"Never") then ef = never-as-expr(ef, typeof(tr), t);
 
          let ictx = mk-fragment();
@@ -66,9 +68,9 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       App{ o-t=left:Var{key:c"open"}, inner-term=right } => (
          let tt = typeof(inner-term);
          if tt.is-t(c"Array") { match tt.slot(c"Array") {
-            TGround{ tag:c"Array", parameters:[_..TAny{}..] } => compile-expr(ctx, inner-term, 0, Used);
+            TGround{ tag:c"Array", parameters:[_..TAny{}..] } => std-c-compile-expr(ctx, inner-term, false);
             TGround{ tag:c"Array", parameters:[TAny{}..inner-tt..] } => std-c-compile-call(ctx, c"open", inner-term);
-            TGround{ tag:c"Array", parameters:[array-length..inner-tt..] } => compile-expr(ctx, inner-term, 0, Used);
+            TGround{ tag:c"Array", parameters:[array-length..inner-tt..] } => std-c-compile-expr(ctx, inner-term, false);
          }} else std-c-compile-call(ctx, c"open", inner-term)
       );
       App{ o-t=left:Var{key:c"sizeof"}, right:AType{tt=tt} } => (
@@ -128,11 +130,11 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          } }
       );
       App{ left:Lit{key:c":"}, right:App{ inner-term=left, right:AType{tt=tt} } } => (
-         let f = compile-expr(ctx, inner-term, 0, Used);
+         let f = std-c-compile-expr(ctx, inner-term, false);
          is-stmt = false; f;
       );
       App{ left:Var{key:c"scope"}, inner-term=right } => (
-         let f = compile-expr(ctx, inner-term, 0, Tail);
+         let f = std-c-compile-expr(ctx, inner-term, false);
          f.context = close(ctx);
          is-stmt = false; f;
       );
@@ -171,7 +173,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                    std-c-compile-call(ctx, fname, return-type, right);
                 );
                 _ => (
-                  let call = compile-expr(ctx, left, 0, Unused);
+                  let call = std-c-compile-expr(ctx, left, false);
                   let args = std-c-compile-push-args(ctx, right);
                   let e = std-c-chain(call, args, false);
                   e.set(c"expression", call.get(c"expression") + SAtom(c"(") + args.get(c"expression") + SAtom(c")"));
