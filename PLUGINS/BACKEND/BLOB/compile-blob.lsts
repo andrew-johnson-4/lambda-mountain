@@ -1,0 +1,19 @@
+
+let plugins-backend-blob-compile(): Nil = (
+   for vector p in ast-parsed-program.unroll-seq { match p {
+      Glb{ k=key, rhs=val:Abs{} } => (
+         let fragment = mk-fragment();
+         fragment.term = rhs;
+         global-ctx = global-ctx.bind(k.key, typeof(rhs), fragment);
+      );
+      _ => ();
+   }};
+   let blob = SNil;
+   for vector p in ast-parsed-program.unroll-seq { match p {
+      Glb{} => ();
+      Meta{} => ();
+      expr => blob = blob + blob-render-simple(global-ctx, c"expression", expr).second;
+   }};
+   assemble-final = clone-rope(escape-string(blob));
+   std-c-compile-write();
+);
