@@ -25,7 +25,7 @@ plugins-backend-blob-compile := λ. (: (
       ( (Glb( k_t rhs )) () )
       ( (Meta( _ )) () )
       ( expr (
-         (let cs (blob-render-simple( global-ctx 'expression_s expr 0_i64 )))
+         (let cs (blob-render-simple( global-ctx 'expression_s expr )))
          (let s (.1 cs))
          (set blob (SCons(
              (close blob)

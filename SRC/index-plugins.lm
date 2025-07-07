@@ -4,7 +4,7 @@
 
 plugin-current-backend := (: (& plugins-backend-c-compile) Arrow<Nil,Nil>[]);
 
-import PLUGINS/BACKEND/C/index-index.lm;
+import PLUGINS/BACKEND/C/index.lsts;
 import PLUGINS/BACKEND/BLOB/index-index.lm;
 
 import PLUGINS/FRONTEND/LM/index-index.lm;

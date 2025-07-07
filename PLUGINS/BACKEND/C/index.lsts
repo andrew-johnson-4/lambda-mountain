@@ -4,7 +4,7 @@ import PLUGINS/BACKEND/C/compile-finish.lsts;
 import PLUGINS/BACKEND/C/compile-program-ordered.lsts;
 import PLUGINS/BACKEND/C/compile-write.lsts;
 import PLUGINS/BACKEND/C/cc-blob.lsts;
-import PLUGINS/BACKEND/C/blob-render.lm;
+import PLUGINS/BACKEND/C/blob-render.lsts;
 import PLUGINS/BACKEND/C/mangle-identifier.lsts;
 import PLUGINS/BACKEND/C/register-hook.lsts;
 import PLUGINS/BACKEND/C/std-c-compile-global.lsts;
