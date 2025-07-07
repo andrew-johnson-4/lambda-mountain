@@ -1,82 +1,65 @@
 
-# render an expression as an S-Expression blob
-blob-render-simple := λ(: ctx FContext)(: context-key String)(: term AST)(: offset I64). (: (
-   (let r (SNil()))
-   (match term (
-      ()
-      ( ASTNil () )
-      ( ASTEOF () )
-      ( (Var( id _ )) (
-         (let e (.lookup( ctx id (typeof term) term )))
-         (set r (.get( e context-key )))
-      ))
-      ( (Lit( val _ )) (
-         (set r (SAtom val))
-      ))
-      ( (App( (Lit( ':_s _ )) (App( t (AType tt) )) )) (
-         (let rs (blob-render-simple( ctx context-key t offset )))
-         (set r (.1( rs )))
-      ))
-      ( (App( (Var( 'as_s _ )) (App( t (AType tt) )) )) (
-         (let rs (blob-render-simple( ctx context-key t offset )))
-         (set r (.1( rs )))
-      ))
-      ( (App( (Var( 'scope_s _ )) t )) (
-         (let cs (blob-render-simple( ctx context-key t offset )))
-         (set r (.1 cs))
-      ))
-      ( (App(
-        (App( (Lit( ':_s _ )) (App( (Lit( 'for-arg_s _ )) (AType _) )) )) 
-        (App(
-           (App( (Abs( (@( lhs-t (Var( lhs _ )) )) ASTNil _ ))
-                 (App( (Var( 'for-arg-i_s _ )) (Var( vsk _ )) )) ))
-           iter
-        ))
-      )) (
-         (let vs (.lookup-soft( ctx vsk ta (mk-eof()) )))
-         (for-each (vi in (.vararg vs)) (
-            (set std-c-fragment-context (.bind( std-c-fragment-context lhs-t vi )))
-            (let inner-ctx (.bind( ctx lhs (.type vs) vi )))
-            (let fs (blob-render-simple( inner-ctx context-key iter offset )))
-            (let s (.1 fs))
-            (set r (+( r s )))
-         ))
-      ))
-      ( (App(
-        (App( (Lit( ':_s _ )) (App( (Lit( 'for-atom_s _ )) (AType _) )) )) 
-        (App(
-           (App( (Abs( (@( lhs-t (Var( lhs _ )) )) ASTNil _ )) rng ))
-           iter
-        ))
-      )) (
-         (let rngcs (blob-render-simple( ctx context-key rng offset )))
-         (let rngs (.1 rngcs))
-         (while (non-zero rngs) (match rngs (
-            ()
-            ( (SCons( a rst )) (
-               (let f (mk-expression a))
-               (let inner-ctx (.bind( ctx lhs (t1 'L_s) f )))
-               (set std-c-fragment-context (.bind( std-c-fragment-context lhs-t f )))
-               (let cs (blob-render-simple( inner-ctx context-key iter offset )))
-               (let s (.1 cs))
-               (set r (+( r s )))
-               (set rngs rst)
-            ))
-            ( _ (set rngs (SNil())) )
-         )))
-      ))
-      ( (App( (Var( 'range_s _ )) (App( le re )) )) (
-         (let lcs (blob-render-simple( ctx context-key le offset )))
-         (let ls (.1 lcs))
-         (let rcs (blob-render-simple( ctx context-key re offset )))
-         (let rs (.1 rcs))
-         (let li (to-i64(clone-rope ls)))
-         (let ri (to-i64(clone-rope rs)))
-         (while (<( li ri )) (
-            (set ri (-( ri 1_i64 )))
-            (set r (SCons( (close(SAtom(to-string ri))) (close r) )))
-         ))
-      ))
+let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContext, AST) = (
+   let r = SNil;
+   match {
+      ASTNil{} => ();
+      ASTEOF{} => ();
+      Var{key=key} => r = ctx.lookup(key, typeof(term), term).get(context-key);
+      Lit{key=key} => r = SAtom(key);
+      App{ left:Lit{key:c":"}, right:App{ t=left, right:AType{tt=tt} } } => r = blob-render-simple(ctx, context-key, t).second;
+      App{ left:Lit{key:c"as"}, right:App{ t=left, right:AType{tt=tt} } } => r = blob-render-simple(ctx, context-key, t).second;
+      App{ left:Lit{key:c"scope"}, t=right } } => r = blob-render-simple(ctx, context-key, t).second;
+      App{ 
+         left:App{ left:Lit{key:c":"}, right:App{ left:Lit{key:c"for-arg"}, right:AType{} } },
+         right:App{
+            left:App{
+               left:Abs{ lhs-t=lhs:Var{lhs=key}, rhs:ASTNil{} },
+               right:App{ left:Var{key:c"for-arg-i"}, right:Var{vsk=key} }
+            }, iter=right
+         }
+      } => (
+         let vs = ctx.lookup-soft(ctx, vsk, ta, mk-eof());
+         for vi in vs.vararg {
+            std-c-fragment-context = std-c-fragment-context.bind(lhs-t, vi);
+            let inner-ctx = ctx.bind(lhs, vs.type, vi);
+            r = r + blob-render-simple(inner-ctx, context-key, iter).second;
+         };
+      );
+      App{ 
+         left:App{ left:Lit{key:c":"}, right:App{ left:Lit{key:c"for-atom"}, right:AType{} } },
+         right:App{
+            left:App{
+               left:Abs{ lhs-t=lhs:Var{lhs=key}, rhs:ASTNil{} },
+               rng=right
+            }, iter=right
+         }
+      } => (
+         let rngs = blob-render-simple(ctx, context-key, rng).second;
+         while non-zero(rngs) { match rngs {
+            SCons{ a=left, rst=right } => (
+               let f = mk-expression(a);
+               let inner-ctx = ctx.bind(lhs, t1(c"L"), f);
+               std-c-fragment-context = std-c-fragment-context.bind(lhs-t,f);
+               r = r + blob-render-simple(inner-ctx, context-key, iter).second;
+               rngs = rst;
+            );
+            _ => rngs = SNil;
+         }}
+      );
+      App{ left:Var{key:c"range"}, right:App{ le=left, re=right } } => (
+         let ls = blob-render-simple(ctx, context-key, le).second;
+         let rs = blob-render-simple(ctx, context-key, re).second;
+         let li = to-i64(clone-rope(ls));
+         let ri = to-i64(clone-rope(rs));
+         while li < ri {
+            ri = ri - 1;
+            r = SCons( close(SAtom(to-string(ri))), close(r) );
+         }
+      );
+      App{ left:Var{key:c"uuid"} } => r = SAtom(uuid());
+   }
+);
+
       ( (App( (Var( 'uuid_s _ )) _ )) (
          (set r (SAtom(uuid())))
       ))
