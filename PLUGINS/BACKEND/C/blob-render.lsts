@@ -90,41 +90,20 @@ let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContex
    (ctx, r)
 );
 
-
-blob-render := λ(: ctx FContext)(: term AST)(: f Fragment)(: offset I64). (: (
-   (match term (
-      ()
-      ( (App( (Lit( ':_s _ )) (App( t (AType _) )) )) (
-         (set f (blob-render( ctx t f offset )))
-      ))
-      ( (App( (Var( k _ )) a )) (
-         (if (.has-prefix( k ':_s )) (            
-            (let cs1 (blob-render-simple( ctx (tail-string k) a offset )))
-            (let s1 (.1 cs1))
-            (set f (.set( f (tail-string k) s1 )))
-         ) (
-            (let cs2 (blob-render-simple( ctx 'expression_s term offset )))
-            (let s2 (.1 cs2))
-            (set f (.set( f 'expression_s s2 )))
-         ))
-      ))
-      ( (App( rst (App( (Var( k _ )) a )) )) (
-         (set f (blob-render( ctx rst f offset )))
-         (if (.has-prefix( k ':_s )) (            
-            (let cs1 (blob-render-simple( ctx (tail-string k) a offset )))
-            (let s1 (.1 cs1))
-            (set f (.set( f (tail-string k) s1 )))
-         ) (
-            (let cs2 (blob-render-simple( ctx 'expression_s term offset )))
-            (let s2 (.1 cs2))
-            (set f (.set( f 'expression_s s2 )))
-         ))
-      ))
-      ( _ (
-         (let cs2 (blob-render-simple( ctx 'expression_s term offset )))
-         (let s2 (.1 cs2))
-         (set f (.set( f 'expression_s s2 )))
-      ))
-   ))
-   f
-) Fragment);
+let blob-render(ctx: FContext, term: AST, f: Fragment): Fragment = (
+   match term {
+      App{ left:Lit{key:c":"}, right:App{ t=left, right:AType{} } } => blob-render(ctx, t, f);
+      App{ left:Var{k=key}, a=right } => (
+         if k.has-prefix(c":")
+         then f.set(tail-string(k), blob-render-simple(ctx, tail-string(k), a).second)
+         then f.set(c"expression", blob-render-simple(ctx, tail-string(k), a).second)
+      );
+      App{ rst=left, right:App{ left:Var{k=key}, a=right } } => (
+         f = blob-render(ctx, rst, f);
+         if k.has-prefix(c":")
+         then f.set(tail-string(k), blob-render-simple(ctx, tail-string(k), a).second)
+         then f.set(c"expression", blob-render-simple(ctx, tail-string(k), a).second)
+      );
+      _ => f.set(c"expression", blob-render-simple(ctx,c"expression",term).second)
+   }
+);
