@@ -57,150 +57,39 @@ let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContex
          }
       );
       App{ left:Var{key:c"uuid"} } => r = SAtom(uuid());
-   }
+      App{ left:Var{key:c"mangle"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{id=key}, right:AType{} } } } => r = mangle-identifier(id);
+      App{ left:Var{key:c"mangle-pre"}, right:AType{tt=tt} } => r = std-c-mangle-declaration-internal(tt.l1, term).first;
+      App{ left:Var{key:c"mangle-post"}, right:AType{tt=tt} } => r = std-c-mangle-declaration-internal(tt.l1, term).second;
+      App{ left:Abs{ lhs-t=lhs:Var{lhs=key}, right:ASTNil{}, tlt=tt }, rhs=right } => (
+         let s = blob-render-simple(ctx, context-key, rhs).second;
+         let f = mk-fragment().set(context-key,s).set(c"expression",s);
+         ctx = ctx.bind(lhs, typeof(rhs), f);
+         std-c-fragment-context = std-c-fragment-context.bind(lhs-t, f);
+      );
+      App{ f=left, a=right } => (
+         if typeof(f).is-arrow { match f {
+            Var{fname=key} => (
+               if fname.has-prefix(c":")
+               then r = blob-render-simple(ctx, tail-string(fname), a).second
+               else r = std-c-compile-call(ctx, fname, a).get(context-key);
+            );
+            _ => (
+               (set ctx, let s1) = blob-render-simple(ctx, context-key, f);
+               (set ctx, let s2) = blob-render-simple(ctx, context-key, a);
+               r = s1 + s2;
+            );
+         }} else {
+            (set ctx, let s1) = blob-render-simple(ctx, context-key, f);
+            (set ctx, let s2) = blob-render-simple(ctx, context-key, a);
+            r = s1 + s2;
+         }
+      );
+      AType{tt=tt} => r = std-c-mangle-type(tt, term);
+      orphan => fail("Orphan Term In blob-render \{std-c-print(orphan)}");
+   };
+   (ctx, r)
 );
 
-      ( (App( (Var( 'uuid_s _ )) _ )) (
-         (set r (SAtom(uuid())))
-      ))
-      ( (App( (Var( 'mangle_s _ )) (App( (Lit( ':_s _ )) (App( (Lit( id _ )) (AType _) )) )) )) (
-         (set r (mangle-identifier id))
-      ))
-      ( (App( (Var( 'mangle-pre_s _ )) (AType tt) )) (
-         (set r (.first(std-c-mangle-declaration-internal( (.l1 tt) term ))))
-      ))
-      ( (App( (Var( 'mangle-post_s _ )) (AType tt) )) (
-         (set r (.second(std-c-mangle-declaration-internal( (.l1 tt) term ))))
-      ))
-      ( (App( (Var( '==_s _ )) (App( le re )) )) (
-         (let lcs (blob-render-simple( ctx context-key le offset )))
-         (let ls (.1 lcs))
-         (let rcs (blob-render-simple( ctx context-key re offset )))
-         (let rs (.1 rcs))
-         (if (==( ls rs )) (set r (SAtom '1_s)) (set r (SAtom '0_s)) )
-      ))
-      ( (App( (Var( '>_s _ )) (App( le re )) )) (
-         (let lcs (blob-render-simple( ctx context-key le offset )))
-         (let ls (.1 lcs))
-         (let rcs (blob-render-simple( ctx context-key re offset )))
-         (let rs (.1 rcs))
-         (let li (to-i64(clone-rope ls)))
-         (let ri (to-i64(clone-rope rs)))
-         (if (>( li ri )) (set r (SAtom '1_s)) (set r (SAtom '0_s)) )
-      ))
-      ( (App( (Var( '/_s _ )) (App( le re )) )) (
-         (let lcs (blob-render-simple( ctx context-key le offset )))
-         (let ls (.1 lcs))
-         (let rcs (blob-render-simple( ctx context-key re offset )))
-         (let rs (.1 rcs))
-         (let li (to-i64(clone-rope ls)))
-         (let ri (to-i64(clone-rope rs)))
-         (set r (SAtom(to-string(/( li ri )))))
-      ))
-      ( (App( (Var( '*_s _ )) (App( le re )) )) (
-         (let lcs (blob-render-simple( ctx context-key le offset )))
-         (let ls (.1 lcs))
-         (let rcs (blob-render-simple( ctx context-key re offset )))
-         (let rs (.1 rcs))
-         (let li (to-i64(clone-rope ls)))
-         (let ri (to-i64(clone-rope rs)))
-         (set r (SAtom(to-string(*( li ri )))))
-      ))
-      ( (App( (Var( '%_s _ )) (App( le re )) )) (
-         (let lcs (blob-render-simple( ctx context-key le offset )))
-         (let ls (.1 lcs))
-         (let rcs (blob-render-simple( ctx context-key re offset )))
-         (let rs (.1 rcs))
-         (let li (to-i64(clone-rope ls)))
-         (let ri (to-i64(clone-rope rs)))
-         (set r (SAtom(to-string(%( li ri )))))
-      ))
-      ( (App( (Var( '+_s _ )) (App( le re )) )) (
-         (let lcs (blob-render-simple( ctx context-key le offset )))
-         (let ls (.1 lcs))
-         (let rcs (blob-render-simple( ctx context-key re offset )))
-         (let rs (.1 rcs))
-         (let li (to-i64(clone-rope ls)))
-         (let ri (to-i64(clone-rope rs)))
-         (set r (SAtom(to-string(+( li ri )))))
-      ))
-      ( (App( (Var( '-_s _ )) (App( le re )) )) (
-         (let lcs (blob-render-simple( ctx context-key le offset )))
-         (let ls (.1 lcs))
-         (let rcs (blob-render-simple( ctx context-key re offset )))
-         (let rs (.1 rcs))
-         (let li (to-i64(clone-rope ls)))
-         (let ri (to-i64(clone-rope rs)))
-         (set r (SAtom(to-string(-( li ri )))))
-      ))
-      ( (App( (App( (App( (Var( 'if_s _ )) cond )) t )) f )) (
-         (let ccs (blob-render-simple( ctx context-key cond offset )))
-         (let cs (.1 ccs))
-         (match cs (
-            ()
-            ( (SAtom '1_s) (
-               (let rcs (blob-render-simple( ctx context-key t offset )))
-               (set r (.1 rcs))
-            ))
-            ( _ (
-               (let rcs (blob-render-simple( ctx context-key f offset )))
-               (set r (.1 rcs))
-            ))
-         ))
-      ))
-      ( (App( (Abs( (@( lhs-t (Var( lhs _ )) )) ASTNil tlt )) rhs )) (
-         (let f (mk-fragment()))
-         (let cs (blob-render-simple( ctx context-key rhs offset )))
-         (let s (.1 cs))
-         (set f (.set( f context-key s )))
-         (set f (.set( f 'expression_s s )))
-         (set ctx (.bind(
-            ctx lhs (typeof rhs) f
-         ))) # TODO, render the binding as non-simple blob?
-         (set std-c-fragment-context (.bind( std-c-fragment-context lhs-t f )))
-      ))
-      ( (App( f a )) (
-         (if (.is-arrow(typeof f)) (
-            (match f (
-               ()
-               ( (Var( fname _ )) (
-                  (if (.has-prefix( fname ':_s )) (
-                     (let e1 (blob-render-simple( ctx (tail-string fname) a offset )))
-                     (set r (.1 e1))
-                  ) (
-                     (let e (std-c-compile-call( ctx fname a )))
-                     (set r (.get( e context-key )))
-                  ))
-               ))
-               ( _ (
-                  (let e1 (blob-render-simple( ctx context-key f offset )))
-                  (set ctx (.2 e1))
-                  (let e2 (blob-render-simple( ctx context-key a offset )))
-                  (set ctx (.2 e2))
-                  (let s1 (.1 e1))
-                  (let s2 (.1 e2))
-                  (set r (+( s1 s2 )))
-               ))
-            ))
-         ) (
-            (let e1 (blob-render-simple( ctx context-key f offset )))
-            (set ctx (.2 e1))
-            (let e2 (blob-render-simple( ctx context-key a offset )))
-            (set ctx (.2 e2))
-            (let s1 (.1 e1))
-            (let s2 (.1 e2))
-            (set r (+( s1 s2 )))
-         ))
-      ))
-      ( (AType tt) (
-         (set r (std-c-mangle-type( tt term )))
-      ))
-      ( orphan (
-         (print 'Orphan\sTerm\sIn\sblob-render\s_s)(std-c-print orphan)(print '\n_s)(exit 1_u64)
-      ))
-   ))
-   (Tuple( ctx r ))
-) Tuple<FContext,S>);
 
 blob-render := λ(: ctx FContext)(: term AST)(: f Fragment)(: offset I64). (: (
    (match term (
