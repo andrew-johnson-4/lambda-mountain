@@ -13,7 +13,7 @@ let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor
       match fterm {
          Glb{val:Abs{lhs=lhs, rhs=rhs}} => (
             (let callee-ctx, let caller-ctx) = std-c-compile-args(global-ctx, ctx, lhs, args);
-            r = blob-render(callee-ctx, rhs, r, 0);
+            r = blob-render(callee-ctx, rhs, r);
             r.context = close(caller-ctx);
          );
          _ => fail("Unexpected fterm in std-c-compile-call: \{fname}\n\{fterm}\n");
@@ -29,7 +29,7 @@ let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor
       let r = mk-fragment();
       match find-global-callable(c"primitive::call", t3(c"Cons",t1(c"ImplicitContext"),typeof(args)), args) {
          Glb{val:Abs{lhs=lhs, rhs=rhs}} => (
-            r = blob-render(inner-ctx, rhs, r, 0);
+            r = blob-render(inner-ctx, rhs, r);
             r.context = close(ctx);
          );
          _ => fail("Unexpected fterm in std-c-compile-call: \{fname}\n\{fterm}\n");

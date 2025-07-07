@@ -1,0 +1,109 @@
+
+let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContext, S) = (
+   let r = SNil;
+   match term {
+      ASTNil{} => ();
+      ASTEOF{} => ();
+      Var{key=key} => r = ctx.lookup(key, typeof(term), term).get(context-key);
+      Lit{key=key} => r = SAtom(key);
+      App{ left:Lit{key:c":"}, right:App{ t=left, right:AType{tt=tt} } } => r = blob-render-simple(ctx, context-key, t).second;
+      App{ left:Lit{key:c"as"}, right:App{ t=left, right:AType{tt=tt} } } => r = blob-render-simple(ctx, context-key, t).second;
+      App{ left:Lit{key:c"scope"}, t=right } => r = blob-render-simple(ctx, context-key, t).second;
+      App{ 
+         left:App{ left:Lit{key:c":"}, right:App{ left:Lit{key:c"for-arg"}, right:AType{} } },
+         right:App{
+            left:App{
+               left:Abs{ lhs-t=lhs:Var{lhs=key}, rhs:ASTNil{} },
+               right:App{ left:Var{key:c"for-arg-i"}, right:Var{vsk=key} }
+            }, iter=right
+         }
+      } => (
+         let vs = ctx.lookup-soft(vsk, ta, mk-eof());
+         for vi in vs.vararg {
+            std-c-fragment-context = std-c-fragment-context.bind(lhs-t, vi);
+            let inner-ctx = ctx.bind(lhs, vs.type, vi);
+            r = r + blob-render-simple(inner-ctx, context-key, iter).second;
+         };
+      );
+      App{ 
+         left:App{ left:Lit{key:c":"}, right:App{ left:Lit{key:c"for-atom"}, right:AType{} } },
+         right:App{
+            left:App{
+               left:Abs{ lhs-t=lhs:Var{lhs=key}, rhs:ASTNil{} },
+               rng=right
+            }, iter=right
+         }
+      } => (
+         let rngs = blob-render-simple(ctx, context-key, rng).second;
+         while non-zero(rngs) { match rngs {
+            SCons{ a=left, rst=right } => (
+               let f = mk-expression(a);
+               let inner-ctx = ctx.bind(lhs, t1(c"L"), f);
+               std-c-fragment-context = std-c-fragment-context.bind(lhs-t,f);
+               r = r + blob-render-simple(inner-ctx, context-key, iter).second;
+               rngs = rst;
+            );
+            _ => rngs = SNil;
+         }}
+      );
+      App{ left:Var{key:c"range"}, right:App{ le=left, re=right } } => (
+         let ls = blob-render-simple(ctx, context-key, le).second;
+         let rs = blob-render-simple(ctx, context-key, re).second;
+         let li = to-i64(clone-rope(ls));
+         let ri = to-i64(clone-rope(rs));
+         while li < ri {
+            ri = ri - 1;
+            r = SCons( close(SAtom(to-string(ri))), close(r) );
+         }
+      );
+      App{ left:Var{key:c"uuid"} } => r = SAtom(uuid());
+      App{ left:Var{key:c"mangle"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{id=key}, right:AType{} } } } => r = mangle-identifier(id);
+      App{ left:Var{key:c"mangle-pre"}, right:AType{tt=tt} } => r = std-c-mangle-declaration-internal(tt.l1, term).first;
+      App{ left:Var{key:c"mangle-post"}, right:AType{tt=tt} } => r = std-c-mangle-declaration-internal(tt.l1, term).second;
+      App{ left:Abs{ lhs-t=lhs:Var{lhs=key}, rhs:ASTNil{}, tlt=tt }, rhs=right } => (
+         let s = blob-render-simple(ctx, context-key, rhs).second;
+         let f = mk-fragment().set(context-key,s).set(c"expression",s);
+         ctx = ctx.bind(lhs, typeof(rhs), f);
+         std-c-fragment-context = std-c-fragment-context.bind(lhs-t, f);
+      );
+      App{ f=left, a=right } => (
+         if typeof(f).is-arrow { match f {
+            Var{fname=key} => (
+               if fname.has-prefix(c":")
+               then r = blob-render-simple(ctx, tail-string(fname), a).second
+               else r = std-c-compile-call(ctx, fname, a).get(context-key);
+            );
+            _ => (
+               (ctx, let s1) = blob-render-simple(ctx, context-key, f);
+               (ctx, let s2) = blob-render-simple(ctx, context-key, a);
+               r = s1 + s2;
+            );
+         }} else {
+            (ctx, let s1) = blob-render-simple(ctx, context-key, f);
+            (ctx, let s2) = blob-render-simple(ctx, context-key, a);
+            r = s1 + s2;
+         }
+      );
+      AType{tt=tt} => r = std-c-mangle-type(tt, term);
+      orphan => fail("Orphan Term In blob-render \{orphan.into(type(String))}");
+   };
+   (ctx, r)
+);
+
+let blob-render(ctx: FContext, term: AST, f: Fragment): Fragment = (
+   match term {
+      App{ left:Lit{key:c":"}, right:App{ t=left, right:AType{} } } => blob-render(ctx, t, f);
+      App{ left:Var{k=key}, a=right } => (
+         if k.has-prefix(c":")
+         then f.set(tail-string(k), blob-render-simple(ctx, tail-string(k), a).second)
+         else f.set(c"expression", blob-render-simple(ctx, tail-string(k), a).second)
+      );
+      App{ rst=left, right:App{ left:Var{k=key}, a=right } } => (
+         f = blob-render(ctx, rst, f);
+         if k.has-prefix(c":")
+         then f.set(tail-string(k), blob-render-simple(ctx, tail-string(k), a).second)
+         else f.set(c"expression", blob-render-simple(ctx, tail-string(k), a).second)
+      );
+      _ => f.set(c"expression", blob-render-simple(ctx,c"expression",term).second);
+   }
+);
