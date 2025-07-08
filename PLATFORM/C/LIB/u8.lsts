@@ -30,4 +30,4 @@ let to-smart-string(i: U8): String = (
    intern(to-string(i as U64))
 );
 
-let print(io: IO::File, x: U8): Nil = fprintf(io, c"%u", x);
+let print(io: IO::File, x: U8): Nil = (fprintf(io, c"%u", x); ());

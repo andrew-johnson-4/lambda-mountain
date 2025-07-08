@@ -17,4 +17,4 @@ declare-unop( not, raw-type(I8), raw-type(U64), ( l"(!"; x; l")"; ) );
 
 declare-unop( into-branch-conditional, raw-type(I8), raw-type(BranchConditional), x );
 
-let print(io: IO::File, x: I8): Nil = fprintf(io, c"%d", x);
+let print(io: IO::File, x: I8): Nil = (fprintf(io, c"%d", x); ());
