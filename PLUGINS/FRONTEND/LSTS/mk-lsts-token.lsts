@@ -1,0 +1,55 @@
+
+let mk-lsts-token(s: String): Token = (
+   let us = untern(s);
+   if us.is-digit || (us.has-prefix(c"-") && tail-string(us).is-digit) {
+      let ds = us;
+      let is-negative = false;
+      let order = 64_u64;
+      if ds==c"-9223372036854775808" then is-negative = true
+      else {
+         if ds.has-prefix(c"-") {
+            is-negative = true;
+            ds = tail-string(ds);
+         };
+         let magnitude = to-u64(ds);
+         if (is-negative && magnitude <= 128) || magnitude <= 255 then order = 8
+         else if (is-negative && magnitude <= 32768) || magnitude <= 65535 then order = 16
+         else if (is-negative && magnitude <= 2147483648) || magnitude <= 4294967295 then order = 32;
+      };
+      match (is-negative, order) {
+         Tuple{ first:0_u64, second:8_u64 } => us = us + c"_u8";
+         Tuple{ first:1_u64, second:8_u64 } => us = us + c"_i8";
+         Tuple{ first:0_u64, second:16_u64 } => us = us + c"_u16";
+         Tuple{ first:1_u64, second:16_u64 } => us = us + c"_i16";
+         Tuple{ first:0_u64, second:32_u64 } => us = us + c"_u32";
+         Tuple{ first:1_u64, second:32_u64 } => us = us + c"_i32";
+         Tuple{ first:0_u64, second:64_u64 } => us = us + c"_u64";
+         Tuple{ first:1_u64, second:64_u64 } => us = us + c"_i64";
+      };
+   };
+   if s.has-prefix("r/") {
+      us = us.remove-prefix(c"r/")
+             .remove-suffix(c"/")
+             .replace(c"\\/", c"/")
+             + c"_rgx";
+   };
+   if s.has-prefix("\"") {
+      us = us.remove-prefix(c"\"")
+             .remove-suffix(c"\"")
+             .replace(c"\\\"", c"\"")
+             + c"_ss";
+   };
+   if s.has-prefix("c\"") {
+      us = us.remove-prefix(c"c\"")
+             .remove-suffix(c"\"")
+             .replace(c"\\\"", c"\"")
+             + c"_s";
+   };
+   if s.has-prefix("l\"") {
+      us = us.remove-prefix(c"l\"")
+             .remove-suffix(c"\"")
+             .replace(c"\\\"", c"\"")
+             + c"_l";
+   };
+   Token(s, us, iuid(), s.location)
+);
