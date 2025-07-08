@@ -16,5 +16,3 @@ declare-binop( $"*", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"*
 declare-unop( not, raw-type(I64), raw-type(U64), ( l"(!"; x; l")"; ) );
 
 declare-unop( into-branch-conditional, raw-type(I64), raw-type(BranchConditional), x );
-
-type I64 implements DefaultPrintable suffix _i64;

@@ -1,7 +1,4 @@
 
-type SmartString implements Collection<U8> suffix _ss
-                = { data:U8[] , start:U8[] , end:U8[] , data-end:U8[] };
-
 let cmp(l: CString, r: String): Ord = (
    cmp( intern(l), r )
 );

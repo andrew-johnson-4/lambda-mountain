@@ -1,6 +1,4 @@
 
-type String implements Collection<U8> suffix _s;
-
 # TODO: instead do U8 iterator for S
 
 # TODO: deprecate this in favor of Vector

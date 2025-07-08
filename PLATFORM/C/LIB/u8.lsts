@@ -1,6 +1,4 @@
 
-type U8 implies U16, I16, U32, I32, U64, I64 implements DefaultPrintable suffix _u8;
-
 declare-binop( $"!=", raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );
 declare-binop( $"==", raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l"=="; y; l")"; ) );
 declare-binop( $"<",  raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l"<"; y; l")"; ) );
@@ -32,3 +30,4 @@ let to-smart-string(i: U8): String = (
    intern(to-string(i as U64))
 );
 
+let print(io: IO::File, x: U8): Nil = (fprintf(io, c"%u", x); ());

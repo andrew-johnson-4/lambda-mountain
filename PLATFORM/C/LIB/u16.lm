@@ -1,4 +1,0 @@
-
-print := λ(: io IO::File)(: x U16). (: (
-   (fprintf( io '%u_s x )) ()
-) Nil);
