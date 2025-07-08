@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -w -O3 -march=native -mtune=native -ferror-limit=50
+CFLAGS = -w -O3 -march=native -mtune=native
 
 dev: install-production
 	lm t.lsts
@@ -65,15 +65,15 @@ else
 endif
 
 smoke-test-clang:
-	clang BOOTSTRAP/cli.c -o tmp
+	clang $(CFLAGS) BOOTSTRAP/cli.c -o tmp
 	rm tmp
 
 smoke-test-gcc:
-	gcc BOOTSTRAP/cli.c -o tmp
+	gcc $(CFLAGS) BOOTSTRAP/cli.c -o tmp
 	rm tmp
 
 smoke-test-musl:
-	musl-gcc BOOTSTRAP/cli.c -o tmp
+	musl-gcc $(CFLAGS) BOOTSTRAP/cli.c -o tmp
 	rm tmp
 
 smoke-test: smoke-test-clang smoke-test-gcc smoke-test-musl

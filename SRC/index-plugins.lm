@@ -5,11 +5,11 @@
 plugin-current-backend := (: (& plugins-backend-c-compile) Arrow<Nil,Nil>[]);
 
 import PLUGINS/BACKEND/C/index.lsts;
-import PLUGINS/BACKEND/BLOB/index-index.lm;
+import PLUGINS/BACKEND/BLOB/index.lsts;
 
 import PLUGINS/FRONTEND/LM/index-index.lm;
-import PLUGINS/FRONTEND/LSTS/index-index.lm;
-import PLUGINS/FRONTEND/C/index-index.lm;
+import PLUGINS/FRONTEND/LSTS/index.lsts;
+import PLUGINS/FRONTEND/C/index.lsts;
 
 frontend-has-seen := (: (HashtableEq( 0_u64 0_u64 (as 0_u64 Tuple<String,U64>[]) )) HashtableEq<String,U64>);
 frontend := λ(: fp String). (: (

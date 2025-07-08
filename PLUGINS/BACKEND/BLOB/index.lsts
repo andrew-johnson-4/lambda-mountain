@@ -1,0 +1,3 @@
+
+import PLUGINS/BACKEND/BLOB/compile-blob.lsts;
+import PLUGINS/BACKEND/BLOB/register-hook.lsts;
