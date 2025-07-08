@@ -8,7 +8,7 @@ import SRC/index-of-tag.lsts;
 import SRC/is-sized-array.lsts;
 import SRC/global-is-seen.lsts;
 
-import SRC/typeof-lhs.lm;
+import SRC/typeof-lhs.lsts;
 import SRC/apply.lm;
 import SRC/try-specialize.lsts;
 
