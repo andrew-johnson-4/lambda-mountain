@@ -1,2 +1,20 @@
 
-let types-have-changed = true;
+let types-have-changed = true; # TODO: iterative-inference
+let typecheck(): Nil = (
+   infer-global-context-prim(ast-parsed-program);
+   infer-global-context-td(ast-parsed-program);
+   infer-global-context(ast-parsed-program);
+   assert-no-infinite-types();
+   ast-parsed-program = infer-global-terms(ast-parsed-program);
+   (_, ast-parsed-program) = std-infer-expr(None : TypeContext?, ast-parsed-program, false, Used, ta);
+   while non-zero(stack-to-specialize) { match stack-to-specialize {
+      # this can't be a normal for-loop because it gets extended during iteration
+      [StackToSpecialize{ key=key, pre-type=pre-type, ctx=ctx, post-type=post-type }.. rst] => (
+         stack-to-specialize = rst;
+         specialize(key, pre-type, ctx, post-type);
+      );
+   }};
+   validate-interfaces();
+   assert-well-typed(ast-parsed-program);
+   decorate-var-to-def();
+);

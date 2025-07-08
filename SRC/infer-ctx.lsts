@@ -1,0 +1,14 @@
+
+let infer-ctx(tctx: TypeContext?, lhs: AST): TypeContext? = (
+   match lhs {
+      App{ left:Lit{key:c":"}, right:App{ v-t=left:Var{v=key,vtk=token}, right:AType{tt=tt} } } => (
+         tt = normalize(tt) && t1(c"LocalVariable");
+         tctx = infer-tctx(tctx.bind(v, tt, v-t), tt);
+      );
+      App{ ps=left, right:App{ left:Lit{key:c":"}, right:App{ v-t=left:Var{v=key,vtk=token}, right:AType{tt=tt} } } } => (
+         tt = normalize(tt) && t1(c"LocalVariable");
+         tctx = infer-tctx(infer-ctx(tctx.bind(v, tt, v-t),ps), tt);
+      );
+      ASTNil{} => ();
+   }; tctx
+);

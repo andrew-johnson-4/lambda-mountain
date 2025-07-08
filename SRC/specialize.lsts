@@ -1,0 +1,19 @@
+
+let specialize(key: CString, ft: Type, unify-ctx: TypeContext?, result-type: Type): Nil = (
+   if not(is-special(key, result-type)) {
+      let term = mk-eof();
+      for Tuple{kt=first, t=third} in global-type-context.lookup(key, [] : List<(Type,Type,AST)>) {
+         if ft == kt { match t {
+            Glb{val:Abs{}} => term = t;
+            _ => ();
+         }}
+      };
+      if non-zero(term) {
+         mark-as-special(key, result-type);
+         let special-term = substitute(unify-ctx, term);
+         infer-global-context(special-term);
+         (_, special-term) = std-infer-expr(None : TypeContext?, special-term, false, Used, ta);
+         ast-parsed-program = ast-parsed-program + special-term;
+      }
+   }
+);

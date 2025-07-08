@@ -1,0 +1,5 @@
+
+let is-special-index = {} : HashtableEq<(CString,Type),U64>;
+
+let mark-as-special(name: CString, tt: Type): Nil = is-special-index = is-special-index.bind((name,tt), true);
+let is-special(name: CString, tt: Type): U64 = is-special-index.lookup((name,tt), false);
