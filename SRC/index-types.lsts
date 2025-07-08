@@ -4,9 +4,9 @@ import SRC/quick-prop.lsts;
 import SRC/substitute.lm;
 import SRC/cons-root.lsts;
 import SRC/is-special.lsts;
-import SRC/global-is-seen.lm;
 import SRC/index-of-tag.lsts;
 import SRC/is-sized-array.lsts;
+import SRC/global-is-seen.lsts;
 
 import SRC/typeof-lhs.lm;
 import SRC/apply.lm;
