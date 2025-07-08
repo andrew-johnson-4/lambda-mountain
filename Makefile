@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -w -O3 -march=native -mtune=native -ferror-limit=50
+CFLAGS = -w -O3 -march=native -mtune=native
 
 dev: install-production
 	lm t.lsts
