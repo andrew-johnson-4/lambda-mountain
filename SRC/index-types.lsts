@@ -18,7 +18,7 @@ import SRC/typecheck.lm;
 import SRC/specialize.lsts;
 import SRC/assert-well-typed.lm;
 import SRC/assert-one-typed.lsts;
-import SRC/infer-ctx.lm;
+import SRC/infer-ctx.lsts;
 import SRC/infer-tctx.lm;
 
 import SRC/ctx-union.lsts;
