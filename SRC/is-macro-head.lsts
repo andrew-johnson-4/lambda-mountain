@@ -1,0 +1,17 @@
+
+let is-macro-head(s: CString, arity: U64): U64 = (
+   let macros = preprocess-macros;
+   let found = false;
+   while non-zero(macros) { match macros {
+      MSeq{ rst=k, v:Macro{ lhs:App{ left:Lit{mv=key}, p1=right }, mrhs=rhs } } => (
+         if arity==1 && s==mv then found = true;
+         macros = rst;
+      );
+      MSeq{ rst=k, v:Macro{ lhs:App{ left:App{ left:Lit{mv=key}, p1=right }, p2=right }, mrhs=rhs } } => (
+         if arity==2 && s==mv then found = true;
+         macros = rst;
+      );
+      MSeq{ rst=k, v:Macro{ mlhs=lhs, mrhs=rhs } } => fail("Unrecognized Macro Pattern: \{mlhs}");
+   }};
+   found
+);

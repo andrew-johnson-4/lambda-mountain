@@ -7,9 +7,9 @@ dev: install-production
 	./a.out
 
 build: compile-production
-	time ./production --c -o deploy1.c SRC/index-index.lm
+	time ./production --c -o deploy1.c SRC/index.lsts
 	$(CC) $(CFLAGS) deploy1.c -o deploy1
-	time ./deploy1 --c -o deploy2.c SRC/index-index.lm
+	time ./deploy1 --c -o deploy2.c SRC/index.lsts
 	diff deploy1.c deploy2.c
 	mv deploy1.c BOOTSTRAP/cli.c
 	rm -f deploy1 deploy1.c deploy2.c
@@ -19,14 +19,14 @@ deploy: build smoke-test
 deploy-lite: build smoke-test-lite
 
 valgrind: install-bootstrap
-	valgrind --tool=callgrind lm SRC/index-index.lm
+	valgrind --tool=callgrind lm SRC/index.lsts
 
 valgrind-view:
 	callgrind_annotate callgrind.out.18778
 
 gprof:
 	$(CC) $(CFLAGS) -pg -o bootstrap.exe BOOTSTRAP/cli.c
-	./bootstrap.exe SRC/index-index.lm
+	./bootstrap.exe SRC/index.lsts
 
 gprof-view-count:
 	gprof bootstrap.exe gmon.out | less
@@ -35,7 +35,7 @@ gprof-view-call-graph:
 	gprof -q bootstrap.exe gmon.out
 
 profile: install-bootstrap
-	perf record lm SRC/index-index.lm
+	perf record lm SRC/index.lsts
 	./report.sh
 
 compile-bootstrap:
@@ -44,7 +44,7 @@ compile-bootstrap:
 
 compile-production: compile-bootstrap
 	rm -f production
-	./bootstrap.exe --c -o production.c SRC/index-index.lm
+	./bootstrap.exe --c -o production.c SRC/index.lsts
 	$(CC) $(CFLAGS) -o production production.c
 	rm -f production.c
 
