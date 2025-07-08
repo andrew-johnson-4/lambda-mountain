@@ -3,7 +3,7 @@ import SRC/quick-prop.lsts;
 
 import SRC/substitute.lm;
 import SRC/cons-root.lsts;
-import SRC/is-special.lm;
+import SRC/is-special.lsts;
 import SRC/global-is-seen.lm;
 import SRC/index-of-tag.lm;
 import SRC/is-sized-array.lsts;
