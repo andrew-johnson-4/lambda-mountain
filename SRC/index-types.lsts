@@ -10,7 +10,7 @@ import SRC/global-is-seen.lsts;
 
 import SRC/typeof-lhs.lm;
 import SRC/apply.lm;
-import SRC/try-specialize.lm;
+import SRC/try-specialize.lsts;
 
 import SRC/typeof-var-raw.lm;
 
