@@ -59,3 +59,25 @@ let substitute(ctx: AContext, term: AST): AST = (
    }
 );
 
+let substitute-lhs(tctx: TypeContext?, t: AST): AST = substitute-lhs(tctx, t, 0);
+
+let substitute-lhs(tctx: TypeContext?, t: AST, idx: U64): AST = (
+   match t {
+      App{ ps=left, right:App{ left:Lit{key:c":",ctk=token}, right:App{ left:Var{v=key,vtk=token}, right:AType{vt=tt} } } } => (
+         mk-app( substitute-lhs(tctx,ps,idx+1), 
+            mk-app( mk-lit(c":",unique(ctk)), mk-app(
+               mk-var(v,unique(vtk)), mk-atype(substitute(tctx, vt.accept-interface(idx)))
+            ))
+         )
+      );
+      App{ left:Lit{key:c":",ctk=token}, right:App{ left:Var{v=key,vtk=token}, right:AType{vt=tt} } } => (
+         mk-app( mk-lit(c":",unique(ctk)), mk-app(
+            mk-var(v,unique(vtk)), mk-atype(substitute(tctx, vt.accept-interface(idx)))
+         ))
+      );
+      App{ ps=left, right:Var{v=key,vtk=token} } => mk-app(substitute-lhs(tctx,ps),mk-var(v,unique(vtk)));
+      Var{v=key,vtk=token} => mk-var(v,unique(vtk));
+      ASTNil{} => t;
+   }
+);
+

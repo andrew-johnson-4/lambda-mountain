@@ -10,3 +10,5 @@ let mk-var(val: SmartString): AST = (
 let mk-var(val: Token): AST = (
    Var( val.key, val )
 );
+
+let mk-var(v: CString, vtk: Token): AST = Var(v,vtk);

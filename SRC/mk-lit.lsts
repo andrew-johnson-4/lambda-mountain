@@ -10,3 +10,5 @@ let mk-lit(val: SmartString): AST = (
 let mk-lit(val: Token): AST = (
    Lit( val.key, val )
 );
+
+let mk-lit(v: CString, vtk: Token): AST = Lit(v,vtk);

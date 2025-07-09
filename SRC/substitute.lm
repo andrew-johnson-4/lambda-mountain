@@ -1,39 +1,4 @@
 
-substitute-lhs := λ(: tctx Maybe<TypeContext>)(: t AST). (: (
-   (substitute-lhs( tctx t 0_u64 ))
-) AST);
-
-substitute-lhs := λ(: tctx Maybe<TypeContext>)(: t AST)(: idx U64). (: (
-   (match t (
-      ()
-      ( (App( ps (App( (Lit( ':_s ctk )) (App( (Var( v vtk )) (AType vt) )) )) )) (
-         (set t (App(
-            (close(substitute-lhs( tctx ps (+( idx 1_u64 )) )))
-            (close(App( (close(Lit( ':_s (unique ctk) ))) (close(App(
-               (close(Var( v (unique vtk) )))
-               (close(AType( (substitute( tctx (.accept-interface( vt idx )) )) )))
-            ))) )))
-         )))
-      ))
-      ( (App( (Lit( ':_s ctk )) (App( (Var( v vtk )) (AType vt) )) )) (
-         (set t (App( (close(Lit( ':_s (unique ctk) ))) (close(App(
-            (close(Var( v (unique vtk) )))
-            (close(AType( (substitute( tctx (.accept-interface( vt idx )) )) )))
-         ))) )))
-      ))
-      ( (App( ps (Var( v vtk )) )) (
-         (set t (App(
-            (close(substitute-lhs( tctx ps )))
-            (close(Var( v (unique vtk) )))
-         )))
-      ))
-      ( (Var( v vtk )) (set t (Var( v (unique vtk) ))) )
-      ( ASTNil () )
-      ( _ (exit-error( 'Unexpected\sSubstitute\sLHS_s t )) )
-   ))
-   t
-) AST);
-
 substitute := λ(: tctx Maybe<TypeContext>)(: t AST). (: (
    (match t (
       ()
