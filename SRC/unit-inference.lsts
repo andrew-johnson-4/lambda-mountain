@@ -35,7 +35,7 @@ import SRC/accept-interface.lsts;
 import SRC/ascript-normal.lsts;
 import SRC/type-index.lsts;
 import SRC/interface-index.lsts;
-import SRC/index-concrete-type-instances.lm;
+import SRC/index-concrete-type-instances.lsts;
 import SRC/typecheck.lsts;
 import SRC/var-to-def-index.lsts;
 import SRC/reify-type-variables.lsts;
