@@ -16,7 +16,7 @@ import SRC/typeof-var-raw.lm;
 
 import SRC/typecheck.lsts;
 import SRC/specialize.lsts;
-import SRC/assert-well-typed.lm;
+import SRC/assert-well-typed.lsts;
 import SRC/assert-one-typed.lsts;
 import SRC/infer-ctx.lsts;
 import SRC/infer-tctx.lm;
