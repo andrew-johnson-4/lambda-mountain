@@ -1,0 +1,27 @@
+
+let assert-well-typed(term: AST): Nil = (
+   match term {
+      Meta{} => ();
+      Typedef2{} => ();
+      ASTEOF{} => ();
+      AType{} => ();
+      ASTNil{} => assert-one-typed(term);
+      Glb{key=key, val=val} => if not(typeof(term).is-open) then assert-well-typed(val);
+      App{ left:Abs{}, rhs=right } => (assert-well-typed(rhs); assert-one-typed(term));
+      App{ left:Var{key:c"as"}, right:App{ t=left, right:AType{tt=tt} } } => assert-well-typed(t);
+      App{ left:Lit{key:c":"}, right:App{ t=left, right:AType{tt=tt} } } => assert-well-typed(t);
+      App{ left:App{ left:App{ left:Var{key:c"if"}, cond=right }, t=right }, f=right } => (
+         assert-well-typed(cond);
+         assert-well-typed(t);
+         assert-well-typed(f);
+         assert-one-typed(term);
+      );
+      App{ left:Var{key:c"open"}, rterm=right } => (assert-well-typed(rterm); assert-one-typed(term));
+      App{ left:Var{key:c"scope"}, rterm=right } => (assert-well-typed(rterm); assert-one-typed(term));
+      Lit{} => assert-one-typed(term);
+      Var{} => assert-one-typed(term);
+      Abs{lhs=lhs, rhs=rhs, tt=tt} => (assert-well-typed(rhs); assert-one-typed(term));
+      App{left=left, right=right} => (assert-well-typed(left); assert-well-typed(right); assert-one-typed(term));
+      Seq{seq=seq} => for vector s in seq { assert-well-typed(s) };
+   }
+);
