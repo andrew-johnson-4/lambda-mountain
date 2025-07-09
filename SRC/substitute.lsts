@@ -81,3 +81,42 @@ let substitute-lhs(tctx: TypeContext?, t: AST, idx: U64): AST = (
    }
 );
 
+let substitute(tctx: TypeContext?, t: AST): AST = (
+   match t {
+      ASTEOF{} => t;
+      ASTNil{} => t;
+      App{ left:Lit{key:c":",ctk=token}, right:App{ left:Var{v=key,vtk=token}, right:AType{vt=tt} } } => (
+         t = mk-app( mk-lit(c":",unique(ctk)), mk-app(mk-var(v,unique(vtk)), mk-atype(substitute(tctx,vt))) );
+         let found = false;
+         for Tuple{tk=first,tv=second,ta=third} in tctx.get-or([] : List<(CString,Type,AST)>) {
+            if not(found) && tk==v {
+               t = mk-app( mk-lit(c":",unique(ctk)), mk-app(substitute(tctx,ta), mk-atype(substitute(tctx,vt))) );
+               found = true;
+            }
+         }; t
+      );
+      Lit{v=key,vtk=token} => mk-lit(v,unique(vtk));
+      Var{v=key,vtk=token} => mk-var(v,unique(vtk));
+      Abs{lhs=lhs,rhs=rhs,tt=tt} => mk-abs(substitute-lhs(tctx,lhs),substitute(tctx,rhs),substitute(tctx,tt));
+      AType{tt=tt} => mk-atype(substitute(tctx,tt));
+      App{is-cons=is-cons,lt=left,rt=right} => mk-cons-or-app(is-cons,substitute(tctx,lt),substitute(tctx,rt));
+      Seq{seq=seq} => (
+         t = mk-eof();
+         for vector s in seq { t = t + substitute(tctx,s); };
+         t
+      );
+      Glb{k=key, rt=val} => (
+         let found = false;
+         for Tuple{tk=first,tv=second,ta=third} in tctx.get-or([] : List<(CString,Type,AST)>) {
+            if not(found) && k.key==tk { 
+               match ta {
+                  Var{tvtk=token} => k = tvtk;
+                  _ => ();
+               };
+               found = true;
+            }
+         };
+         mk-glb(unique(k),substitute(tctx,rt))
+      );
+   }
+);
