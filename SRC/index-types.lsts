@@ -12,7 +12,7 @@ import SRC/typeof-lhs.lsts;
 import SRC/apply.lsts;
 import SRC/try-specialize.lsts;
 
-import SRC/typeof-var-raw.lm;
+import SRC/typeof-var-raw.lsts;
 
 import SRC/typecheck.lsts;
 import SRC/specialize.lsts;
