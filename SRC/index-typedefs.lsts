@@ -1,0 +1,21 @@
+
+let index-typedefs(program: AST): Nil = (
+   for vector def in program.unroll-seq { match def {
+      Typedef2{} => (
+         let cases = (def as Tag::Typedef2).cases;
+         let has-cases = false;
+         for vector case-fields in cases {
+            if non-zero(case-fields.first) {
+               has-cases = true;
+               index-index-of-tag(case-fields.first, 0);
+               if case-fields.second.length == 0 then index-lone-tag(case-fields.first);
+            };
+            if not(has-cases) {
+               let lhs-type = (def as Tag::Typedef2).lhs-type;
+               index-index-of-tag(lhs-type.simple-tag, 0);
+            }
+         }
+      );
+      _ => ();
+   }}
+);
