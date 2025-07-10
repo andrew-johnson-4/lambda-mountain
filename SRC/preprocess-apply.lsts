@@ -63,13 +63,9 @@ let preprocess-apply(program: AST): AST = (
       );
       App{
          left:App{
-            left:App{
-               left:Var{key:c"as",atk=token},
-               t=right
-            },
-            right:AType{tt=tt}
-         },
-         nt=right
+            left:Var{key:c"as",atk=token},
+            right:App{ t=left, right:AType{tt=tt} }
+         }, nt=right
       } => (
          mk-app( mk-app( mk-var(c"as",unique(atk)), mk-app(preprocess-apply(t),mk-atype(tt)) ), preprocess-apply(nt) )
       );
