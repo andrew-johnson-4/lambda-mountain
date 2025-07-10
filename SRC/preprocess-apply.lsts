@@ -51,13 +51,6 @@ let preprocess-apply(program: AST): AST = (
             mk-cons-or-app(is-cons-3,t,mk-atype(tt))
          );
       );
-      App{is-cons-2=is-cons, left:Lit{key:c":",ctk=token}, right:App{is-cons-3=is-cons,t=left,right:AType{tt=tt}}} => (
-         if not(tt.is-t(c"SmartString")) then t = preprocess-apply(t);
-         mk-cons-or-app(is-cons-2,
-            mk-lit(c":",unique(ctk)),
-            mk-cons-or-app(is-cons-3,t,mk-atype(tt))
-         );
-      );
       App{is-cons-1=is-cons, left:App{is-cons-2=is-cons, left:Lit{key:c":",ctk=token}, mvar=right}, right:Lit{mtype=key,mtk=token} } => (
          if is-cons-1
          then mk-cons-or-app(is-cons-1, mk-cons-or-app(is-cons-2, mk-lit(c":",ctk), preprocess-apply(mvar)), mk-lit(mtype,mtk))
