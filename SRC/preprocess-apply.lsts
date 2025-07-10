@@ -1,6 +1,18 @@
 
 let preprocess-apply(program: AST): AST = (
    match program {
+      App{ left:App{ left:Var{key:c"macro::concat",ctk=token}, right:App{ left:Var{lk=key}, right:Var{rk=key} } }, nt=right } => (
+         mk-app( mk-var(lk+rk, unique(ctk)), preprocess-apply(nt) )
+      );
+      App{ left:App{ left:Var{key:c"macro::concat",ctk=token}, right:App{ left:Var{lk=key}, right:Lit{rk=key} } }, nt=right } => (
+         mk-app( mk-var(lk+rk, unique(ctk)), preprocess-apply(nt) )
+      );
+      App{ left:App{ left:Var{key:c"macro::concat",ctk=token}, right:App{ left:Lit{lk=key}, right:Var{rk=key} } }, nt=right } => (
+         mk-app( mk-var(lk+rk, unique(ctk)), preprocess-apply(nt) )
+      );
+      App{ left:App{ left:Var{key:c"macro::concat",ctk=token}, right:App{ left:Lit{lk=key}, right:Lit{rk=key} } }, nt=right } => (
+         mk-app( mk-var(lk+rk, unique(ctk)), preprocess-apply(nt) )
+      );
       App{ is-cons-1=is-cons,
          left:App{is-cons-2=is-cons,
             left:Lit{key:c":",ctk=token},
@@ -28,7 +40,7 @@ let preprocess-apply(program: AST): AST = (
          mk-cons-or-app(is-cons-1,
             mk-cons-or-app(is-cons-2,
                mk-lit(c":",unique(ctk)),
-               mk-cons-or-app(is-cons-3,t,mk-atype(tt))
+               mk-cons-or-app(is-cons-3,preprocess-apply(t),mk-atype(tt))
             ), preprocess-apply(nt)
          );
       );
@@ -131,3 +143,4 @@ let preprocess-apply(program: AST): AST = (
       _ => program;
    }
 );
+
