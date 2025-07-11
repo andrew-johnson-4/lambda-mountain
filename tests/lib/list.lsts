@@ -1,5 +1,5 @@
 
-import LIB/default.lsts;
+import std/default.lsts;
 
 let li = [1_u64, 2_u64, 2_u64, 3_u64, 4_u64, 5_u64] : List<U64>;
 assert( li == [1_u64, 2_u64, 2_u64, 3_u64, 4_u64, 5_u64] );

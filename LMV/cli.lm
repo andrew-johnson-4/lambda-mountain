@@ -1,5 +1,5 @@
 
-import LIB/default.lm;
+import std/default.lm;
 import LMV/parse.lm;
 
 type VerifyMode ModeVerifyGNU;

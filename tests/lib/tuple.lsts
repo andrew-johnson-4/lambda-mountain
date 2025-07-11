@@ -1,5 +1,5 @@
 
-import LIB/default.lsts;
+import std/default.lsts;
 
 assert( Tuple(1, 2) == Tuple(1, 2) );
 assert( Tuple(1, 2) != Tuple(1, 3) );

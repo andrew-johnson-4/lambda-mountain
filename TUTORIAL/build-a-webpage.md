@@ -5,7 +5,7 @@ Blob compilation is a compiler option that tells the assembler to just emit simp
 To create a blob webpage we can use the `LIB/default.html` library to help us get started.
 
 ```
-import LIB/default.html;
+import std/default.html;
 
 (html(
    (head(

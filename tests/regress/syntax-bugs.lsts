@@ -1,5 +1,5 @@
 
-import LIB/minimal.lsts;
+import std/minimal.lsts;
 
 if true {
    let a = 3;

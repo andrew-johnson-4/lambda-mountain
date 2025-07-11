@@ -1,5 +1,5 @@
 
-import LIB/default.lsts;
+import std/default.lsts;
 
 macro ('m1 a) (print a);
 

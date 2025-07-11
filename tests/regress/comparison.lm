@@ -1,5 +1,5 @@
 
-import LIB/default.lsts;
+import std/default.lsts;
 
 g0 := 0_u64;
 g1 := 1_u64;

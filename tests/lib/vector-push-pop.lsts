@@ -1,5 +1,5 @@
 
-import LIB/minimal.lsts;
+import std/minimal.lsts;
 
 let v = mk-vector(type(String), 4);
 

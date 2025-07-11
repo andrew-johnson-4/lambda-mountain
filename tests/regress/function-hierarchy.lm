@@ -1,5 +1,5 @@
 
-import LIB/default.lsts;
+import std/default.lsts;
 
 f := λ(: x U64). 1_u64;
 f := λ(: x U64+Nonce1+Nonce2). 2_u64;

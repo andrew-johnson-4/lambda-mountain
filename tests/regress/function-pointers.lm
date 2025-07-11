@@ -1,5 +1,5 @@
 
-import LIB/default.lsts;
+import std/default.lsts;
 
 fa := λ. (: (print 'A_s) Nil);
 fb := λ. (: (print 'B_s) Nil);

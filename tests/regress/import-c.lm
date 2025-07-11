@@ -1,5 +1,5 @@
 
-import LIB/default.lsts;
+import std/default.lsts;
 import math.h;
 import stdlib.h;
 

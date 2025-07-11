@@ -1,5 +1,5 @@
 
-import LIB/default.lsts;
+import std/default.lsts;
 
 if A_s < B_s then print("A<B\n") else print("B<A\n"); 
 if B_s < A_s then print("B<A\n") else print("A<B\n"); 

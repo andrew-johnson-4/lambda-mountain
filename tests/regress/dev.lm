@@ -1,6 +1,6 @@
 
-import LIB/default.lsts;
-import LIB/dev-u64.lm;
+import std/default.lsts;
+import std/dev-u64.lm;
 
 main := λ.(: (
    (let a1 1_u64)
