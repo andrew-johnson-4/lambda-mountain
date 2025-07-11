@@ -39,6 +39,7 @@ macro ( ('for-each (item 'in iterable) loop) ) (
    )))
 );
 
+##[[deprecated for-each]]
 macro ( ('for-each-v (item 'in iter) loop) ) (
    (let (uuid iter-term) iter)
    (let (uuid iter-i) 0_u64)
