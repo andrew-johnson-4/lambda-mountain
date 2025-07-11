@@ -16,7 +16,7 @@ let main-with = false;
 
 let config-path = [] : List<CString>; # TODO: getenv("HOME")+"/.lm/"
 
-let config-platform-prefix = c"PLATFORM/C/";
+let config-platform-prefix = c"lib/";
 let config-profile-invocations = false;
 let config-target = c"tmp.c";
 let config-mode = ModeCompile;

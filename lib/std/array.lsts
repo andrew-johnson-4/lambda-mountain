@@ -1,0 +1,84 @@
+
+declare-binop( $"!=", raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"+", raw-type(base-type[]), raw-type(U64), raw-type(base-type[]), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"+", raw-type(base-type[]), raw-type(I64), raw-type(base-type[]), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(U64), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(I64), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l"-"; y; l")"; ) );
+
+declare-unop( not, raw-type(base-type[]), raw-type(U64), ( l"(!"; x; l")"; ) );
+
+declare-unop( into-branch-conditional, raw-type(base-type[]), raw-type(BranchConditional), x );
+
+declare-binop( $"[]", raw-type(base-type[]), raw-type(U64), raw-type(base-type), ( l"("; x; l"["; y; l"])"; ) );
+declare-ternop( $"set[]", raw-type(base-type[]), raw-type(U64), raw-type(base-type), raw-type(base-type), ( l"("; x; l"["; y; l"]="; z; l")"; ) );
+
+declare-unop( open, raw-type(t), raw-type(t), x );
+declare-unop( open, raw-type(base-type[]), raw-type(base-type), (l"(*"; x; l")";) );
+#declare-unop( open, raw-type(base-type[CONST]), raw-type(base-type[CONST]), x );
+declare-unop( $"&", raw-type(t), raw-type(t[]), (l"(&"; x; l")";) );
+
+declare-unop( raw, raw-type(t), raw-type(t), x );
+declare-unop( raw, raw-type(base-type[]), raw-type(base-type[]+Raw), x );
+
+let mark-memory-as-safe(ptr: t[], len: U64): Nil = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   while len > 0_u64 {
+      let ignored = ptr[0_u64];
+      len = len - 1_u64;
+      ptr = ((ptr as U8[]) + sizeof(t)) as t[];
+   };
+);
+
+let safe-alloc-impl(nb: U64): ?[] = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   let ptr = malloc(nb);
+   if ptr as U64 == 0_u64 {
+      fail("malloc \{nb}B fail");
+   };
+
+   mark-memory-as-safe(ptr as U8[], nb);
+   ptr
+);
+
+let safe-realloc-impl(ptr: ?[], nb: U64): ?[] = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   let new_ptr = realloc(ptr, nb) as ?[];
+   if new_ptr as U64 == 0_u64 {
+      fail("realloc to \{nb}B fail");
+   };
+
+   mark-memory-as-safe(new_ptr as U8[], nb);
+   new_ptr
+);
+
+## this will fail() if len is 0
+let safe-alloc(len: U64, ty: Type<t>): t[] = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   let nb = len * sizeof(t);
+   safe-alloc-impl(nb) as t[]
+);
+
+## this will fail() if len is 0
+let safe-realloc(ptr: t[], len: U64, ty: Type<t>): t[] = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   let nb = len * sizeof(t);
+   safe-realloc-impl(nb) as t[]
+);
+
+let close(x: p): p[] = (
+   let r = safe-alloc(1_u64, type(p));
+   r[0_u64] = x;
+   r
+);

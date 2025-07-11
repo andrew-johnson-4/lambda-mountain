@@ -1,0 +1,26 @@
+
+typed macro macro::assert(cond: lazy): lazy = (
+   if not(cond) then fail("Assertion Failed", macro::location(here))
+);
+
+# not required, but generates less C code than iters, and therefore speeds up comptime a bit
+typed macro macro::for(item: lazy, iter: List<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iter;
+   while uuid(iter-term).has-head { match uuid(iter-term) {
+      [item.. uuid(tl)] => (
+         loop; uuid(iter-term) = uuid(tl);
+      );
+   }}
+);
+
+# not required, but generates less C code than iters, and therefore speeds up comptime a bit
+typed macro macro::for(item: lazy, iter: Vector<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iter;
+   let uuid(iter-i) = 0_u64;
+   let uuid(iter-length) = uuid(iter-term).length;
+   while uuid(iter-i) < uuid(iter-length) { match uuid(iter-term)[uuid(iter-i)] {
+      item => (
+         loop; uuid(iter-i) = uuid(iter-i) + 1;
+      );
+   }}
+);

@@ -14,21 +14,16 @@ let frontend-has-seen = {} : HashtableEq<CString,U64>;
 let frontend(fp: CString): Nil = (
    if not(frontend-has-seen.has(fp)) {
       frontend-has-seen = frontend-has-seen.bind(fp,true);
-      if fp.has-prefix(c"LIB/") then fp = config-platform-prefix + fp;
+      if fp.has-prefix(c"core/") then fp = config-platform-prefix + fp;
+      if fp.has-prefix(c"std/") then fp = config-platform-prefix + fp;
       let found-file = false;
       if fp.has-suffix(c".h") then found-file = true;
       if plugins-frontends-index.has(fp.file-extension) then found-file = true;
-      if not(found-file) && fp.has-prefix(c"PLATFORM/") {
-         if file-exists(fp) then found-file = true
-         else {
-            for base-path in config-path {
-               if not(found-file) && file-exists(base-path + fp) {
-                  found-file = true;
-                  fp = base-path + fp;
-               }
-            }
-         }
-      } else found-file = found-file || file-exists(fp);
+      if not(found-file) {
+         if file-exists(fp) {
+            found-file = true
+         };
+      };
       if not(found-file) then fail("Unable To Find Path To File: \{fp}");
       let todo = true;
       if todo && (fp.has-suffix(c".lm") || fp.has-suffix(c".html")) {

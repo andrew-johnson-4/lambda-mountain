@@ -1,0 +1,69 @@
+
+.rm_so := λ: Blob(: t C_regmatch__t_). (: (
+   (:frame( (:frame t) ))
+   (:expression( '\[_l (:expression t) '.rm_so\]_l ))
+) U64);
+.rm_eo := λ: Blob(: t C_regmatch__t_). (: (
+   (:frame( (:frame t) ))
+   (:expression( '\[_l (:expression t) '.rm_eo\]_l ))
+) U64);
+
+.has-prefix := λ(: text SmartString)(: rgx Regex). (: (
+   (let status (regexec(
+      (as (& rgx) C_regex__t_*_)
+      (as (.start text) C_char_*)
+      (as 0_u64 C_size__t_)
+      (as 0_u64 C_regmatch__t_*)
+      (as 0_u64 C_int)
+   )))   
+   (==( (as status U64) 0_u64 ))
+) U64);
+
+== := λ(: text String)(: rgx Regex). (: (
+   (let matches (: __uninitialized C_regmatch__t_[1]))
+   (let status (regexec(
+      (as (& rgx) C_regex__t_*_)
+      (as text C_char_*)
+      (as 1_u64 C_size__t_)
+      (as matches C_regmatch__t_*)
+      (as 0_u64 C_int)
+   )))
+   (&&(
+      (==( (as status U64) 0_u64 ))
+      (&&(
+         (==( (.rm_so([]( matches 0_u64 ))) 0_u64 ))
+         (==( (.rm_eo([]( matches 0_u64 ))) (.length text) ))
+      ))
+   ))
+) U64);
+
+# TODO remove (this method name is a misnomer)
+.remove-prefix := λ(: text SmartString)(: rgx Regex). (: (
+   (let matches (: __uninitialized C_regmatch__t_[1]))
+   (let status (regexec(
+      (as (& rgx) C_regex__t_*_)
+      (as (.start text) C_char_*)
+      (as 1_u64 C_size__t_)
+      (as matches C_regmatch__t_*)
+      (as 0_u64 C_int)
+   )))
+   (if (!=( (.rm_so([]( matches 0_u64 ))) 0_u64 )) (
+      (fail 'Remove\sSmartString\sPrefix\sBy\sRegex\sNot\sA\sPrefix_s)
+   ) ())
+   ([:]( text 0_i64 (as (.rm_eo([]( matches 0_u64 ))) I64) ))
+) SmartString);
+
+.get-prefix := λ(: text SmartString)(: rgx Regex). (: (
+   (let matches (: __uninitialized C_regmatch__t_[1]))
+   (let status (regexec(
+      (as (& rgx) C_regex__t_*_)
+      (as (.start text) C_char_*)
+      (as 1_u64 C_size__t_)
+      (as matches C_regmatch__t_*)
+      (as 0_u64 C_int)
+   )))
+   (if (!=( (.rm_so([]( matches 0_u64 ))) 0_u64 )) (
+      (fail 'Remove\sSmartString\sPrefix\sBy\sRegex\sNot\sA\sPrefix_s)
+   ) ())
+   ([:]( text 0_i64 (as (.rm_eo([]( matches 0_u64 ))) I64) ))
+) SmartString);

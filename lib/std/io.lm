@@ -1,0 +1,46 @@
+
+io::file::stdin := λ: Blob(). (: (:expression stdin_l) IO::File);
+io::file::stdout := λ: Blob(). (: (:expression stdout_l) IO::File);
+io::file::stderr := λ: Blob(). (: (:expression stderr_l) IO::File);
+
+fopen := λ: FFI(: fp String)(: mode String). (: __uninitialized IO::File+Phi<FileState::Open>);
+fclose := λ: FFI(: fio IO::File+Phi<FileState::Open,FileState::Closed>). (: __uninitialized U32);
+fwrite := λ: FFI(: c U8[])(: c-size U64)(: c-len U64)(: f IO::File). (: __uninitialized U32);
+
+exit := λ(: x U64).(: (exit(as x U32)) Nil);
+
+fail := λ(: msg String)(: loc String). (: (
+   (print msg)(print '\sat\s_s)(print loc)
+   (as (exit 1_u32) Never)
+) Never);
+
+fail := λ(: msg SmartString). (: (
+   (print msg)
+   (as (exit 1_u32) Never)
+ ) Never);
+
+fail := λ(: msg SmartString)(: loc SmartString). (: (
+   (print msg)(print '\sat\s_s)(print loc)
+   (as (exit 1_u32) Never)
+) Never);
+
+fail := λ(: msg String). (: (
+   (print msg)
+   (as (exit 1_u32) Never)
+) Never);
+
+write-file := λ(: fp String)(: contents String). (: (
+   (let f (fopen( (as fp U8[]) (as 'w_s U8[]) )))
+   (fwrite( (as contents U8[]) 1_u64 (.length contents) f ))
+   (fclose f) ()
+) Nil);
+
+file-exists := λ(: fp String). (: (
+   (let f (fopen( (as fp U8[]) (as 'r_s U8[]) )))
+   (let exists 0_u64)
+   (if (!=( (as f U64) 0_u64 )) (
+      (set exists 1_u64)
+      (fclose f) ()
+   ) ())
+   exists
+) U64);

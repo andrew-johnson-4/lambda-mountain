@@ -1,5 +1,5 @@
 
-import LIB/minimal.lsts;
+import std/minimal.lsts;
 
 import SRC/unit-drivers.lsts;
 

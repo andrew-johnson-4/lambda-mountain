@@ -1,6 +1,6 @@
 
 let c-frontend(fp: CString): Nil = (
-   frontend(c"LIB/c-primitives.lsts"); # hard coded dependency
+   frontend(c"std/c-primitives.lsts"); # hard coded dependency
 
    let tmp = intern(mktemp(untern("/tmp/lm.tmp.XXXXXX") as U8[]) as CString);
    let cmd = "cpp /dev/null -o " + tmp;

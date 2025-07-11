@@ -1,0 +1,66 @@
+
+type SmartString implements Collection<U8> suffix _ss
+                = { data:U8[] , start:U8[] , end:U8[] , data-end:U8[] };
+
+let cmp(l: CString, r: String): Ord = (
+   cmp( intern(l), r )
+);
+let $"=="(l: CString, r: String): U64 = cmp(l, r) == Equal();
+let $"!="(l: CString, r: String): U64 = cmp(l, r) != Equal();
+let $"<"(l: CString, r: String): U64 = cmp(l, r)  <  Equal();
+let $"<="(l: CString, r: String): U64 = cmp(l, r) <= Equal();
+let $">"(l: CString, r: String): U64 = cmp(l, r)  >  Equal();
+let $">="(l: CString, r: String): U64 = cmp(l, r) >= Equal();
+
+let cmp(l: String, r: CString): Ord = (
+   cmp( l, intern(r) )
+);
+let $"=="(l: String, r: CString): U64 = cmp(l, r) == Equal();
+let $"!="(l: String, r: CString): U64 = cmp(l, r) != Equal();
+let $"<"(l: String, r: CString): U64 = cmp(l, r)  <  Equal();
+let $"<="(l: String, r: CString): U64 = cmp(l, r) <= Equal();
+let $">"(l: String, r: CString): U64 = cmp(l, r)  >  Equal();
+let $">="(l: String, r: CString): U64 = cmp(l, r) >= Equal();
+
+let cmp(x: String, y: String): Ord = (
+   let r = Equal();
+   if not(is( x, y )) {
+      let x-start = x.start;
+      let y-start = y.start;
+      while x-start < x.end && y-start < y.end {
+         if x-start[0_u64] < y-start[0_u64] {
+            r = LessThan();
+            x-start = x.end;
+            y-start = y.end;
+         } else if x-start[0_u64] > y-start[0_u64] {
+            r = GreaterThan();
+            x-start = x.end;
+            y-start = y.end;
+         } else {
+            x-start = x-start + 1_u64;
+            y-start = y-start + 1_u64;
+         }
+      };
+      if x-start < x.end { r = GreaterThan() };
+      if y-start < y.end { r = LessThan() };
+   };
+   r
+);
+
+let print(io: IO::File, x: SmartString): Nil = (
+   let start = x.start;
+   while start != x.end {
+      fwrite(start, 1_u64, 1_u64, $"io::file::stdout"());
+      start = start + 1_u64;
+   };
+);
+let print(x: SmartString): Nil = print( $"io::file::stdout"() as IO::File, x );
+
+let eprint(io: IO::File, x: SmartString): Nil = (
+   let start = x.start;
+   while start != x.end {
+      fwrite(start, 1_u64, 1_u64, $"io::file::stderr"());
+      start = start + 1_u64;
+   };
+);
+let eprint(x: SmartString): Nil = print( $"io::file::stderr"() as IO::File, x );

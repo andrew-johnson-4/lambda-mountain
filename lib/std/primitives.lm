@@ -1,0 +1,21 @@
+
+primitive::while := λ: Blob(: body Any)(: cond BranchConditional). (: (
+   (:frame( (:frame body) (:frame cond) ))
+   (:expression(
+      '\[{while\[_l (:expression cond) '\]{_l (:expression body) '\:}\:}\]_l
+   ))
+) Nil);
+
+primitive::if := λ: Blob(: ictx ImplicitContext)(: f Any)(: t Any)(: c BranchConditional). (: (
+   (:frame( (:frame c) (:frame t) (:frame f) ))
+   (:expression(
+      '\[_l (:expression c) '?_l (:expression t) ':_l (:expression f) '\]_l
+   ))
+) Nil);
+
+primitive::call := λ: Blob(: ictx ImplicitContext)(: args Any). (: (
+   (:frame( (:frame ictx) (:frame args) ))
+   (:expression(
+      '\[_l (:function-id ictx) '\[_l (:expression args) '\]\]_l
+   ))
+) Nil);
