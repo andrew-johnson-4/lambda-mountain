@@ -10,7 +10,6 @@ import std/sized.lm;
 import std/bool.lsts;
 import std/u64.lm;
 import std/i64.lm;
-import std/f64.lm;
 import std/u8.lsts;
 import std/i8.lsts;
 import std/u16.lsts;
