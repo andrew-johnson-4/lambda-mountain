@@ -121,7 +121,7 @@ let .pop(v: Vector<t>): Tuple<t, Vector<t>> = (
 );
 
 let .clone(self: Vector<t>): Vector<t> = (
-   self.iter().collect(type(Vector<t>))
+   self.unsafe-iter().collect(type(Vector<t>))
 );
 
 let $"[]"( v: Vector<t>, i: U64 ): t = (
