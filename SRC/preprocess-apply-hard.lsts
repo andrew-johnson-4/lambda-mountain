@@ -27,6 +27,6 @@ let preprocess-apply-hard(macro-name: CString, arity: U64, program: AST): AST = 
          }
       );
    }};
-   if not(matched) then fail("Invalid Macro Application \{macro-name}");
+   if not(matched) then fail("Invalid Macro Application \{macro-name} At \{program.location}");
    return
 );
