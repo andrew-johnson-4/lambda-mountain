@@ -1,7 +1,13 @@
 
+## linked list
+##
+## consider using [type(Vector<x>)] instead
 type List<x> zero LEOF
              = LEOF
              | LCons{ head:x , tail:List<x>[] };
+
+type List<x> implements Iterable<x>;
+type List<x> implements Collection<x>;
 
 let cmp(ls: List<x>, rs: List<x>): Ord = (
    let diff = Equal();
@@ -40,6 +46,7 @@ let .unique(ls: List<x>): List<x> = (
    rs
 );
 
+##[DEPRECATED .iter().next()]
 let .next(ls: Array<List<x>,?>): Maybe<x> = (
    match open(ls) {
       [i.. rst] => (
@@ -48,6 +55,55 @@ let .next(ls: Array<List<x>,?>): Maybe<x> = (
       );
       [] => (None : Maybe<x>)();
    };
+);
+
+let .nth(tt: List<x>, idx: U64): Maybe<x> = (
+   let err = false;
+   while idx > 0 && not(err) {
+      if tt.has-head() {
+         tt = tail(tt);
+         idx = idx - 1;
+      } else {
+         err = true;
+      }
+   };
+
+   if err || not(tt.has-head()) {
+      None : Maybe<x>
+   } else {
+      Some(head(tt))
+   }
+);
+
+
+let $"[]"(tt: List<x>, idx: U64): x = (
+   while idx > 0 {
+      if not(tt.has-head()) {
+         fail("index \{idx} is out of bounds for list of length \{tt.length()}");
+      };
+      tt = tail(tt);
+   };
+   head(tt)
+);
+
+type ListIter<x> implements Iterator<x> = { list: List<x> };
+
+let .next(ls: ListIter<x>[]): Maybe<x> = (
+   match open(open(ls).list) {
+      [i.. rst] => (
+         ls[0_u64] = ListIter(rst);
+         Some(i)
+      );
+      [] => (None : Maybe<x>);
+   };
+);
+
+let .iter(li: List<x>): ListIter<x> = (
+   li.unsafe-iter();
+);
+
+let .unsafe-iter(li: List<x>): ListIter<x> = (
+   ListIter(li)
 );
 
 let .lookup(ls: List<Tuple<k,v>>, key: k, default: v): v = (
