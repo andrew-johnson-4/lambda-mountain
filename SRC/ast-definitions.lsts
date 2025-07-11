@@ -28,7 +28,7 @@ type ParsePartial = PME{ term:AST , remainder:List<Token> };
 
 type ApplyResult = { function-type:Type , return-type:Type };
 
-type CompileMode = ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
+type CompileMode = ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
 type IsUsed = Used | Unused | Tail | Return | Call;
 
