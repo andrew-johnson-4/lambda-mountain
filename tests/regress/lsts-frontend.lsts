@@ -1,5 +1,5 @@
 
-import $"LIB/default.lsts";
+import $"std/default.lsts";
 
 let $"***"(x: I64, y: I64): I64 = (x + y) - 2_i64 * y;
 
