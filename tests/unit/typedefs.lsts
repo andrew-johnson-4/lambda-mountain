@@ -1,5 +1,5 @@
 
-import LIB/default.lsts;
+import std/default.lsts;
 
 type2 A size 2_B;
 type2 B size 3_b;

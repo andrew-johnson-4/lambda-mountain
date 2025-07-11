@@ -126,7 +126,7 @@ To define our instruction set and some basic concepts like integers and named re
 The hello world program can then be completed as below.
 
 ```
-import LIB/default-minimal.lm;
+import std/default-minimal.lm;
 
 main := λ. (: (
        (mov( 1_u64 RAX ))          # 1 is sys_write

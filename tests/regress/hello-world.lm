@@ -1,5 +1,5 @@
 
-import LIB/default-minimal.lm;
+import std/default-minimal.lm;
 
 cdecl::return := λ: Blob(: l Nil). (: (
    (:program l)

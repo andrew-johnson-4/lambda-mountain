@@ -1,5 +1,5 @@
 
-import LIB/default.lsts;
+import std/default.lsts;
 
 main := λ.(: (
    (let a1 1_u64)

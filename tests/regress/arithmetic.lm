@@ -1,5 +1,5 @@
 
-import LIB/default.lsts;
+import std/default.lsts;
 
 main := λ. (: (
   (print 1_u64)(print '\n_s)

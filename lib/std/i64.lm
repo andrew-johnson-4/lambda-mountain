@@ -1,0 +1,49 @@
+
+minimum-I64 := -2147483648_i64;
+
+print := λ(: io IO::File)(: x I64). (: (
+   (fprintf( io '%ld_s x )) ()
+) Nil);
+
+to-string := λ(: i I64). (: (
+   (let sign (SNil()))
+   (let r (SNil()))
+   (if (<( i 0_i64 )) (
+      (set sign (SAtom '-_s))
+      (set i (-( 0_i64 i )))
+   ) ())
+   (let c 0_u8)
+   (while (not(==( i 0_i64 ))) (
+      (let ci (as (+( (%( (as i U64) 10_u64 )) 48_u64 )) U8))
+      (set i (/( i 10_i64 )))
+      (set r (SCons(
+         (close(SAtom(clone-rope ci)))
+         (close r)
+      )))
+   ))
+   (if (non-zero r) () (
+      (set r (SAtom '0_s))
+   ))
+   (clone-rope(SCons( (close sign) (close r) )))
+) String);
+
+to-i64 := λ(: s String). (: (
+   (let negative False_u8)
+   (if (==( (head-string s) 45_u8 )) (
+      (set negative True_u8)
+      (set s (tail-string s))
+   ) ())
+   (let base (as (to-u64 s) I64))
+   (if (==( negative True_u8 )) (
+      (set base (-( 0_i64 base )))
+   ) ())
+   base
+) I64);
+
+max := λ(: x I64)(: y I64). (: (
+   (if (>=( x y )) x y)
+) I64);
+
+min := λ(: x I64)(: y I64). (: (
+   (if (<=( x y )) x y)
+) I64);

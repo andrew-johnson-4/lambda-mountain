@@ -1,0 +1,31 @@
+
+:expression := λ: Blob(: x Any). (: () L);
+:program := λ: Blob(: x Any). (: () L);
+:frame := λ: Blob(: x Any). (: () L);
+:case-number := λ: Blob(: x Any). (: () L);
+:function-id := λ: Blob(: x Any). (: () L);
+
+== := λ: Blob(: l L)(: r L). (: () L);
+!= := λ: Blob(: l L)(: r L). (: () L);
+< := λ: Blob(: l L)(: r L). (: () L);
+<= := λ: Blob(: l L)(: r L). (: () L);
+> := λ: Blob(: l L)(: r L). (: () L);
+>= := λ: Blob(: l L)(: r L). (: () L);
+
+* := λ: Blob(: l L)(: r L). (: () L);
+/ := λ: Blob(: l L)(: r L). (: () L);
+% := λ: Blob(: l L)(: r L). (: () L);
++ := λ: Blob(: l L)(: r L). (: () L);
+- := λ: Blob(: l L)(: r L). (: () L);
+
+range := λ: Blob(: hi L). (: () L);
+range := λ: Blob(: lo L)(: hi L). (: () L);
+
+align := λ: Blob(: hi L). (: () L);
+uuid := λ: Blob(: t L). (: () L);
+
+remove-trailing-comma := λ: Blob(: t L). (: () L);
+
+mangle := λ: Blob(: t L). (: () L);
+mangle-pre := λ: Blob(: t Type<Any>). (: () L);
+mangle-post := λ: Blob(: t Type<Any>). (: () L);

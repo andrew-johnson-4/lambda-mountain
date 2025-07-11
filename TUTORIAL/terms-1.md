@@ -17,7 +17,7 @@ This will install an `lm` command that we will use to compile our source files.
 To run our examples we will make an example file `example.lsts`.
 
 ```
-import LIB/default.lm;
+import std/default.lm;
 
 print("hello world\n");
 ```

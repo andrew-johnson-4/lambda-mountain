@@ -1,5 +1,5 @@
 
-import LIB/default.lsts;
+import std/default.lsts;
 
 typed macro ast-macros-test-add(x: U64, y: lazy): lazy = (
    x + y

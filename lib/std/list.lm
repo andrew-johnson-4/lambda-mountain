@@ -1,0 +1,124 @@
+
+cons := λ(: hd x)(: tl List<x>). (: (
+   (set tl (LCons( hd (close tl) )))
+   tl
+) List<x>);
+
+list::cons := λ(: hd x)(: tl List<x>). (: (
+   (set tl (LCons( hd (close tl) )))
+   tl
+) List<x>);
+
+head := λ(: l List<x>). (: (
+   (match l (
+      ()
+      ( LEOF (fail 'List::head\sis\sfallible\n_s) )
+      ( _ () )
+   ))
+   (.2(as l List<x>+Tag::LCons))
+) x);
+
+.has-head := λ(: l List<x>). (: (
+   (match l (
+      ()
+      ( LEOF 0_u64 )
+      ( _ 1_u64 )
+   ))
+) U64);
+
+tail := λ(: l List<x>). (: (
+   (match l (
+      ()
+      ( LEOF (fail 'List::head\sis\sfallible\n_s) )
+      ( (LCons( hd tl ))  (set l tl) )
+   ))
+   l
+) List<x>);
+
++ := λ(: hd List<x>)(: tl List<x>). (: (
+   (set hd (.reverse hd))
+   (while (non-zero hd) (match hd (
+      ()
+      ( (LCons( hdhd tlhd )) (
+         (set tl (cons( hdhd tl )))
+         (set hd tlhd)
+      ))
+   )))
+   tl
+) List<x>);
+
+.length := λ(: list List<x>). (: (
+   (let l 0_u64)
+   (while (non-zero list) (
+      (match list (
+         ()
+         ( (LCons( _ tl )) (set list tl) )
+      ))
+      (set l (+( l 1_u64 )))
+   ))
+   l
+) U64);
+
+.reverse := λ(: l List<x>). (: (
+   (let r (: LEOF List<x>))
+   (while (non-zero l) (match l (
+      ()
+      ( (LCons( v rst )) (
+         (set r (LCons( v (close r) )))
+         (set l rst)
+      ))
+   )))
+   r
+) List<x>);
+
+print := λ(: l List<x>). (: (
+   (print '[_s)
+   (let some False_u8)
+   (while (non-zero l) (match l (
+      ()
+      ( (LCons( v rst )) (
+         (if (==( some True_u8 )) (print ',_s) ())
+         (print v)
+         (set some True_u8)
+         (set l rst)
+      ))
+   )))
+   (print ']_s)
+) Nil);
+
+== := λ(: lt List<x>)(: rt List<x>). (: (
+   (let r 0_u64)
+   (match (Tuple( lt rt )) (
+      ()
+      ( (Tuple( LEOF LEOF )) (set r 1_u64) )
+      ( (Tuple( (LCons( ltr lt1 )) (LCons( rtr rt1 )) )) (
+         (if (==( lt1 rt1 )) (
+            (if (==( ltr rtr )) (
+               (set r 1_u64)
+            ) ())
+         ) ())
+      ))
+      ( _ () )
+   ))
+   r
+) U64);
+
+.contains := λ(: l List<x>)(: i x). (: (
+   (let r 0_u64)
+   (while (non-zero l) (
+      (if (==( (head l) i )) (set r 1_u64) ())
+      (set l (tail l))
+   ))
+   r
+) U64);
+
+.join :=  λ(: l List<String>)(: sep String). (: (
+   (let r (SNil()))
+   (while (non-zero l) (
+      (set r (+( r (SAtom(head l)) )))
+      (set l (tail l))
+      (if (non-zero l) (set r (+( r (SAtom sep) ))) ())
+   ))
+   (clone-rope r)
+) String);
+
