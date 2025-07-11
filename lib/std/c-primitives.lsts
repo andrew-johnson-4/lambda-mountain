@@ -1,11 +1,11 @@
 
 # TODO: when moving this, update c-frontend.lsts
 
-import PLATFORM/C/LIB/common-macros.lm;
-import PLATFORM/C/LIB/platform-macros.lm;
-import PLATFORM/C/LIB/blob.lm;
-import PLATFORM/C/LIB/primitives.lm;
-import PLATFORM/C/LIB/primitives.lsts;
+import core/common-macros.lm;
+import std/platform-macros.lm;
+import core/blob.lm;
+import std/primitives.lm;
+import std/primitives.lsts;
 
 let :Blob $"c::compound"(ts: Cons<Any,last>): last = (
 );

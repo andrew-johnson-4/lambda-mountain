@@ -74,7 +74,7 @@ let safe-realloc(ptr: t[], len: U64, ty: Type<t>): t[] = (
    # BEFORE CHANGING THIS: talk to alex
 
    let nb = len * sizeof(t);
-   safe-realloc-impl(nb) as t[]
+   safe-realloc-impl(ptr as ?[], nb) as t[]
 );
 
 let close(x: p): p[] = (
