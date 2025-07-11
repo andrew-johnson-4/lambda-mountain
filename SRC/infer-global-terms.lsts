@@ -29,7 +29,7 @@ let infer-global-terms(term: AST): AST = (
 let infer-global-context-prim(term: AST): Nil = (
    match term {
       Seq{seq=seq} => (
-         for vector s in seq { infer-global-context-prim(s) }
+         for s in seq { infer-global-context-prim(s) }
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
          if k.key.has-prefix(c"primitive::") then {
@@ -47,8 +47,8 @@ let infer-global-context-prim(term: AST): Nil = (
 let infer-global-context-td(term: AST): Nil = (
    match term {
       Seq{seq=seq} => (
-         for vector s in seq { infer-global-context-td(s) };
-         for vector s in type-ast-inserts { ast-parsed-program = ast-parsed-program + s; };
+         for s in seq { infer-global-context-td(s) };
+         for s in type-ast-inserts { ast-parsed-program = ast-parsed-program + s; };
       );
       Typedef2{} => infer-type-definition(term);
       _ => ();
@@ -58,7 +58,7 @@ let infer-global-context-td(term: AST): Nil = (
 let infer-global-context(term: AST): Nil = (
    match term {
       Seq{seq=seq} => (
-         for vector s in seq { infer-global-context(s) }
+         for s in seq { infer-global-context(s) }
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
          if k.key.has-prefix(c"primitive::") then ()
