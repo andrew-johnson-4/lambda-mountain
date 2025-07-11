@@ -117,6 +117,12 @@ let apply-global-callable(fname: CString, arg-types: Type, blame: AST, can-fail:
       };
       exit(1);
    };
-   if can-fail && not(non-zero(result-normal)) then fail("Unable to find appropriate global callable: \{fname} \{arg-types}\nAt \{blame.location}\n");
+   if can-fail && not(non-zero(result-normal)) then {
+      print("Unable to find appropriate global callable: \{fname} \{arg-types}\nAt: \{blame.location}\n");
+      for Tuple{kt=second, t=third} in global-type-context.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
+         print("Candidate: \{kt}\n");
+      };
+      exit(1);
+   };
    if non-zero(result-normal) then apply-and-specialize(fname, result-normal, result-denormal, arg-types, blame) else ta
 );
