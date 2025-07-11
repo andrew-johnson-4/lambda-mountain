@@ -4,6 +4,7 @@
 import core/common-macros.lm;
 import std/platform-macros.lm;
 import core/blob.lm;
+import core/blob.lsts;
 import std/primitives.lm;
 import std/primitives.lsts;
 
