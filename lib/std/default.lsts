@@ -1,7 +1,7 @@
 
 import core/index.lsts;
 import std/std-primitives.lsts;
-import std/c-shim.lm;
+import std/c-shim.lsts;
 import std/std-macros.lsts;
 import std/platform-macros.lm;
 import std/primitives.lsts;

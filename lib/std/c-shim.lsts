@@ -1,0 +1,23 @@
+
+import stdio.h;
+import stdlib.h;
+import string.h;
+import regex.h;
+
+let :FFI strcmp(l: U8[], r: U8[]): I32 = $"__uninitialized";
+let :FFI memcmp(l: ?[], r: ?[], len: U64): U32 = $"__uninitialized";
+let :FFI printf(format: CString, arg: Any): U32 = $"__uninitialized";
+let :FFI fprintf(io: IO::File, format: CString, arg: Any): U32 = $"__uninitialized";
+let :FFI putchar(x: U32): U32 = $"__uninitialized";
+let :FFI exit(x: U32): Nil = $"__uninitialized";
+let :FFI malloc(sz: U64): ?[] = $"__uninitialized";
+let :FFI realloc(ptr: ?[], sz: U64): ?[] = $"__uninitialized";
+let :FFI memset(ptr: ?[], x: U32, sz: U64): ?[] = $"__uninitialized";
+let :FFI fopen(fp: U8[], mode: U8[]): IO::File = $"__uninitialized";
+let :FFI fread(buff: ?[], size: U64, count: U64, f: IO::File): U64 = $"__uninitialized";
+let :FFI fwrite(buff: ?[], size: U64, count: U64, f: IO::File): U64 = $"__uninitialized";
+let :FFI fclose(f: IO::File): U32 = $"__uninitialized";
+let :FFI execvp(file: U8[], argv: U8[][]): U32 = $"__uninitialized";
+let :FFI mktemp(template: U8[]): U8[] = $"__uninitialized";
+let :FFI system(command: U8[]): U32 = $"__uninitialized";
+
