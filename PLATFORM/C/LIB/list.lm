@@ -1,8 +1,4 @@
 
-## linked list
-##
-## consider using [type(Vector<x>)] instead
-
 cons := λ(: hd x)(: tl List<x>). (: (
    (set tl (LCons( hd (close tl) )))
    tl
@@ -89,23 +85,6 @@ print := λ(: l List<x>). (: (
    )))
    (print ']_s)
 ) Nil);
-
-.nth := λ(: tt List<x>)(: i U64)(: default x). (: (
-   (while (>( i 0_u64 )) (
-      (match tt (
-         ()
-         ( (LCons( _ rst )) (set tt rst) )
-         ( _ () )
-      ))
-      (set i (-( i 1_u64 )))
-   ))
-   (match tt (
-      ()
-      ( (LCons( d _ )) (set default d) )
-      ( _ () )
-   ))
-   default
-) Type);
 
 == := λ(: lt List<x>)(: rt List<x>). (: (
    (let r 0_u64)
