@@ -12,7 +12,7 @@ let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
          let is-c = can-unify(t2(c"C",ta), tt);
          let modifiers = SNil();
          let result = SNil();
-         for vector c in conjugate {
+         for c in conjugate {
             if is-c && c.simple-tag != c"C" {} else {
                if c.simple-tag == c"C" {
                   let rt = std-c-mangle-type-internal(c, blame);
@@ -96,7 +96,7 @@ let std-c-mangle-type-simple(tt: Type, blame: AST): S = (
       TAnd{ conjugate=conjugate } => (
          let is-c = can-unify(t2(c"C",ta), tt);
          let result = SNil();
-         for vector c in conjugate {
+         for c in conjugate {
             if is-c && c.simple-tag != c"C" {} else {
                let rt = std-c-mangle-type-internal(c, blame);
                result = if non-zero(result) && non-zero(rt) then result + SAtom(c" ") + rt

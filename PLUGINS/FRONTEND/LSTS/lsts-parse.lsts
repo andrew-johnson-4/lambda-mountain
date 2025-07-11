@@ -1169,6 +1169,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
       );
       [Token{key:c"for"}.. rest] => (
          let loc = head(tokens).location; tokens = rest;
+         # TODO: remove "vector" syntax
          let is-vector = if lsts-parse-head(tokens)==c"vector" {
             tokens = tail(tokens); true
          } else false;
