@@ -1,6 +1,5 @@
 
 import core/blob.lsts;
-import core/blob.lm;
 import core/common-macros.lm;
 import core/common-macros.lsts;
 import core/primitive-types.lsts;
