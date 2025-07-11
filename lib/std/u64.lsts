@@ -42,3 +42,58 @@ let to-string(i: U64): CString = (
 let to-smart-string(i: U64): SmartString = (
    intern(to-string(i))
 );
+
+let print(io: IO::File, x: U64): Nil = (fprintf(io, c"%lu", x); ());
+let max(x: U64, y: U64): U64 = if x>=y then x else y;
+let min(x: U64, y: U64): U64 = if x<=y then x else y;
+let deep-hash(x: U64): U64 = hash(x) as U64;
+
+let to-u64(s: CString): U64 = (
+   let i = 0_u64;
+   while head-string(s) {
+      i = i * 10;
+      match head-string(s) {
+         48_u8 => i = i + 0_u64;
+         49_u8 => i = i + 1_u64;
+         50_u8 => i = i + 2_u64;
+         51_u8 => i = i + 3_u64;
+         52_u8 => i = i + 4_u64;
+         53_u8 => i = i + 5_u64;
+         54_u8 => i = i + 6_u64;
+         55_u8 => i = i + 7_u64;
+         56_u8 => i = i + 8_u64;
+         57_u8 => i = i + 9_u64;
+         _ => ();
+      };
+      s = tail-string(s);
+   };
+   i
+);
+
+let to-hex(i: U64): CString = (
+   let buff = SNil;
+   let rpt = 16_u64;
+   while rpt > 0_u64 {
+      match i % 16 {
+         0 => buff = SAtom(c"0") + buff;
+         1 => buff = SAtom(c"1") + buff;
+         2 => buff = SAtom(c"2") + buff;
+         3 => buff = SAtom(c"3") + buff;
+         4 => buff = SAtom(c"4") + buff;
+         5 => buff = SAtom(c"5") + buff;
+         6 => buff = SAtom(c"6") + buff;
+         7 => buff = SAtom(c"7") + buff;
+         8 => buff = SAtom(c"8") + buff;
+         9 => buff = SAtom(c"9") + buff;
+         10 => buff = SAtom(c"a") + buff;
+         11 => buff = SAtom(c"b") + buff;
+         12 => buff = SAtom(c"c") + buff;
+         13 => buff = SAtom(c"d") + buff;
+         14 => buff = SAtom(c"e") + buff;
+         15 => buff = SAtom(c"f") + buff;
+      };
+      i = i / 16;
+      rpt = rpt - 1;
+   };
+   clone-rope(buff);
+);
