@@ -1,0 +1,22 @@
+
+let preprocess-apply-locations(program: AST): AST = (
+   match program {
+      App{ left:Var{key:c"p"}, right:Lit{key:c":Location:",ltk=token} } => (
+         let l = c"File: " + ltk.location.filename
+               + c" Line: " + to-string(ltk.location.line)
+               + c" Column: " + to-string(ltk.location.column);
+         mk-lit(l, with-key(unique(ltk),l))
+      );
+      Lit{l=key,ltk=token} => mk-lit(l, unique(ltk));
+      Var{l=key,ltk=token} => mk-var(l, unique(ltk));
+      App{is-cons=is-cons,t1=left,t2=right} => mk-cons-or-app(is-cons, preprocess-apply-locations(t1), preprocess-apply-locations(t2));
+      Seq{seq=seq} => (
+         program = mk-eof();
+         for vector p in seq { program = program + preprocess-apply-locations(p) };
+         program
+      );
+      Abs{al=lhs, ar=rhs, tlt=tt} => mk-abs(preprocess-apply-locations(al), preprocess-apply-locations(ar), tlt);
+      Glb{k=key, ar=val} => mk-glb(unique(k), preprocess-apply-locations(ar));
+      _ => program;
+   }
+);
