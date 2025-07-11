@@ -40,3 +40,4 @@ import PLATFORM/C/LIB/regex.lm;
 import PLATFORM/C/LIB/regex.lsts;
 import PLATFORM/C/LIB/cmp.lsts;
 import PLATFORM/C/LIB/print.lsts;
+import PLATFORM/C/LIB/collections.lsts;

@@ -1,8 +1,8 @@
 
-interface Collection<t> {
+interface self implements Collection<t> {
    let .length(x: self): U64;
    let $"[]"(x: self, idx: U64): t;
-};
+}
 
 let .last(self: t+Collection<x>): x = (
    let ln = self.length();
@@ -12,18 +12,19 @@ let .last(self: t+Collection<x>): x = (
    self[(ln-1)]
 );
 
-interface Iterator<t> {
+interface self implements Iterator<t> {
    let .next(x: self[]): Maybe<t>;
-};
+}
 
-interface Iterable<t> {
-   ## When modifying th eunderlying collection while iterating,
-   ## the iterator should continue on the old version.
+interface self implements Iterable<t> {
+   # TODO: uncomment doc
+   # ## When modifying th eunderlying collection while iterating,
+   # ## the iterator should continue on the old version.
    let .iter(x: self): Iterator<t>;
 
-   ## Underlying collection not allowed to be modified while iterating.
+   # ## Underlying collection not allowed to be modified while iterating.
    let .unsafe-iter(x: self): Iterator<t>;
-};
+}
 
 type Iterator<t> implements Iterable<t>;
 let .iter(x: t+Iterator<elt>): t = ( x );
@@ -53,7 +54,14 @@ let length-or-zero(from: Collection<x>+Iterable<x>): U64 = (
    from.length()
 );
 
-type CollectionIteratorBase<c,t> = CollectionIteratorBase { coll: c, idx: U64, _u: Unused<t> };
+## TODO: remove
+type Unused<t> = {};
+
+let unused(tt: Type<t>): Unused<t> = (
+   Unused()
+);
+
+type CollectionIteratorBase<c,t> = { coll: c, idx: U64, _u: Unused<t> };
 type CollectionIteratorBase<c,t> implements Iterator<t>;
 type CollectionIteratorBase<c,t> implements IteratorRemaining;
 
@@ -67,12 +75,12 @@ let .next(p: CollectionIteratorBase<c,t>[]): Maybe<t> = (
       let val = v.coll[v.idx];
       v.idx = v.idx + 1;
       p[0] = v;
-      Some { val } :: Maybe<t>
+      Some(val) : Maybe<t>
    } else {
-      None :: Maybe<t>
+      None : Maybe<t>
    }
 );
 
 let .into(self: c+Collection<t>, out: Type<CollectionIteratorBase<c,t>>): CollectionIteratorBase<c,t> = (
-   CollectionIteratorBase { self, 0_u64, unused(type(t)) }
+   CollectionIteratorBase( self, 0_u64, unused(type(t)) )
 );
