@@ -85,8 +85,7 @@ let $"[]"(tt: List<x>, idx: U64): x = (
    head(tt)
 );
 
-type ListIter<x> = ListIter { list: List<x> };
-type ListIter<x> implements Iterator<x>;
+type ListIter<x> implements Iterator<x> = { list: List<x> };
 
 let .next(ls: ListIter<x>[]): Maybe<x> = (
    match open(open(ls).list) {
