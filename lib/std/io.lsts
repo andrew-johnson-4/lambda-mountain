@@ -26,3 +26,42 @@ let read-file(fp: CString): CString = (
    let v = read-binary-file-to(mk-vector(type(U8)), fp);
    v.into(type(CString))
 );
+
+let :Blob $"io::file::stdin"(): IO::File = $":expression"(l"stdin");
+let :Blob $"io::file::stdout"(): IO::File = $":expression"(l"stdout");
+let :Blob $"io::file::stderr"(): IO::File = $":expression"(l"stderr");
+let exit(x: U64): Nil = exit(x as U32) as Nil;
+
+let fail(msg: CString, loc: CString): Never = (
+   print(msg); print(c" at "); print(loc); exit(1_u32) as Never;
+);
+
+let fail(msg: CString): Never = (
+   print(msg); exit(1_u32) as Never;
+);
+
+
+let fail(msg: String, loc: String): Never = (
+   print(msg); print(c" at "); print(loc); exit(1_u32) as Never;
+);
+
+let fail(msg: String): Never = (
+   print(msg); exit(1_u32) as Never;
+);
+
+let write-file(fp: CString, contents: CString): Nil = (
+   let f = fopen(fp as U8[], c"w" as U8[]);
+   let c = contents as U8[];
+   fwrite(c, 1_u64, contents.length, f);
+   fclose(f); ()
+);
+
+let file-exists(fp: CString): U64 = (
+   let f = fopen(fp as U8[], c"r" as U8[]);
+   let exists = false;
+   if (f as U64) != 0 {
+      exists = true;
+      fclose(f); ()
+   };
+   exists
+);
