@@ -1,2 +1,63 @@
 
 type Regex suffix _rgx;
+
+import lib/std/regex.lm;
+
+#let :Blob .rm_so(t: C<"regmatch_t">): U64 = (
+#   $":frame"( $":frame"(t) );
+#   $":expression"( l"("; $":expression"(t); l".rm_so)"; );
+#);
+#let :Blob .rm_eo(t: C<"regmatch_t">): U64 = (
+#   $":frame"( $":frame"(t) );
+#   $":expression"( l"("; $":expression"(t); l".rm_eo)"; );
+#);
+
+#let .has-prefix(text: String, rgx: Regex): U64 = (
+#   let status = regexec(
+#      &rgx as C<"regex_t">[],   # C_regex__t_*_
+#      text.start as C<"char">,  # C_char_*
+#      0 as C<"size_t">,         # C_size__t_
+#      0 as C<"regmatch_t">[],   # C_regmatch__t_*
+#      0 as C<"int">             # C_int
+#   );
+#   (status as U64) == 0
+#);
+
+#let $"=="(text: CString, rgx: Regex): U64 = (
+#   let matches = $"__uninitialized" : C<"regmatch_t">[1];
+#   let status = regexec(
+#      &rgx as C<"regex_t">[],   # C_regex__t_*_
+#      text as C<"char">,  # C_char_*
+#      1 as C<"size_t">,         # C_size__t_
+#      matches as C<"regmatch_t">[],   # C_regmatch__t_*
+#      0 as C<"int">             # C_int
+#   );
+#   (status as U64)==0 && matches[0].rm_so==0 && matches[0].rm_eo==text.length
+#);
+
+# TODO remove (this method name is a misnomer), correct name is ".get-prefix"
+#let .remove-prefix(text: String, rgx: Regex): U64 = (
+#   let matches = $"__uninitialized" : C<"regmatch_t">[1];
+#   let status = regexec(
+#      &rgx as C<"regex_t">[],   # C_regex__t_*_
+#      text.start as C<"char">,  # C_char_*
+#      1 as C<"size_t">,         # C_size__t_
+#      matches as C<"regmatch_t">[],   # C_regmatch__t_*
+#      0 as C<"int">             # C_int
+#   );
+#   if matches[0].rm_so != 0 then fail(".remove-prefix regex did not match the prefix");
+#   text[0_i64 : matches[0].rm_eo as I64]
+#);
+
+#let .get-prefix(text: String, rgx: Regex): U64 = (
+#   let matches = $"__uninitialized" : C<"regmatch_t">[1];
+#   let status = regexec(
+#      &rgx as C<"regex_t">[],   # C_regex__t_*_
+#      text.start as C<"char">,  # C_char_*
+#      1 as C<"size_t">,         # C_size__t_
+#      matches as C<"regmatch_t">[],   # C_regmatch__t_*
+#      0 as C<"int">             # C_int
+#   );
+#   if matches[0].rm_so != 0 then fail(".get-prefix regex did not match the prefix");
+#   text[0_i64 : matches[0].rm_eo as I64]
+#);

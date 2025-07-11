@@ -29,7 +29,6 @@ import std/hashtable.lm;
 import std/hashtable.lsts;
 import std/array.lsts;
 import std/io.lsts;
-import std/regex.lm;
 import std/regex.lsts;
 import std/cmp.lsts;
 import std/print.lsts;
