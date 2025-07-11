@@ -241,7 +241,7 @@ let to-smart-string(self: Vector<x>): String = (
    for v in self {
       if has-item then rval = rval + ",";
       has-item = true;
-      rval = rval + v.into(type(String));
+      rval = rval + to-smart-string(v);
    };
    rval + "]"
 );
