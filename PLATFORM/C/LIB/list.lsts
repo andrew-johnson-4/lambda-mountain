@@ -62,12 +62,13 @@ let .nth(tt: List<x>, idx: U64): Maybe<x> = (
    while idx > 0 && not(err) {
       if tt.has-head() {
          tt = tail(tt);
+         idx = idx - 1;
       } else {
          err = true;
       }
    };
 
-   if err {
+   if err || not(tt.has-head()) {
       None : Maybe<x>
    } else {
       Some(head(tt))
