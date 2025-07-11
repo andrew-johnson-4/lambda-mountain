@@ -117,7 +117,7 @@ let preprocess-apply(program: AST): AST = (
       );
       Seq{seq=seq} => (
          program = mk-eof();
-         for vector s in seq { program = program + preprocess-apply(s) };
+         for s in seq { program = program + preprocess-apply(s) };
          program
       );
       App{is-cons=is-cons, al=left, ar=right} => (

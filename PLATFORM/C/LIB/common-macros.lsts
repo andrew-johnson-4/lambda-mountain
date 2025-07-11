@@ -45,6 +45,7 @@ typed macro macro::lhs-index(base field: macro::lhs-field, index: lazy): lazy = 
    macro::concat($".", field)(base); index
 );
 
+# not required, but generates less C code than iters, and therefore speeds up comptime a bit
 typed macro macro::for(item: lazy, iter: List<?>, loop: lazy): lazy = (
    let uuid(iter-term) = iter;
    while uuid(iter-term).has-head { match uuid(iter-term) {
@@ -54,6 +55,7 @@ typed macro macro::for(item: lazy, iter: List<?>, loop: lazy): lazy = (
    }}
 );
 
+# not required, but generates less C code than iters, and therefore speeds up comptime a bit
 typed macro macro::for(item: lazy, iter: Vector<?>, loop: lazy): lazy = (
    let uuid(iter-term) = iter;
    let uuid(iter-i) = 0_u64;

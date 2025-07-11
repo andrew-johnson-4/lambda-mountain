@@ -49,7 +49,7 @@ let mangle-identifier(kt: Type): S = (
       );
       TAnd{conjugate=conjugate} => (
          let r = SNil;
-         for vector c in conjugate { r = r + mangle-identifier(c); };
+         for c in conjugate { r = r + mangle-identifier(c); };
          r
       );
    }

@@ -7,9 +7,9 @@ interface self implements Collection<t> {
 let .last(self: t+Collection<x>): x = (
    let ln = self.length();
    if ln == 0 {
-      fail("cannot get .last() from empty element");
+      fail("cannot get .last() from empty collection");
    };
-   self[(ln-1)]
+   self[(ln - 1)]
 );
 
 interface self implements Iterator<t> {
@@ -57,10 +57,6 @@ let length-or-zero(from: Collection<x>+Iterable<x>): U64 = (
 ## TODO: remove
 type Unused<t> = {};
 
-let unused(tt: Type<t>): Unused<t> = (
-   Unused()
-);
-
 type CollectionIteratorBase<c,t> = { coll: c, idx: U64, _u: Unused<t> };
 type CollectionIteratorBase<c,t> implements Iterator<t>;
 type CollectionIteratorBase<c,t> implements IteratorRemaining;
@@ -82,5 +78,5 @@ let .next(p: CollectionIteratorBase<c,t>[]): Maybe<t> = (
 );
 
 let .into(self: c+Collection<t>, out: Type<CollectionIteratorBase<c,t>>): CollectionIteratorBase<c,t> = (
-   CollectionIteratorBase( self, 0_u64, unused(type(t)) )
+   CollectionIteratorBase( self, 0_u64, Unused() : Unused<t> )
 );
