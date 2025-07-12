@@ -208,6 +208,11 @@ let lsts-parse(tokens: List<Token>): Nil = (
             (let bind, tokens) = lsts-parse-typed-macro(tokens);
             ast-parsed-program = ast-parsed-program + bind;
          );
+         [ Token{key:c"deprecated"}.. Token{key:c"macro"}.. rst] => (
+            (let mlhs, tokens) = lsts-parse-atom-without-tail(rst);
+            (let mrhs, tokens) = lsts-parse-atom-without-tail(rst);
+            preprocess-macros = MSeq( close(preprocess-macros), Macro(without-location(mlhs), without-location(mrhs)) );
+         );
          [ Token{key:c"interface"}.. _] => tokens = lsts-parse-interface(tokens);
          [ Token{key:c"import"}.. rest] => (
             tokens = rest;
