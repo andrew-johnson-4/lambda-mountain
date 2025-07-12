@@ -88,3 +88,111 @@ let .get-prefix(s: String, pre: String): String = (
 let .get-suffix(s: String, pre: String): String = (
    s[s.length - pre.length:]
 );
+
+let head-string(x: CString): U8 = (x as U8[])[0_u64];
+let tail-string(x: CString): CString = ((x as U8[]) + 1_u64) as CString;
+
+let deep-hash(key: CString): U64 = (
+   let i = 0_u64;
+   let hash = 0_u64;
+   while head-string(key) {
+      hash = hash + head-string(key);
+      key = tail-string(key);
+      hash = hash + (hash << 10);
+      hash = hash ^ (hash >> 6);
+   };
+   hash = hash + (hash << 3);
+   hash = hash ^ (hash >> 11);
+   hash = hash + (hash << 15);
+   hash
+);
+
+let .length(s: CString): U64 = (
+   let si = 0_u64;
+   while (s as U8[])[si] != 0 {
+      si = si + 1;
+   };
+   si
+);
+
+let .has-prefix(base: CString, pfx: CString): U64 = (
+   let r = true;
+   while head-string(pfx) {
+      if head-string(base) {
+         if head-string(base)==head-string(pfx) {
+            base = tail-string(base);
+            pfx = tail-string(pfx);
+         } else {
+            r = false;
+            pfx = c"";
+         }
+      } else {
+         r = false;
+         pfx = c"";
+      }
+   };
+   r
+);
+
+let .remove-prefix(base: CString, pfx: CString): CString = (
+   if base.has-prefix(pfx) {
+      while head-string(pfx) {
+         base = tail-string(base);
+         pfx = tail-string(pfx);
+      };
+   };
+   base
+);
+
+let .has-suffix(base: CString, sfx: CString): U64 = (
+   let r = false;
+   while head-string(base) {
+      if base==sfx then r = true;
+      base = tail-string(base);
+   };
+   r
+);
+
+let .remove-suffix(base: CString, sfx: CString): CString = (
+   let r = SNil;
+   while head-string(base) {
+      if base==sfx then base=c"0" # not empty string because this gets chomped
+      else r = r + SAtom(clone-rope(head-string(base)));
+      base = tail-string(base);
+   };
+   clone-rope(r)
+);
+
+let .replace(base: CString, pat: CString, n: CString): CString = (
+   let r = SNil;
+   while head-string(base)!=0 {
+      if base.has-prefix(pat) {
+         base = base.remove-prefix(pat);
+         r = r + SAtom(n);
+      } else {
+         r = r + SAtom(clone-rope(head-string(base)));
+         base = tail-string(base);
+      }
+   };
+   clone-rope(r);
+);
+
+let .contains(base: CString, pat: CString): U64 = (
+   let r = false;
+   while head-string(base)!=0 {
+      if base.has-prefix(pat) then r = true;
+      base = tail-string(base);
+   };
+   r
+);
+
+let $"+"(l: CString, r: CString): CString = clone-rope(SAtom(l) + SAtom(r));
+
+let print(x: CString): Nil = (
+   while head-string(x) {
+      putchar( head-string(x) as U32 );
+      x = tail-string(x)
+   }
+);
+
+let non-zero(x: CString): U64 = head-string(x) != 0;
