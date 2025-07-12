@@ -210,7 +210,7 @@ let lsts-parse(tokens: List<Token>): Nil = (
          );
          [ Token{key:c"deprecated"}.. Token{key:c"macro"}.. rst] => (
             (let mlhs, tokens) = lsts-parse-atom-without-tail(rst);
-            (let mrhs, tokens) = lsts-parse-atom-without-tail(rst);
+            (let mrhs, tokens) = lsts-parse-atom-without-tail(tokens);
             preprocess-macros = MSeq( close(preprocess-macros), Macro(without-location(mlhs), without-location(mrhs)) );
             lsts-parse-expect(c";",tokens); tokens = tail(tokens);
          );

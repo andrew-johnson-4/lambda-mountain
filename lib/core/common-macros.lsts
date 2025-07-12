@@ -256,10 +256,7 @@ typed macro macro::lhs-struct-post(bind field val: macro::lhs-raw-struct-field, 
    )
 );
 
-
-
-#macro ( ('let x y) )
-#      ( (λ x . ()) y );
+#deprecated macro ( $"let"(x)(y) ) ( (fn x = ())(y) );
 
 #macro ( ('set lhs rhs) )
 #      ( (mov( rhs lhs )) );
