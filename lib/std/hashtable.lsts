@@ -86,3 +86,64 @@ let non-zero(self: HashtableEq<k,v>): U64 = (
       _ => ( 1 );
    }
 );
+
+let mk-hashtable-is(key: Type<k>, value: Type<v>): HashtableIs<k,v> = HashtableIs(0, 0, 0 as (k,v)[]);
+
+let .bind(table: HashtableIs<k,v>, key: k, value: v): HashtableIs<k,v> = (
+   if table.occupied*3 >= table.capacity {
+      let new-capacity = max(1000, table.occupied*30);
+      let new-sizeof = sizeof((k,v)) * new-capacity;
+      let new-contents = malloc(new-sizeof) as (k,v)[];
+      memset(new-contents, 0, new-sizeof);
+      let old-i = 0_u64;
+      while old-i < table.capacity {
+         let old-kv = table.contents[old-i];
+         if mem-is-non-zero(old-kv) then new-contents.bind-is(new-capacity, old-kv.first, old-kv.second);
+         old-i = old-i + 1;
+      };
+      table.contents = new-contents;
+      table.capacity = new-capacity;
+   };
+   let replacing = table.contents.bind-is(table.capacity, key, value);
+   if not(replacing) then table.occupied = table.occupied + 1;
+   table
+);
+
+let .bind-is(table: (k,v)[], table-capacity: U64, key: k, value: v): U64 = (
+   let replacing = false;
+   let ki = hash(key) % table-capacity;
+   let old-kv = table[ki];
+   let old-k = old-kv.first;
+   if is(old-k, key) then replacing = true;
+   while mem-is-non-zero(old-kv) && not(replacing) {
+      ki = (ki + 1) % table-capacity;
+      old-kv = table[ki];
+      old-k = old-kv.first;
+      if is(old-k, key) then replacing = true;     
+   };
+   let kv = (key, value);
+   table[ki] = kv;
+   replacing
+);
+
+let .lookup(table: HashtableIs<k,v>, key: k, default: v): v = (
+   if table.capacity != 0 {
+      let replacing = false;
+      let ki = hash(key) % table.capacity;
+      let old-kv = table.contents[ki];
+      let old-k = old-kv.first;
+      if is(old-k,key) then replacing = true;
+      while mem-is-non-zero(old-kv) && not(replacing) {
+         ki = (ki + 1) % table.capacity;
+         old-kv = table.contents[ki];
+         old-k = old-kv.first;
+         if is(old-k, key) then replacing = true;     
+      };
+      if replacing then default = old-kv.second;
+   };
+   default
+);
+
+let $"set[]"(table: HashtableEq<k,v>, key: k, value: v): HashtableEq<k,v> = table.bind(key, value);
+let $"map::cons"(key: k, value: v, tl: HashtableEq<k,v>): HashtableEq<k,v> = tl.bind(key, value);
+

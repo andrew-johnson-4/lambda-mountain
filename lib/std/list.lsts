@@ -121,3 +121,60 @@ let .lookup(ls: List<Tuple<k,v1,v2>>, key: k, default: Tuple<v1,v2>): Tuple<v1,v
    default;
 );
 
+let cons(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
+let $"list::cons"(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
+let head(l: List<x>): x = if l.has-head then (l as Tag::LCons).head else fail("list::head is fallible");
+let tail(l: List<x>): List<x> = if l.has-head then open((l as Tag::LCons).tail) else fail("list::tail is fallible");
+let .has-head(l: List<x>): U64 = non-zero(l);
+
+let $"+"(hd: List<x>, tl: List<x>): List<x> = (
+   for hdhd in hd.reverse { tl = cons(hdhd,tl); };
+   tl
+);
+
+let .length(l: List<x>): U64 = (
+   let li = 0_u64;
+   for _ in l { li = li + 1; };
+   li
+);
+
+let .reverse(l: List<x>): List<x> = (
+   let r = [] : List<x>;
+   for v in l { r = cons(v,r); };
+   r
+);
+
+let print(l: List<x>): Nil = (
+   print(c"[");
+   let li = 0_u64;
+   for v in l {
+      if li>0 then print(c",");
+      print(v);
+      li = li + 1;
+   };
+   print(c"]");
+);
+
+let $"=="(lt: List<x>, rt: List<x>): U64 = (
+   match (lt, rt) {
+      Tuple{ first:[], second:[] } => true;
+      Tuple{ first:[ltr..lt1], second:[rtr..rt1] } => ltr==rtr && lt1==rt1;
+      _ => false;
+   };
+);
+
+let .contains(l: List<x>, i: x): U64 = (
+   let r = false;
+   for j in l { r = r || i==j; };
+   r
+);
+
+let .join(l: List<CString>, sep: CString): CString = (
+   let r = SNil;
+   for i in l {
+      if non-zero(r)
+      then r = r + SAtom(sep) + SAtom(i)
+      else r = SAtom(i)
+   };
+   clone-rope(r)
+);
