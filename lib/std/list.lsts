@@ -155,7 +155,7 @@ let print(l: List<x>): Nil = (
    print(c"]");
 );
 
-let $"=="(li: List<x>, rt: List<x>): U64 = (
+let $"=="(lt: List<x>, rt: List<x>): U64 = (
    match (lt, rt) {
       Tuple{ first:[], second:[] } => true;
       Tuple{ first:[ltr..lt1], second:[rtr..rt1] } => ltr==rtr && lt1==rt1;
