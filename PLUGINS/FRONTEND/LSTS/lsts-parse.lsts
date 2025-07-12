@@ -1825,7 +1825,6 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       };
       let rec-id = c"";
       if lsts-parse-head(tokens)!=c"(" then (rec-id, tokens) = lsts-parse-identifier(tokens);
-      if non-zero(rec-id) then fail("TODO: recursive let \{rec-id}\n");
       (let func-sig, tokens) = lsts-parse-function-signature(tokens, loc);
       lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
       (let rhs, tokens) = lsts-parse-small-expression(tokens);
