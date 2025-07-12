@@ -69,7 +69,7 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
          push-newline = 1;
       );
 
-      (lit=r/^[cl]?["]([^"\\]|([\\].))*["]/).. rest => (
+      (lit=r/^[r]?[cl]?["]([^"\\]|([\\].))*["]/).. rest => (
          tokens = cons(text[:lit.length], tokens); text = rest;
       );
 
