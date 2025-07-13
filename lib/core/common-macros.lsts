@@ -258,8 +258,7 @@ typed macro macro::lhs-struct-post(bind field val: macro::lhs-raw-struct-field, 
 
 deprecated macro ( rl"let"(x)(y) ) ( (fn(x) = ())(y) );
 
-#macro ( ('set lhs rhs) )
-#      ( (mov( rhs lhs )) );
+deprecated macro ( rl"set"(lhs)(rhs) ) ( mov(rhs,lhs) );
 
 #macro ( ('set ('macro::lhs-field( base field )) rhs) )
 #      ( (macro::concat( set. field )) (base rhs) );

@@ -1,7 +1,4 @@
 
-macro ( ('set lhs rhs) )
-      ( (mov( rhs lhs )) );
-
 macro ( ('set ('macro::lhs-field( base field )) rhs) )
       ( (macro::concat( set. field )) (base rhs) );
 
