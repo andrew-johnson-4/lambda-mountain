@@ -321,15 +321,14 @@ deprecated macro (rl"match"(
    match-pats( uuid(term), ps, fail("Pattern Match Failure \{macro::location()}") );
 ));
 
-#macro ('match-pats( term () remainder )) (
-#   remainder
-#);
+deprecated macro (rl"match-pats"(term,(),remainder))
+                 (remainder);
 
-#macro ('match-pats( term (ps (lhs rhs)) remainder )) (
-#   (match-pats( term ps
-#      (scope(if (match-pats-arm( term lhs )) rhs remainder))
-#   ))
-#);
+deprecated macro (rl"match-pats"(term,ps(lhs,rhs),remainder)) (
+   match-pats(term,ps,
+      scope($"if"(match-pats-arm(term,lhs))(rhs)(remainder))
+   )
+);
 
 #macro ('match-pats-arm( term (:Variable: v) )) (
 #   ( (let v term) (branchtrue()) )
