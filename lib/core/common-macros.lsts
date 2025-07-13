@@ -272,14 +272,14 @@ deprecated macro ( rl"set"( rl"macro::lhs-index"( base, index ), rhs ) )
 #   ) U64);
 #);
 
-#macro ( ('macro::lhs-as-rhs (:Variable: v)) )
-#      ( v );
+deprecated macro ( rl"macro::lhs-as-rhs"( $":Variable", v ) )
+                 ( v );
 
-#macro ( ('macro::lhs-as-rhs ('& v)) )
-#      ( & v );
+deprecated macro ( rl"macro::lhs-as-rhs"( rl"&", v ) )
+                 ( & v );
 
-#macro ( ('macro::lhs-as-rhs ('macro::lhs-field( base field )) ) )
-#      ( (macro::concat( . field )) base );
+deprecated macro ( rl"macro::lhs-as-rhs"( rl"macro::lhs-field"( base, field ) ) )
+                 ( $"macro::concat"( $".", field ) ( base ) );
 
 #macro ( ('while cond body) )
 #      ( (primitive::while( (as body Nil) (into-branch-conditional cond) )) );

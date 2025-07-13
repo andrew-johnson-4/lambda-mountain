@@ -5,15 +5,6 @@ macro ( ('macro::define-zero (base-type constructor con-tag)) ) (
    ) U64);
 );
 
-macro ( ('macro::lhs-as-rhs (:Variable: v)) )
-      ( v );
-
-macro ( ('macro::lhs-as-rhs ('& v)) )
-      ( & v );
-
-macro ( ('macro::lhs-as-rhs ('macro::lhs-field( base field )) ) )
-      ( (macro::concat( . field )) base );
-
 macro ( ('while cond body) )
       ( (primitive::while( (as body Nil) (into-branch-conditional cond) )) );
 
