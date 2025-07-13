@@ -272,7 +272,7 @@ deprecated macro ( rl"set"( rl"macro::lhs-index"( base, index ), rhs ) )
 #   ) U64);
 #);
 
-deprecated macro ( rl"macro::lhs-as-rhs"( $":Variable", v ) )
+deprecated macro ( rl"macro::lhs-as-rhs"( rl":Variable", v ) )
                  ( v );
 
 deprecated macro ( rl"macro::lhs-as-rhs"( rl"&", v ) )
@@ -314,7 +314,7 @@ deprecated macro (rl"match"(rl"macro::bind-raw"(t))(ps)) (scope(
 ));
 
 deprecated macro (rl"match"(
-                     rl"macro::bind-raw"( $":Field:"(f), t ),
+                     rl"macro::bind-raw"( rl":Field:"(f), t ),
                      ps
                  )) (scope(
    let uuid(term) = f($"raw"(t));
@@ -330,17 +330,17 @@ deprecated macro (rl"match-pats"(term,ps(lhs,rhs),remainder)) (
    )
 );
 
-#macro ('match-pats-arm( term (:Variable: v) )) (
-#   ( (let v term) (branchtrue()) )
-#);
+deprecated macro (rl"match-pats-arm"(term,rl":Variable:"(v))) (
+   ($"let"(v)(term); branchtrue())
+);
 
-#macro ('match-pats-arm( term ('@( v more )) )) (
-#   ( (let v term) (match-pats-arm( v more )) )
-#);
+deprecated macro (rl"match-pats-arm"(term,rl"@"(v,more))) (
+   ($"let"(v)(term); match-pats-arm(v,more))
+);
 
-#macro ('match-pats-arm( term :Any: )) (
-#   (branchtrue())
-#);
+deprecated macro (rl"match-pats-arm"(term,rl":Any:")) (
+   branchtrue()
+);
 
 #macro ('match-pats-arm( term (:Literal: l) )) (
 #   ( (let (uuid v) term) (==( (uuid v) l )) )
