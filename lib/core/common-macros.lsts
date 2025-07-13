@@ -294,19 +294,6 @@ deprecated macro ( rl"macro::lhs-as-rhs"( rl"macro::lhs-field"( base, field ) ) 
 #   )))
 #);
 
-#for-arg-i := λ: Blob(: vi x...). (: () x);
-#macro ( ('for-arg (item 'in iter) loop) ) (
-#   (scope('for-arg_r (
-#      (let item (for-arg-i iter)) loop
-#   )))
-#);
-
-#macro ( ('for-atom (item 'in iter) loop) ) (
-#   (scope('for-atom_r (
-#      (let item iter) loop
-#   )))
-#);
-
 #macro ('assert c) (
 #   (if (not c) (
 #      (print 'Assertion\sFailed\s_s)(print (: (p :Location:) Constant+Literal+String))(print '\n_s)(exit 1_u64)
