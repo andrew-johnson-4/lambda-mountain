@@ -284,15 +284,18 @@ deprecated macro ( rl"macro::lhs-as-rhs"( rl"macro::lhs-field"( base, field ) ) 
 deprecated macro ( rl"while"(cond)(body) )
       ( $"primitive::while"( body as Nil, into-branch-conditional(cond) ) );
 
-#macro ( ('for-each (item 'in iterable) loop) ) (
-#   (let (uuid iter-term) (.unsafe-iter iterable))
-#   (let (uuid continue-iter) true)
-#   (while (uuid continue-iter) (match (.next(&(uuid iter-term))) (
-#      ()
-#      ( (Some( item )) (loop ()) )
-#      ( None (set (uuid continue-iter) false) )
-#   )))
-#);
+deprecated macro ( rl"for-each"(item(rl"in")(iterable))(loop) ) (
+   let uuid(iter-term) = iterable.unsafe-iter;
+   let uuid(continue-iter) = true;
+   while uuid(continue-iter) {
+      $"match"( (&(uuid(iter-term))).next )
+      (
+         ();
+         (Some(item); loop());
+         (None(); uuid(continue-iter) = false);
+      );
+   }
+);
 
 #macro ('assert c) (
 #   (if (not c) (

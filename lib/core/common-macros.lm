@@ -5,16 +5,6 @@ macro ( ('macro::define-zero (base-type constructor con-tag)) ) (
    ) U64);
 );
 
-macro ( ('for-each (item 'in iterable) loop) ) (
-   (let (uuid iter-term) (.unsafe-iter iterable))
-   (let (uuid continue-iter) true)
-   (while (uuid continue-iter) (match (.next(&(uuid iter-term))) (
-      ()
-      ( (Some( item )) (loop ()) )
-      ( None (set (uuid continue-iter) false) )
-   )))
-);
-
 macro ('assert c) (
    (if (not c) (
       (print 'Assertion\sFailed\s_s)(print (: (p :Location:) Constant+Literal+String))(print '\n_s)(exit 1_u64)
