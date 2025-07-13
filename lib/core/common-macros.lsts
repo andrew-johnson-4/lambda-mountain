@@ -303,20 +303,23 @@ deprecated macro ( rl"assert"(c) ) (
         ( exit(1_u64) ); ()
 );
 
-#macro ('match t ps) (scope(
-#   (let (uuid term) (open t))
-#   (match-pats( (uuid term) ps (fail( 'Pattern\sMatch\sFailure_s (: (p :Location:) Constant+Literal+String) )) ))
-#));
+deprecated macro (rl"match"(t)(ps)) (scope(
+   let uuid(term) = open(t);
+   match-pats( uuid(term), ps, fail("Pattern Match Failure \{macro::location()}") );
+));
 
-#macro ('match ('macro::bind-raw t) ps) (scope(
-#   (let (uuid term) t)
-#   (match-pats( (uuid term) ps (fail( 'Pattern\sMatch\sFailure_s (: (p :Location:) Constant+Literal+String) )) ))
-#));
+deprecated macro (rl"match"(rl"macro::bind-raw"(t))(ps)) (scope(
+   let uuid(term) = t;
+   match-pats( uuid(term), ps, fail("Pattern Match Failure \{macro::location()}") );
+));
 
-#macro ('match ('macro::bind-raw ((:Field: f) t)) ps) (scope(
-#   (let (uuid term) (f(raw t)))
-#   (match-pats( (uuid term) ps (fail( 'Pattern\sMatch\sFailure_s (: (p :Location:) Constant+Literal+String) )) ))
-#));
+deprecated macro (rl"match"(
+                     rl"macro::bind-raw"( $":Field:"(f), t ),
+                     ps
+                 )) (scope(
+   let uuid(term) = f($"raw"(t));
+   match-pats( uuid(term), ps, fail("Pattern Match Failure \{macro::location()}") );
+));
 
 #macro ('match-pats( term () remainder )) (
 #   remainder
