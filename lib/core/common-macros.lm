@@ -5,14 +5,6 @@ macro ( ('macro::define-zero (base-type constructor con-tag)) ) (
    ) U64);
 );
 
-macro ('match-pats-arm( term (:Literal: l) )) (
-   ( (let (uuid v) term) (==( (uuid v) l )) )
-);
-
-macro ('match-pats-arm( term (:Tag: l lt) )) (
-   ( (let (uuid v) term) (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) )) )
-);
-
 macro ('match-pats-arm( term ('macro::lhs-head( x rest )) )) (
    ( (let (uuid v) term) (
       (if (.has-head( (uuid v) )) (

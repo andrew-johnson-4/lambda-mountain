@@ -342,13 +342,13 @@ deprecated macro (rl"match-pats-arm"(term,rl":Any:")) (
    branchtrue()
 );
 
-#macro ('match-pats-arm( term (:Literal: l) )) (
-#   ( (let (uuid v) term) (==( (uuid v) l )) )
-#);
+deprecated macro (rl"match-pats-arm"(term,rl":Literal:"(l))) (
+   ( $"let"(uuid(v))(term); uuid(v)==l )
+);
 
-#macro ('match-pats-arm( term (:Tag: l lt) )) (
-#   ( (let (uuid v) term) (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) )) )
-#);
+deprecated macro (rl"match-pats-arm"(term,rl":Tag:"(l)(lt))) (
+   ( $"let"(uuid(v))(term); uuid(v).discriminator-case-tag==(uuid(v) as lt).discriminator-case-tag )
+);
 
 #macro ('match-pats-arm( term ('macro::lhs-head( x rest )) )) (
 #   ( (let (uuid v) term) (
