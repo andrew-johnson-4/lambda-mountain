@@ -5,9 +5,6 @@ macro ( ('macro::define-zero (base-type constructor con-tag)) ) (
    ) U64);
 );
 
-macro ( ('while cond body) )
-      ( (primitive::while( (as body Nil) (into-branch-conditional cond) )) );
-
 macro ( ('for-each (item 'in iterable) loop) ) (
    (let (uuid iter-term) (.unsafe-iter iterable))
    (let (uuid continue-iter) true)

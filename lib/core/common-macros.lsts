@@ -281,8 +281,8 @@ deprecated macro ( rl"macro::lhs-as-rhs"( rl"&", v ) )
 deprecated macro ( rl"macro::lhs-as-rhs"( rl"macro::lhs-field"( base, field ) ) )
                  ( $"macro::concat"( $".", field ) ( base ) );
 
-#macro ( ('while cond body) )
-#      ( (primitive::while( (as body Nil) (into-branch-conditional cond) )) );
+deprecated macro ( rl"while"(cond)(body) )
+      ( $"primitive::while"( body as Nil, into-branch-conditional(cond) ) );
 
 #macro ( ('for-each (item 'in iterable) loop) ) (
 #   (let (uuid iter-term) (.unsafe-iter iterable))
