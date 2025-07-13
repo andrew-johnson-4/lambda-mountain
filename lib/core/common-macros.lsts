@@ -297,11 +297,11 @@ deprecated macro ( rl"for-each"(item(rl"in")(iterable))(loop) ) (
    }
 );
 
-#macro ('assert c) (
-#   (if (not c) (
-#      (print 'Assertion\sFailed\s_s)(print (: (p :Location:) Constant+Literal+String))(print '\n_s)(exit 1_u64)
-#   ) ()) ()
-#);
+deprecated macro ( rl"assert"(c) ) (
+   $"if"( not(c) )
+        ( print("Assertion Failed At \{macro::location()}\n"); )
+        ( exit(1_u64) ); ()
+);
 
 #macro ('match t ps) (scope(
 #   (let (uuid term) (open t))

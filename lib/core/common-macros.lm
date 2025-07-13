@@ -5,12 +5,6 @@ macro ( ('macro::define-zero (base-type constructor con-tag)) ) (
    ) U64);
 );
 
-macro ('assert c) (
-   (if (not c) (
-      (print 'Assertion\sFailed\s_s)(print (: (p :Location:) Constant+Literal+String))(print '\n_s)(exit 1_u64)
-   ) ()) ()
-);
-
 macro ('match t ps) (scope(
    (let (uuid term) (open t))
    (match-pats( (uuid term) ps (fail( 'Pattern\sMatch\sFailure_s (: (p :Location:) Constant+Literal+String) )) ))
