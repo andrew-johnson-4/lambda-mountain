@@ -260,11 +260,11 @@ deprecated macro ( rl"let"(x)(y) ) ( (fn(x) = ())(y) );
 
 deprecated macro ( rl"set"(lhs)(rhs) ) ( mov(rhs,lhs) );
 
-#macro ( ('set ('macro::lhs-field( base field )) rhs) )
-#      ( (macro::concat( set. field )) (base rhs) );
+deprecated macro ( rl"set"( rl"macro::lhs-field"( base, field ), rhs ) )
+                 ( $"macro::concat"( $"set.", field ) (base, rhs) );
 
-#macro ( ('set ('macro::lhs-index( base index )) rhs) )
-#      ( set[] ((macro::lhs-as-rhs base) index rhs) );
+deprecated macro ( rl"set"( rl"macro::lhs-index"( base, index ), rhs ) )
+                 ( $"set[]"( $"macro::lhs-as-rhs"(base), index, rhs ) );
 
 #macro ( ('macro::define-zero (base-type constructor con-tag)) ) (
 #   non-zero := λ(: t base-type). (: (
