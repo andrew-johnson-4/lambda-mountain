@@ -1,16 +1,6 @@
 
 let preprocess-apply-literals(program: AST): AST = (
    match program {
-      App{ is-cons-1=is-cons, left:App{ is-cons-2=is-cons, left:Lit{key:c":",ctk=token}, mvar=right }, right:Lit{mtype=key,mtk=token} } => (
-         if is-cons-1
-         then mk-cons-or-app(is-cons-1, mk-cons-or-app(is-cons-2, mk-lit(c":",ctk), preprocess-apply-literals(mvar)), mk-lit(mtype,mtk))
-         else mk-app( mk-lit(c":",unique(ctk)), mk-app(preprocess-apply-literals(mvar), mk-atype(parse-type(mtype))) )
-      );
-      App{ is-cons-1=is-cons, left:App{ is-cons-2=is-cons, left:Lit{key:c":",ctk=token}, mvar=right }, right:Var{mtype=key,mtk=token} } => (
-         if is-cons-1
-         then mk-cons-or-app(is-cons-1, mk-cons-or-app(is-cons-2, mk-lit(c":",ctk), preprocess-apply-literals(mvar)), mk-var(mtype,mtk))
-         else mk-app( mk-lit(c":",unique(ctk)), mk-app(preprocess-apply-literals(mvar), mk-atype(parse-type(mtype))) )
-      );
       Lit{ l=key, ltk=token } => (
          if l.has-suffix(c"_t") {
             let lpfx = l.remove-suffix(c"_t");

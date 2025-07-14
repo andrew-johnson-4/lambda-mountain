@@ -51,16 +51,6 @@ let preprocess-apply(program: AST): AST = (
             mk-cons-or-app(is-cons-3,t,mk-atype(tt))
          );
       );
-      App{is-cons-1=is-cons, left:App{is-cons-2=is-cons, left:Lit{key:c":",ctk=token}, mvar=right}, right:Lit{mtype=key,mtk=token} } => (
-         if is-cons-1
-         then mk-cons-or-app(is-cons-1, mk-cons-or-app(is-cons-2, mk-lit(c":",ctk), preprocess-apply(mvar)), mk-lit(mtype,mtk))
-         else mk-app( mk-lit(c":",unique(ctk)), mk-app(preprocess-apply(mvar), mk-atype(parse-type(mtype))) );
-      );
-      App{is-cons-1=is-cons, left:App{is-cons-2=is-cons, left:Lit{key:c":",ctk=token}, mvar=right}, right:Var{mtype=key,mtk=token} } => (
-         if is-cons-1
-         then mk-cons-or-app(is-cons-1, mk-cons-or-app(is-cons-2, mk-lit(c":",ctk), preprocess-apply(mvar)), mk-var(mtype,mtk))
-         else mk-app( mk-lit(c":",unique(ctk)), mk-app(preprocess-apply(mvar), mk-atype(parse-type(mtype))) );
-      );
       App{
          left:App{
             left:Var{key:c"as",atk=token},
@@ -68,18 +58,6 @@ let preprocess-apply(program: AST): AST = (
          }, nt=right
       } => (
          mk-app( mk-app( mk-var(c"as",unique(atk)), mk-app(preprocess-apply(t),mk-atype(tt)) ), preprocess-apply(nt) )
-      );
-      App{ left:App{ left:Var{key:c"as",atk=token}, mvar=right }, right:Lit{mtype=key} } => (
-         mk-app( mk-var(c"as",unique(atk)), mk-app(preprocess-apply(mvar),mk-atype(parse-type(mtype))) )
-      );
-      App{ left:App{ left:Var{key:c"as",atk=token}, mvar=right }, right:Var{mtype=key} } => (
-         mk-app( mk-var(c"as",unique(atk)), mk-app(preprocess-apply(mvar),mk-atype(parse-type(mtype))) )
-      );
-      App{ left:Var{key:c"sizeof",stk=token}, right:Var{mtype=key} } => (
-         mk-app( mk-var(c"sizeof",unique(stk)), mk-atype(parse-type(mtype)) )
-      );
-      App{ left:Var{key:c"sizeof",stk=token}, right:Lit{mtype=key} } => (
-         mk-app( mk-var(c"sizeof",unique(stk)), mk-atype(parse-type(mtype)) )
       );
       Lit{l=key,ltk=token} => (
          for Tuple{sfxs=first, sfxtt=second} in parse-suffixes {

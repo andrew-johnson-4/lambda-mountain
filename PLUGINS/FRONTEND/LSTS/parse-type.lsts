@@ -1,2 +1,0 @@
-
-let parse-type(s: CString): Type = t1(s);
