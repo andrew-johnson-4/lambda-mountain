@@ -266,11 +266,9 @@ deprecated macro ( rl"set"( rl"macro::lhs-field"( base, field ), rhs ) )
 deprecated macro ( rl"set"( rl"macro::lhs-index"( base, index ), rhs ) )
                  ( $"set[]"( $"macro::lhs-as-rhs"(base), index, rhs ) );
 
-#macro ( ('macro::define-zero (base-type constructor con-tag)) ) (
-#   non-zero := λ(: t base-type). (: (
-#      (!=( (.discriminator-case-tag t) (.discriminator-case-tag(as t con-tag)) ))
-#   ) U64);
-#);
+deprecated macro ( rl"macro::define-zero"(base-type,constructor,con-tag) ) (
+   let non-zero(t: base-type): U64 = t.discriminator-case-tag != (t as con-tag).discriminator-case-tag;
+);
 
 deprecated macro ( rl"macro::lhs-as-rhs"( rl":Variable", v ) )
                  ( v );
