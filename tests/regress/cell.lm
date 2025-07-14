@@ -1,9 +1,0 @@
-
-import std/default.lsts;
-
-main := λ. (: (
-  (let c (cell( 1_u64 )))
-  (print (deref c))
-  (set[]( c 2_u64 ))
-  (print (deref c))
-) Nil);

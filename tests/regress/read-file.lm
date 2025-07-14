@@ -1,7 +1,0 @@
-
-import std/default.lsts;
-
-main := λ.(: (
-   (print(read-file( 'tests/regress/read-file.lm.out_s )))
-) Nil);
-
