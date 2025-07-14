@@ -51,5 +51,11 @@ let mk-lsts-token(s: String): Token = (
              .replace(c"\\\"", c"\"")
              + c"_l";
    };
+   if s.has-prefix("rl\"") {
+      us = us.remove-prefix(c"rl\"")
+             .remove-suffix(c"\"")
+             .replace(c"\\\"", c"\"")
+             + c"_rl";
+   };
    Token(s, us, iuid(), s.location)
 );

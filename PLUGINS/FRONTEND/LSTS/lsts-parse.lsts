@@ -208,6 +208,12 @@ let lsts-parse(tokens: List<Token>): Nil = (
             (let bind, tokens) = lsts-parse-typed-macro(tokens);
             ast-parsed-program = ast-parsed-program + bind;
          );
+         [ Token{key:c"deprecated"}.. Token{key:c"macro"}.. rst] => (
+            (let mlhs, tokens) = lsts-parse-atom-without-tail(rst);
+            (let mrhs, tokens) = lsts-parse-atom-without-tail(tokens);
+            preprocess-macros = MSeq( close(preprocess-macros), Macro(without-location(mlhs), without-location(mrhs)) );
+            lsts-parse-expect(c";",tokens); tokens = tail(tokens);
+         );
          [ Token{key:c"interface"}.. _] => tokens = lsts-parse-interface(tokens);
          [ Token{key:c"import"}.. rest] => (
             tokens = rest;
@@ -1799,6 +1805,9 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       term = AType( term-rest.first );
    } else if lsts-parse-head(tokens).has-suffix(c"_ss") {
       (term, tokens) = lsts-parse-lit(tokens);
+   } else if lsts-parse-head(tokens).has-suffix(c"_rl") {
+      term = mk-lit(lsts-parse-head(tokens).remove-suffix(c"_rl"));
+      tokens = tail(tokens);
    } else if lsts-parse-head(tokens)==c"sizeof" {
       let loc = head(tokens).location;
       tokens = tail(tokens);
@@ -1819,7 +1828,6 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       };
       let rec-id = c"";
       if lsts-parse-head(tokens)!=c"(" then (rec-id, tokens) = lsts-parse-identifier(tokens);
-      if non-zero(rec-id) then fail("TODO: recursive let \{rec-id}\n");
       (let func-sig, tokens) = lsts-parse-function-signature(tokens, loc);
       lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
       (let rhs, tokens) = lsts-parse-small-expression(tokens);
