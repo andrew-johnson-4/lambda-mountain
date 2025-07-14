@@ -299,8 +299,8 @@ deprecated macro ( rl"for-each"(item(rl"in")(iterable))(loop) ) (
 
 deprecated macro ( rl"assert"(c) ) (
    $"if"( not(c) )
-        ( print("Assertion Failed At \{macro::location()}\n"); )
-        ( exit(1_u64) ); ()
+        ( print(c"Assertion Failed At"); print(macro::location()); exit(1_u64); )
+        ()
 );
 
 deprecated macro (rl"match"(t)(ps)) (scope(
