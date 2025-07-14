@@ -402,90 +402,90 @@ deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x1) )) (
    uuid(m);
 );
 
-#deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x2(x1)) )) (
-#   let uuid(v) = term;
-#   let uuid(m) = false;
-#   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-#           $"if"(match-pats-arm( open((uuid(v) as lt).1), x1 )) (
-#              $"if"(match-pats-arm( open((uuid(v) as lt).2), x2 ))
-#                   (uuid(m) = true)
-#                   ()
-#           ) ()
-#        ) ();
-#   uuid(m);
-#);
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x2(x1)) )) (
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+           $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 )) (
+              $"if"(match-pats-arm( open($".2"(uuid(v) as lt)), x2 ))
+                   (uuid(m) = true)
+                   ()
+           ) ()
+        ) ();
+   uuid(m);
+);
 
-#deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x3(x2)(x1)) )) (
-#   let uuid(v) = term;
-#   let uuid(m) = false;
-#   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-#           $"if"(match-pats-arm( open((uuid(v) as lt).1), x1 )) (
-#              $"if"(match-pats-arm( open((uuid(v) as lt).2), x2 )) (
-#                 $"if"(match-pats-arm( open((uuid(v) as lt).3), x3 ))
-#                      (uuid(m) = true)
-#                      ()
-#              ) ()
-#           ) ()
-#        ) ();
-#   uuid(m);
-#);
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x3(x2)(x1)) )) (
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+           $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 )) (
+              $"if"(match-pats-arm( open($".2"(uuid(v) as lt)), x2 )) (
+                 $"if"(match-pats-arm( open($".3"(uuid(v) as lt)), x3 ))
+                      (uuid(m) = true)
+                      ()
+              ) ()
+           ) ()
+        ) ();
+   uuid(m);
+);
 
-#deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x4(x3)(x2)(x1)) )) (
-#   let uuid(v) = term;
-#   let uuid(m) = false;
-#   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-#           $"if"(match-pats-arm( open((uuid(v) as lt).1), x1 )) (
-#              $"if"(match-pats-arm( open((uuid(v) as lt).2), x2 )) (
-#                 $"if"(match-pats-arm( open((uuid(v) as lt).3), x3 )) (
-#                    $"if"(match-pats-arm( open((uuid(v) as lt).4), x4 ))
-#                         (uuid(m) = true)
-#                         ()
-#                 ) ()
-#              ) ()
-#           ) ()
-#        ) ();
-#   uuid(m);
-#);
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x4(x3)(x2)(x1)) )) (
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+           $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 )) (
+              $"if"(match-pats-arm( open($".2"(uuid(v) as lt)), x2 )) (
+                 $"if"(match-pats-arm( open($".3"(uuid(v) as lt)), x3 )) (
+                    $"if"(match-pats-arm( open($".4"(uuid(v) as lt)), x4 ))
+                         (uuid(m) = true)
+                         ()
+                 ) ()
+              ) ()
+           ) ()
+        ) ();
+   uuid(m);
+);
 
-#deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x5(x4)(x3)(x2)(x1)) )) (
-#   let uuid(v) = term;
-#   let uuid(m) = false;
-#   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-#           $"if"(match-pats-arm( open((uuid(v) as lt).1), x1 )) (
-#              $"if"(match-pats-arm( open((uuid(v) as lt).2), x2 )) (
-#                 $"if"(match-pats-arm( open((uuid(v) as lt).3), x3 )) (
-#                    $"if"(match-pats-arm( open((uuid(v) as lt).4), x4 )) (
-#                       $"if"(match-pats-arm( open((uuid(v) as lt).5), x5 ))
-#                            (uuid(m) = true)
-#                            ()
-#                    ) ()
-#                 ) ()
-#              ) ()
-#           ) ()
-#        ) ();
-#   uuid(m);
-#);
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x5(x4)(x3)(x2)(x1)) )) (
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+           $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 )) (
+              $"if"(match-pats-arm( open($".2"(uuid(v) as lt)), x2 )) (
+                 $"if"(match-pats-arm( open($".3"(uuid(v) as lt)), x3 )) (
+                    $"if"(match-pats-arm( open($".4"(uuid(v) as lt)), x4 )) (
+                       $"if"(match-pats-arm( open($".5"(uuid(v) as lt)), x5 ))
+                            (uuid(m) = true)
+                            ()
+                    ) ()
+                 ) ()
+              ) ()
+           ) ()
+        ) ();
+   uuid(m);
+);
 
-#deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x6(x5)(x4)(x3)(x2)(x1)) )) (
-#   let uuid(v) = term;
-#   let uuid(m) = false;
-#   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-#           $"if"(match-pats-arm( open((uuid(v) as lt).1), x1 )) (
-#              $"if"(match-pats-arm( open((uuid(v) as lt).2), x2 )) (
-#                 $"if"(match-pats-arm( open((uuid(v) as lt).3), x3 )) (
-#                    $"if"(match-pats-arm( open((uuid(v) as lt).4), x4 )) (
-#                       $"if"(match-pats-arm( open((uuid(v) as lt).5), x5 )) (
-#                          $"if"(match-pats-arm( open((uuid(v) as lt).6), x6 ))
-#                               (uuid(m) = true)
-#                               ()
-#                       ) ()
-#                    ) ()
-#                 ) ()
-#              ) ()
-#           ) ()
-#        ) ();
-#   uuid(m);
-#);
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x6(x5)(x4)(x3)(x2)(x1)) )) (
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+           $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 )) (
+              $"if"(match-pats-arm( open($".2"(uuid(v) as lt)), x2 )) (
+                 $"if"(match-pats-arm( open($".3"(uuid(v) as lt)), x3 )) (
+                    $"if"(match-pats-arm( open($".4"(uuid(v) as lt)), x4 )) (
+                       $"if"(match-pats-arm( open($".5"(uuid(v) as lt)), x5 )) (
+                          $"if"(match-pats-arm( open($".6"(uuid(v) as lt)), x6 ))
+                               (uuid(m) = true)
+                               ()
+                       ) ()
+                    ) ()
+                 ) ()
+              ) ()
+           ) ()
+        ) ();
+   uuid(m);
+);
 
 #macro ('match-pats-arm( term ( (:Tag: l lt) () ) )) (
 #   ( (let (uuid v) term) (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) )) )
