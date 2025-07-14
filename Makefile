@@ -88,4 +88,4 @@ else
 	mv lm $${HOME}/.local/bin/lm
 endif
 	mkdir -p $${HOME}/.lm/
-	cp -rf PLATFORM $${HOME}/.lm/
+	cp -rf lib $${HOME}/.lm/
