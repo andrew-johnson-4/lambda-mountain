@@ -5,21 +5,6 @@ macro ( ('macro::define-zero (base-type constructor con-tag)) ) (
    ) U64);
 );
 
-macro ('match-pats-arm( term ((:Tag: l lt) ('macro::bind-field-by-key( x1-key x1 )) ) )) (
-   (
-      (let (uuid v) term)
-      (let (uuid m) 0_u8)
-      (if (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) ))
-          (if (match-pats-arm( (open(x1-key( (as (uuid v) lt) ))) x1 ))
-              (set (uuid m) 1_u8)
-              ()
-          )
-          ()
-      )
-      (==( (uuid m) 1_u8 ))
-   )
-);
-
 macro ('match-pats-arm( term ((:Tag: l lt) ('macro::bind-field-by-key( x1-key ('macro::bind-raw x1) )) ) )) (
    (
       (let (uuid v) term)
