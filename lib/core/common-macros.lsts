@@ -299,18 +299,18 @@ deprecated macro ( rl"for-each"(item(rl"in")(iterable))(loop) ) (
 
 deprecated macro ( rl"assert"(c) ) (
    $"if"( not(c) )
-        ( print(c"Assertion Failed At"); print(p(rl":Location:")); exit(1_u64); )
+        ( print(c"Assertion Failed At"); print(p(rl":Location:") : Constant+Literal+CString); exit(1_u64); )
         ()
 );
 
 deprecated macro (rl"match"(t)(ps)) (scope(
    let uuid(term) = open(t);
-   match-pats( uuid(term), ps, fail("Pattern Match Failure \{macro::location()}") );
+   match-pats( uuid(term), ps, fail("Pattern Match Failure \{p(rl\":Location:\") : Constant+Literal+CString}") );
 ));
 
 deprecated macro (rl"match"(rl"macro::bind-raw"(t))(ps)) (scope(
    let uuid(term) = t;
-   match-pats( uuid(term), ps, fail("Pattern Match Failure \{macro::location()}") );
+   match-pats( uuid(term), ps, fail("Pattern Match Failure \{p(rl\":Location:\") : Constant+Literal+CString}") );
 ));
 
 deprecated macro (rl"match"(
@@ -318,7 +318,7 @@ deprecated macro (rl"match"(
                      ps
                  )) (scope(
    let uuid(term) = f($"raw"(t));
-   match-pats( uuid(term), ps, fail("Pattern Match Failure \{macro::location()}") );
+   match-pats( uuid(term), ps, fail("Pattern Match Failure \{p(rl\":Location:\") : Constant+Literal+CString}") );
 ));
 
 deprecated macro (rl"match-pats"(term,(),remainder))
