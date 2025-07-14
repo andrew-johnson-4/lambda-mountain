@@ -360,39 +360,36 @@ deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-head"(x,rest))) (
         (branchfalse())
 );
 
-#macro ('match-pats-arm( term ('macro::lhs-prefix-or-suffix( (:Literal: l) rest )) )) (
-#   ( (let (uuid v) term) (
-#      (if (.has-prefix( (uuid v) l )) (
-#         (match-pats-arm( (.remove-prefix( (uuid v) l )) rest ))
-#      ) (branchfalse()))
-#   ))
-#);
+deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rl":Literal:"(l), rest ))) (
+   $"let"(uuid(v))(term);
+   $"if"(uuid(v).has-prefix(l))
+        (match-pats-arm(uuid(v).remove-prefix(l),rest))
+        (branchfalse())
+);
 
-#macro ('match-pats-arm( term ('macro::lhs-prefix-or-suffix( rest (:Literal: l) )) )) (
-#   ( (let (uuid v) term) (
-#      (if (.has-suffix( (uuid v) l )) (
-#         (match-pats-arm( (.remove-suffix( (uuid v) l )) rest ))
-#      ) (branchfalse()))
-#   ))
-#);
+deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rest, rl":Literal:"(l) ))) (
+   $"let"(uuid(v))(term);
+   $"if"(uuid(v).has-suffix(l))
+        (match-pats-arm(uuid(v).remove-suffix(l),rest))
+        (branchfalse())
+);
 
-#macro ('match-pats-arm( term ('macro::lhs-prefix-or-suffix( rest ('macro::lhs-bind( (:Variable: b) (:Literal: l) )) )) )) (
-#   ( (let (uuid v) term) (
-#      (if (.has-suffix( (uuid v) l )) (
-#         (let b (.remove-suffix( (uuid v) l )))
-#         (match-pats-arm( ([:]( (uuid v) 0_i64 (.length b) )) rest ))
-#      ) (branchfalse()))
-#   ))
-#);
+deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rl"macro::lhs-bind"(rl":Variable:"(b), rl":Literal:"(l)), rest ))) (
+   $"let"(uuid(v))(term);
+   $"if"(uuid(v).has-prefix(l)) (
+           $"let"(b)(uuid(v).remove-prefix(l));
+           (match-pats-arm(uuid(v)[b.length:],rest))
+        ) (branchfalse())
+);
 
-#macro ('match-pats-arm( term ('macro::lhs-prefix-or-suffix( ('macro::lhs-bind( (:Variable: b) (:Literal: l) )) rest )) )) (
-#   ( (let (uuid v) term) (
-#      (if (.has-prefix( (uuid v) l )) (
-#         (let b (.remove-prefix( (uuid v) l )))
-#         (match-pats-arm( ([:]( (uuid v) (.length b) minimum-I64 )) rest ))
-#      ) (branchfalse()))
-#   ))
-#);
+
+deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rest, rl"macro::lhs-bind"(rl":Variable:"(b), rl":Literal:"(l)) ))) (
+   $"let"(uuid(v))(term);
+   $"if"(uuid(v).has-suffix(l)) (
+           $"let"(b)(uuid(v).remove-suffix(l));
+           (match-pats-arm(uuid(v)[:b.length],rest))
+        ) (branchfalse())
+);
 
 #macro ('match-pats-arm( term ((:Tag: l lt) ( x1 )) )) (
 #   (
