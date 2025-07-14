@@ -487,9 +487,10 @@ deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x6(x5)(x4)(x3)(x2)(
    uuid(m);
 );
 
-#macro ('match-pats-arm( term ( (:Tag: l lt) () ) )) (
-#   ( (let (uuid v) term) (==( (.discriminator-case-tag( (uuid v) )) (.discriminator-case-tag(as (uuid v) lt)) )) )
-#);
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)() )) (
+   let uuid(v) = term;
+   uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag
+);
 
 #macro ('match-pats-arm( term ((:Tag: l lt) ('macro::bind-field-by-key( x1-key x1 )) ) )) (
 #   (
