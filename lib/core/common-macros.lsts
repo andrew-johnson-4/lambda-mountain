@@ -391,16 +391,16 @@ deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rest,
         ) (branchfalse())
 );
 
-#deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x1) )) (
-#   let uuid(v) = term;
-#   let uuid(m) = false;
-#   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-#           $"if"(match-pats-arm( open((uuid(v) as lt).1), x1 ))
-#                (uuid(m) = true)
-#                ()
-#        ) ();
-#   uuid(m);
-#);
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x1) )) (
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+      $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 ))
+         (uuid(m) = true)
+         ()
+   ) ();
+   uuid(m);
+);
 
 #deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x2(x1)) )) (
 #   let uuid(v) = term;
