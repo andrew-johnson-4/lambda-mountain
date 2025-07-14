@@ -1,7 +1,6 @@
 
 # TODO: when moving this, update c-frontend.lsts
 
-import core/common-macros.lm;
 import std/platform-macros.lm;
 import std/primitives.lsts;
 
