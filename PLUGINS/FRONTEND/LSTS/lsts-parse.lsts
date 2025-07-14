@@ -199,7 +199,10 @@ let lsts-parse(tokens: List<Token>): Nil = (
       (let docx, tokens) = lsts-parse-doc(tokens);
       let prev-tokens = tokens;
       match tokens {
-         [ Token{key:c"let"}.. _] => tokens = lsts-parse-let(tokens);
+         [ Token{key:c"let"}.. _] => (
+            (let t, tokens) = lsts-parse-let(tokens);
+            ast-parsed-program = ast-parsed-program + t;
+         );
          [ Token{key:c"type"}.. _] => (
             (let td, tokens) = lsts-parse-typedef2(tokens);
             ast-parsed-program = ast-parsed-program + td;
@@ -960,7 +963,7 @@ let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tup
    Tuple ( out, tokens )
 );
 
-let lsts-parse-let(tokens: List<Token>): List<Token> = (
+let lsts-parse-let(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c"let", tokens); let loc = head(tokens).location; tokens = tail(tokens);
    let prop = 0;
    if lsts-parse-head(tokens)==c"prop" {
@@ -998,29 +1001,29 @@ let lsts-parse-let(tokens: List<Token>): List<Token> = (
       );
    };
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-   if non-zero(args-list) {
+   let rvalue = if non-zero(args-list) {
       let attach-tt = if prop { t1(c"Prop") } else { ta };
       if name==c"quick-prop" {
          match args-list {
             App{ left:Lit{key:c":"}, right:App{right:AType{ pre=tt }} } => (
                add-quick-prop(pre, ta, return-type);
+               ASTNil;
             );
             _ => (
                print("Malformed quick-prop Argument List at \{loc}\n");
                exit(1);
+               ASTNil;
             );
          };
       } else {
-         ast-parsed-program = ast-parsed-program +
-            mk-glb( with-location(mk-token(name),loc), mk-abs(
-               args-list, return-term, misc-tt && attach-tt
-            ) );
+         mk-glb( with-location(mk-token(name),loc), mk-abs(
+            args-list, return-term, misc-tt && attach-tt
+         ) );
       };
    } else {
-      ast-parsed-program = ast-parsed-program +
-         mk-glb( with-location(mk-token(name),loc), return-term );
+      mk-glb( with-location(mk-token(name),loc), return-term );
    };
-   tokens
+   (rvalue, tokens)
 );
 
 type ASTOrIdent = ASTOrIdentAST { ast: AST }
