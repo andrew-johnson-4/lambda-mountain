@@ -3,7 +3,7 @@ import core/index.lsts;
 import std/std-primitives.lsts;
 import std/c-shim.lsts;
 import std/std-macros.lsts;
-import std/platform-macros.lm;
+import std/platform-macros.lsts;
 import std/primitives.lsts;
 import std/field-accessors.lsts;
 import std/sized.lsts;
