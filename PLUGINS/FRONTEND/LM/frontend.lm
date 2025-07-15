@@ -1,4 +1,0 @@
-
-lm-frontend := λ(: fp String)(: text String). (: (
-   (parse(tokenize( fp text )))
-) Nil);

@@ -1,7 +1,7 @@
 
 # TODO: when moving this, update c-frontend.lsts
 
-import std/platform-macros.lm;
+import std/platform-macros.lsts;
 import std/primitives.lsts;
 
 let :Blob $"c::compound"(ts: Cons<Any,last>): last = (

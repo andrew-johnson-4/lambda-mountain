@@ -1,7 +1,0 @@
-
-macro ( ('macro::define-zero (base-type constructor con-tag)) ) (
-   non-zero := λ(: t base-type). (: (
-      (!=( (.discriminator-case-tag t) (.discriminator-case-tag(as t con-tag)) ))
-   ) U64);
-);
-

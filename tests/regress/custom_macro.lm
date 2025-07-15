@@ -1,9 +1,0 @@
-
-import std/default.lsts;
-
-macro ('m1 a) (print a);
-
-main := λ. (: (
-  (m1 'ABC\n_s)
-  (m1 'XYZ\n_s)
-) Nil);

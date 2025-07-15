@@ -5,7 +5,6 @@ let plugin-current-backend = (&plugins-backend-c-compile) : Arrow<Nil,Nil>[];
 import PLUGINS/BACKEND/C/index.lsts;
 import PLUGINS/BACKEND/BLOB/index.lsts;
 
-import PLUGINS/FRONTEND/LM/index-index.lm;
 import PLUGINS/FRONTEND/LSTS/index.lsts;
 import PLUGINS/FRONTEND/C/index.lsts;
 
@@ -25,16 +24,6 @@ let frontend(fp: CString): Nil = (
          };
       };
       if not(found-file) then fail("Unable To Find Path To File: \{fp}");
-      let todo = true;
-      if todo && (fp.has-suffix(c".lm") || fp.has-suffix(c".html")) {
-         let text = c"";
-         if not(is-already-tokenized(fp)) {
-            text = read-file(fp);
-            already-tokenized = cons(fp, already-tokenized);
-         };
-         lm-frontend(fp, text);
-         todo = false;
-      };
-      if todo then plugins-frontends-index.lookup(fp.file-extension, plugin-null-frontend)(fp);
+      plugins-frontends-index.lookup(fp.file-extension, plugin-null-frontend)(fp);
    }; ()
 );

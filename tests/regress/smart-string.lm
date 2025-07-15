@@ -1,7 +1,0 @@
-
-import std/default.lsts;
-
-main := λ. (: (
-   (print (intern 'ABC_s))
-   (print ([:]( (intern 'ABC_s) 1_i64 -1_i64 )))
-) Nil);
