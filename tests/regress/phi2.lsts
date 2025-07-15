@@ -1,0 +1,18 @@
+
+import LIB/default.lsts;
+
+type Phi2T = { id:U64 };
+
+let del(t: Phi2T): Nil = (
+   print("destroyed \{t.id}\n");
+);
+
+let f(x: Phi2T): Nil = ();  # end of lifetime
+let g(x: Phi2T): Phi2T = x; # transfer of lifetime
+
+if true {
+   let binding = Phi2T(1);  # transfer of lifetime to scope
+   Phi2T(2);                # end of lifetime
+   f(Phi2T(3));             # transfer of lifetime to function
+   g(Phi2T(4));             # transfer of lifetime to function
+};

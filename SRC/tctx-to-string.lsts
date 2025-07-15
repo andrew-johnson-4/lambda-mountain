@@ -1,7 +1,7 @@
 
 let .into(tctx: Maybe<TypeContext>, tt: Type<String>): String = (
    let result = "";
-   for Tuple{first=first,second=second} in tctx.get-or([] : TypeContext) {
+   for Tuple{first=first,second=second} in tctx.get-or(mk-tctx()).tctx {
       result = result + "\{first} : \{second}\n";
    };
    result

@@ -19,8 +19,10 @@ type AST zero ASTEOF implements DefaultFormattable
 # constructor with a default argument
 let $"App"(left: AST[], right: AST[]): AST = App ( false, left, right );
 
-type alias TypeContext = List<Tuple<CString,Type,AST>>;
-type alias AContext = List<Tuple<CString,AST>>;
+type TypeContext = { tctx:List<(CString,Type,AST)>, pctx: List<(CString,Type)> };
+let mk-tctx(): TypeContext = TypeContext( [] : List<(CString,Type,AST)>, [] : List<(CString,Type)> );
+
+type alias AContext = List<(CString,AST)>;
 
 type StackToSpecialize = { key:CString, pre-type:Type, ctx:Maybe<TypeContext>, post-type:Type };
 

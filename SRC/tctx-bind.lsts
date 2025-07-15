@@ -7,5 +7,8 @@ let .bind(tctx: HashtableEq<CString,List<Tuple<Type,Type,AST>>>, k: CString, kt:
 );
 
 let .bind(tctx: TypeContext?, k: CString, kt: Type, kv: AST): TypeContext? = (
-   Some( cons(Tuple(k, kt, kv), tctx.get-or([] : TypeContext)) );
+   Some(TypeContext(
+      cons( (k, kt, kv), tctx.get-or(mk-tctx()).tctx ),
+      tctx.get-or(mk-tctx()).pctx
+   ));
 );
