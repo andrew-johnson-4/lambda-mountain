@@ -14,6 +14,7 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TypeContext> = (
    match (Tuple(fpt, pt)) {
       Tuple{ first:TAny{} } => ctx = yes;
       Tuple{ first:TGround{tag:c"Any"} } => ctx = yes;
+      Tuple{ first:TGround{tag:c"Phi::Initialize"} } => ctx = yes;
       Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => no;
       Tuple{ first:TVar{name=name}, second:TGround{tag=tag} } => (
          ctx = ctx.bind(name, normalize(pt), Lit(tag, mk-token(tag)));
@@ -25,6 +26,7 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TypeContext> = (
          for lc in lconjugate {
             if result.is-some then (match lc {
                TGround{tag:c"Any"} => ();
+               TGround{tag:c"Phi::Initialize"} => ();
                TGround{ltag=tag} => (
                   let this-result-ok = no;
                   let rc = rconjugate[ri];

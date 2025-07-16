@@ -14,6 +14,7 @@ let can-unify(fpt: Type, pt: Type): U64 = (
    match (Tuple(fpt, pt)) {
       Tuple{ first:TAny{} } => true;
       Tuple{ first:TGround{tag:c"Any"} } => true;
+      Tuple{ first:TGround{tag:c"Phi::Initialize"} } => true;
       Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => false;
       Tuple{ first:TVar{} } => true;
       Tuple{ first:TAnd{ lconjugate=conjugate }, second:TAnd{ rconjugate=conjugate } } => (
@@ -22,6 +23,7 @@ let can-unify(fpt: Type, pt: Type): U64 = (
          for lc in lconjugate {
             if result then (match lc {
                TGround{tag:c"Any"} => ();
+               TGround{tag:c"Phi::Initialize"} => ();
                TGround{ltag=tag} => (
                   let this-result-ok = false as U64;
                   let rc = rconjugate[ri];
@@ -123,5 +125,5 @@ let can-unify(fpt: Type, pt: Type): U64 = (
           second:TGround{rtn=tag, rps=parameters}
       } => ltn==rtn && can-unify(lps,rps);
       _ => false;
-   }
+   };
 );
