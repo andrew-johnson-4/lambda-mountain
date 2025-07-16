@@ -21,7 +21,7 @@ let .into(tt: Type, tgt: Type<String>): String = (
       TAnd{conjugate=conjugate} => (
          let result = "";
          for c in conjugate {
-            if non-zero(result) then (result = result + "+" + c.into(type(String)))
+            if non-zero(result) then (result = result + " + " + c.into(type(String)))
             else (result = c.into(type(String)));
          };
          result
@@ -34,7 +34,7 @@ let .pretty(tt: Type): String = (
       TAnd{conjugate=conjugate} => (
          let result = "";
          for c in conjugate {
-            if non-zero(result) then (result = result + "+\n" + c.into(type(String)))
+            if non-zero(result) then (result = result + " + \n" + c.into(type(String)))
             else (result = c.into(type(String)));
          };
          result
