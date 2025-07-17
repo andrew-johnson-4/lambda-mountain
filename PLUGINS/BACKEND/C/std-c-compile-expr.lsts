@@ -169,7 +169,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                    match right {
                       App{ base=left, right:AType{tt=tt} } => (
                          if typeof-term(base).is-t(c"Type") && tt.is-t(c"Type") && tt.l1.is-t(c"String")
-                         then std-c-compile-smart-string(ctx, typeof-term(base).l1.into(type(String)).into(type(CString)), t)
+                         then std-c-compile-smart-string(ctx, typeof-term(base).slot(c"Type").l1.into(type(String)).into(type(CString)), t)
                          else std-c-compile-call(ctx, fname, right);
                       );
                       _ => std-c-compile-call(ctx, fname, right);
