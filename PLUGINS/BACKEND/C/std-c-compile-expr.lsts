@@ -18,7 +18,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          }
       );
       App{ left:Abs{lhs=lhs:Var{name=key}, rhs:ASTNil{}}, rhs=right } => (
-         let lt = typeof(lhs).without-modifiers;
+         let lt = typeof-term(lhs).without-modifiers;
          let v = mk-fragment().set(c"expression",if std-c-is-ctype(lt) then SAtom(name) else SAtom(uuid()));
          let f = mk-fragment();
          std-c-fragment-context = std-c-fragment-context.bind( lhs, v );
@@ -45,7 +45,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       App{ left:Var{key:c"as"}, right:App{ inner=left, right:AType{tt=tt} } } => (
          let f = std-c-compile-expr(ctx, inner, false);
-         f.set(c"expression", SAtom(c"((") + std-c-mangle-type(typeof(t), t) + SAtom(c")") +
+         f.set(c"expression", SAtom(c"((") + std-c-mangle-type(typeof-term(t), t) + SAtom(c")") +
             f.get(c"expression") + SAtom(c")")
          );
       );
@@ -53,20 +53,20 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          let ec = std-c-compile-call(ctx, c"into-branch-conditional", cond);
          let et = std-c-compile-expr( open(ec.context), tr, false );
          let ef = std-c-compile-expr( open(ec.context), fa, false );
-         if typeof(fa).is-t(c"Never") then ef = never-as-expr(ef, typeof(tr), t);
+         if typeof-term(fa).is-t(c"Never") then ef = never-as-expr(ef, typeof-term(tr), t);
 
          let ictx = mk-fragment();
          ctx = ctx.bind(c"ictx", t1(c"ImplicitContext"), ictx);
          ctx = ctx.bind(c"c", t1(c"BranchConditiona"), ec);
-         ctx = ctx.bind(c"t", typeof(tr), et);
-         ctx = ctx.bind(c"f", typeof(fa), ef);
+         ctx = ctx.bind(c"t", typeof-term(tr), et);
+         ctx = ctx.bind(c"f", typeof-term(fa), ef);
 
-         let a-tt = t3(c"Cons",t3(c"Cons",t3(c"Cons",t1(c"ImplicitContext"),typeof(fa)),typeof(tr)),t1(c"BranchConditional"));
+         let a-tt = t3(c"Cons",t3(c"Cons",t3(c"Cons",t1(c"ImplicitContext"),typeof-term(fa)),typeof-term(tr)),t1(c"BranchConditional"));
          let f = cc-blob(ctx, c"primitive::if", a-tt, t);
          f.context = et.context; f
       );
       App{ o-t=left:Var{key:c"open"}, inner-term=right } => (
-         let tt = typeof(inner-term);
+         let tt = typeof-term(inner-term);
          if tt.is-t(c"Array") { match tt.slot(c"Array") {
             TGround{ tag:c"Array", parameters:[_..TAny{}..] } => std-c-compile-expr(ctx, inner-term, false);
             TGround{ tag:c"Array", parameters:[TAny{}..inner-tt..] } => std-c-compile-call(ctx, c"open", inner-term);
@@ -78,7 +78,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          f.context = close(ctx); f
       );
       Lit{val=key} => (
-         let tt = typeof(t);
+         let tt = typeof-term(t);
          if tt.is-t(c"C") && tt.r1.is-t(c"uint8_t") then mk-expression(val)
          else if tt.is-t(c"C") && tt.r1.is-t(c"uint16_t") then mk-expression(val)
          else if tt.is-t(c"C") && tt.r1.is-t(c"uint32_t") then mk-expression(val)
@@ -98,7 +98,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                let lit = mk-lit(val); ascript-normal(lit, t1(c"CString"));
                let intern-ss = std-c-compile-call(ctx, c"intern", lit);
                assemble-header-section = assemble-header-section +
-               std-c-mangle-type(typeof(t), t) + SAtom(c" ") + SAtom(guid) + SAtom(c";\n");
+               std-c-mangle-type(typeof-term(t), t) + SAtom(c" ") + SAtom(guid) + SAtom(c";\n");
                assemble-string-initializer-section = assemble-string-initializer-section +
                SAtom(guid) + SAtom(c"=") + intern-ss.get(c"expression") + SAtom(c";\n");
                mk-expression(SAtom(guid));
@@ -112,9 +112,9 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             val.escape-as-cstring + SAtom(c", REG_EXTENDED); if(return_code){ fprintf(stderr,\"Could not compile regex.\"); exit(1);}};\n");
             mk-expression(rgx-id);
          } else if tt.is-type && tt.is-t(c"List") && val==c"LEOF" {
-            std-c-compile-call(ctx, val, typeof(t), mk-nil());
+            std-c-compile-call(ctx, val, typeof-term(t), mk-nil());
          } else if tt.is-type && tt.is-t(c"HashtableEq") && val==c"HashtableEqEOF" {
-            std-c-compile-call(ctx, val, typeof(t), mk-nil());
+            std-c-compile-call(ctx, val, typeof-term(t), mk-nil());
          } else { match val {
             c"True" => mk-expression(c"(1)");
             c"False" => mk-expression(c"(0)");
@@ -160,16 +160,16 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          e
       );
       App{ is-cons=is-cons, left=left, right=right } => (
-          if not(is-cons) && typeof(left).is-arrow {
+          if not(is-cons) && typeof-term(left).is-arrow {
              match left {
                 Var{fname=key} => std-c-compile-call(ctx, fname, right);
                 App{ left:Lit{key:c":"}, right:App{ left:Var{fname=key}, right:AType{tt=tt} } } => std-c-compile-call(ctx, fname, right);
                 Lit{fname=key} => (
-                   let return-type = normalize(typeof(t));
+                   let return-type = normalize(typeof-term(t));
                    std-c-compile-call(ctx, fname, return-type, right);
                 );
                 App{ left:Lit{key:c":"}, right:App{ left:Lit{fname=key}, right:AType{tt=tt} } } => (
-                   let return-type = normalize(typeof(t));
+                   let return-type = normalize(typeof-term(t));
                    std-c-compile-call(ctx, fname, return-type, right);
                 );
                 _ => (
@@ -199,7 +199,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
    };
    if is-stmt && non-zero(f.get(c"expression")) then f = f.set(c"expression", f.get(c"expression") + SAtom(c";"));
    f.context = close(ctx);
-   f.type = typeof(t); f
+   f.type = typeof-term(t); f
 );
 
 

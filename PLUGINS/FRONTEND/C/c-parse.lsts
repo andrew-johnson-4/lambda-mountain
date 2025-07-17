@@ -57,7 +57,7 @@ let cmp(l: CTerm, r: CTerm): Ord = (
    }
 );
 
-let to-smart-string(l: CTerm): String = (
+let .into(l: CTerm, tt: Type<String>): String = (
    match l {
       CInteger{rv=value} => "{Integer \{rv}}";
       CCharacter{rv=value} => "{Character \{rv}}";

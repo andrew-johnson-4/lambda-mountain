@@ -53,7 +53,7 @@ let std-apply-macro-constant(tctx: Maybe<TypeContext>, mname: CString, margs: AS
 );
 
 let std-apply-macro-location(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
-   (tctx, mk-lit(to-smart-string(margs.location)).ascript(t1(c"String") && t1(c"Literal")))
+   (tctx, mk-lit(margs.location.into(type(String))).ascript(t1(c"String") && t1(c"Literal")))
 );
 
 let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed, strong: Bool): (TypeContext?, AST) = (
@@ -124,7 +124,7 @@ let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type): (T
       TVar{} => (ta, t);
       _ => (
          (_, t) = std-infer-expr(tctx, t, false, Used(), ta);
-         (typeof(t), t);
+         (typeof-term(t), t);
       );
    }
 );

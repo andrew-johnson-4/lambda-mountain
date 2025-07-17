@@ -12,7 +12,7 @@ let .into(tt: Type, tgt: Type<String>): String = (
             r = r + "<";
             for p in parameters.reverse {
                if pc > 0 { r = r + ","; };
-               r = r + to-smart-string(p);
+               r = r + p.into(type(String));
                pc = pc + 1;
             };
             r = r + ">";

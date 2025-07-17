@@ -4,7 +4,7 @@ let plugins-backend-blob-compile(): Nil = (
       Glb{ k=key, rhs=val:Abs{} } => (
          let fragment = mk-fragment();
          fragment.term = rhs;
-         global-ctx = global-ctx.bind(k.key, typeof(rhs), fragment);
+         global-ctx = global-ctx.bind(k.key, typeof-term(rhs), fragment);
       );
       _ => ();
    }};

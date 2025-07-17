@@ -16,7 +16,7 @@ let infer-global-terms(term: AST): AST = (
             mark-var-to-def(new-term, term);
             term = new-term;
          };
-         let kt = normalize(typeof(rhs)) && t1(c"GlobalVariable");
+         let kt = normalize(typeof-term(rhs)) && t1(c"GlobalVariable");
          global-type-context = global-type-context.bind(k.key, kt, term);
          mark-global-as-seen(k.key, kt, ta);
          ascript-normal(term, kt);

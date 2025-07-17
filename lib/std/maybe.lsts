@@ -34,7 +34,7 @@ let cmp(l: Maybe<x>, r: Maybe<x>): Ord = (
    else Equal()
 );
 
-let to-smart-string(l: Maybe<x>): String = (
+let .into(l: Maybe<x>, tt: Type<String>): String = (
    match l {
       Some{content=content} => "Some{\{content}}";
       _ => "None";

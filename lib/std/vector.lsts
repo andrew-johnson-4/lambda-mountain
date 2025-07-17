@@ -185,7 +185,7 @@ let .sort(v: Vector<t>): Vector<t> = (
 );
 
 let print(v: Vector<x>): Nil = (
-   print(untern(to-smart-string(v)));
+   print(untern(v.into(type(String))));
 );
 
 let .push-all(self: Vector<t>, val: Iterable<t>): Vector<t> = (
@@ -235,13 +235,13 @@ let .into(l: Iterable<t>, out: Type<Vector<t>>): Vector<t> = (
    l.iter().collect(type(Vector<t>))
 );
 
-let to-smart-string(self: Vector<x>): String = (
+let .into(self: Vector<x>, tt: Type<String>): String = (
    let rval = "[";
    let has-item = false;
    for v in self {
       if has-item then rval = rval + ",";
       has-item = true;
-      rval = rval + to-smart-string(v);
+      rval = rval + v.into(type(String));
    };
    rval + "]"
 );
