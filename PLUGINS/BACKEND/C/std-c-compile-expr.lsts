@@ -26,7 +26,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          }; e
       );
       AType{ tt=tt } => (
-         if tt.is-t(c"Type") {
+         if tt.is-t(c"Type",1) {
             mk-fragment().set(c"expression",SAtom(c"0"));
          } else {
             mk-fragment().set(c"expression",std-c-mangle-type(tt, t));
@@ -38,7 +38,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          let f = mk-fragment();
          std-c-fragment-context = std-c-fragment-context.bind( lhs, v );
          ctx = ctx.bind( name, lt, v );
-         if lt.is-t(c"C") && lt.slot(c"C",0).r1.is-t(c":Label") {
+         if lt.is-t(c"C",0) && lt.slot(c"C",0).r1.is-t(c":Label",0) {
             f = f.set(c"expression", v.get(c"expression") + SAtom(c":"));
          } else {
             (let pre, let post) = std-c-mangle-declaration(lt, t);
@@ -68,7 +68,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          let ec = std-c-compile-call(ctx, c"into-branch-conditional", cond);
          let et = std-c-compile-expr( open(ec.context), tr, false );
          let ef = std-c-compile-expr( open(ec.context), fa, false );
-         if typeof-term(fa).is-t(c"Never") then ef = never-as-expr(ef, typeof-term(tr), t);
+         if typeof-term(fa).is-t(c"Never",0) then ef = never-as-expr(ef, typeof-term(tr), t);
 
          let ictx = mk-fragment();
          ctx = ctx.bind(c"ictx", t1(c"ImplicitContext"), ictx);
@@ -82,7 +82,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       App{ o-t=left:Var{key:c"open"}, inner-term=right } => (
          let tt = typeof-term(inner-term);
-         if tt.is-t(c"Array") { match tt.slot(c"Array",2) {
+         if tt.is-t(c"Array",2) { match tt.slot(c"Array",2) {
             TGround{ tag:c"Array", parameters:[_..TAny{}..] } => std-c-compile-expr(ctx, inner-term, false);
             TGround{ tag:c"Array", parameters:[TAny{}..inner-tt..] } => std-c-compile-call(ctx, c"open", inner-term);
             TGround{ tag:c"Array", parameters:[array-length..inner-tt..] } => std-c-compile-expr(ctx, inner-term, false);
@@ -94,19 +94,19 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       Lit{val=key} => (
          let tt = typeof-term(t);
-         if tt.is-t(c"C") && tt.r1.is-t(c"uint8_t") then mk-expression(val)
-         else if tt.is-t(c"C") && tt.r1.is-t(c"uint16_t") then mk-expression(val)
-         else if tt.is-t(c"C") && tt.r1.is-t(c"uint32_t") then mk-expression(val)
-         else if tt.is-t(c"C") && tt.r1.is-t(c"uint64_t") then mk-expression(val)
-         else if tt.is-t(c"C") && tt.r1.is-t(c"int8_t") then mk-expression(val)
-         else if tt.is-t(c"C") && tt.r1.is-t(c"int16_t") then mk-expression(val)
-         else if tt.is-t(c"C") && tt.r1.is-t(c"int32_t") then mk-expression(val)
-         else if tt.is-t(c"C") && tt.r1.is-t(c"int64_t") then mk-expression(val)
-         else if tt.is-t(c"C") && tt.r1.is-t(c":Label") then mk-expression(val)
-         else if tt.is-t(c"L") then mk-expression(val)
-         else if tt.is-t(c"CString") then mk-expression(val.escape-as-cstring)
-         else if tt.is-t(c"String") then std-c-compile-smart-string(ctx, val, t)
-         else if tt.is-t(c"Regex") {
+         if tt.is-t(c"C",1) && tt.r1.is-t(c"uint8_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) && tt.r1.is-t(c"uint16_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) && tt.r1.is-t(c"uint32_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) && tt.r1.is-t(c"uint64_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) && tt.r1.is-t(c"int8_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) && tt.r1.is-t(c"int16_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) && tt.r1.is-t(c"int32_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) && tt.r1.is-t(c"int64_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) && tt.r1.is-t(c":Label",0) then mk-expression(val)
+         else if tt.is-t(c"L",0) then mk-expression(val)
+         else if tt.is-t(c"CString",0) then mk-expression(val.escape-as-cstring)
+         else if tt.is-t(c"String",0) then std-c-compile-smart-string(ctx, val, t)
+         else if tt.is-t(c"Regex",0) {
             let rgx-id = uuid();
             assemble-header-section = assemble-header-section +
             SAtom(c"regex_t ") + SAtom(rgx-id) + SAtom(c";\n");            
@@ -114,9 +114,9 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             SAtom(c"{int return_code = regcomp(&") + SAtom(rgx-id) + SAtom(c", ") +
             val.escape-as-cstring + SAtom(c", REG_EXTENDED); if(return_code){ fprintf(stderr,\"Could not compile regex.\"); exit(1);}};\n");
             mk-expression(rgx-id);
-         } else if tt.is-type && tt.is-t(c"List") && val==c"LEOF" {
+         } else if tt.is-type && tt.is-t(c"List",1) && val==c"LEOF" {
             std-c-compile-call(ctx, val, typeof-term(t), mk-nil());
-         } else if tt.is-type && tt.is-t(c"HashtableEq") && val==c"HashtableEqEOF" {
+         } else if tt.is-type && tt.is-t(c"HashtableEq",2) && val==c"HashtableEqEOF" {
             std-c-compile-call(ctx, val, typeof-term(t), mk-nil());
          } else { match val {
             c"True" => mk-expression(c"(1)");
@@ -168,7 +168,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                 Var{fname=key:c".into"} => (
                    match right {
                       App{ base=left, right:AType{tt=tt} } => (
-                         if typeof-term(base).is-t(c"Type",1) && tt.is-t(c"Type",1) && tt.l1.is-t(c"String")
+                         if typeof-term(base).is-t(c"Type",1) && tt.is-t(c"Type",1) && tt.l1.is-t(c"String",0)
                          then std-c-compile-smart-string(ctx, typeof-term(base).slot(c"Type",1).l1.into(type(String)).into(type(CString)), t)
                          else std-c-compile-call(ctx, fname, right);
                       );

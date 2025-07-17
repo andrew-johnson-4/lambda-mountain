@@ -7,7 +7,7 @@ let apply-and-specialize(fname: CString, ft: Type, ft-denormal: Type, at: Type, 
    if closed-type.is-open then fail("Error: Unification Did Not Close Before Specialization\nfunction: \{fname} \{ft}\nargs: \{at}\nAt \{blame.location}\n");
    if ft.is-open then try-specialize(fname, ft, tctx, closed-type);
    let r = substitute(tctx, ft.range);
-   if ft.is-t(c"Prop") then r = r && cons-root(at);
+   if ft.is-t(c"Prop",0) then r = r && cons-root(at);
    r
 );
 

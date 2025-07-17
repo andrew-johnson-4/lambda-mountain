@@ -8,7 +8,7 @@ let with-size(tt: Type): Type = (
       TVar{} => tt;
       TGround{tag:c"Any"} => tt;
       _ => (
-         if not(tt.is-t(c"Sized")) && non-zero(tt) && not(tt.is-t(c"Arrow"))
+         if not(tt.is-t(c"Sized",0)) && non-zero(tt) && not(tt.is-t(c"Arrow",2))
          then tt && t1(c"Sized")
          else tt
       );
