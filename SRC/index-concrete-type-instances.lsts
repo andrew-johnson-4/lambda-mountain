@@ -3,7 +3,7 @@ let concrete-type-instances-index = {} : HashtableEq<(CString,U64),List<Type>>;
 
 let add-concrete-type-instance(tt: Type): Nil = (
    tt = normalize(tt);
-   let lt = tt.slot(c"Array");
+   let lt = tt.slot(c"Array",2);
    if non-zero(lt) then tt = lt else tt = tt.with-only-class;
    if non-zero(tt) { match tt {
       TGround{tag=tag, parameters:[]} => (

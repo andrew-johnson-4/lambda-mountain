@@ -38,7 +38,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          let f = mk-fragment();
          std-c-fragment-context = std-c-fragment-context.bind( lhs, v );
          ctx = ctx.bind( name, lt, v );
-         if lt.is-t(c"C") && lt.slot(c"C").r1.is-t(c":Label") {
+         if lt.is-t(c"C") && lt.slot(c"C",0).r1.is-t(c":Label") {
             f = f.set(c"expression", v.get(c"expression") + SAtom(c":"));
          } else {
             (let pre, let post) = std-c-mangle-declaration(lt, t);
@@ -82,7 +82,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       App{ o-t=left:Var{key:c"open"}, inner-term=right } => (
          let tt = typeof-term(inner-term);
-         if tt.is-t(c"Array") { match tt.slot(c"Array") {
+         if tt.is-t(c"Array") { match tt.slot(c"Array",2) {
             TGround{ tag:c"Array", parameters:[_..TAny{}..] } => std-c-compile-expr(ctx, inner-term, false);
             TGround{ tag:c"Array", parameters:[TAny{}..inner-tt..] } => std-c-compile-call(ctx, c"open", inner-term);
             TGround{ tag:c"Array", parameters:[array-length..inner-tt..] } => std-c-compile-expr(ctx, inner-term, false);
@@ -169,7 +169,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                    match right {
                       App{ base=left, right:AType{tt=tt} } => (
                          if typeof-term(base).is-t(c"Type",1) && tt.is-t(c"Type",1) && tt.l1.is-t(c"String")
-                         then std-c-compile-smart-string(ctx, typeof-term(base).slot(c"Type").l1.into(type(String)).into(type(CString)), t)
+                         then std-c-compile-smart-string(ctx, typeof-term(base).slot(c"Type",1).l1.into(type(String)).into(type(CString)), t)
                          else std-c-compile-call(ctx, fname, right);
                       );
                       _ => std-c-compile-call(ctx, fname, right);

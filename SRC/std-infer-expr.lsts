@@ -22,7 +22,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          (tctx, let new-r) = std-infer-expr(tctx, r, false, Used(), ta);
          if not(is(r,new-r)) then { r = new-r; term = mk-app(o-t, r); };
          let deref-type = typeof-term(r);
-         match deref-type.slot(c"Array") {
+         match deref-type.slot(c"Array",2) {
             TGround{tag:c"Array", parameters:[_.. TAny{}..]} => ();
             TGround{tag:c"Array", parameters:[TAny{}.. array-base..]} => (
                mark-var-to-def-todo(tctx, c"open", deref-type, o-t);
