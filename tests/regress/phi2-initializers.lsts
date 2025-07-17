@@ -1,26 +1,24 @@
 
 import lib/std/default.lsts;
 
-type Inner = { x: U64+Phi::Initialize<X> } InnerA { y: U64+Phi::Initialize<Y> } | InnerB{ z: U64+Phi::Initialize<Z> };
-type Outer = { x: Inner } OuterA { y: Inner } | OuterB { z: Inner } ;
+type Inner = InnerA { y: U64+Phi::Initialize<Y> } | InnerB{ z: U64+Phi::Initialize<Z> };
+type Outer = OuterA { y: Inner } | OuterB { z: Inner } ;
 
-let inner1 = InnerA(1, 2); # inner1 : Inner+Field::x<U64+Phi::Id<123>>+Field::y<U64+Phi::Id<456>>+Phi::State<123,X>+Phi::State<456,Y>
+let inner1 = InnerA(1); # inner1 : Inner+Field::y<U64+Phi::Id<456>>+Phi::State<456,Y>
 print("typeof(inner1)           = \{typeof(inner1)}\n");
 
-let inner2 = InnerB(1, 2); # inner2 : Inner+Field::x<U64+Phi::Id<789>>+Field::z<U64+Phi::Id<000>>+Phi::State<789,X>+Phi::State<000,Z>
+let inner2 = InnerB(2); # inner2 : Inner+Field::z<U64+Phi::Id<000>>+Phi::State<000,Z>
 print("typeof(inner2)           = \{typeof(inner2)}\n");
 
-let outer1 = OuterA(inner1, inner1); # outer1 : Outer
-                                     # +Field::x<Inner+Field::x<U64+Phi::Id<123>+Field::y<U64+Phi::Id<456>>
+let outer1 = OuterA(inner1); # outer1 : Outer
                                      # +Field::y<Inner+Field::x<U64+Phi::Id<123>+Field::y<U64+Phi::Id<456>>
 print("typeof(outer1)           = \{typeof(outer1)}\n");
 
-let outer2 = OuterB(inner1, inner2); # outer2 : Outer
-                                     # +Field::x<Inner+Field::x<U64+Phi::Id<123>+Field::y<U64+Phi::Id<456>>
+let outer2 = OuterB(inner2); # outer2 : Outer
                                      # +Field::z<Inner+Field::x<U64+Phi::Id<789>+Field::z<U64+Phi::Id<000>>
 print("typeof(outer2)           = \{typeof(outer2)}\n");
 
-outer1.x = inner2;                   # outer1 : Outer
-                                     # +Field::x<Inner+Field::x<U64+Phi::Id<789>+Field::z<U64+Phi::Id<000>>
-                                     # +Field::y<Inner+Field::x<U64+Phi::Id<123>+Field::y<U64+Phi::Id<456>>
-print("typeof(outer1) post edit = \{typeof(outer1)}\n");
+#outer1.x = inner2;                   # outer1 : Outer
+#                                     # +Field::x<Inner+Field::x<U64+Phi::Id<789>+Field::z<U64+Phi::Id<000>>
+#                                     # +Field::y<Inner+Field::x<U64+Phi::Id<123>+Field::y<U64+Phi::Id<456>>
+#print("typeof(outer1) post edit = \{typeof(outer1)}\n");

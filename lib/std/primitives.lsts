@@ -22,6 +22,11 @@ declare-binop( $"primitive::field-set", raw-type(base-type), raw-type(field-type
 declare-unop( $"primitive::field-get-indirect", raw-type(base-type[]), raw-type(field-type), ( l"("; x; l"->"; mangle(field-name : L); l")"; ) );
 declare-binop( $"primitive::field-set-indirect", raw-type(base-type[]), raw-type(field-type), raw-type(Nil), ( l"("; x; l"->"; mangle(field-name : L); l"="; y; l")"; ) );
 
+# needs to be declared to prevent a special case during inference
+# this only needs to be declared if you want to support casting type information into String literals
+# EXAMPLE: print(typeof(x))
+declare-binop( $".into", type(x), type(String), raw-type(String), () );
+
 let :Blob $"primitive::while"(body: Any, cond: BranchConditional): Nil = (
    $":frame"( $":frame"(body); $":frame"(cond) );
    $":expression"(
