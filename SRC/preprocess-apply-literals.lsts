@@ -1,30 +1,6 @@
 
 let preprocess-apply-literals(program: AST): AST = (
    match program {
-      Lit{ l=key, ltk=token } => (
-         if l.has-suffix(c"_t") {
-            let lpfx = l.remove-suffix(c"_t");
-            mk-app( mk-lit(c"Token",with-key(ltk,c"Token")), mk-app(
-               mk-app(
-                  mk-app(
-                     mk-lit(c":",with-key(ltk,c":")),
-                     mk-app( mk-lit(lpfx,with-key(ltk,lpfx)), mk-atype(t1(c"Literal")&&t1(c"Constant")&&t1(c"String")) )
-                  ), mk-var(c"_", with-key(ltk,c"_"))
-               ), mk-var(c"_", with-key(ltk,c"_"))
-            ))
-         } else program
-      );
-      Var{ l=key, ltk=token } => (
-         if l.has-suffix(c"_t") {
-            let lpfx = l.remove-suffix(c"_t");
-            mk-app( mk-lit(c"Token",with-key(ltk,c"Token")), mk-app(
-               mk-app(
-                  mk-var(lpfx,with-key(ltk,lpfx)),
-                  mk-var(c"_", with-key(ltk,c"_"))
-               ), mk-var(c"_", with-key(ltk,c"_"))
-            ))
-         } else program
-      );
       App{is-cons=is-cons,t1=left,t2=right} => mk-cons-or-app(is-cons,preprocess-apply-literals(t1),preprocess-apply-literals(t2));
       Seq{seqs=seq} => (
          program = mk-eof();

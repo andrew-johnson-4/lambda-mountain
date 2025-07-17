@@ -1,5 +1,5 @@
 
-type String implements Collection<U8> suffix _s;
+type CString implements Collection<U8> suffix _s;
 
-type SmartString implements Collection<U8> suffix _ss
-                = { data:U8[] , start:U8[] , end:U8[] , data-end:U8[] };
+type String implements Collection<U8> suffix _ss
+          = { data:U8[] , start:U8[] , end:U8[] , data-end:U8[] };
