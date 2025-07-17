@@ -2,3 +2,6 @@
 let to-smart-string(loc: SourceLocation): String = (
    "In File \{loc.filename} Line \{loc.line} Column \{loc.column}"
 );
+let .into(loc: SourceLocation, tt: Type<String>): String = (
+   "In File \{loc.filename} Line \{loc.line} Column \{loc.column}"
+);

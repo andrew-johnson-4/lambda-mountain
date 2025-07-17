@@ -29,5 +29,8 @@ let clone-rope(s: U8): CString = (
 let to-smart-string(i: U8): String = (
    intern(to-string(i as U64))
 );
+let .into(i: U8, tt: Type<String>): String = (
+   intern(to-string(i as U64))
+);
 
 let print(io: IO::File, x: U8): Nil = (fprintf(io, c"%u", x); ());

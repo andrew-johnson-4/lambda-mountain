@@ -22,7 +22,7 @@ let cmp(ls: List<x>, rs: List<x>): Ord = (
    Equal()
 );
 
-let to-smart-string(ls: List<x>): String = (
+let .into(ls: List<x>, tt: Type<String>): String = (
    let s = "[";
    let si = 0_u64;
    for l in ls {
@@ -35,6 +35,7 @@ let to-smart-string(ls: List<x>): String = (
    s = s + "]";
    s
 );
+let to-smart-string(ls: List<x>): String = ls.into(type(String));
 
 let .unique(ls: List<x>): List<x> = (
    let rs = [] : List<x>;

@@ -6,7 +6,7 @@ let assert-well-typed(term: AST): Nil = (
       ASTEOF{} => ();
       AType{} => ();
       ASTNil{} => assert-one-typed(term);
-      Glb{key=key, val=val} => if not(typeof(term).is-open) then assert-well-typed(val);
+      Glb{key=key, val=val} => if not(typeof-term(term).is-open) then assert-well-typed(val);
       App{ left:Abs{}, rhs=right } => (assert-well-typed(rhs); assert-one-typed(term));
       App{ left:Var{key:c"as"}, right:App{ t=left, right:AType{tt=tt} } } => assert-well-typed(t);
       App{ left:Lit{key:c":"}, right:App{ t=left, right:AType{tt=tt} } } => assert-well-typed(t);

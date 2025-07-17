@@ -4,7 +4,7 @@ let plugins-backend-c-compile(): Nil = (
       Glb{ key=key, rhs=val } => (
          if key.key==c"main" then assemble-argv-referenced = true;
          let fragment = mk-fragment();
-         let kt = typeof(rhs);
+         let kt = typeof-term(rhs);
          if not(kt.is-open) {
             if kt.is-t(c"Blob") {
                fragment.term = rhs;

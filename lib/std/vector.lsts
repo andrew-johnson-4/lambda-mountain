@@ -235,7 +235,7 @@ let .into(l: Iterable<t>, out: Type<Vector<t>>): Vector<t> = (
    l.iter().collect(type(Vector<t>))
 );
 
-let to-smart-string(self: Vector<x>): String = (
+let .into(self: Vector<x>, tt: Type<String>): String = (
    let rval = "[";
    let has-item = false;
    for v in self {
@@ -245,6 +245,7 @@ let to-smart-string(self: Vector<x>): String = (
    };
    rval + "]"
 );
+let to-smart-string(self: Vector<x>): String = self.into(type(String));
 
 let .ptr(v: Vector<t>, toelem: U64): t[] = (
    if toelem >= v.capacity {

@@ -196,3 +196,4 @@ let print(x: CString): Nil = (
 );
 
 let non-zero(x: CString): U64 = head-string(x) != 0;
+

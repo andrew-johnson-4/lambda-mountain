@@ -170,6 +170,7 @@ let $"+"(l: String, r: String): String = (
 
 let to-smart-string(s: String): String = s;
 let to-smart-string(s: CString): String = intern(s);
+let .into(s: String, tt: Type<String>): String = s;
 
 let deep-hash(key: String): U64 = (
    let i = 0_u64;

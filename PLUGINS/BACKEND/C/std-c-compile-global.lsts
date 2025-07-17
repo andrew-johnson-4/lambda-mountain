@@ -36,13 +36,13 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    else if k==c"bsearch" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"qsort" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"__compar_fn_t" then std-c-force-import-clib(c"stdlib.h")
-   else if typeof(term).is-open || typeof(term).is-t(c"Blob") || typeof(term).is-t(c"FFI") || typeof(term).is-t(c"Prop") then ()
+   else if typeof-term(term).is-open || typeof-term(term).is-t(c"Blob") || typeof-term(term).is-t(c"FFI") || typeof-term(term).is-t(c"Prop") then ()
    else if k==c"main" && not(non-zero(compile-global-c-main-term)) then {
       compile-global-c-main-term = term;
    } else match term {
       App{left:Lit{key:c":"}, right:App{left:Var{key:c"__uninitialized"}, right:AType{tt=tt}}} => (
          if not(tt.is-t(c"C-FFI")) && not(tt.is-t(c"C-Fragment")) {
-            let clean-tt = typeof(term).without-tag;
+            let clean-tt = typeof-term(term).without-tag;
             k = mangle-identifier(k, clean-tt);
          };
          (let pre-decl, let post-decl) = std-c-mangle-declaration(tt, term);
@@ -56,7 +56,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
       );
       App{left:Lit{key:c":"}, right:App{t=left, right:AType{tt=tt}}} => (
          if not(tt.is-t(c"C-FFI")) && not(tt.is-t(c"C-Fragment")) {
-            let clean-tt = typeof(term).without-tag;
+            let clean-tt = typeof-term(term).without-tag;
             k = mangle-identifier(k, clean-tt);
          };
          let gend = false;
@@ -89,8 +89,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          }
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => (
-         if k!=c"main" && not(typeof(term).is-t(c"C-FFI_s")) {
-            k = mangle-identifier(k, typeof(term));
+         if k!=c"main" && not(typeof-term(term).is-t(c"C-FFI_s")) {
+            k = mangle-identifier(k, typeof-term(term));
          };
          ctx = std-c-compile-destructure-args( ctx, lhs, false );
          let loc = term.location;
@@ -108,7 +108,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
                text = text + SAtom(c"\"\n");
             };
             if k==c"main" then text = text + SAtom(c"int")
-            else text = text + std-c-mangle-type(typeof(rhs), term);
+            else text = text + std-c-mangle-type(typeof-term(rhs), term);
             text = text + SAtom(c" ");
             text = text + SAtom(k);
             text = text + SAtom(c"(");
@@ -131,7 +131,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
                text = text + SAtom(c"\"\n");
             };
             if k==c"main" then text = text + SAtom(c"int")
-            else text = text + std-c-mangle-type(typeof(rhs), term);
+            else text = text + std-c-mangle-type(typeof-term(rhs), term);
             text = text + SAtom(c" ");
             text = text + SAtom(k);
             text = text + SAtom(c"(");
@@ -147,8 +147,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          };
       );
       t => (
-         let tt = typeof(term);
-         if not(typeof(term).is-t(c"C-FFI")) && not(tt.is-t(c"C-Fragment")) {
+         let tt = typeof-term(term);
+         if not(typeof-term(term).is-t(c"C-FFI")) && not(tt.is-t(c"C-Fragment")) {
             k = mangle-identifier(k, tt);
          };
 

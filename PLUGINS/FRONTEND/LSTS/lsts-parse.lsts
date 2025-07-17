@@ -1625,8 +1625,11 @@ let lsts-make-lit(t: Token): AST = (
             let sub-tokens = lsts-tokenize-string(c"[Format String]", clone-rope(t-buffer));
             let se-rest = lsts-parse-expression(sub-tokens);
             let se = mk-app(
-               Var( c"to-smart-string", with-location(mk-token("to-smart-string"),loc) ),
-               se-rest.first
+               Var( c".into", with-location(mk-token(".into"),loc) ),
+               mk-cons(
+                  se-rest.first,
+                  mk-atype(t2(c"Type",t1(c"String")))
+               )
             );
             if non-zero(base) {
                base = mk-app(

@@ -42,6 +42,9 @@ let to-string(i: U64): CString = (
 let to-smart-string(i: U64): String = (
    intern(to-string(i))
 );
+let .into(i: U64, tt: Type<String>): String = (
+   intern(to-string(i))
+);
 
 let print(io: IO::File, x: U64): Nil = (fprintf(io, c"%lu", x); ());
 let max(x: U64, y: U64): U64 = if x>=y then x else y;

@@ -3,7 +3,7 @@ let std-c-compile-push-args(ctx: FContext, args: AST): Fragment = (
    match args {
       ASTNil{} => mk-expression(c"");
       _ => (
-         match typeof(args).slot(c"Cons") {
+         match typeof-term(args).slot(c"Cons") {
             TGround{tag:c"Cons", parameters:[p2..p1..]} => (
                match args {
                   App{le=left, re=right} => (
