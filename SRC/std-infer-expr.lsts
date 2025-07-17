@@ -12,6 +12,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.bind(lname, tt, def);
          ascript-normal(term, t1(c"Nil"));
       );
+      App{o-t=left:Var{key:c"typeof"}, r=right} => (
+         (tctx, let new-r) = std-infer-expr(tctx, r, is-scoped, Used, ta);
+         if not(is(r,new-r)) then { r = new-r; term = mk-app(o-t, r); };
+         ascript-normal(term, t2(c"Type",typeof(r)));
+      );
       App{o-t=left:Var{key:c"open"}, r=right} => (
          (tctx, let new-r) = std-infer-expr(tctx, r, false, Used(), ta);
          if not(is(r,new-r)) then { r = new-r; term = mk-app(o-t, r); };
