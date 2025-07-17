@@ -227,7 +227,7 @@ let .into(in: Vector<U8>, res: Type<CString>): CString = (
 );
 
 ## does not destory input vec
-let .into(self: Vector<U8>, res: Type<SmartString>): SmartString = (
+let .into(self: Vector<U8>, res: Type<String>): String = (
    intern(self.into(type(CString)))
 );
 

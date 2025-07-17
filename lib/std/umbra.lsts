@@ -235,7 +235,7 @@ let .into(self: Umbra, t: Type<CString>): CString = (
    ((v.data as U8[]) as CString);
 );
 
-let .into(self: Umbra, t: Type<SmartString>): SmartString = (
+let .into(self: Umbra, t: Type<String>): String = (
    let v = self.into(type(CString));
    intern(v);
 );

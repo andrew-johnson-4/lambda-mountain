@@ -44,30 +44,30 @@ let cmp(x: String, y: String): Ord = (
    r
 );
 
-let print(io: IO::File, x: SmartString): Nil = (
+let print(io: IO::File, x: String): Nil = (
    let start = x.start;
    while start != x.end {
       fwrite(start, 1_u64, 1_u64, $"io::file::stdout"());
       start = start + 1_u64;
    };
 );
-let print(x: SmartString): Nil = print( $"io::file::stdout"() as IO::File, x );
+let print(x: String): Nil = print( $"io::file::stdout"() as IO::File, x );
 
-let eprint(io: IO::File, x: SmartString): Nil = (
+let eprint(io: IO::File, x: String): Nil = (
    let start = x.start;
    while start != x.end {
       fwrite(start, 1_u64, 1_u64, $"io::file::stderr"());
       start = start + 1_u64;
    };
 );
-let eprint(x: SmartString): Nil = print( $"io::file::stderr"() as IO::File, x );
+let eprint(x: String): Nil = print( $"io::file::stderr"() as IO::File, x );
 
 let non-zero(s: String): U64 = s.start < s.end;
 
 let intern(s: CString): String = (
    let data-end = (s as U8[]) + s.length;
    let a1 = s as U8[];
-   SmartString( a1, a1, data-end, data-end )
+   String( a1, a1, data-end, data-end )
 );
 let intern(s: String): String = s;
 
@@ -95,7 +95,7 @@ let $"[:]"(x: String, low: I64, hi: I64): String = (
    if hip < lowp then fail("Index Out Of Bounds: String [:]");
    if lowp < x.start then fail("Index Out Of Bounds: String [:]");
    if hip > x.end then fail("Index Out Of Bounds: String [:]");
-   SmartString(x.data, lowp, hip, x.data-end)
+   String(x.data, lowp, hip, x.data-end)
 );
 
 let tail-string(x: String): String = x[ 1_i64 : x.length as I64 ];
@@ -112,7 +112,7 @@ let $"[]"(x: String, low: U64): U8 = (
    lowp[0]
 );
 
-let head-string(x: SmartString): U8 = x[0_u64];
+let head-string(x: String): U8 = x[0_u64];
 
 let .has-suffix(base: String, sfx: String): U64 = (
    base.length >= sfx.length &&
@@ -165,7 +165,7 @@ let $"+"(l: String, r: String): String = (
       ri = ri + 1;
    };
    data[length] = 0;
-   SmartString( data, data, data + length, data + length )
+   String( data, data, data + length, data + length )
 );
 
 let to-smart-string(s: String): String = s;

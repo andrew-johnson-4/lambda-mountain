@@ -89,13 +89,13 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          else if tt.is-t(c"C") && tt.r1.is-t(c"int64_t") then mk-expression(val)
          else if tt.is-t(c"C") && tt.r1.is-t(c":Label") then mk-expression(val)
          else if tt.is-t(c"L") then mk-expression(val)
-         else if tt.is-t(c"String") then mk-expression(val.escape-as-cstring)
-         else if tt.is-t(c"SmartString") { 
+         else if tt.is-t(c"CString") then mk-expression(val.escape-as-cstring)
+         else if tt.is-t(c"String") { 
             let guid = compile-smart-string-index.lookup(val,c"");
             if non-zero(guid) then mk-expression(guid) else {
                guid = uuid();
                compile-smart-string-index = compile-smart-string-index.bind(val,guid);
-               let lit = mk-lit(val); ascript-normal(lit, t1(c"String"));
+               let lit = mk-lit(val); ascript-normal(lit, t1(c"CString"));
                let intern-ss = std-c-compile-call(ctx, c"intern", lit);
                assemble-header-section = assemble-header-section +
                std-c-mangle-type(typeof(t), t) + SAtom(c" ") + SAtom(guid) + SAtom(c";\n");

@@ -46,7 +46,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          (tctx, let new-t) = std-infer-expr(tctx, t, false, Tail(), tt);
          if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
          ascript-normal(term, typeof(t));
-         if tt.is-t(c"SmartString") then maybe-apply-global-callable(c"intern", tt, term);
+         if tt.is-t(c"String") then maybe-apply-global-callable(c"intern", tt, term);
       );
       App{asc=left:Var{key:c"as"}, right:App{t=left,right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
