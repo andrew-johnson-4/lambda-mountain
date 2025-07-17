@@ -40,4 +40,3 @@ let .into(l: Maybe<x>, tt: Type<String>): String = (
       _ => "None";
    }
 );
-let to-smart-string(l: Maybe<x>): String = l.into(type(String));

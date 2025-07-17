@@ -29,13 +29,12 @@ let .into(ls: List<x>, tt: Type<String>): String = (
       if si > 0_u64 {
          s = s + ",";
       };
-      s = s + to-smart-string(l);
+      s = s + l.into(type(String));
       si = si + 1_u64;
    };
    s = s + "]";
    s
 );
-let to-smart-string(ls: List<x>): String = ls.into(type(String));
 
 let .unique(ls: List<x>): List<x> = (
    let rs = [] : List<x>;

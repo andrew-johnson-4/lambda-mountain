@@ -39,9 +39,6 @@ let to-string(i: U64): CString = (
    out.into(type(CString));
 );
 
-let to-smart-string(i: U64): String = (
-   intern(to-string(i))
-);
 let .into(i: U64, tt: Type<String>): String = (
    intern(to-string(i))
 );

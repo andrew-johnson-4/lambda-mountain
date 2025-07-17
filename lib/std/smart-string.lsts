@@ -168,8 +168,6 @@ let $"+"(l: String, r: String): String = (
    String( data, data, data + length, data + length )
 );
 
-let to-smart-string(s: String): String = s;
-let to-smart-string(s: CString): String = intern(s);
 let .into(s: String, tt: Type<String>): String = s;
 
 let deep-hash(key: String): U64 = (

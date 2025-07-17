@@ -7,8 +7,6 @@ let .into(tctx: Maybe<TypeContext>, tt: Type<String>): String = (
    result
 );
 
-let to-smart-string(tctx: Maybe<TypeContext>): String = tctx.into(type(String));
-
 let .into(ctx: Maybe<AContext>, tt: Type<String>): String = (
    let result = "";
    for Tuple{first=first,second=second} in ctx.get-or([] : AContext) {
@@ -16,5 +14,3 @@ let .into(ctx: Maybe<AContext>, tt: Type<String>): String = (
    };
    result
 );
-
-let to-smart-string(ctx: Maybe<AContext>): String = ctx.into(type(String));
