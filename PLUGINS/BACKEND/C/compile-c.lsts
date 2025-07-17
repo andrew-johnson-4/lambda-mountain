@@ -6,7 +6,7 @@ let plugins-backend-c-compile(): Nil = (
          let fragment = mk-fragment();
          let kt = typeof-term(rhs);
          if not(kt.is-open) {
-            if kt.is-t(c"Blob") {
+            if kt.is-t(c"Blob",0) {
                fragment.term = rhs;
                global-ctx = global-ctx.bind(key.key, kt, fragment);
                std-c-fragment-context = std-c-fragment-context.bind(def-to-sym(program-term), fragment);

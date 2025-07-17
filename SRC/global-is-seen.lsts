@@ -2,7 +2,7 @@
 let global-symbol-registry = {} : HashtableEq<(CString,Type),U64>;
 
 let mark-global-as-seen(name: CString, tt: Type, tlt: Type): Nil = (
-   if global-is-seen(name,tt) && not(tlt.is-t(c"FFI")) then fail("Duplicate Global Symbol \{name} : \{tt}");
+   if global-is-seen(name,tt) && not(tlt.is-t(c"FFI",0)) then fail("Duplicate Global Symbol \{name} : \{tt}");
    global-symbol-registry = global-symbol-registry.bind((name,tt), true);
 );
 

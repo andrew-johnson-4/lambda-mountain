@@ -12,15 +12,15 @@ let t-f = t3(c"Arrow", t-A, t-B);
 let t-g = t3(c"Array", t-f, ta);
 
 # .is-t tests
-assert( t-A.is-t(c"A") );
-assert( not(t-A.is-t(c"B")) );
-assert( t-B.is-t(c"B") );
-assert( not(t-B.is-t(c"A")) );
-assert( t-B.r1.is-t(c"A") );
-assert( not(t-B.r1.is-t(c"B")) );
-assert( t-AB.is-t(c"A") );
-assert( t-AB.is-t(c"B") );
-assert( not(t-x.is-t(c"x")) );
+assert( t-A.is-t(c"A",0) );
+assert( not(t-A.is-t(c"B",1)) );
+assert( t-B.is-t(c"B",1) );
+assert( not(t-B.is-t(c"A",0)) );
+assert( t-B.r1.is-t(c"A",0) );
+assert( not(t-B.r1.is-t(c"B",1)) );
+assert( t-AB.is-t(c"A",0) );
+assert( t-AB.is-t(c"B",1) );
+assert( not(t-x.is-t(c"x",0)) );
 
 # .is-open tests
 assert( not(t-A.is-open) );
@@ -43,10 +43,10 @@ assert( t-g.is-arrow );
 assert( t-g.r2.is-arrow );
 
 # domain / range tests
-assert( t-f.domain.is-t(c"A") );
-assert( t-f.range.is-t(c"B") );
-assert( t-g.domain.is-t(c"A") );
-assert( t-g.range.is-t(c"B") );
+assert( t-f.domain.is-t(c"A",0) );
+assert( t-f.range.is-t(c"B",1) );
+assert( t-g.domain.is-t(c"A",0) );
+assert( t-g.range.is-t(c"B",1) );
 
 # .has-class tests
 assert( t-A.has-class );
@@ -69,17 +69,17 @@ assert( t-f.arity == 2 );
 assert( t-g.arity == 2 );
 
 # .arity synthesized field
-assert( t-A.slot(c"A") == t-A );
-assert( t-A.slot(c"B") == ta );
-assert( t-B.slot(c"A") == ta );
-assert( t-B.slot(c"B") == t-B );
-assert( t-AB.slot(c"A") == t-A );
-assert( t-AB.slot(c"B") == t-B );
-assert( t-x.slot(c"A") == ta );
-assert( t-Ax.slot(c"A") == t-A );
-assert( t-C.slot(c"C") == t-C );
-assert( t-f.slot(c"Arrow") == t-f );
-assert( t-g.slot(c"Array") == t-g );
+assert( t-A.slot(c"A",0) == t-A );
+assert( t-A.slot(c"B",1) == ta );
+assert( t-B.slot(c"A",0) == ta );
+assert( t-B.slot(c"B",1) == t-B );
+assert( t-AB.slot(c"A",0) == t-A );
+assert( t-AB.slot(c"B",1) == t-B );
+assert( t-x.slot(c"A",0) == ta );
+assert( t-Ax.slot(c"A",0) == t-A );
+assert( t-C.slot(c"C",1) == t-C );
+assert( t-f.slot(c"Arrow",2) == t-f );
+assert( t-g.slot(c"Array",2) == t-g );
 
 # .without-tag synthesized field
 assert( is(t-A.without-tag, t-A) );
