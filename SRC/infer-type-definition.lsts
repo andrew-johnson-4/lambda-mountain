@@ -85,7 +85,7 @@ let infer-type-definition(term: AST): Nil = (
       } else has-tag-case = true;
       has-any-case = true;
    };
-   if not(has-tag-case) && has-any-case then infer-type-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, term, has-tag-case);
+   if not(has-tag-case) && has-any-case then infer-type-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, [] : List<(CString,Type)>, term, has-tag-case);
    if has-any-case {
       add-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
       add-weaken-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
@@ -98,7 +98,7 @@ let infer-type-definition(term: AST): Nil = (
    let case-index = 0_u64;
    for Tuple{ case-tag=first, case-fields=second } in cases {
       if case-tag!=c"" {
-         let o-case-fields = common-fields;
+         let o-case-fields = [] : List<(CString,Type)>;
          for Tuple{ field-name=first, field-type=second } in case-fields {
             o-case-fields = cons((field-name, field-type), o-case-fields);
          };
@@ -106,15 +106,15 @@ let infer-type-definition(term: AST): Nil = (
          let tag-case-number = t2(c"CaseNumber", t1(to-string(case-index)));
          add-quick-prop(tag-guard, tag-guard, tag-case-number);
          add-weaken-quick-prop(tag-guard, tag-guard, tag-case-number);
-         infer-type-yield-constructor(lhs-type, case-tag, case-index, o-case-fields, term, has-tag-case);
-         case-index = case-index + 1;
+         infer-type-yield-constructor(lhs-type, case-tag, case-index, common-fields, o-case-fields, term, has-tag-case);
       };
+      case-index = case-index + 1;
    };
 );
 
 let type-constructor-tag-ordinal-index = {} : HashtableEq<(CString,U64,CString),U64>;
 
-let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, case-fields: List<(CString,Type)>, blame: AST, has-tag-case: U64): Nil = (
+let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, common-fields: List<(CString,Type)>, case-fields: List<(CString,Type)>, blame: AST, has-tag-case: U64): Nil = (
    (let base-tag, let base-arity) = base-type.ground-tag-and-arity;
    type-constructor-tag-ordinal-index = type-constructor-tag-ordinal-index.bind( (base-tag,base-arity,case-tag), case-number );
 
@@ -122,6 +122,13 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
    # This only works for C-backend...
 
    let args = mk-eof();
+   for Tuple{field-name=first, field-type=second} in common-fields.reverse {
+      let mangled-field-name = c"0_" + field-name;
+      let par = mk-var(mangled-field-name).ascript(field-type);
+      if non-zero(args)
+      then args = mk-cons(args, par)
+      else args = par
+   };
    for Tuple{field-name=first, field-type=second} in case-fields.reverse {
       let mangled-field-name = to-string(case-number) + c"_" + field-name;
       let par = mk-var(mangled-field-name).ascript(field-type);
@@ -130,6 +137,7 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
       else args = par
    };
    if not(non-zero(args)) then args = mk-nil();
+   print("Constructor: \{case-tag} \{args}\n");
 
    let return-id = uuid();
  
@@ -144,6 +152,16 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
       body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")) );
       body = mk-cons(body, mk-lit(c".discriminator_case_tag=").ascript(t1(c"L")));
       body = mk-cons(body, mk-lit(to-string(case-number)).ascript(t1(c"L")) );
+      body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
+   };
+
+   for Tuple{field-name=first, field-type=second} in common-fields.reverse {
+      let mangled-field-name = c"0_" + field-name;
+      body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")) );
+      body = mk-cons(body, mk-lit(c".").ascript(t1(c"L")));
+      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name).ascript(t1(c"L"))) );
+      body = mk-cons(body, mk-lit(c"=").ascript(t1(c"L")));
+      body = mk-cons(body, mk-var(mangled-field-name) );
       body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
    };
 
