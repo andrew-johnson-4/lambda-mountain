@@ -137,7 +137,6 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
       else args = par
    };
    if not(non-zero(args)) then args = mk-nil();
-   print("Constructor: \{case-tag} \{args}\n");
 
    let return-id = uuid();
  
