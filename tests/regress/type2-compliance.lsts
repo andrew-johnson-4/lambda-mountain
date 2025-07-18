@@ -1,0 +1,10 @@
+
+import lib/std/default.lsts;
+
+type ABC =
+         | { a: U64 }
+         | B { b: U64 }
+         | C { c: U64 };
+
+let abc1 = B(1,2);
+let abc2 = C(3,4);

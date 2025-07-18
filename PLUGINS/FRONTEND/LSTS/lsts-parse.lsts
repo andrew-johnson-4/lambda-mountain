@@ -875,9 +875,11 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
       } else if mode==c"alias" {
          (alias, tokens) = lsts-parse-type(tokens);
       } else {
+         if lsts-parse-head(tokens)==c"|" { tokens = tail(tokens); };
          if lsts-parse-head(tokens)==c"{" {
             (let row, tokens) = lsts-parse-typedef2-case-body(tokens);
             cases = cases.push((c"", row));
+            if lsts-parse-head(tokens)==c"|" { tokens = tail(tokens); };
          };
          if lsts-parse-head(tokens)!=c";" {
             lsts-parse-expect(c"[Tag]", lsts-is-enum-head(lsts-parse-head(tokens)), tokens);
