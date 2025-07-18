@@ -8,3 +8,9 @@ type ABC =
 
 let abc1 = B(1,2);
 let abc2 = C(3,4);
+
+print(abc1.a);
+print(abc2.a);
+
+print((abc1 as Tag::B).b);
+print((abc2 as Tag::C).c);
