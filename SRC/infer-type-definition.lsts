@@ -72,7 +72,7 @@ let infer-type-definition(term: AST): Nil = (
          visit-field-template(field-name, guard, field-type, term, case-fields.length - field-ordinal, case-number);
          field-ordinal = field-ordinal + 1;
       };
-      if case-tag!=c"" then case-number = case-number + 1;
+      case-number = case-number + 1;
    };
    let common-fields = [] : List<(CString,Type)>;
    let has-tag-case = false;
