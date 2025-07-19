@@ -15,6 +15,7 @@ let .without-tag(tt: Type): Type = (
          else if result.length==1 then result[0]
          else tand(result)
       );
+      TGround { tag:c"Arrow", parameters:[rng..dom..] } => t3(c"Arrow",dom.without-tag,rng.without-tag);
       TGround { tag:c"Constructor" } => ta;
       TGround { tag:c"CaseNumber" } => ta;
       TGround { tag:c"C-FFI", parameters:[] } => ta;
@@ -24,6 +25,7 @@ let .without-tag(tt: Type): Type = (
       TGround { tag:c"Literal" } => ta;
       TGround { tag:c"LocalVariable" } => ta;
       TGround { tag:c"GlobalVariable" } => ta;
+      TGround { tag:c"Phi::Initialize" } => ta;
       TGround { tag:tag } => if tag.has-prefix(c"Tag::") then ta
                         else if tag.has-prefix(c"Field::") then ta
                         else tt;

@@ -27,6 +27,10 @@ declare-binop( $"primitive::field-set-indirect", raw-type(base-type[]), raw-type
 # EXAMPLE: print(typeof(x))
 declare-binop( $".into", type(x), type(String), raw-type(String), () );
 
+# this operator is hard-coded in the compiler for now
+# but this definition being in the library is simplest for inference
+declare-binop( $"<:", type(x), type(y), raw-type(Bool), () );
+
 let :Blob $"primitive::while"(body: Any, cond: BranchConditional): Nil = (
    $":frame"( $":frame"(body); $":frame"(cond) );
    $":expression"(

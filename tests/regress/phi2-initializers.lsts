@@ -1,16 +1,11 @@
 
 import lib/std/default.lsts;
 
-let f(): U64+Phi::Initialize<A>;
-let g(): U64+Phi::Initialize<B>;
+let f(): U64+Phi::Initialize<A> = 123;
 
 let x = f();
 print("typeof(x) = \{typeof(x)}\n"); # x : U64+Phi::State<A>
+assert( typeof(x) <: type(U64+Phi::State<A>) );
 
-let y = g();
-print("typeof(y) = \{typeof(y)}\n"); # y : U64+Phi::State<B>
-
-# Let's just start with phi annotations directly on locals and globals
-# nested phi on fields is complicated and potentially unnecessary distraction and/or unsound
-
-# This is enough to implement garbage collection, so let's be conservative to start and extend later
+# Theory: Phi Types are only part of the conjugate
+# They don't have any explicit meaning other than just a decoration on the immediate type
