@@ -6,9 +6,11 @@ let g(): U64+T<Phi::Initialize<B>>;
 
 let x = f();
 print("typeof(x) = \{typeof(x)}\n"); # x : U64+Phi::State<A>
+assert( typeof(x) <: type(U64+Phi::State<A>) );
 
 let y = g();
 print("typeof(y) = \{typeof(y)}\n"); # y : U64+T<Phi::State<B>>
+assert( typeof(y) <: type(U64+T<Phi::State<B>>) );
 
 # Theory: Phi Types are only part of the conjugate
 # They don't have any explicit meaning other than just a decoration on the immediate type

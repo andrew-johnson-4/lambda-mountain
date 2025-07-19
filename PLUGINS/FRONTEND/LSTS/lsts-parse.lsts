@@ -552,7 +552,8 @@ let lsts-parse-cmp(tokens: List<Token>): Tuple<AST,List<Token>> = (
    tokens = term-rest.second;
    while lsts-parse-head(tokens)==c"==" || lsts-parse-head(tokens)==c"!=" ||
          lsts-parse-head(tokens)==c"<" || lsts-parse-head(tokens)==c"<=" ||
-         lsts-parse-head(tokens)==c">" || lsts-parse-head(tokens)==c">=" {
+         lsts-parse-head(tokens)==c">" || lsts-parse-head(tokens)==c">=" ||
+         lsts-parse-head(tokens)==C"<:" {
       let op-t = head(tokens); let op = op-t.key; tokens = tail(tokens);
       if (op==c"<" && lsts-parse-head(tokens)==c"<") ||
          (op==c">" && lsts-parse-head(tokens)==c">") {
