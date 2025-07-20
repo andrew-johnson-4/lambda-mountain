@@ -2,7 +2,7 @@
 let specialize(key: CString, ft: Type, unify-ctx: TypeContext?, result-type: Type): Nil = (
    if not(is-special(key, result-type)) {
       let term = mk-eof();
-      for Tuple{kt=first, t=third} in global-type-context.lookup(key, [] : List<(Type,Type,AST)>) {
+      for Tuple{kt=first, t=third} in global-type-context-normal.lookup(key, [] : List<(Type,Type,AST)>) {
          if ft == kt { match t {
             Glb{val:Abs{}} => term = t;
             _ => ();
