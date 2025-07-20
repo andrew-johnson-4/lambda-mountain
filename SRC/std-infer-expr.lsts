@@ -187,6 +187,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                };
                if not(is(used,Call())) { rt = cons-tail-or-self(rt); };
                (tctx, rt) = phi-initialize(tctx, rt);
+               rt = phi-state(tctx, rt);
                ascript(term, rt);
             };
          };

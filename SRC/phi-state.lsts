@@ -1,0 +1,37 @@
+
+let phi-state(tctx: TypeContext?, tt: Type): Type = (
+   match tt {
+      TAnd{conjugate=conjugate} => (
+         let new-conjugate = mk-vector(type(Type), conjugate.length);
+         for c in conjugate {
+            match phi-state(tctx, c) {
+               TAnd{c-conjugate=conjugate} => (
+                  for small-c in c-conjugate {
+                     new-conjugate = new-conjugate.push(small-c);
+                  }
+               );
+               TAny{} => ();
+               _ => new-conjugate = new-conjugate.push(c);
+            }
+         };
+         TAnd(new-conjugate)
+      );
+      TGround{tag:c"Phi::Id",parameters:[TGround{phi-id=tag,parameters:[]}..]} => (
+         let phi-state = tctx.get-or(mk-tctx()).tctx.lookup(phi-id, (ta, ta, ASTEOF)).first;
+         if not(non-zero(phi-state)) then fail("Unable to find Phi::Id<\{phi-id}>\n");
+         tt && t2(c"Phi::State",phi-state);
+      );
+      TGround{tag:c"Phi::Initialize",parameters:[init-tt..]} => ta;
+      TGround{tag:c"Phi::State",parameters:[init-tt..]} => ta;
+      TGround{tag:c"Arrow",parameters:[init-tt..]} => tt;
+      TGround{tag=tag, parameters=parameters} => (
+         let new-parameters = [] : List<Type>;
+         for p in parameters.reverse {
+            p = phi-state(tctx, p);
+            new-parameters = cons(p, new-parameters);
+         };
+         ts(tag,new-parameters)
+      );
+      _ => tt;
+   };
+);
