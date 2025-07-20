@@ -21,7 +21,7 @@ let infer-global-terms(term: AST): AST = (
          global-type-context-normal = global-type-context-normal.bind(k.key, ktn, term);
          global-type-context-denormal = global-type-context-denormal.bind(k.key, ktd, term);
          mark-global-as-seen(k.key, ktd, ta);
-         ascript-normal(term, ktd);
+         ascript(term, ktd);
          maybe-apply-global-callable(c"mov", t3(c"Cons",ktd,ktd), term);
       );
       _ => ();
@@ -37,8 +37,8 @@ let infer-global-context-prim(term: AST): Nil = (
          if k.key.has-prefix(c"primitive::") then {
             let ft = t3(c"Arrow", typeof-lhs(lhs), return-type) && misc-tt;
             mark-global-as-seen(k.key, ft, misc-tt);
-            ascript-normal(term, ft);
-            ascript-normal(frhs, ft);
+            ascript(term, ft);
+            ascript(frhs, ft);
             global-type-context-normal = global-type-context-normal.bind(k.key, ft, term);
             global-type-context-denormal = global-type-context-denormal.bind(k.key, ft, term);
          };
@@ -69,8 +69,8 @@ let infer-global-context(term: AST): Nil = (
          else {
             let ft = t3(c"Arrow", typeof-lhs(lhs), return-type) && misc-tt;
             mark-global-as-seen(k.key, ft, misc-tt);
-            ascript-normal(term, ft);
-            ascript-normal(frhs, ft);
+            ascript(term, ft);
+            ascript(frhs, ft);
             global-type-context-normal = global-type-context-normal.bind(k.key, ft, term);
             global-type-context-denormal = global-type-context-denormal.bind(k.key, ft, term);
          };
