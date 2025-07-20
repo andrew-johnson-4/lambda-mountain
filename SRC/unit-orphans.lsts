@@ -18,6 +18,7 @@ import SRC/std-direct-destructure-macro.lsts;
 import SRC/infer-global-terms.lsts;
 import SRC/infer-type-definition.lsts;
 import SRC/assert-no-infinite-types.lsts;
+import SRC/phi-initialize.lsts;
 
 let .unroll-seq(t: AST): Vector<AST> = (
    match t {
