@@ -71,29 +71,30 @@ let to-u64(s: CString): U64 = (
 );
 
 let to-hex(i: U64): CString = (
-   let buff = SNil;
+   let buff = mk-vector(type(U8), 17);
    let rpt = 16_u64;
    while rpt > 0_u64 {
       match i % 16 {
-         0 => buff = SAtom(c"0") + buff;
-         1 => buff = SAtom(c"1") + buff;
-         2 => buff = SAtom(c"2") + buff;
-         3 => buff = SAtom(c"3") + buff;
-         4 => buff = SAtom(c"4") + buff;
-         5 => buff = SAtom(c"5") + buff;
-         6 => buff = SAtom(c"6") + buff;
-         7 => buff = SAtom(c"7") + buff;
-         8 => buff = SAtom(c"8") + buff;
-         9 => buff = SAtom(c"9") + buff;
-         10 => buff = SAtom(c"a") + buff;
-         11 => buff = SAtom(c"b") + buff;
-         12 => buff = SAtom(c"c") + buff;
-         13 => buff = SAtom(c"d") + buff;
-         14 => buff = SAtom(c"e") + buff;
-         15 => buff = SAtom(c"f") + buff;
+         0 => buff = buff.push(48);
+         1 => buff = buff.push(49);
+         2 => buff = buff.push(50);
+         3 => buff = buff.push(51);
+         4 => buff = buff.push(52);
+         5 => buff = buff.push(53);
+         6 => buff = buff.push(54);
+         7 => buff = buff.push(55);
+         8 => buff = buff.push(56);
+         9 => buff = buff.push(57);
+         10 => buff = buff.push(97);
+         11 => buff = buff.push(98);
+         12 => buff = buff.push(99);
+         13 => buff = buff.push(100);
+         14 => buff = buff.push(101);
+         15 => buff = buff.push(102);
       };
       i = i / 16;
       rpt = rpt - 1;
    };
-   clone-rope(buff);
+   buff = buff.push(0);
+   buff.data as CString
 );
