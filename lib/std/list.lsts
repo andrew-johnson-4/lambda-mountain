@@ -120,6 +120,13 @@ let .lookup(ls: List<Tuple<k,v1,v2>>, key: k, default: Tuple<v1,v2>): Tuple<v1,v
    };
    default;
 );
+let .lookup(ls: List<Tuple<k,v1,v2,v3>>, key: k, default: Tuple<v1,v2,v3>): Tuple<v1,v2,v3> = (
+   let found = false;
+   for Tuple{lkey=first, val1=second, val2=third, val3=fourth} in ls {
+      if not(found) && key==lkey { default=Tuple(val1,val2,val3); found=true; }
+   };
+   default;
+);
 
 let cons(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
 let $"list::cons"(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
