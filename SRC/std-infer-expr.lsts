@@ -1,5 +1,10 @@
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
+   print("PContext:\n");
+   for Tuple{key=first, val=second} in tctx.get-or(mk-tctx()).pctx {
+      print("\{key} : \{val}\n");
+   };
+   print("Term: \{term}\n");
    match term {
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
          if typeof-var-raw(term, tctx, lname).is-t(c"LocalVariable",0)
@@ -187,6 +192,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                };
                if not(is(used,Call())) { rt = cons-tail-or-self(rt); };
                (tctx, rt) = phi-initialize(tctx, rt);
+               rt = phi-state(tctx, rt);
                ascript(term, rt);
             };
          };
