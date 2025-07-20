@@ -11,7 +11,7 @@ typed macro ast-macros-test-add(x: I64, y: lazy): lazy = (
 assert( ast-macros-test-add(1_u64, 2_u64) == 3_u64 );
 assert( ast-macros-test-add(2_i64, 3_i64) == 5_i64 );
 
-(
+scope(
    let x = mk-vector(type(U64)).push(1).push(2);
    $"macro::set"($"macro::lhs-index"(x,0), 3);
    $"macro::set"($"macro::lhs-index"(x,1), 4);
@@ -19,13 +19,13 @@ assert( ast-macros-test-add(2_i64, 3_i64) == 5_i64 );
 );
 
 type A = {a:U64};
-(
+scope(
    let a = A(1);
    $"macro::set"($"macro::lhs-field"(a,a), 2);
    print(a.a);
 );
 
-(
+scope(
    let wi = 0_u64;
    macro::while( wi < 4, ( print(wi); wi = wi + 1; ) )
 );
