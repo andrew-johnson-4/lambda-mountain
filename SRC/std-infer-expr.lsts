@@ -89,11 +89,14 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       AType{tt=tt} => ascript(term, tt);
       Seq{seq=seq} => (
          let def-i = 0_u64;
-         while def-i < seq.length {
-            (_, let new-r) = std-infer-expr(tctx, seq[def-i], false, Used(), hint);
-            seq[def-i] = new-r;
-            def-i = def-i + 1;
-         };
+         while def-i < seq.length { match seq[def-i] {
+            Glb{val:Abs{}} => (
+               (_, let new-r) = std-infer-expr(tctx, seq[def-i], false, Used(), hint);
+               seq[def-i] = new-r;
+               def-i = def-i + 1;
+            );
+            _ => def-i = def-i + 1;
+         }};
       );
       Glb{key=key, val=val} => (
          let rough-tt = typeof-term(term);
@@ -183,6 +186,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   t3(c"Cons", typeof-term(l), typeof-term(r))
                };
                if not(is(used,Call())) { rt = cons-tail-or-self(rt); };
+               (tctx, rt) = phi-initialize(tctx, rt);
                ascript(term, rt);
             };
          };
