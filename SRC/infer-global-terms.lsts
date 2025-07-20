@@ -24,7 +24,9 @@ let infer-global-terms(term: AST): AST = (
          ascript(term, ktd);
          maybe-apply-global-callable(c"mov", t3(c"Cons",ktd,ktd), term);
       );
-      _ => ();
+      _ => (
+         (_, term) = std-infer-expr(None : TypeContext?, term, false, Used, ta);
+      );
    }; term
 );
 
