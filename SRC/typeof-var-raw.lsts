@@ -2,7 +2,7 @@
 let typeof-var-raw(sloc: AST, tctx: TypeContext?, vname: CString): Type = (
    let found = ta;
    let continue = true;
-   for Tuple{k=first, vt=second} in tctx.get-or(mk-tctx()).tctx {
+   for Tuple{k=first, vt=third} in tctx.get-or(mk-tctx()).tctx {
       if continue && k==vname {
          if non-zero(found) {
             if vt.is-arrow
@@ -12,7 +12,7 @@ let typeof-var-raw(sloc: AST, tctx: TypeContext?, vname: CString): Type = (
          if not(vt.is-arrow) then continue = false;
       }
    };
-   for Tuple{kt=first,t=third} in global-type-context.lookup(vname, [] : List<(Type,Type,AST)>) {
+   for Tuple{kt=first,t=third} in global-type-context-denormal.lookup(vname, [] : List<(Type,Type,AST)>) {
       if non-zero(found) {
          if found.is-arrow then found = found && kt;
       } else found = kt;
@@ -23,13 +23,13 @@ let typeof-var-raw(sloc: AST, tctx: TypeContext?, vname: CString): Type = (
 let defof-var(sloc: AST, tctx: TypeContext?, vname: CString): AST = (
    let found = mk-eof();
    let continue = true;
-   for Tuple{k=first, vt=second, def=third} in tctx.get-or(mk-tctx()).tctx {
+   for Tuple{k=first, vt=second, def=fourth} in tctx.get-or(mk-tctx()).tctx {
       if continue && k==vname {
          if not(non-zero(found)) then found = def;
          if not(vt.is-arrow) then continue = false;
       }
    };
-   for Tuple{kt=first,t=third} in global-type-context.lookup(vname, [] : List<(Type,Type,AST)>) {
+   for Tuple{kt=first,t=third} in global-type-context-denormal.lookup(vname, [] : List<(Type,Type,AST)>) {
       if non-zero(found) then found = t;
    };
    found
@@ -39,13 +39,13 @@ let defof-var(sloc: AST, tctx: TypeContext?, vname: CString, tt: Type): AST = (
    let found = mk-eof();
    let found-type = ta;
    let continue = true;
-   for Tuple{k=first, vt=second, def=third} in tctx.get-or(mk-tctx()).tctx {
+   for Tuple{k=first, vt=second, def=fourth} in tctx.get-or(mk-tctx()).tctx {
       if continue && k==vname {
          found = def;
          continue = false;
       }
    };
-   for Tuple{kt=first,t=third} in global-type-context.lookup(vname, [] : List<(Type,Type,AST)>) {
+   for Tuple{kt=first,t=third} in global-type-context-denormal.lookup(vname, [] : List<(Type,Type,AST)>) {
       if not(non-zero(found)) {
          if kt.is-arrow {
             if non-zero(tt)

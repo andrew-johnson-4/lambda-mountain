@@ -88,7 +88,7 @@ let substitute(tctx: TypeContext?, t: AST): AST = (
       App{ left:Lit{key:c":",ctk=token}, right:App{ left:Var{v=key,vtk=token}, right:AType{vt=tt} } } => (
          t = mk-app( mk-lit(c":",unique(ctk)), mk-app(mk-var(v,unique(vtk)), mk-atype(substitute(tctx,vt))) );
          let found = false;
-         for Tuple{tk=first,tv=second,ta=third} in tctx.get-or(mk-tctx()).tctx {
+         for Tuple{tk=first,tv=second,tvd=third,ta=fourth} in tctx.get-or(mk-tctx()).tctx {
             if not(found) && tk==v {
                t = mk-app( mk-lit(c":",unique(ctk)), mk-app(substitute(tctx,ta), mk-atype(substitute(tctx,vt))) );
                found = true;
@@ -107,7 +107,7 @@ let substitute(tctx: TypeContext?, t: AST): AST = (
       );
       Glb{k=key, rt=val} => (
          let found = false;
-         for Tuple{tk=first,tv=second,ta=third} in tctx.get-or(mk-tctx()).tctx {
+         for Tuple{tk=first,tv=second,tvd=third,ta=fourth} in tctx.get-or(mk-tctx()).tctx {
             if not(found) && k.key==tk { 
                match ta {
                   Var{tvtk=token} => k = tvtk;

@@ -1,5 +1,8 @@
 
-let type-index = mk-hashtable-is(type(AST), type(Type));
+let type-index-normal = mk-hashtable-is(type(AST), type(Type));
+let type-index-denormal = mk-hashtable-is(type(AST), type(Type));
 
-let typeof-term(t: AST): Type = type-index.lookup(t,ta);
-let ascript(t: AST, tt: Type): Nil = type-index = type-index.bind(t, tt);
+let typeof-term-normal(t: AST): Type = type-index-normal.lookup(t,ta);
+let typeof-term(t: AST): Type = type-index-denormal.lookup(t,ta);
+let ascript-normal(t: AST, tt: Type): Nil = type-index-normal = type-index-normal.bind(t, tt);
+let ascript-denormal(t: AST, tt: Type): Nil = type-index-denormal = type-index-denormal.bind(t, tt);

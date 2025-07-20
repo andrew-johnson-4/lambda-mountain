@@ -6,9 +6,9 @@ let .bind(tctx: HashtableEq<CString,List<Tuple<Type,Type,AST>>>, k: CString, kt:
    tctx.bind(k, row);
 );
 
-let .bind(tctx: TypeContext?, k: CString, kt: Type, kv: AST): TypeContext? = (
+let .bind(tctx: TypeContext?, k: CString, kt-normal: Type, kt-denormal: Type, kv: AST): TypeContext? = (
    Some(TypeContext(
-      cons( (k, kt, kv), tctx.get-or(mk-tctx()).tctx ),
+      cons( (k, kt-normal, kt-denormal, kv), tctx.get-or(mk-tctx()).tctx ),
       tctx.get-or(mk-tctx()).pctx
    ));
 );

@@ -6,7 +6,7 @@ let std-c-compile-smart-string(ctx: FContext, val: CString, blame: AST): Fragmen
    if non-zero(guid) then mk-expression(guid) else {
       guid = uuid();
       compile-smart-string-index = compile-smart-string-index.bind(val,guid);
-      let lit = mk-lit(val); ascript-normal(lit, t1(c"CString"));
+      let lit = mk-lit(val); ascript(lit, t1(c"CString"));
       let intern-ss = std-c-compile-call(ctx, c"intern", lit);
       assemble-header-section = assemble-header-section +
       std-c-mangle-type(t1(c"String"), blame) + SAtom(c" ") + SAtom(guid) + SAtom(c";\n");
