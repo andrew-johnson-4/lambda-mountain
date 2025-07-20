@@ -1,16 +1,17 @@
 
-let infer-global-terms(term: AST): AST = (
+let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
    match term {
       Seq{seq=seq} => (
          let def-i = 0_u64;
          while def-i < seq.length {
-            seq[def-i] = infer-global-terms(seq[def-i]);
+            (tctx, let rterm) = infer-global-terms(tctx, seq[def-i]);
+            seq[def-i] = rterm;
             def-i = def-i + 1;
          };
       );
       Glb{val:Abs{}} => ();
       Glb{k=key, rhs=val} => (
-         (_, let new-rhs) = std-infer-expr((None : TypeContext?)(), rhs, false, Used(), ta);
+         (tctx, let new-rhs) = std-infer-expr((None : TypeContext?)(), rhs, false, Used(), ta);
          if not(is(rhs,new-rhs)) then {
             let new-term = mk-glb(k, new-rhs);
             mark-var-to-def(new-term, term);
@@ -24,10 +25,9 @@ let infer-global-terms(term: AST): AST = (
          ascript(term, ktd);
          maybe-apply-global-callable(c"mov", t3(c"Cons",ktd,ktd), term);
       );
-      _ => (
-         (_, term) = std-infer-expr(None : TypeContext?, term, false, Used, ta);
-      );
-   }; term
+      _ => (tctx, term) = std-infer-expr(None : TypeContext?, term, false, Used, ta);
+   };
+   (tctx, term)
 );
 
 let infer-global-context-prim(term: AST): Nil = (
