@@ -74,7 +74,7 @@ match2 (A(123)) {
 match2 (A(123)) {
    A{let raw a=a:123} => print(a);
 };
-(
+scope(
    let x = 555;
    match2 (A(123)) {
       A{set x=a} => print(x);
