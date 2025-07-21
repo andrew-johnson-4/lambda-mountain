@@ -26,12 +26,12 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             TGround{tag:c"Array", parameters:[_.. TAny{}..]} => ();
             TGround{tag:c"Array", parameters:[TAny{}.. array-base..]} => (
                mark-var-to-def-todo(tctx, c"open", deref-type, o-t);
-               maybe-apply-global-callable(c"open", deref-type, term);
+               maybe-apply-global-callable(tctx, c"open", deref-type, term);
                deref-type = array-base;
             );
             _ => (
                mark-var-to-def-todo(tctx, c"open", deref-type, o-t);
-               apply-global-callable(c"open", deref-type, term);
+               apply-global-callable(tctx, c"open", deref-type, term);
             );
          };
          ascript(term, deref-type);
@@ -52,7 +52,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          (tctx, let new-t) = std-infer-expr(tctx, t, false, Tail(), tt);
          if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
          ascript(term, typeof-term(t));
-         if tt.is-t(c"String",0) then maybe-apply-global-callable(c"intern", tt, term);
+         if tt.is-t(c"String",0) then maybe-apply-global-callable(tctx, c"intern", tt, term);
       );
       App{asc=left:Var{key:c"as"}, right:App{t=left,right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
@@ -79,7 +79,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
             then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
          };
-         apply-global-callable(c"into-branch-conditional", typeof-term(cond), cond);
+         apply-global-callable(tctx, c"into-branch-conditional", typeof-term(cond), cond);
          ascript(term, typeof-term(t)); # TODO: use MGU to merge true and false branches
       );
       ASTEOF{} => ascript(term, t1(c"Nil"));
@@ -111,7 +111,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       Var{key=key, token=token} => (
          if key==c"__uninitialized" then ascript(term, hint)
-         else ascript(term, typeof-var(term, tctx, key));
+         else (
+            let vt = typeof-var(term, tctx, key);
+            vt = phi-state(tctx, vt);
+            ascript(term, vt);
+         );
          mark-var-to-def-todo(tctx, key, ta, term);
       );
       Lit{key=key, token=token} => (
@@ -119,10 +123,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             ascript(term,hint);
          } else if not(non-zero(typeof-term(term))) {
             if hint.is-t(c"List",1) && hint.is-type && key==c"LEOF"
-            then ascript(term,apply-global-constructor(key, hint, t1(c"Nil"), term))
+            then ascript(term,apply-global-constructor(tctx, key, hint, t1(c"Nil"), term).second)
             else if hint.is-t(c"HashtableEq",2) && hint.is-type && key==c"HashtableEqEOF"
-            then ascript(term,apply-global-constructor(key, hint, t1(c"Nil"), term))
-            else ascript(term,apply-global-constructor(key, hint, ta, term));
+            then ascript(term,apply-global-constructor(tctx, key, hint, t1(c"Nil"), term).second)
+            else ascript(term,apply-global-constructor(tctx, key, hint, ta, term).second);
          }
       );
       Abs{lhs=lhs, rhs=rhs:App{asc=left:Lit{key:c":"},right:App{inner-rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} => (
@@ -177,13 +181,13 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   (tctx, let new-r) = std-infer-expr(tctx, r, false, Used(), ta);
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
                };
-               rt = if typeof-term(l).is-arrow && non-zero(lit-name-if-lit(l)) {
+               (tctx, rt) = if typeof-term(l).is-arrow && non-zero(lit-name-if-lit(l)) {
                   let direct-hint = hint-if-hint(l);
-                  apply-global-constructor(lit-name-if-lit(l), direct-hint, typeof-term(r), term);
+                  apply-global-constructor(tctx, lit-name-if-lit(l), direct-hint, typeof-term(r), term);
                } else if typeof-term(l).is-arrow && non-zero(var-name-if-var-or-lit(l)) {
-                  apply-global-callable(var-name-if-var-or-lit(l), typeof-term(r), term);
+                  apply-global-callable(tctx, var-name-if-var-or-lit(l), typeof-term(r), term);
                } else {
-                  t3(c"Cons", typeof-term(l), typeof-term(r))
+                  (tctx, t3(c"Cons", typeof-term(l), typeof-term(r)))
                };
                if not(is(used,Call())) { rt = cons-tail-or-self(rt); };
                (tctx, rt) = phi-initialize(tctx, rt);
@@ -194,7 +198,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 
          if not(is-macro) && not(is-cons) && typeof-term(l).is-arrow && non-zero(var-name-if-var(l)) {
             mark-var-to-def-todo(tctx, var-name-if-var(l), typeof-term(r), l);
-            apply-global-callable(var-name-if-var(l),typeof-term(r),term);
+            apply-global-callable(tctx, var-name-if-var(l),typeof-term(r),term);
          };
       );
       _ => fail("Unexpected Term in std-infer-expr\n\{term}\n");

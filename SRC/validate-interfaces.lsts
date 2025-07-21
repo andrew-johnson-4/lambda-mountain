@@ -8,7 +8,7 @@ let validate-interfaces(): Nil = (
          args-type = denormalize(substitute(tctx, args-type).reify-type-variables);
          return-type = substitute(tctx, return-type).reify-type-variables;
          let function-type = typeof-var-raw( blame, (None : Maybe<TypeContext>)(), symbol-name );
-         let apply-return-type = apply-global-callable(symbol-name, args-type, blame);
+         (_, let apply-return-type) = apply-global-callable(None : TypeContext?, symbol-name, args-type, blame);
          if not(can-unify(return-type, denormalize(apply-return-type))) {
             fail("Function Application Yielded Unexpected Return Value\n"
                  "\{symbol-name}\n"

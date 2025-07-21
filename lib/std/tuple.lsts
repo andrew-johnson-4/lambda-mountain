@@ -54,3 +54,21 @@ let $">="(l: Tuple<x,y>, r: Tuple<x,y>): U64 = (
    l.first > r.first ||
    (l.first == r.first && l.second >= r.second)
 );
+
+let .into(l: Tuple<x,y>, tt: Type<String>): String = (
+   "(" + l.first.into(type(String)) + ","
+       + l.second.into(type(String)) + ")"
+);
+
+let .into(l: Tuple<x,y,z>, tt: Type<String>): String = (
+   "(" + l.first.into(type(String)) + ","
+       + l.second.into(type(String)) + ","
+       + l.third.into(type(String)) + ")"
+);
+
+let .into(l: Tuple<w,x,y,z>, tt: Type<String>): String = (
+   "(" + l.first.into(type(String)) + ","
+       + l.second.into(type(String)) + ","
+       + l.third.into(type(String)) + ","
+       + l.fourth.into(type(String)) + ")"
+);

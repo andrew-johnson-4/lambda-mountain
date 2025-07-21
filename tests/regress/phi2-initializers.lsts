@@ -2,6 +2,10 @@
 import lib/std/default.lsts;
 
 let f(): U64+Phi::Initialize<A> = 123;
+let g(x: U64+Phi::Transition<A,B>): U64 = 123;
 
 let x = f();
 assert( typeof(x) <: type(U64+Phi::State<A>) );
+
+g(x);
+assert( typeof(x) <: type(U64+Phi::State<B>) );
