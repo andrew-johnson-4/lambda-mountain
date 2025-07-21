@@ -23,10 +23,34 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TypeContext> = (
       Tuple{ first:TAnd{ lconjugate=conjugate }, second:TAnd{ rconjugate=conjugate } } => (
          let result = yes;
          let ri = 0_u64;
+         let phi-id = c"";
+         let phi-state-in = ta;
+         let phi-state-out = ta;
          for lc in lconjugate {
             if result.is-some then (match lc {
                TGround{tag:c"Any"} => ();
                TGround{tag:c"Phi::Initialize"} => ();
+               TGround{tag:c"Phi::Transition", parameters:[phi-to..phi-from..]} => (
+                  let scan-states = true;
+                  while scan-states && ri < rconjugate.length { match rconjugate[ri] {
+                     TGround{tag:c"Phi::Id",parameters:[TGround{new-phi-id=tag}..]} => (
+                        phi-id = new-phi-id;
+                        ri = ri + 1;
+                     );
+                     TGround{tag:c"Phi::State",parameters:[new-phi-state..]} => (
+                        phi-state-in = phi-state-in && new-phi-state;
+                        ri = ri + 1;
+                     );
+                     TGround{tag=tag} => (
+                        if tag < c"Phi::Transition"
+                        then ri = ri + 1
+                        else scan-states = false
+                     );
+                     _ => scan-states = false;
+                  }};
+                  if can-unify(phi-from, phi-state-in)
+                  then phi-state-out = phi-state-out && phi-to;
+               );
                TGround{ltag=tag} => (
                   let this-result-ok = no;
                   let rc = rconjugate[ri];
@@ -54,6 +78,7 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TypeContext> = (
                _ => result = result && unify(lc,pt);
             });
          };
+         if non-zero(phi-id) && non-zero(phi-state-out) then result = result.bind-phi(phi-id, phi-state-out);
          ctx = result;
       );
       Tuple{ first:TAnd{ lconjugate=conjugate }, rt=second } => (

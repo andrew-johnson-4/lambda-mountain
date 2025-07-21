@@ -12,3 +12,10 @@ let .bind(tctx: TypeContext?, k: CString, kt-normal: Type, kt-denormal: Type, kv
       tctx.get-or(mk-tctx()).pctx
    ));
 );
+
+let .bind-phi(tctx: TypeContext?, k: CString, kt: Type): TypeContext? = (
+   Some(TypeContext(
+      tctx.get-or(mk-tctx()).tctx,
+      cons( (k,kt) , tctx.get-or(mk-tctx()).pctx )
+   ));
+);
