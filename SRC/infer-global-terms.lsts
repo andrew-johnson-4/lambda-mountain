@@ -23,7 +23,7 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
          global-type-context-denormal = global-type-context-denormal.bind(k.key, ktd, term);
          mark-global-as-seen(k.key, ktd, ta);
          ascript(term, ktd);
-         maybe-apply-global-callable(c"mov", t3(c"Cons",ktd,ktd), term);
+         maybe-apply-global-callable(global-flow-tctx,c"mov", t3(c"Cons",ktd,ktd), term);
       );
       _ => (tctx, term) = std-infer-expr(tctx, term, false, Used, ta);
    };

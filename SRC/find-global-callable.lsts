@@ -51,7 +51,7 @@ let find-global-constructor(fname: CString, hint: Type, arg-types: Type, blame: 
    result
 );
 
-let apply-global-constructor(fname: CString, hint: Type, arg-types: Type, blame: AST): Type = (
+let apply-global-constructor(tctx: TypeContext?, fname: CString, hint: Type, arg-types: Type, blame: AST): (TypeContext?, Type) = (
    hint = hint.rewrite-type-alias;
    let result = ta;
    let simple = ta;
@@ -79,20 +79,23 @@ let apply-global-constructor(fname: CString, hint: Type, arg-types: Type, blame:
    if not(non-zero(result)) && non-zero(hint) && not(hint.is-type) then result = hint
    else if not(non-zero(result)) then fail("Unable to apply appropriate global constructor: \{fname} :: \{hint}At: \{blame.location}\n");
    if result.is-arrow && non-zero(arg-types) {
-      let tctx = if non-zero(hint)
+      let inner-tctx = if non-zero(hint)
       then unify(simple.range, hint)
       else unify(simple.domain, arg-types);
-      let closed-type = substitute(tctx, simple);
-      if simple.is-open then try-specialize(fname, simple, tctx, closed-type);
-      result = substitute(tctx, simple.range);
+      let closed-type = substitute(inner-tctx, simple);
+      if simple.is-open then try-specialize(fname, simple, inner-tctx, closed-type);
+      result = substitute(inner-tctx, simple.range);
+      for Tuple{pn=first, pt=second} in inner-tctx.get-or(mk-tctx()).pctx {
+         tctx = tctx.bind-phi(pn, pt);
+      };
    };
-   result
+   (tctx, result)
 );
 
-let apply-global-callable(fname: CString, arg-types: Type, blame: AST): Type = apply-global-callable(fname,arg-types,blame,true);
-let maybe-apply-global-callable(fname: CString, arg-types: Type, blame: AST): Type = apply-global-callable(fname,arg-types,blame,false);
+let apply-global-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST): (TypeContext?, Type) = apply-global-callable(tctx,fname,arg-types,blame,true);
+let maybe-apply-global-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST): (TypeContext?, Type) = apply-global-callable(tctx,fname,arg-types,blame,false);
 
-let apply-global-callable(fname: CString, arg-types: Type, blame: AST, can-fail: Bool): Type = (
+let apply-global-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, can-fail: Bool): (TypeContext?, Type) = (
    arg-types = denormalize-strong(arg-types);
    let match-set = mk-vector(type((Type,Type,AST)), 16);
    for Tuple{ot=first, kt=second, t=third} in global-type-context-denormal.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
@@ -124,5 +127,5 @@ let apply-global-callable(fname: CString, arg-types: Type, blame: AST, can-fail:
       };
       exit(1);
    };
-   if non-zero(result-normal) then apply-and-specialize(fname, result-normal, result-denormal, arg-types, blame) else ta
+   if non-zero(result-normal) then apply-and-specialize(tctx, fname, result-normal, result-denormal, arg-types, blame) else (tctx, ta)
 );
