@@ -111,7 +111,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       Var{key=key, token=token} => (
          if key==c"__uninitialized" then ascript(term, hint)
-         else ascript(term, typeof-var(term, tctx, key));
+         else (
+            let vt = typeof-var(term, tctx, key);
+            vt = phi-state(tctx, vt);
+            ascript(term, vt);
+         );
          mark-var-to-def-todo(tctx, key, ta, term);
       );
       Lit{key=key, token=token} => (

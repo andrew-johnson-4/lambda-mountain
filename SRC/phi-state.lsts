@@ -17,7 +17,7 @@ let phi-state(tctx: TypeContext?, tt: Type): Type = (
          TAnd(new-conjugate)
       );
       TGround{tag:c"Phi::Id",parameters:[TGround{phi-id=tag,parameters:[]}..]} => (
-         let phi-state = tctx.get-or(mk-tctx()).tctx.lookup(phi-id, (ta, ta, ASTEOF)).first;
+         let phi-state = tctx.get-or(mk-tctx()).pctx.lookup(phi-id, ta);
          if not(non-zero(phi-state)) then fail("Unable to find Phi::Id<\{phi-id}>\n");
          tt && t2(c"Phi::State",phi-state);
       );

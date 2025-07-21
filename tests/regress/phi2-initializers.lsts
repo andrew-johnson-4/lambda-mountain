@@ -8,5 +8,4 @@ let x = f();
 assert( typeof(x) <: type(U64+Phi::State<A>) );
 
 g(x);
-print("typeof(x) after g : \{typeof(x)}\n");
-assert( typeof(x) <: type(U64+Phi::State<A>) );
+assert( typeof(x) <: type(U64+Phi::State<B>) );
