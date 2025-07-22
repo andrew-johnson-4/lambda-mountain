@@ -1,11 +1,13 @@
 
 import lib/std/default.lsts;
 
+type phi ABCDEF = A | B | C | D | E | F;
+
 let f(): U64+Phi::Initialize<A> = 123;
 let g(x: U64+Phi::Transition<A,B>): U64 = 123;
 let h(x: U64+Phi::Transition<B,C>): U64 = 123;
 let i(x: U64+Phi::Transition<B,D>): U64 = 123;
-let j(x: U64+Phi::Transition<E,H>): U64 = 123;
+let j(x: U64+Phi::Transition<E,F>): U64 = 123;
 let phi(l: C, r: D): E;
 
 let x = f();
@@ -22,4 +24,4 @@ if true {
 print("typeof(x) = \{typeof(x)}\n");
 if true then j(x) else j(x);
 print("typeof(x) = \{typeof(x)}\n");
-assert( typeof(x) <: type(U64+Phi::State<H>) );
+assert( typeof(x) <: type(U64+Phi::State<F>) );
