@@ -12,9 +12,10 @@ let .without-phi(tt: Type): Type = (
          else tand(result)
       );
       TGround { tag:c"Arrow", parameters:[_.._..] } => tt;
-      TGround { tag:c"Phi::Transition" } => ta;
-      TGround { tag:c"Phi::Initialize" } => ta;
-      TGround { tag:c"Phi::State" } => ta;
+      TGround { tag:c"Phi::Id", parameters:[_..] } => ta;
+      TGround { tag:c"Phi::Transition", parameters:[_.._..] } => ta;
+      TGround { tag:c"Phi::Initialize", parameters:[_..] } => ta;
+      TGround { tag:c"Phi::State", parameters:[_..] } => ta;
       TGround { tag=tag, parameters=parameters } => ts(tag, parameters.without-phi);
       _ => tt;
    }
@@ -22,7 +23,7 @@ let .without-phi(tt: Type): Type = (
 
 let .without-phi(tt: List<Type>): List<Type> = (
    match tt {
-      [hd..tl] => cons( hd.without-tag, tl.without-tag );
+      [hd..tl] => cons( hd.without-phi, tl.without-phi );
       tl => tl;
    }
 );
