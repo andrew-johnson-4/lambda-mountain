@@ -98,7 +98,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{} } } => false;
             _ => true;
          };
-         if not(config-strip-debug) || not(initialized) {
+         if initialized || can-unify(t2(c"C",t1(c"typedef")), tt) {
             let text = SNil();
             if not(config-strip-debug) && loc.filename != c"Unknown" {
                text = text + SAtom(c"\n#line ");

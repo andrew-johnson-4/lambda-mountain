@@ -2,28 +2,30 @@
 let concrete-type-instances-index = {} : HashtableEq<(CString,U64),List<Type>>;
 
 let add-concrete-type-instance(tt: Type): Nil = (
-   tt = normalize(tt);
-   let lt = tt.slot(c"Array",2);
-   if non-zero(lt) then tt = lt else tt = tt.with-only-class;
-   if non-zero(tt) { match tt {
-      TGround{tag=tag, parameters:[]} => (
-         if tt.is-type && not(does-concrete-type-instance-exist(tt)) {
-            let k = (tag,0_u64);
-            concrete-type-instances-index = concrete-type-instances-index.bind(
-               k, cons( tt, concrete-type-instances-index.lookup(k, [] : List<Type>) )
-            );
-         }
-      );
-      TGround{tag=tag, ts=parameters} => (
-         if not(does-concrete-type-instance-exist(tt)) {
-            let k = (tag, ts.length);
-            concrete-type-instances-index = concrete-type-instances-index.bind(
-               k, cons( tt, concrete-type-instances-index.lookup(k, [] : List<Type>) )
-            );
-         };
-         for ct in ts { add-concrete-type-instance(ct) };
-      );
-   }}
+   if not(tt.is-phi-type) then {
+      tt = normalize(tt);
+      let lt = tt.slot(c"Array",2);
+      if non-zero(lt) then tt = lt else tt = tt.with-only-class;
+      if non-zero(tt) { match tt {
+         TGround{tag=tag, parameters:[]} => (
+            if tt.is-type && not(does-concrete-type-instance-exist(tt)) {
+               let k = (tag,0_u64);
+               concrete-type-instances-index = concrete-type-instances-index.bind(
+                  k, cons( tt, concrete-type-instances-index.lookup(k, [] : List<Type>) )
+               );
+            }
+         );
+         TGround{tag=tag, ts=parameters} => (
+            if not(does-concrete-type-instance-exist(tt)) {
+               let k = (tag, ts.length);
+               concrete-type-instances-index = concrete-type-instances-index.bind(
+                  k, cons( tt, concrete-type-instances-index.lookup(k, [] : List<Type>) )
+               );
+            };
+            for ct in ts { add-concrete-type-instance(ct) };
+         );
+      }}
+   }
 );
 
 let does-concrete-type-instance-exist(tt: Type): U64 = (

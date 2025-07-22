@@ -21,7 +21,5 @@ if true {
 } else {
    i(x);
 };
-print("typeof(x) = \{typeof(x)}\n");
 if true then j(x) else j(x);
-print("typeof(x) = \{typeof(x)}\n");
 assert( typeof(x) <: type(U64+Phi::State<F>) );
