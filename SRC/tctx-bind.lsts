@@ -19,3 +19,10 @@ let .bind-phi(tctx: TypeContext?, k: CString, kt: Type): TypeContext? = (
       cons( (k,kt) , tctx.get-or(mk-tctx()).pctx )
    ));
 );
+
+let .with-pctx(tctx: TypeContext?, pctx: List<(CString,Type)>): TypeContext? = (
+   Some(TypeContext(
+      tctx.get-or(mk-tctx()).tctx,
+      pctx
+   ));   
+);

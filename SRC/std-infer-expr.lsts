@@ -67,17 +67,20 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
          if is-scoped {
             (let tctx-inner, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
-            (_, let new-t) = std-infer-expr(tctx-inner, t, false, Tail(), ta);
-            (_, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
+            tctx = tctx.with-pctx(tctx-inner.get-or(mk-tctx()).pctx);
+            (let tctx-t, let new-t) = std-infer-expr(tctx-inner, t, false, Tail(), ta);
+            (let tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
             if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
             then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
+            tctx = tctx.with-pctx( phi-merge(tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx) );
          } else {
             (tctx, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
             (let tctx-t, let new-t) = std-infer-expr(tctx, t, false, Tail(), ta);
-            (_, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
+            (let tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
             tctx = tctx-t;
             if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
             then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
+            tctx = tctx.with-pctx( phi-merge(tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx) );
          };
          apply-global-callable(tctx, c"into-branch-conditional", typeof-term(cond), cond);
          ascript(term, typeof-term(t)); # TODO: use MGU to merge true and false branches
