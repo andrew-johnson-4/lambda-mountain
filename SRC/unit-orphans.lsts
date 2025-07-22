@@ -20,6 +20,7 @@ import SRC/infer-type-definition.lsts;
 import SRC/assert-no-infinite-types.lsts;
 import SRC/phi-initialize.lsts;
 import SRC/phi-state.lsts;
+import SRC/phi-merge.lsts;
 
 let .unroll-seq(t: AST): Vector<AST> = (
    match t {

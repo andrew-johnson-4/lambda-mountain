@@ -33,10 +33,15 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
 );
 
 let type-base-type-index = {} : HashtableEq<(CString,U64),U64>;
+let phi-type-index = {} : HashtableEq<(CString,U64),U64>;
 
 let .is-type(tt: Type): U64 = (
    let gta = normalize(tt).ground-tag-and-arity;
    type-base-type-index.has(gta)
+);
+
+let .is-phi-type(tt: Type): U64 = (
+   phi-type-index.has(tt.ground-tag-and-arity)
 );
 
 let infer-type-definition(term: AST): Nil = (
@@ -48,6 +53,7 @@ let infer-type-definition(term: AST): Nil = (
    let alias = (term as Tag::Typedef2).alias;
    let opaque-alias = (term as Tag::Typedef2).opaque-alias;
    let cases = (term as Tag::Typedef2).cases;
+   let misc-type = (term as Tag::Typedef2).misc-type;
    for rhs-type in implies {
       add-quick-prop(lhs-type, lhs-type, rhs-type);
       add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
@@ -59,56 +65,67 @@ let infer-type-definition(term: AST): Nil = (
    };
    if non-zero(alias) then add-type-alias(lhs-type, alias);
    if non-zero(opaque-alias) then add-opaque-type-alias(lhs-type, opaque-alias);
-   let case-number = 0_u64;
-   for Tuple{ case-tag=first, case-fields=second } in cases {
-      complex-type-index = complex-type-index.bind( lhs-type.ground-tag-and-arity, 1 );
-      type-base-type-index = type-base-type-index.bind( lhs-type.ground-tag-and-arity, 1 );
-      let field-ordinal = 0_u64;
-      for Tuple{ field-name=first, field-type=second } in case-fields {
-         let guard = lhs-type && (if non-zero(case-tag) then t1(c"Tag::"+case-tag) else ta);
-         let field-wrapped-type = t2(c"Field::"+field-name, field-type);
-         add-quick-prop(lhs-type, guard, field-wrapped-type);
-         add-weaken-quick-prop(lhs-type, guard, field-wrapped-type);
-         visit-field-template(field-name, guard, field-type, term, case-fields.length - field-ordinal, case-number);
-         field-ordinal = field-ordinal + 1;
-      };
-      case-number = case-number + 1;
-   };
-   let common-fields = [] : List<(CString,Type)>;
-   let has-tag-case = false;
-   let has-any-case = false;
-   for Tuple{ case-tag=first, case-fields=second } in cases {
-      if case-tag==c"" {
+   if misc-type.is-t(c"Phi",0) {
+      let common-tags-length = 0_u64;
+      for Tuple{ case-tag=first, case-fields=second } in cases {
+         if case-tag==c"" {
+            common-tags-length = case-fields.length;
+         } else {
+            phi-type-index = phi-type-index.bind((case-tag, common-tags-length + case-fields.length), true);
+         }
+      }
+   } else {
+      let case-number = 0_u64;
+      for Tuple{ case-tag=first, case-fields=second } in cases {
+         complex-type-index = complex-type-index.bind( lhs-type.ground-tag-and-arity, 1 );
+         type-base-type-index = type-base-type-index.bind( lhs-type.ground-tag-and-arity, 1 );
+         let field-ordinal = 0_u64;
          for Tuple{ field-name=first, field-type=second } in case-fields {
-            common-fields = cons((field-name, field-type), common-fields);
+            let guard = lhs-type && (if non-zero(case-tag) then t1(c"Tag::"+case-tag) else ta);
+            let field-wrapped-type = t2(c"Field::"+field-name, field-type);
+            add-quick-prop(lhs-type, guard, field-wrapped-type);
+            add-weaken-quick-prop(lhs-type, guard, field-wrapped-type);
+            visit-field-template(field-name, guard, field-type, term, case-fields.length - field-ordinal, case-number);
+            field-ordinal = field-ordinal + 1;
          };
-      } else has-tag-case = true;
-      has-any-case = true;
-   };
-   if not(has-tag-case) && has-any-case then infer-type-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, [] : List<(CString,Type)>, term, has-tag-case);
-   if has-any-case {
-      add-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
-      add-weaken-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
-   };
-   if not(has-tag-case) && has-any-case then {
-      let tag-case-number = t2(c"CaseNumber", t1(c"0"));
-      add-quick-prop(lhs-type, lhs-type, tag-case-number);
-      add-weaken-quick-prop(lhs-type, lhs-type, tag-case-number);
-   };
-   let case-index = 0_u64;
-   for Tuple{ case-tag=first, case-fields=second } in cases {
-      if case-tag!=c"" {
-         let o-case-fields = [] : List<(CString,Type)>;
-         for Tuple{ field-name=first, field-type=second } in case-fields {
-            o-case-fields = cons((field-name, field-type), o-case-fields);
-         };
-         let tag-guard = lhs-type && t1(c"Tag::"+case-tag);
-         let tag-case-number = t2(c"CaseNumber", t1(to-string(case-index)));
-         add-quick-prop(tag-guard, tag-guard, tag-case-number);
-         add-weaken-quick-prop(tag-guard, tag-guard, tag-case-number);
-         infer-type-yield-constructor(lhs-type, case-tag, case-index, common-fields, o-case-fields, term, has-tag-case);
+         case-number = case-number + 1;
       };
-      case-index = case-index + 1;
+      let common-fields = [] : List<(CString,Type)>;
+      let has-tag-case = false;
+      let has-any-case = false;
+      for Tuple{ case-tag=first, case-fields=second } in cases {
+         if case-tag==c"" {
+            for Tuple{ field-name=first, field-type=second } in case-fields {
+               common-fields = cons((field-name, field-type), common-fields);
+            };
+         } else has-tag-case = true;
+         has-any-case = true;
+      };
+      if not(has-tag-case) && has-any-case then infer-type-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, [] : List<(CString,Type)>, term, has-tag-case);
+      if has-any-case {
+         add-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
+         add-weaken-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
+      };
+      if not(has-tag-case) && has-any-case then {
+         let tag-case-number = t2(c"CaseNumber", t1(c"0"));
+         add-quick-prop(lhs-type, lhs-type, tag-case-number);
+         add-weaken-quick-prop(lhs-type, lhs-type, tag-case-number);
+      };
+      let case-index = 0_u64;
+      for Tuple{ case-tag=first, case-fields=second } in cases {
+         if case-tag!=c"" {
+            let o-case-fields = [] : List<(CString,Type)>;
+            for Tuple{ field-name=first, field-type=second } in case-fields {
+               o-case-fields = cons((field-name, field-type), o-case-fields);
+            };
+            let tag-guard = lhs-type && t1(c"Tag::"+case-tag);
+            let tag-case-number = t2(c"CaseNumber", t1(to-string(case-index)));
+            add-quick-prop(tag-guard, tag-guard, tag-case-number);
+            add-weaken-quick-prop(tag-guard, tag-guard, tag-case-number);
+            infer-type-yield-constructor(lhs-type, case-tag, case-index, common-fields, o-case-fields, term, has-tag-case);
+         };
+         case-index = case-index + 1;
+      };
    };
 );
 

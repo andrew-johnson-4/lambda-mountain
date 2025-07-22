@@ -252,3 +252,11 @@ let .ptr(v: Vector<t>, toelem: U64): t[] = (
    };
    ((v.data as U64) + sizeof(t) * toelem) as t[]
 );
+
+let .contains(v: Vector<t>, i: t): U64 = (
+   let result = false;
+   for vi in v {
+      if vi==i then result = true;
+   };
+   result
+);
