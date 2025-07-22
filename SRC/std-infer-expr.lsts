@@ -42,9 +42,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          ascript(szof, tt);
       );
       App{szof=left:Var{key:c"scope"}, r=right} => (
-         (_, let new-r) = std-infer-expr(tctx, r, true, Tail(), ta);
+         (let inner-tctx, let new-r) = std-infer-expr(tctx, r, true, Tail(), ta);
          if not(is(r,new-r)) then { r = new-r; term = mk-app(szof, r); };
          ascript(term, typeof-term(r));
+         tctx = tctx.with-pctx(inner-tctx.get-or(mk-tctx()).pctx);
       );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
@@ -72,7 +73,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             (let tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
             if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
             then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
-            tctx = tctx.with-pctx( phi-merge(tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx) );
+            tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
          } else {
             (tctx, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
             (let tctx-t, let new-t) = std-infer-expr(tctx, t, false, Tail(), ta);
@@ -80,7 +81,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             tctx = tctx-t;
             if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
             then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
-            tctx = tctx.with-pctx( phi-merge(tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx) );
+            tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
          };
          apply-global-callable(tctx, c"into-branch-conditional", typeof-term(cond), cond);
          ascript(term, typeof-term(t)); # TODO: use MGU to merge true and false branches
