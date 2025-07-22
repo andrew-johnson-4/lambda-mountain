@@ -25,11 +25,11 @@ declare-binop( $"primitive::field-set-indirect", raw-type(base-type[]), raw-type
 # needs to be declared to prevent a special case during inference
 # this only needs to be declared if you want to support casting type information into String literals
 # EXAMPLE: print(typeof(x))
-declare-binop( $".into", type(x), type(String), raw-type(String), () );
+declare-binop( $".into", type(Any), type(String), raw-type(String), () );
 
 # this operator is hard-coded in the compiler for now
 # but this definition being in the library is simplest for inference
-declare-binop( $"<:", type(x), type(y), raw-type(Bool), () );
+declare-binop( $"<:", type(Any), type(Any), raw-type(Bool), () );
 
 let :Blob $"primitive::while"(body: Any, cond: BranchConditional): Nil = (
    $":frame"( $":frame"(body); $":frame"(cond) );

@@ -297,7 +297,7 @@ deprecated macro ( rl"for-each"(item(rl"in")(iterable))(loop) ) ((
 
 deprecated macro ( rl"assert"(c) ) (
    $"if"( not(c) )
-        ( print(c"Assertion Failed At"); print(p(rl":Location:") : Constant+Literal+CString); exit(1_u64); )
+        ( print(c"Assertion Failed At "); print(p(rl":Location:") : Constant+Literal+CString); exit(1_u64); )
         ()
 );
 

@@ -21,6 +21,7 @@ import SRC/assert-no-infinite-types.lsts;
 import SRC/phi-initialize.lsts;
 import SRC/phi-state.lsts;
 import SRC/phi-merge.lsts;
+import SRC/without-phi.lsts;
 
 let .unroll-seq(t: AST): Vector<AST> = (
    match t {

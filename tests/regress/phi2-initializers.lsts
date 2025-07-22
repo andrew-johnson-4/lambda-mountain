@@ -10,6 +10,10 @@ let i(x: U64+Phi::Transition<B,D>): U64 = 123;
 let j(x: U64+Phi::Transition<E,F>): U64 = 123;
 let phi(l: C, r: D): E;
 
+let no-phi(phi-x: x): Nil = (
+   assert(not( typeof(phi-x) <: type(Phi::State<Any>) ));
+);
+
 let x = f();
 assert( typeof(x) <: type(U64+Phi::State<A>) );
 
@@ -23,3 +27,5 @@ if true {
 };
 if true then j(x) else j(x);
 assert( typeof(x) <: type(U64+Phi::State<F>) );
+
+no-phi(x);
