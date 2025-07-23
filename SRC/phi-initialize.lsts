@@ -31,7 +31,7 @@ let phi-initialize-parameter(tctx: TypeContext?, tt: Type): (TypeContext?, Type)
       TAnd{conjugate=conjugate} => (
          let new-conjugate = mk-vector(type(Type), conjugate.length);
          for c in conjugate {
-            (tctx, c) = phi-initialize(tctx, c);
+            (tctx, c) = phi-initialize-parameter(tctx, c);
             if non-zero(c) then new-conjugate = new-conjugate.push(c);
          };
          (tctx, TAnd(new-conjugate))

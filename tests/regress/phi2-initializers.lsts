@@ -15,12 +15,10 @@ let no-phi(phi-x: x): Nil = (
 );
 
 let only-phi-state(phi-x: U64+Phi::State<ABCDEF::B>): Nil = (
-   print("only-phi-state \{typeof(phi-x)}\n");
    assert( typeof(phi-x) <: type(Phi::State<ABCDEF::B>) );
 );
 
 let only-phi-transition(phi-x: U64+Phi::Transition<ABCDEF::B,ABCDEF::B>): Nil = (
-   print("only-phi-transition \{typeof(phi-x)}\n");
    assert( typeof(phi-x) <: type(Phi::State<ABCDEF::B>) );
 );
 
@@ -28,7 +26,6 @@ let x = f();
 assert( typeof(x) <: type(U64+Phi::State<ABCDEF::A>) );
 
 g(x);
-print("x \{typeof(x)}\n");
 only-phi-state(x);
 only-phi-transition(x);
 assert( typeof(x) <: type(U64+Phi::State<ABCDEF::B>) );
