@@ -197,6 +197,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                (tctx, rt) = phi-initialize(tctx, rt);
                rt = phi-state(tctx, rt);
                ascript(term, rt);
+               if var-name-if-var-or-lit(l)==c"mov" && typeof-term(r).is-t(c"Cons",2) {
+                  let new-tt = typeof-term(r).slot(c"Cons",2).l1;
+                  let current-tt = typeof-term(r).slot(c"Cons",2).l2;
+                  tctx = phi-override(tctx, current-tt, new-tt);
+               };
             };
          };
 

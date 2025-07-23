@@ -41,5 +41,4 @@ assert( typeof(x) <: type(U64+Phi::State<ABCDEF::F>) );
 no-phi(x);
 
 x = f();
-print("typeof(x) = \{typeof(x)}\n");
 assert( typeof(x) <: type(U64+Phi::State<ABCDEF::A>) );
