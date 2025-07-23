@@ -3,22 +3,32 @@ import lib/std/default.lsts;
 
 type phi ABCDEF = A | B | C | D | E | F;
 
-let f(): U64+Phi::Initialize<A> = 123;
-let g(x: U64+Phi::Transition<A,B>): U64 = 123;
-let h(x: U64+Phi::Transition<B,C>): U64 = 123;
-let i(x: U64+Phi::Transition<B,D>): U64 = 123;
-let j(x: U64+Phi::Transition<E,F>): U64 = 123;
-let phi(l: C, r: D): E;
+let f(): U64+Phi::Initialize<ABCDEF::A> = 123;
+let g(x: U64+Phi::Transition<ABCDEF::A,ABCDEF::B>): U64 = 123;
+let h(x: U64+Phi::Transition<ABCDEF::B,ABCDEF::C>): U64 = 123;
+let i(x: U64+Phi::Transition<ABCDEF::B,ABCDEF::D>): U64 = 123;
+let j(x: U64+Phi::Transition<ABCDEF::E,ABCDEF::F>): U64 = 123;
+let phi(l: ABCDEF::C, r: ABCDEF::D): ABCDEF::E;
 
 let no-phi(phi-x: x): Nil = (
    assert(not( typeof(phi-x) <: type(Phi::State<Any>) ));
 );
 
+let only-phi-state(phi-x: U64+Phi::State<ABCDEF::B>): Nil = (
+   assert( typeof(phi-x) <: type(Phi::State<ABCDEF::B>) );
+);
+
+let only-phi-transition(phi-x: U64+Phi::Transition<ABCDEF::B,ABCDEF::B>): Nil = (
+   assert( typeof(phi-x) <: type(Phi::State<ABCDEF::B>) );
+);
+
 let x = f();
-assert( typeof(x) <: type(U64+Phi::State<A>) );
+assert( typeof(x) <: type(U64+Phi::State<ABCDEF::A>) );
 
 g(x);
-assert( typeof(x) <: type(U64+Phi::State<B>) );
+only-phi-state(x);
+only-phi-transition(x);
+assert( typeof(x) <: type(U64+Phi::State<ABCDEF::B>) );
 
 if true {
    h(x);
@@ -26,6 +36,6 @@ if true {
    i(x);
 };
 if true then j(x) else j(x);
-assert( typeof(x) <: type(U64+Phi::State<F>) );
+assert( typeof(x) <: type(U64+Phi::State<ABCDEF::F>) );
 
 no-phi(x);
