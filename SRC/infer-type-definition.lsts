@@ -71,7 +71,7 @@ let infer-type-definition(term: AST): Nil = (
          if case-tag==c"" {
             common-tags-length = case-fields.length;
          } else {
-            phi-type-index = phi-type-index.bind((case-tag, common-tags-length + case-fields.length), true);
+            phi-type-index = phi-type-index.bind((lhs-type.simple-tag+c"::"+case-tag, common-tags-length + case-fields.length), true);
          }
       }
    } else {
