@@ -1,0 +1,26 @@
+
+let phi-override(tctx: TypeContext?, current-tt: Type, new-tt: Type): TypeContext? = (
+   match current-tt {
+      TAnd{conjugate=conjugate} => (
+         for c in conjugate {
+            tctx = phi-override(tctx, c, new-tt);
+         }
+      );
+      TGround{tag:c"Phi::Id",parameters:[TGround{phi-id=tag}..]} => (
+         let new-phi-type = ta;
+         match new-tt {
+            TAnd{conjugate=conjugate} => (
+               for c in conjugate { match c {
+                  TGround{tag:c"Phi::State",parameters:[phi-state..]} => new-phi-type = new-phi-type && phi-state;
+                  _ => ();
+               }}
+            );
+            TGround{tag:c"Phi::State",parameters:[phi-state..]} => new-phi-type = new-phi-type && phi-state;
+            _ => ();
+         };
+         tctx = tctx.bind-phi(phi-id, new-phi-type);
+      );
+      _ => ();
+   };
+   tctx
+);

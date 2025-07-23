@@ -22,6 +22,7 @@ import SRC/phi-initialize.lsts;
 import SRC/phi-state.lsts;
 import SRC/phi-merge.lsts;
 import SRC/without-phi.lsts;
+import SRC/phi-override.lsts;
 
 let .unroll-seq(t: AST): Vector<AST> = (
    match t {

@@ -39,3 +39,6 @@ if true then j(x) else j(x);
 assert( typeof(x) <: type(U64+Phi::State<ABCDEF::F>) );
 
 no-phi(x);
+
+x = f();
+assert( typeof(x) <: type(U64+Phi::State<ABCDEF::A>) );
