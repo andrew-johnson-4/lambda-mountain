@@ -6,7 +6,7 @@ let ascript(t: AST, tt: Type): Nil = (
          let norm-tt = normalize(tt);
          if not(norm-tt.is-arrow) {
             if not(can-unify(norm-tt,prev-tt)) {
-               exit-error("Type Ascription Inequality\n\{typeof-term(t)} does not imply \{tt}", t);
+               exit-error("Type Ascription Inequality\n\{typeof-term-normal(t)} does not imply \{norm-tt}", t);
             }
          }
       } else ascript-force(t, tt);
