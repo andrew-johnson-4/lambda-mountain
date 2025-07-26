@@ -6,9 +6,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          then exit-error("Variable Name Is Already Bound In Outer Scope \{lname}", term);
          (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Tail(), ta);
          if not(is(rhs,new-rhs)) then { rhs = new-rhs; term = mk-app(mk-abs(def,mk-nil(),misc-tt),rhs); };
-         let tt = typeof-term(rhs);
-         tctx = tctx.bind(lname, normalize(tt), tt && t1(c"LocalVariable"), def);
-         tt = normalize(tt) && t1(c"LocalVariable");
+         let tt = typeof-term-plain(rhs);
+         tt = tt && t1(c"LocalVariable");
+         tctx = tctx.bind(lname, ta, tt, def);
          ascript(def, tt);
          ascript(term, t1(c"Nil"));
       );
