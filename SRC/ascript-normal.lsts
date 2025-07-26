@@ -3,10 +3,10 @@ let ascript(t: AST, tt: Type): Nil = (
    if non-zero(tt) {
       let prev-tt = typeof-term(t);
       if non-zero(prev-tt) {
-         if not(tt.is-arrow) {
-            let norm-tt = normalize(tt);
+         let norm-tt = normalize(tt);
+         if not(norm-tt.is-arrow) {
             if not(can-unify(norm-tt,prev-tt)) {
-               exit-error("Type Ascription Inequality\n\{typeof-term-normal(t)} does not imply \{norm-tt}", t);
+               exit-error("Type Ascription Inequality\n\{typeof-term(t)} does not imply \{tt}", t);
             }
          }
       } else ascript-force(t, tt);
@@ -15,9 +15,6 @@ let ascript(t: AST, tt: Type): Nil = (
 
 let ascript-force(t: AST, tt: Type): Nil = (
    add-concrete-type-instance(tt);
-   let ttn = normalize(tt);
-   ascript-normal(t, ttn);
-   let ttd = denormalize(tt);
-   ascript-denormal(t, ttd);
+   ascript-plain(t, tt);
    types-have-changed = true;
 );
