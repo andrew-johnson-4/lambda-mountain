@@ -63,7 +63,6 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
       ".".. rest => (tokens = cons(text[:".".length], tokens); text = rest;);
 
       (lin=r/^'[a-z]{1,3}/).. rest => (
-         print(text[:lin.length]);
          tokens = cons(text[:lin.length], tokens); text = rest;
       );
 
