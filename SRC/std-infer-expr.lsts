@@ -21,7 +21,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{o-t=left:Var{key:c"open"}, r=right} => (
          (tctx, let new-r) = std-infer-expr(tctx, r, false, Used(), ta);
          if not(is(r,new-r)) then { r = new-r; term = mk-app(o-t, r); };
-         let deref-type = typeof-term(r);
+         let deref-type = typeof-term-plain(r);
          match deref-type.slot(c"Array",2) {
             TGround{tag:c"Array", parameters:[_.. TAny{}..]} => ();
             TGround{tag:c"Array", parameters:[TAny{}.. array-base..]} => (
