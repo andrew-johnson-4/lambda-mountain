@@ -83,8 +83,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
             tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
          };
-         apply-global-callable(tctx, c"into-branch-conditional", typeof-term(cond), cond);
-         ascript(term, typeof-term(t)); # TODO: use MGU to merge true and false branches
+         apply-global-callable(tctx, c"into-branch-conditional", typeof-term-plain(cond), cond);
+         ascript(term, typeof-term-plain(t)); # TODO: use MGU to merge true and false branches
       );
       ASTEOF{} => ascript(term, t1(c"Nil"));
       ASTNil{} => ascript(term, t1(c"Nil"));
@@ -103,7 +103,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          }};
       );
       Glb{key=key, val=val} => (
-         let rough-tt = typeof-term(term);
+         let rough-tt = typeof-term-plain(term);
          if rough-tt.is-arrow && not(rough-tt.is-open) && not(rough-tt.is-t(c"TypedMacro",0)) {
             (_, let new-val) = std-infer-expr(tctx, val, is-scoped, Used(), ta);
             if not(is(val,new-val)) then {
@@ -125,7 +125,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       Lit{key=key, token=token} => (
          if hint.is-t(c"Literal",0) {
             ascript(term,hint);
-         } else if not(non-zero(typeof-term(term))) {
+         } else if not(non-zero(typeof-term-plain(term))) {
             if hint.is-t(c"List",1) && hint.is-type && key==c"LEOF"
             then ascript(term,apply-global-constructor(tctx, key, hint, t1(c"Nil"), term).second)
             else if hint.is-t(c"HashtableEq",2) && hint.is-type && key==c"HashtableEqEOF"
