@@ -44,7 +44,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{szof=left:Var{key:c"scope"}, r=right} => (
          (let inner-tctx, let new-r) = std-infer-expr(tctx, r, true, Tail(), ta);
          if not(is(r,new-r)) then { r = new-r; term = mk-app(szof, r); };
-         ascript(term, typeof-term(r));
+         ascript(term, typeof-term-plain(r));
          tctx = tctx.with-pctx(inner-tctx.get-or(mk-tctx()).pctx);
       );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
@@ -52,7 +52,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          add-concrete-type-instance(tt);
          (tctx, let new-t) = std-infer-expr(tctx, t, false, Tail(), tt);
          if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
-         ascript(term, typeof-term(t));
+         ascript(term, typeof-term-plain(t));
          if tt.is-t(c"String",0) then maybe-apply-global-callable(tctx, c"intern", tt, term);
       );
       App{asc=left:Var{key:c"as"}, right:App{t=left,right:AType{tt=tt}}} => (
@@ -60,7 +60,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          add-concrete-type-instance(tt);
          (tctx, let new-t) = std-infer-expr(tctx, t, false, used, ta);
          if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
-         let inner-tt = normalize(typeof-term(t));
+         let inner-tt = normalize(typeof-term-plain(t));
          if tt.tag.has-prefix(c"Tag::") then tt = tt && inner-tt
          else tt = tt && inner-tt.with-only-class;
          ascript(term, tt);
