@@ -23,8 +23,8 @@ let substitute(tctx: Maybe<TypeContext>, tt: Type): Type = (
       );
       TGround{tag=tag,parameters=parameters} => TGround(tag,close(substitute(tctx,parameters)));
       TVar{name=name} => (
-         let ta = tctx.get-or(mk-tctx()).tctx.lookup(name,Tuple(ta,ta,mk-eof()));
-         if non-zero(ta.first) then ta.first else tt;
+         let tn = tctx.get-or(mk-tctx()).tctx.lookup(name,TypeContextRow(c"",ta,ta,mk-eof())).normalized-type;
+         if non-zero(tn) then tn else tt;
       );
       _ => tt;
    }

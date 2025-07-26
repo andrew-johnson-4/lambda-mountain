@@ -1,8 +1,8 @@
 
 let .into(tctx: Maybe<TypeContext>, tt: Type<String>): String = (
    let result = "";
-   for Tuple{first=first,second=second} in tctx.get-or(mk-tctx()).tctx {
-      result = result + "\{first} : \{second}\n";
+   for TypeContextRow{first=key,third=denormalized-type} in tctx.get-or(mk-tctx()).tctx {
+      result = result + "\{first} : \{third}\n";
    };
    result
 );

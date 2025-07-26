@@ -18,11 +18,11 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TypeContext> = (
       Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => no;
       Tuple{ first:TVar{name=name}, second:TGround{tag=tag} } => (
          pt = pt.without-phi;
-         ctx = ctx.bind(name, normalize(pt), pt, Lit(tag, mk-token(tag)));
+         ctx = ctx.bind(name, ta, pt, Lit(tag, mk-token(tag)));
       );
       Tuple{ first:TVar{name=name} } => (
          pt = pt.without-phi;
-         ctx = ctx.bind(name, normalize(pt), pt, mk-eof());
+         ctx = ctx.bind(name, ta, pt, mk-eof());
       );
       Tuple{ first:TAnd{ lconjugate=conjugate }, second:TAnd{ rconjugate=conjugate } } => (
          let result = yes;
