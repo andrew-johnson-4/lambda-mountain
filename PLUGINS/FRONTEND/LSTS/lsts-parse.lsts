@@ -287,11 +287,19 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
 
 let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
    (let base-type, tokens) = lsts-parse-type-conjugate(tokens);
-   while lsts-parse-head(tokens)==c"-" && lsts-parse-head(tail(tokens))==c">" {
-      lsts-parse-expect(c"-", tokens); tokens = tail(tokens);
-      lsts-parse-expect(c">", tokens); tokens = tail(tokens);
-      (let tail-type, tokens) = lsts-parse-type-conjugate(tokens);
-      base-type = t3(c"Arrow", base-type, tail-type);
+   while (lsts-parse-head(tokens)==c"-" && lsts-parse-head(tail(tokens))==c">") ||
+         (lsts-parse-head(tokens)==c"~" && lsts-parse-head(tail(tokens))==c">") {
+      if lsts-parse-head(tokens)==c"-" && lsts-parse-head(tail(tokens))==c">" {
+         lsts-parse-expect(c"-", tokens); tokens = tail(tokens);
+         lsts-parse-expect(c">", tokens); tokens = tail(tokens);
+         (let tail-type, tokens) = lsts-parse-type-conjugate(tokens);
+         base-type = t3(c"Arrow", base-type, tail-type);
+      } else {
+         lsts-parse-expect(c"~", tokens); tokens = tail(tokens);
+         lsts-parse-expect(c">", tokens); tokens = tail(tokens);
+         (let tail-type, tokens) = lsts-parse-type-conjugate(tokens);
+         base-type = t3(c"Phi::Transition", base-type, tail-type);
+      }
    };
    (base-type, tokens)
 );
@@ -313,6 +321,10 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
    } else if lsts-parse-head(tokens)==c"?" {
       lsts-parse-expect(c"?", tokens); tokens = tail(tokens);
       ta
+   } else if lsts-parse-head(tokens).has-prefix(c"'") && not(lsts-parse-head(tokens).has-suffix(c"'")) {
+      let new-tt = t2(c"Linear",tv(lsts-parse-head(tokens)));
+      tokens = tail(tokens);
+      new-tt
    } else if lsts-is-ident-head(lsts-parse-head(tokens)) && not(lsts-is-type-tag(lsts-parse-head(tokens))) {
       (let varname, tokens) = lsts-parse-identifier(tokens);
       TVar ( varname )
