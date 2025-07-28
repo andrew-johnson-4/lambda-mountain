@@ -34,6 +34,9 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
 
 let type-base-type-index = {} : HashtableEq<(CString,U64),U64>;
 let phi-type-index = {} : HashtableEq<(CString,U64),U64>;
+let phi-parameters-index = {} : HashtableEq<(CString,U64),Type>;
+
+let phi-parameters(tag: CString, ps: U64): Type = phi-parameters-index.lookup((tag,ps),ta);
 
 let .is-type(tt: Type): U64 = (
    let gta = normalize(tt).ground-tag-and-arity;
@@ -67,11 +70,21 @@ let infer-type-definition(term: AST): Nil = (
    if non-zero(opaque-alias) then add-opaque-type-alias(lhs-type, opaque-alias);
    if misc-type.is-t(c"Phi",0) {
       let common-tags-length = 0_u64;
+      let common-parameters = [] : List<Type>;
       for Tuple{ case-tag=first, case-fields=second } in cases {
          if case-tag==c"" {
             common-tags-length = case-fields.length;
+            for Tuple{field-name=first, field-type=second} in case-fields {
+               common-parameters = cons(field-type, common-parameters);
+            };
          } else {
-            phi-type-index = phi-type-index.bind((lhs-type.simple-tag+c"::"+case-tag, common-tags-length + case-fields.length), true);
+            let case-parameters = common-parameters;
+            for Tuple{field-name=first, field-type=second} in case-fields {
+               case-parameters = cons(field-type, case-parameters);
+            };
+            let case-name = lhs-type.simple-tag+c"::"+case-tag;
+            phi-type-index = phi-type-index.bind((case-name, common-tags-length + case-fields.length), true);
+            phi-parameters-index = phi-parameters-index.bind((case-name, common-tags-length + case-fields.length), ts(case-name,case-parameters));
          }
       }
    } else {
