@@ -1,3 +1,21 @@
 
 let prewrite-phi-types(t: AST): AST = (
+   match t {
+      Seq{} => t;
+      ASTEOF{} => t;
+      ASTNil{} => t;
+      AType{tt=tt} => AType(phi-as-state(tt));
+      Var{} => t;
+      Lit{} => t;
+      Meta{} => t;
+      Typedef2{} => t;
+      Glb{key=key, val=val} => if key.key==c"phi" then t else mk-glb(key, prewrite-phi-types(val));
+      Abs{lhs=lhs, rhs:App{ asc=left:Lit{key:c":"}, right:App{ inner=left, right:AType{rt=tt} } }, tt=tt} => (
+         mk-abs(prewrite-phi-types(lhs), mk-app(
+            asc, mk-app(prewrite-phi-types(inner), mk-atype(phi-as-initialize(rt)))
+         ), tt);
+      );
+      Abs{lhs=lhs, rhs=rhs, tt=tt} => mk-abs(prewrite-phi-types(lhs), prewrite-phi-types(rhs), tt);
+      App{is-cons=is-cons, left=left, right=right} => mk-cons-or-app(is-cons, prewrite-phi-types(left), prewrite-phi-types(right));
+   }
 );

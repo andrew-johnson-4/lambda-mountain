@@ -5,7 +5,7 @@ let phi-as-initialize(tt: Type): Type = (
          let new-conjugate = mk-vector(type(Type));
          for c in conjugate {
             new-conjugate = new-conjugate.push(phi-as-initialize(c));
-         }
+         };
          TAnd(new-conjugate);
       );
       TGround{tag:"Phi::State",parameters:[st..]} => t2(c"Phi::Initialize",st);

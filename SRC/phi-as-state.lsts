@@ -5,7 +5,7 @@ let phi-as-state(tt: Type): Type = (
          let new-conjugate = mk-vector(type(Type));
          for c in conjugate {
             new-conjugate = new-conjugate.push(phi-as-state(c));
-         }
+         };
          TAnd(new-conjugate);
       );
       TGround{} => if tt.is-phi-type then t2(c"Phi::State",tt) else tt;
