@@ -60,22 +60,13 @@ let infer-global-context-td(term: AST): Nil = (
    }
 );
 
-let infer-global-context(term: AST): AST = (
-   let original-term = term;
-   term = prewrite-phi-types(term);
-   if not(is(term,original-term)) then print("Original: \{original-term}\nNew: \{term}\n");
+let infer-global-context(term: AST): Nil = (
    match term {
       Seq{seq=seq} => (
-         let def-i = 0_u64;
-         while def-i < seq.length {
-            let rterm = infer-global-context(seq[def-i]);
-            seq[def-i] = rterm;
-            def-i = def-i + 1;
-         };
-         term
+         for s in seq { infer-global-context(s) }
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
-         if k.key.has-prefix(c"primitive::") then term = original-term
+         if k.key.has-prefix(c"primitive::") then ()
          else if misc-tt.is-t(c"TypedMacro",0) then bind-new-macro(k.key, frhs)
          else {
             let ft = t3(c"Arrow", typeof-lhs(lhs), return-type) && misc-tt;
@@ -85,9 +76,8 @@ let infer-global-context(term: AST): AST = (
             global-type-context-normal = global-type-context-normal.bind(k.key, ft, term);
             global-type-context-denormal = global-type-context-denormal.bind(k.key, ft, term);
          };
-         term
       );
-      _ => term;
+      _ => ();
    }
 );
 
