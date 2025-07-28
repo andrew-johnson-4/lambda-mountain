@@ -586,6 +586,7 @@ let lsts-parse-ascript(tokens: List<Token>): Tuple<AST,List<Token>> = (
    while lsts-parse-head(tokens)==c":" && non-zero(tokens) && lsts-parse-head(tail(tokens)) != c":" {
       tokens = tail(tokens);
       (let tt, tokens) = lsts-parse-type(tokens);
+      tt = phi-as-state(tt);
       match term {
          App{ constructor=left:Lit{}, right:ASTNil{} } => (
             term = mk-app(constructor.ascript(tt), mk-nil());
@@ -913,6 +914,7 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
             .with-size(size).with-alias(alias).with-opaque-alias(opaque-alias)
             .with-cases(cases).with-misc(misc-type);
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
+   if misc-type.is-t(c"Phi",0) then infer-type-definition(td);
    (td, tokens);
 );
 
@@ -954,6 +956,7 @@ let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tup
          had-type = true;
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          (arg-type, tokens) = lsts-parse-type(tokens);
+         arg-type = phi-as-state(arg-type);
       };
       if lsts-parse-head(tokens)==c"," { tokens = tail(tokens); } else { lsts-parse-expect(c")", tokens); };
       let arg-binding = if had-type then mk-cons(
@@ -974,6 +977,7 @@ let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tup
        lsts-parse-expect(c":", tokens); tokens = tail(tokens);
        let rtype-rest = lsts-parse-type(tokens);
        out.return-type = rtype-rest.first;
+       out.return-type = phi-as-initialize(out.return-type);
        tokens = rtype-rest.second;
    };
 
@@ -1818,7 +1822,7 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       let term-rest = lsts-parse-type(tokens);
       tokens = term-rest.second;
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-      term = AType( t2(c"Type", term-rest.first) );
+      term = AType( t2(c"Type", phi-as-state(term-rest.first)) );
    } else if lsts-parse-head(tokens)==c"raw-type" {
       tokens = tail(tokens);
       lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
@@ -1959,7 +1963,7 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
             tokens = type-rest.second;
             base = mk-app(
                Var( c"as", with-location(mk-token("as"),loc) ),
-               mk-cons(base, mk-atype(type-rest.first))
+               mk-cons(base, mk-atype(phi-as-state(type-rest.first)))
             );
          );
          [Token{key:"["}.. rest] => (
