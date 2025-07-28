@@ -3,7 +3,7 @@ let types-have-changed = true; # TODO: iterative-inference
 let typecheck(): Nil = (
    infer-global-context-prim(ast-parsed-program);
    infer-global-context-td(ast-parsed-program);
-   infer-global-context(ast-parsed-program);
+   ast-parsed-program = infer-global-context(ast-parsed-program);
    assert-no-infinite-types();
    (global-flow-tctx, ast-parsed-program) = infer-global-terms(global-flow-tctx, ast-parsed-program);
    (global-flow-tctx, ast-parsed-program) = std-infer-expr(global-flow-tctx, ast-parsed-program, false, Used, ta);

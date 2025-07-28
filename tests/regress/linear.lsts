@@ -3,14 +3,9 @@ import lib/std/default.lsts;
 
 type phi MustChomp<x: Linear<?>> = ToChomp { x: x } | Chomped;
 
-# There could be better syntax than this, but let's get this working first
 let to-chomp(x: U64): U64+MustChomp::ToChomp<'a> = x;
-# short for
-# let to-chomp(x: U64): U64+Phi::Initialize<MustChomp::ToChomp<Linear::Initialize<a>>> = x;
 
 let chomp(x: U64+(MustChomp::ToChomp<'a> ~> MustChomp::Chomped)): Nil = ();
-# short for
-# let chomp(x: U64+Phi::Transition<MustChomp::ToChomp,MustChomp::Chomped>): Nil = ();
 
 let x = to-chomp(1);
 chomp(x);

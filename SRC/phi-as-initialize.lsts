@@ -1,0 +1,15 @@
+
+let phi-as-initialize(tt: Type): Type = (
+   match tt {
+      TAnd{conjugate=conjugate} => (
+         let new-conjugate = mk-vector(type(Type));
+         for c in conjugate {
+            new-conjugate = new-conjugate.push(phi-as-initialize(c));
+         }
+         TAnd(new-conjugate);
+      );
+      TGround{tag:"Phi::State",parameters:[st..]} => t2(c"Phi::Initialize",st);
+      TGround{} => if tt.is-phi-type then t2(c"Phi::Initialize",tt) else tt;
+      _ => tt;
+   }
+);
