@@ -733,7 +733,7 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
          name = name + lsts-unwrap-identifier(lsts-parse-head(tokens)); tokens = tail(tokens);
       };
 
-      let sig = lsts-parse-function-signature(tokens, loc);
+      let sig = lsts-parse-function-signature(name, tokens, loc);
       tokens = sig.second;
       let args-type = sig.first.args-type;
       let args-list = sig.first.args-list;
@@ -943,7 +943,7 @@ let lsts-parse-typedef2-case-body(tokens: List<Token>): (Vector<(CString, Type)>
 type LstsFnSignature = { args-list: AST, args-type: Type, return-type: Type };
 
 # parses:    (a: I32, b: I32): U64
-let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tuple<LstsFnSignature, List<Token>> = (
+let lsts-parse-function-signature(fname: CString, tokens: List<Token>, loc: SourceLocation): Tuple<LstsFnSignature, List<Token>> = (
    let out = LstsFnSignature ( mk-nil(), ta, ta );
 
    lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
@@ -956,7 +956,7 @@ let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tup
          had-type = true;
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          (arg-type, tokens) = lsts-parse-type(tokens);
-         arg-type = phi-as-state(arg-type);
+         if fname!=c"phi" then arg-type = phi-as-state(arg-type);
       };
       if lsts-parse-head(tokens)==c"," { tokens = tail(tokens); } else { lsts-parse-expect(c")", tokens); };
       let arg-binding = if had-type then mk-cons(
@@ -977,7 +977,7 @@ let lsts-parse-function-signature(tokens: List<Token>, loc: SourceLocation): Tup
        lsts-parse-expect(c":", tokens); tokens = tail(tokens);
        let rtype-rest = lsts-parse-type(tokens);
        out.return-type = rtype-rest.first;
-       out.return-type = phi-as-initialize(out.return-type);
+       if fname!=c"phi" then out.return-type = phi-as-initialize(out.return-type);
        tokens = rtype-rest.second;
    };
 
@@ -1005,7 +1005,7 @@ let lsts-parse-let(tokens: List<Token>): (AST, List<Token>) = (
    let args-list = mk-eof();
    let return-type = ta;
    if lsts-parse-head(tokens) == c"(" {
-      let sig = lsts-parse-function-signature(tokens, loc);
+      let sig = lsts-parse-function-signature(name, tokens, loc);
       tokens = sig.second;
       args-list = sig.first.args-list;
       return-type = sig.first.return-type;
@@ -1855,7 +1855,7 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       };
       let rec-id = c"";
       if lsts-parse-head(tokens)!=c"(" then (rec-id, tokens) = lsts-parse-identifier(tokens);
-      (let func-sig, tokens) = lsts-parse-function-signature(tokens, loc);
+      (let func-sig, tokens) = lsts-parse-function-signature(rec-id, tokens, loc);
       lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
       (let rhs, tokens) = lsts-parse-small-expression(tokens);
       if non-zero(func-sig.return-type) then rhs = mk-app(mk-lit(c":"), mk-cons(rhs, mk-atype(func-sig.return-type)));

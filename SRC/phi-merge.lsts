@@ -7,7 +7,7 @@ let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<(CString,Type)>, tc
          if not(non-zero(pt)) then tctx-primary = cons( (sid,st), tctx-primary )
          else if can-unify(st,pt) && can-unify(pt,st) then ()
          else (
-            (_, let rt) = apply-global-callable(tctx-globals, c"phi", t3(c"Cons",t2(c"Phi::State",pt),t2(c"Phi::State",st)), blame);
+            (_, let rt) = apply-global-callable(tctx-globals, c"phi", t3(c"Cons",pt,st), blame);
             tctx-primary = cons( (sid,rt), tctx-primary );
          );
          seen = seen.push(sid);
