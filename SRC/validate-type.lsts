@@ -3,11 +3,11 @@ let validate-type(tt: Type, blame: AST): Nil = (
    match tt {
       TAnd{conjugate=conjugate} => for c in conjugate { validate-type(c,blame) };
       TGround{tag:c"Phi::State", parameters:[TGround{tag=tag,parameters=parameters}..]} => (
-         print("Check phi type: \{tt}\n");
          let pi = 0_u64;
          for p in parameters {
-            if not(can-unify(phi-parameters(tag,parameters.length).r(pi), p))
-            then exit-error("Invalid parameter to phi type: \{p} in \{tt}",blame);
+            let p-expect = phi-parameters(tag,parameters.length).r(pi);
+            if not(can-unify(p-expect, p))
+            then exit-error("Invalid parameter to phi type: \{p} in \{tt}, expected \{p-expect}",blame);
             pi = pi + 1;
          };
       );
