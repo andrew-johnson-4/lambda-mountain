@@ -4,7 +4,7 @@ let .into(t: AST, tgt: Type<String>): String = (
       ASTEOF{} => "[EOF]";
       ASTNil{} => "()";
       App{left:Lit{key:c":"},right:App{inner=left, right:AType{tt=tt}}} => (
-         inner.into(type(String)) + " :: " + tt.into(type(String));
+         inner.into(type(String)) + " : " + tt.into(type(String));
       );
       App{is-cons:1_u8, left=left,right=right} => (
          "(" + left.into(type(String)) + "," + right.into(type(String)) + ")";

@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm tests/regress/linear-must-use.lsts
+	lm tests/regress/phi2-initializers.lsts
 	cc tmp.c
 	./a.out
 
