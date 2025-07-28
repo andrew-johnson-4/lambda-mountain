@@ -1,7 +1,8 @@
 
 let concrete-type-instances-index = {} : HashtableEq<(CString,U64),List<Type>>;
 
-let add-concrete-type-instance(tt: Type): Nil = (
+let add-concrete-type-instance(tt: Type, blame: AST): Nil = (
+   validate-type(tt, blame);
    if not(tt.is-phi-type) then {
       tt = normalize(tt);
       let lt = tt.slot(c"Array",2);
@@ -22,7 +23,7 @@ let add-concrete-type-instance(tt: Type): Nil = (
                   k, cons( tt, concrete-type-instances-index.lookup(k, [] : List<Type>) )
                );
             };
-            for ct in ts { add-concrete-type-instance(ct) };
+            for ct in ts { add-concrete-type-instance(ct,blame) };
          );
       }}
    }

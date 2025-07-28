@@ -1,7 +1,7 @@
 
 import lib/std/default.lsts;
 
-type phi MustChomp<x: Linear<?>> = ToChomp { x: x } | Chomped;
+type phi MustChomp = ToChomp { x: 'a } | Chomped;
 
 let to-chomp(x: U64): U64+MustChomp::ToChomp<'a> = x;
 
@@ -9,3 +9,5 @@ let chomp(x: U64+(MustChomp::ToChomp<'a> ~> MustChomp::Chomped)): Nil = ();
 
 let x = to-chomp(1);
 chomp(x);
+
+1 : U64+MustChomp::ToChomp<U64>;

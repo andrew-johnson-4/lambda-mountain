@@ -49,7 +49,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
-         add-concrete-type-instance(tt);
+         add-concrete-type-instance(tt, term);
          (tctx, let new-t) = std-infer-expr(tctx, t, false, Tail(), tt);
          if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
          ascript(term, typeof-term-plain(t));
@@ -57,7 +57,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       App{asc=left:Var{key:c"as"}, right:App{t=left,right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
-         add-concrete-type-instance(tt);
+         add-concrete-type-instance(tt, term);
          (tctx, let new-t) = std-infer-expr(tctx, t, false, used, ta);
          if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
          let inner-tt = normalize(typeof-term-plain(t));

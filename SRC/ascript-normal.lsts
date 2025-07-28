@@ -14,7 +14,7 @@ let ascript(t: AST, tt: Type): Nil = (
 );
 
 let ascript-force(t: AST, tt: Type): Nil = (
-   add-concrete-type-instance(tt);
+   add-concrete-type-instance(tt, t);
    ascript-plain(t, tt);
    types-have-changed = true;
 );
