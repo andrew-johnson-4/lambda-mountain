@@ -64,11 +64,6 @@ let phi-initialize-parameter(tctx: TypeContext?, tt: Type, blame: AST): (TypeCon
          tctx = tctx.bind-phi(phi-id, init-tt, blame);
          (tctx, t2(c"Phi::Id",t1(phi-id)))
       );
-      TGround{tag:c"Phi::Transition",parameters:[_..init-tt..]} => (
-         let phi-id = uuid();
-         tctx = tctx.bind-phi(phi-id, init-tt, blame);
-         (tctx, t2(c"Phi::Id",t1(phi-id)))
-      );
       TGround{tag=tag, parameters=parameters} => (
          let new-parameters = [] : List<Type>;
          for p in parameters.reverse {
