@@ -130,7 +130,7 @@ let can-unify(fpt: Type, pt: Type): U64 = (
       } => (
          if can-unify(rdom, ldom) {
             if rdom.is-open {
-               let tctx = unify(rdom, ldom);
+               let tctx = unify(rdom, ldom, ASTEOF);
                can-unify(lrng, substitute(tctx,rrng));
             } else {
                can-unify(lrng, rrng)
