@@ -21,10 +21,11 @@ type AST zero ASTEOF implements DefaultFormattable
 let $"App"(left: AST[], right: AST[]): AST = App ( false, left, right );
 
 type TypeContextRow = { key: CString, nt: Type, dt: Type, def: AST };
+type PhiContextRow = { phi-id: CString, phi-tt: Type, blame: AST };
 let .normalized-type(tr: TypeContextRow): Type = if non-zero(tr.nt) then tr.nt else normalize(tr.dt);
 let .denormalized-type(tr: TypeContextRow): Type = if non-zero(tr.dt) then tr.dt else denormalize(tr.nt);
-type TypeContext = { tctx:List<TypeContextRow>, pctx: List<(CString,Type)> };
-let mk-tctx(): TypeContext = TypeContext( [] : List<TypeContextRow>, [] : List<(CString,Type)> );
+type TypeContext = { tctx:List<TypeContextRow>, pctx: List<PhiContextRow> };
+let mk-tctx(): TypeContext = TypeContext( [] : List<TypeContextRow>, [] : List<PhiContextRow> );
 let .lookup(trs: List<TypeContextRow>, key: CString, default: TypeContextRow): TypeContextRow = (
    let continue = true;
    for tr in trs { if continue {

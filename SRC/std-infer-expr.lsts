@@ -112,7 +112,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                term = new-term;
             };
          };
-         validate-pctx-del(tctx, term);
+         validate-pctx-del(tctx);
       );
       Var{key=key, token=token} => (
          if key==c"__uninitialized" then ascript(term, hint)
