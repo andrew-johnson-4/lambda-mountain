@@ -18,6 +18,9 @@ let only-phi-state(phi-x: U64+ABCDEF::B): Nil = (
    assert( typeof(phi-x) <: type(ABCDEF::B) );
 );
 
+let only-phi-transition(phi-x: U64+(ABCDEF::B ~> ABCDEF::B)): Nil = (
+);
+
 let x = f();
 assert( typeof(x) <: type(U64+ABCDEF::A) );
 
