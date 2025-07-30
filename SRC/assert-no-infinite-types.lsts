@@ -26,7 +26,7 @@ let assert-no-infinite-types(): Nil = (
 let assert-no-infinite-type(fields-of-type: HashtableEq<(CString,U64),Vector<(Type,Type)>>,
                             seen: List<(CString,U64)>, visiting: Type, root-type: Type, blame: AST): Nil = (
    for Tuple{base-type=first,field-type=second} in fields-of-type.lookup(visiting.ground-tag-and-arity, mk-vector(type((Type,Type)))) {
-      let tctx = unify(base-type, visiting);
+      let tctx = unify(base-type, visiting, blame);
       base-type = substitute(tctx, base-type);
       field-type = substitute(tctx, field-type);
       if seen.contains(field-type.ground-tag-and-arity) then fail("Type definition has infinite size: \{root-type} at \{blame.location}\n");
