@@ -1,10 +1,10 @@
 
 let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>, blame: AST): List<PhiContextRow> = (
    let seen = mk-vector(type(CString));
-   for Tuple{ sid=phi-id, st=phi-tt, blame=blame } in tctx-secondary {
+   for Tuple{ sid=phi-id, st=phi-tt, pblame=blame } in tctx-secondary {
       if not(seen.contains(sid)) {
          let pt = tctx-primary.lookup(sid,ta);
-         if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,blame), tctx-primary )
+         if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,pblame), tctx-primary )
          else if can-unify(st,pt) && can-unify(pt,st) then ()
          else (
             (_, let rt) = apply-global-callable(tctx-globals, c"phi", t3(c"Cons",pt,st), blame);

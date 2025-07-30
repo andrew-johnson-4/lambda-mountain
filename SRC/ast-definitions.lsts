@@ -36,6 +36,16 @@ let .lookup(trs: List<TypeContextRow>, key: CString, default: TypeContextRow): T
    }};
    default
 );
+let .lookup(trs: List<PhiContextRow>, key: CString, default: Type): Type = (
+   let continue = true;
+   for tr in trs { if continue {
+      if tr.phi-id == key {
+         default = tr.phi-tt;
+         continue = false;
+      }
+   }};
+   default
+);
 
 type alias AContext = List<(CString,AST)>;
 

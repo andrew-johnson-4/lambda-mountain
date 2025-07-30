@@ -1,7 +1,7 @@
 
 let validate-pctx-del(tctx: TypeContext?): Nil = (
    let ps-seen = {} : HashtableEq<CString,U64>;
-   for Tuple{pid=first, pt=second} in tctx.get-or(mk-tctx()).pctx {
+   for Tuple{pid=phi-id, pt=phi-tt, pblame=blame} in tctx.get-or(mk-tctx()).pctx {
       if not(ps-seen.has(pid)) {
          #if pt.is-linear
          #then exit-error("", blame);
