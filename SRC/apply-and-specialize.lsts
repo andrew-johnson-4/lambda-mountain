@@ -1,15 +1,15 @@
 
 let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denormal: Type, at: Type, blame: AST): (TypeContext?, Type) = (
    if not(can-apply(ft-denormal, at)) then fail("Unable to apply and specialize: \{fname}\nFunction: \{ft}\nArguments: \{at}\nAt \{blame.location}\n");
-   let inner-tctx = unify(ft-denormal.domain, at);
+   let inner-tctx = unify(ft-denormal.domain, at, blame);
    if inner-tctx.is-none then fail("Unable to apply and specialize (unify): \{fname}\nFunction: \{ft}\nArguments: \{at}\nAt \{blame.location}\n");
    let closed-type = substitute(inner-tctx, ft);
    if closed-type.is-open then fail("Error: Unification Did Not Close Before Specialization\nfunction: \{fname} \{ft}\nargs: \{at}\nAt \{blame.location}\n");
    if ft.is-open then try-specialize(fname, ft, inner-tctx, closed-type);
    let r = substitute(inner-tctx, ft.range);
    if ft.is-t(c"Prop",0) then r = r && cons-root(at);
-   for Tuple{pn=first, pt=second} in inner-tctx.get-or(mk-tctx()).pctx {
-      tctx = tctx.bind-phi(pn, pt);
+   for PhiContextRow{pn=phi-id, pt=phi-tt, pblame=blame} in inner-tctx.get-or(mk-tctx()).pctx {
+      tctx = tctx.bind-phi(pn, pt, pblame);
    };
    (tctx, r)
 );

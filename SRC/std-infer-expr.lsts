@@ -105,7 +105,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       Glb{key=key, val=val} => (
          let rough-tt = typeof-term-plain(term);
          if rough-tt.is-arrow && not(rough-tt.is-open) && not(rough-tt.is-t(c"TypedMacro",0)) {
-            (_, let new-val) = std-infer-expr(tctx, val, is-scoped, Used(), ta);
+            (let inner-tctx, let new-val) = std-infer-expr(tctx, val, is-scoped, Used(), ta);
+            validate-pctx-del(inner-tctx);
             if not(is(val,new-val)) then {
                let new-term = mk-glb(key,new-val);
                mark-var-to-def(new-term, term);
@@ -194,13 +195,13 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   (tctx, t3(c"Cons", typeof-term(l), typeof-term(r)))
                };
                if not(is(used,Call())) { rt = cons-tail-or-self(rt); };
-               (tctx, rt) = phi-initialize(tctx, rt);
+               (tctx, rt) = phi-initialize(tctx, rt, term);
                rt = phi-state(tctx, rt);
                ascript(term, rt);
                if var-name-if-var-or-lit(l)==c"mov" && typeof-term-plain(r).is-t(c"Cons",2) {
                   let new-tt = typeof-term-plain(r).slot(c"Cons",2).l1;
                   let current-tt = typeof-term-plain(r).slot(c"Cons",2).l2;
-                  tctx = phi-override(tctx, current-tt, new-tt);
+                  tctx = phi-override(tctx, current-tt, new-tt, term);
                };
             };
          };

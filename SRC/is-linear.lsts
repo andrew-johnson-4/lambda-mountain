@@ -1,0 +1,17 @@
+
+let .is-linear(tt: Type): U64 = (
+   match tt {
+      TAnd{conjugate=conjugate} => (
+         let return = false;
+         for c in conjugate { return = return || c.is-linear };
+         return
+      );
+      TGround{tag:c"Linear",parameters:[_..]} => true;
+      TGround{parameters=parameters} => (
+         let return = false;
+         for c in parameters { return = return || c.is-linear };
+         return
+      );
+      _ => false;
+   }
+);

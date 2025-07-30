@@ -59,7 +59,7 @@ let apply-global-constructor(tctx: TypeContext?, fname: CString, hint: Type, arg
       for Tuple{ot=first, kt=second, t=third} in global-type-context-denormal.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
          if (not(non-zero(hint)) || can-receive(ot, hint)) && (not(non-zero(arg-types)) || can-apply(ot, arg-types)) {
             let next = if non-zero(hint)
-            then substitute(unify(ot.range,hint),kt)
+            then substitute(unify(ot.range,hint,blame),kt)
             else kt;
             simple = ot;
             if non-zero(result) then result = result && next else result = next;
@@ -80,13 +80,13 @@ let apply-global-constructor(tctx: TypeContext?, fname: CString, hint: Type, arg
    else if not(non-zero(result)) then fail("Unable to apply appropriate global constructor: \{fname} :: \{hint}At: \{blame.location}\n");
    if result.is-arrow && non-zero(arg-types) {
       let inner-tctx = if non-zero(hint)
-      then unify(simple.range, hint)
-      else unify(simple.domain, arg-types);
+      then unify(simple.range, hint, blame)
+      else unify(simple.domain, arg-types, blame);
       let closed-type = substitute(inner-tctx, simple);
       if simple.is-open then try-specialize(fname, simple, inner-tctx, closed-type);
       result = substitute(inner-tctx, simple.range);
-      for Tuple{pn=first, pt=second} in inner-tctx.get-or(mk-tctx()).pctx {
-         tctx = tctx.bind-phi(pn, pt);
+      for prow in inner-tctx.get-or(mk-tctx()).pctx {
+         tctx = tctx.bind-phi(prow.phi-id, prow.phi-tt, blame);
       };
    };
    (tctx, result)

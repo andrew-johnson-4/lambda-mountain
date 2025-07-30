@@ -1,13 +1,13 @@
 
-let unify(fpt: Type, pt: Type): Maybe<TypeContext> = (
+let unify(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
    let ctx = (None : Maybe<TypeContext>)();
    if can-unify(fpt, pt) {
-      ctx = unify-inner(fpt, pt);
+      ctx = unify-inner(fpt, pt, blame);
    };
    ctx
 );
 
-let unify-inner(fpt: Type, pt: Type): Maybe<TypeContext> = (
+let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
    let ctx = (None : Maybe<TypeContext>)();
    let yes = Some(mk-tctx());
    let no = (None : Maybe<TypeContext>)();
@@ -69,7 +69,7 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TypeContext> = (
                      };
                      let scan-ri = ri;
                      while scan-ri<rconjugate.length && rtag==ltag {
-                        this-result-ok = this-result-ok || unify(lc,rc);
+                        this-result-ok = this-result-ok || unify(lc,rc,blame);
                         scan-ri = scan-ri + 1;
                         if scan-ri < rconjugate.length {
                            rc = rconjugate[scan-ri];
@@ -79,20 +79,20 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TypeContext> = (
                   );
                   result = result && this-result-ok;
                );
-               _ => result = result && unify(lc,pt);
+               _ => result = result && unify(lc,pt,blame);
             });
          };
-         if non-zero(phi-id) && non-zero(phi-state-out) then result = result.bind-phi(phi-id, phi-state-out);
+         if non-zero(phi-id) && non-zero(phi-state-out) then result = result.bind-phi(phi-id, phi-state-out, blame);
          ctx = result;
       );
       Tuple{ first:TAnd{ lconjugate=conjugate }, rt=second } => (
          ctx = yes;
-         for c in lconjugate { ctx = ctx && unify-inner(c,rt) };
+         for c in lconjugate { ctx = ctx && unify-inner(c,rt,blame) };
          ctx
       );
       Tuple{ lt=first, second:TAnd{ rconjugate=conjugate } } => (
          ctx = yes;
-         for c in rconjugate { ctx = union(ctx, unify-inner(lt,c)) };
+         for c in rconjugate { ctx = union(ctx, unify-inner(lt,c,blame)) };
          ctx
       );
 
@@ -112,7 +112,7 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TypeContext> = (
           ]},
           second:TGround{tag:c"Cons", parameters:[rp1..rpr..]}
       } => (
-         ctx = unify-inner(lpr, pt);
+         ctx = unify-inner(lpr, pt, blame);
       );
       Tuple{
           first:TGround{tag:c"Cons", parameters:[
@@ -122,14 +122,14 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TypeContext> = (
           second:rp1
       } => (
          if can-unify(lp1, rp1)
-         then { ctx = unify-inner(lp1,rp1) && unify-inner(lpr, t1(c"Nil")); }
-         else { ctx = unify-inner(lpr,rp1); }
+         then { ctx = unify-inner(lp1,rp1,blame) && unify-inner(lpr, t1(c"Nil"), blame); }
+         else { ctx = unify-inner(lpr,rp1,blame); }
       );
       Tuple{
           first:TGround{tag:c"...", parameters:[lp1..]},
           second:TGround{tag:c"Cons", parameters:[rp1..rpr..]}
       } => (
-         if can-unify(lp1,rp1) { ctx = unify-inner(fpt,rpr) && unify-inner(lp1,rp1); };
+         if can-unify(lp1,rp1) { ctx = unify-inner(fpt,rpr,blame) && unify-inner(lp1,rp1,blame); };
       );
       Tuple{
           first:TGround{tag:c"...", parameters:[lp1..]},
@@ -138,18 +138,18 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TypeContext> = (
       Tuple{
           first:TGround{tag:c"...", parameters:[lp1..]},
           second:rp1
-      } => ctx = unify-inner(lp1,rp1);
+      } => ctx = unify-inner(lp1,rp1,blame);
 
       Tuple{
           first:TGround{tag:c"Arrow", parameters:[lrng.. ldom..]},
           second:TGround{tag:c"Arrow", parameters:[rrng.. rdom..]}
       } => (
-          let tctx = unify-inner(rdom, ldom);
+          let tctx = unify-inner(rdom, ldom, blame);
           if tctx.is-some {
             if rdom.is-open {
-               ctx = tctx && unify-inner(lrng, substitute(tctx,rrng));
+               ctx = tctx && unify-inner(lrng, substitute(tctx,rrng), blame);
             } else {
-               ctx = tctx && unify-inner(lrng, rrng)
+               ctx = tctx && unify-inner(lrng, rrng, blame)
             }
          }
       );
@@ -157,19 +157,19 @@ let unify-inner(fpt: Type, pt: Type): Maybe<TypeContext> = (
       Tuple{
           first:TGround{ltn=tag, lps=parameters},
           second:TGround{rtn=tag, rps=parameters}
-      } => if ltn==rtn then { ctx = unify(lps,rps) };
+      } => if ltn==rtn then { ctx = unify(lps,rps,blame) };
       _ => ();
    };
    ctx
 );
 
-let unify(fpt: List<Type>, pt: List<Type>): Maybe<TypeContext> = (
+let unify(fpt: List<Type>, pt: List<Type>, blame: AST): Maybe<TypeContext> = (
    let ctx = (None : Maybe<TypeContext>)();
    let yes = Some(mk-tctx());
    match Tuple( fpt, pt ) {
       Tuple{ first:[lp1..lps], second:[rp1..rps] } => (
-         ctx = unify-inner(lp1,rp1);
-         if non-zero(ctx) { ctx = union(ctx, unify(lps,rps)); }
+         ctx = unify-inner(lp1,rp1,blame);
+         if non-zero(ctx) { ctx = union(ctx, unify(lps,rps,blame)); }
       );
       Tuple{ first:[], second:[] } => ctx = yes;
       Tuple{} => ();

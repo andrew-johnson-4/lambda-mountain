@@ -13,14 +13,14 @@ let .bind(tctx: TypeContext?, k: CString, kt-normal: Type, kt-denormal: Type, kv
    ));
 );
 
-let .bind-phi(tctx: TypeContext?, k: CString, kt: Type): TypeContext? = (
+let .bind-phi(tctx: TypeContext?, k: CString, kt: Type, blame: AST): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
-      cons( (k,kt) , tctx.get-or(mk-tctx()).pctx )
+      cons( PhiContextRow(k,kt,blame) , tctx.get-or(mk-tctx()).pctx )
    ));
 );
 
-let .with-pctx(tctx: TypeContext?, pctx: List<(CString,Type)>): TypeContext? = (
+let .with-pctx(tctx: TypeContext?, pctx: List<PhiContextRow>): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
       pctx

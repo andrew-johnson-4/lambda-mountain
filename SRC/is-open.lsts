@@ -10,6 +10,7 @@ let .is-open(tt: Type): U64 = (
       );
       TGround { tag:c"Array", parameters:[_.. TAny{}..] } => false;
       TGround { tag:c"Array", parameters:[_.. base-type..] } => base-type.is-open;
+      TGround { tag:c"Phi::State", parameters:[_..] } => false;
       TGround { tag:c"Linear", parameters:[TVar{}..] } => false;
       TGround { parameters=parameters } => (
          let is-open = false;

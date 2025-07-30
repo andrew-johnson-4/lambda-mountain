@@ -14,7 +14,7 @@ let std-c-compile-type-typedef(td: AST): Nil = (
    for concrete-type in concrete-type-instances-index.lookup(lhs-type.ground-tag-and-arity, [] : List<Type>) {
       assemble-header-section = assemble-header-section + SAtom(c"typedef struct ") + std-c-mangle-type(concrete-type, td)
                               + SAtom(c" ") + std-c-mangle-type(concrete-type, td) + SAtom(c";\n");
-      let tctx = unify(lhs-type, concrete-type);
+      let tctx = unify(lhs-type, concrete-type, td);
       continue-compile-c-typedefs-concrete = cons( (tctx, concrete-type, td), continue-compile-c-typedefs-concrete );
    }};
 );

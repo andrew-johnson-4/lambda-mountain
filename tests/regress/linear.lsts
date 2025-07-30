@@ -11,3 +11,5 @@ let x = to-chomp(1);
 print("typeof(x) = \{typeof(x)}\n");
 
 chomp(x);
+
+let test(t: U64+MustChomp::ToChomp<'a>): U64 = 1;

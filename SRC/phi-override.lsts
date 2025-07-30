@@ -1,9 +1,9 @@
 
-let phi-override(tctx: TypeContext?, current-tt: Type, new-tt: Type): TypeContext? = (
+let phi-override(tctx: TypeContext?, current-tt: Type, new-tt: Type, blame: AST): TypeContext? = (
    match current-tt {
       TAnd{conjugate=conjugate} => (
          for c in conjugate {
-            tctx = phi-override(tctx, c, new-tt);
+            tctx = phi-override(tctx, c, new-tt, blame);
          }
       );
       TGround{tag:c"Phi::Id",parameters:[TGround{phi-id=tag}..]} => (
@@ -18,7 +18,7 @@ let phi-override(tctx: TypeContext?, current-tt: Type, new-tt: Type): TypeContex
             TGround{tag:c"Phi::State",parameters:[phi-state..]} => new-phi-type = new-phi-type && phi-state;
             _ => ();
          };
-         tctx = tctx.bind-phi(phi-id, new-phi-type);
+         tctx = tctx.bind-phi(phi-id, new-phi-type, blame);
       );
       _ => ();
    };
