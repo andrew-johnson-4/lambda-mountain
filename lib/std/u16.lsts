@@ -15,6 +15,6 @@ declare-binop( $"*", raw-type(U16), raw-type(U16), raw-type(U16), ( l"("; x; l"*
 
 declare-unop( not, raw-type(U16), raw-type(U64), ( l"(!"; x; l")"; ) );
 
-declare-unop( into-branch-conditional, raw-type(U16), raw-type(BranchConditional), x );
+declare-unop( into-branch-conditional, raw-type(U16), raw-type(U64), x );
 
 let print(io: IO::File, x: U16): Nil = (fprintf(io, c"%u", x); ());
