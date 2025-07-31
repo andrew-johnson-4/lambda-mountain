@@ -16,12 +16,18 @@ if true {
 
 # merge case: open two linear types and merge them
 if true {
-   let x = if true {
-      to-chomp(1)
-   } else {
-      to-chomp(2)
-   };
+   let x = $"if"(true) (
+      let inner = to-chomp(1);
+      print("typeof(inner) = \{typeof(inner)}\n");
+      inner
+   ) (
+      let outer = to-chomp(2);
+      print("typeof(outer) = \{typeof(outer)}\n");
+      outer
+   );
    print("typeof(x) = \{typeof(x)}\n");  
+   print("typeof(inner) = \{typeof(inner)}\n");  
+   chomp(x);
 };
 
 

@@ -42,7 +42,6 @@ let least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): 
             let new-phi-state = phi-merge(tctx,left-phi-state,right-phi-state,blame);
             result = result.push(t2(c"Phi::Id",t1(new-phi-id)));
             tctx = tctx.bind-phi(new-phi-id, new-phi-state, blame);
-            print("Merge Phi States LUB\nleft id \{left-phi-id}\nright id \{right-phi-id}\nleft state \{left-phi-state}\nright state \{right-phi-state}\nFinal Id \{new-phi-id}\nFinal State \{tctx.get-or(mk-tctx()).pctx.lookup(new-phi-id,ta)}\n");
          };
          if accept then Some(TAnd(result)) else None : Type?
       );
@@ -54,7 +53,6 @@ let least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): 
       );
       _ => None : Type?;
    };
-   print("LUB\nleft \{left}\nright \{right}\nresult \{rt}\n");
    (tctx, rt)
 );
 
