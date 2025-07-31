@@ -84,8 +84,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
          };
          apply-global-callable(tctx, c"into-branch-conditional", typeof-term-plain(cond), cond);
-         (tctx, let lub) = least-upper-bound(tctx, typeof-term(t), typeof-term(f), term);
-         ascript(term, lub.get-or(ta));
+         let lub = if typeof-term(t).is-t(c"Never",0) then typeof-term(f)
+         else if typeof-term(f).is-t(c"Never",0) then typeof-term(t)
+         else { (tctx, let lub) = least-upper-bound(tctx, typeof-term(t), typeof-term(f), term); lub.get-or(ta); };
+         ascript(term, lub);
       );
       ASTEOF{} => ascript(term, t1(c"Nil"));
       ASTNil{} => ascript(term, t1(c"Nil"));

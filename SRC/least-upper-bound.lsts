@@ -11,7 +11,15 @@ let least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): 
          let right-phi-state = ta;
          let right-phi-id = c"";
          while accept && (li < lconjugate.length || ri < rconjugate.length) {
-            if li < lconjugate.length && lconjugate[li].is-t(c"Phi::Id",1) {
+            if li < lconjugate.length && ( lconjugate[li].is-t(c"Constant",0)
+                                        || lconjugate[li].is-t(c"Literal",0)
+            ) {
+               li = li + 1;
+            } else if ri < rconjugate.length && ( rconjugate[ri].is-t(c"Constant",0) 
+                                               || rconjugate[ri].is-t(c"Literal",0)
+            ) {
+               ri = ri + 1;
+            } else if li < lconjugate.length && lconjugate[li].is-t(c"Phi::Id",1) {
                left-phi-id = lconjugate[li].l1.simple-tag;
                li = li + 1;
             } else if ri < rconjugate.length && rconjugate[ri].is-t(c"Phi::Id",1) {
@@ -54,7 +62,7 @@ let least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): 
       Tuple{ first:TAny{}, second:TAny{} } => Some(ta);
       _ => None : Type?;
    };
-   if not(rt.is-some) then print("LUB\nLeft \{left}\nRight \{right}\nResult \{rt}\n");
+   if not(rt.is-some) then print("LUB \{blame.location}\nLeft \{left}\nRight \{right}\nResult \{rt}\n");
    (tctx, rt)
 );
 
