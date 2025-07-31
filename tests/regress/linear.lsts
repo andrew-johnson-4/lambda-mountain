@@ -7,9 +7,21 @@ let to-chomp(x: U64): U64+MustChomp::ToChomp<'a> = x;
 
 let chomp(x: U64+(MustChomp::ToChomp<'a> ~> MustChomp::Chomped)): Nil = ();
 
-let x = to-chomp(1);
-print("typeof(x) = \{typeof(x)}\n");
+# simple case: open linear type and close it
+if true {
+   let x = to-chomp(1);
+   print("typeof(x) = \{typeof(x)}\n");
+   chomp(x);
+};
 
-chomp(x);
+# merge case: open two linear types and merge them
+if true {
+   let x = if true {
+      to-chomp(1)
+   } else {
+      to-chomp(2)
+   };
+   print("typeof(x) = \{typeof(x)}\n");  
+};
 
-let test(t: U64+MustChomp::ToChomp<'a>): U64 = 1;
+
