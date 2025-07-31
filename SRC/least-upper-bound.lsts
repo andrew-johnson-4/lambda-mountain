@@ -54,7 +54,7 @@ let least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): 
       Tuple{ first:TAny{}, second:TAny{} } => Some(ta);
       _ => None : Type?;
    };
-   print("LUB\nLeft \{left}\nRight \{right}\nResult \{rt}\n");
+   if not(rt.is-some) then print("LUB\nLeft \{left}\nRight \{right}\nResult \{rt}\n");
    (tctx, rt)
 );
 
