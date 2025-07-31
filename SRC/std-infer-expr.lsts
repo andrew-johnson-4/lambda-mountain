@@ -85,7 +85,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          };
          apply-global-callable(tctx, c"into-branch-conditional", typeof-term-plain(cond), cond);
          let lub = if typeof-term(t).is-t(c"Never",0) then typeof-term(f)
-         else if typeof-term(f).is-t(c"Never",0) then typeof-term(t)
+         else if typeof-term(f).is-t(c"Never",0) || typeof-term(f).is-t(c"Nil",0) then typeof-term(t)
          else { (tctx, let lub) = least-upper-bound(tctx, typeof-term(t), typeof-term(f), term); lub.get-or(ta); };
          ascript(term, lub);
       );
