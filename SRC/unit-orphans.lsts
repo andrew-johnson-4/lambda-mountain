@@ -28,6 +28,7 @@ import SRC/phi-as-initialize.lsts;
 import SRC/validate-type.lsts;
 import SRC/validate-pctx-del.lsts;
 import SRC/is-linear.lsts;
+import SRC/least-upper-bound.lsts;
 
 let .unroll-seq(t: AST): Vector<AST> = (
    match t {

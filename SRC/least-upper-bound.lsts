@@ -1,0 +1,7 @@
+
+let least-upper-bound(left: Type, right: Type): Type = (
+   print("Least Upper Bound (Left): \{left}\n");
+   print("Least Upper Bound (Right): \{right}\n");
+   exit(1);
+   ta   
+);
