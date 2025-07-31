@@ -1,5 +1,5 @@
 
-let least-upper-bound(left: Type, right: Type): Type? = (
+let least-upper-bound(tctx: TypeContext?, left: Type, right: Type): (TypeContext?, Type?) = (
    let rt = match (left, right) {
       Tuple{ first:TAnd{lconjugate=conjugate}, second:TAnd{rconjugate=conjugate} } => (
          let result = mk-vector(type(Type));
@@ -24,7 +24,7 @@ let least-upper-bound(left: Type, right: Type): Type? = (
                right-phi-state = rconjugate[ri].l1;
                ri = ri + 1;
             } else if li < lconjugate.length && ri < rconjugate.length {
-               let tt = least-upper-bound(lconjugate[li], rconjugate[ri]);
+               (tctx, let tt) = least-upper-bound(tctx,lconjugate[li], rconjugate[ri]);
                if tt.is-some {
                   result = result.push(tt.get-or-panic);
                   li = li + 1;
@@ -39,26 +39,27 @@ let least-upper-bound(left: Type, right: Type): Type? = (
       );
       Tuple{ first:TGround{ltag=tag,lparameters=parameters}, second:TGround{rtag=tag,rparameters=parameters} } => (
          if ltag==rtag {
-            let ps = least-upper-bound(lparameters, rparameters);
+            (tctx, let ps) = least-upper-bound(tctx, lparameters, rparameters);
             if ps.is-some then Some(ts(ltag,ps.get-or-panic)) else None : Type?
          } else None : Type?
       );
       _ => None : Type?;
    };
    print("LUB\nleft \{left}\nright \{right}\nresult \{rt}\n");
-   rt
+   (tctx, rt)
 );
 
-let least-upper-bound(left: List<Type>, right: List<Type>): List<Type>? = (
-   match (left, right) {
+let least-upper-bound(tctx: TypeContext?, left: List<Type>, right: List<Type>): (TypeContext?, List<Type>?) = (
+   let tt = match (left, right) {
       Tuple{ first:[lt..ls], second:[rt..rs] } => (
-         let tt = least-upper-bound(lt,rt);
+         (tctx, let tt) = least-upper-bound(tctx,lt,rt);
          if tt.is-some {
-            let ts = least-upper-bound(ls,rs);
+            (tctx, let ts) = least-upper-bound(tctx,ls,rs);
             if ts.is-some then Some(cons(tt.get-or-panic,ts.get-or-panic)) else None : List<Type>?
          } else None : List<Type>?
       );
       Tuple{ first:[], second:[] } => Some([] : List<Type>);
       _ => None : List<Type>?;
-   }
+   };
+   (tctx, tt)
 );
