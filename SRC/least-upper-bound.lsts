@@ -1,9 +1,22 @@
 
 let least-upper-bound(left: Type, right: Type): Type? = (
-   match (left, right) {
+   let rt = match (left, right) {
       Tuple{ first:TAnd{lconjugate=conjugate}, second:TAnd{rconjugate=conjugate} } => (
-         print("TODO conjugate\nleft \{left}\nright \{right}\n");
-         None : Type?;
+         let result = mk-vector(type(Type));
+         let li = 0_u64;
+         let ri = 0_u64;
+         let accept = true;
+         while accept && (li < lconjugate.length || ri < rconjugate.length) {
+            if li < lconjugate.length && ri < rconjugate.length {
+               let tt = least-upper-bound(lconjugate[li], rconjugate[ri]);
+               if tt.is-some {
+                  result = result.push(tt.get-or-panic);
+                  li = li + 1;
+                  ri = ri + 1;
+               } else accept = false
+            } else accept = false;
+         };
+         if accept then Some(TAnd(result)) else None : Type?
       );
       Tuple{ first:TGround{ltag=tag,lparameters=parameters}, second:TGround{rtag=tag,rparameters=parameters} } => (
          if ltag==rtag {
@@ -12,7 +25,9 @@ let least-upper-bound(left: Type, right: Type): Type? = (
          } else None : Type?
       );
       _ => None : Type?;
-   }
+   };
+   print("LUB\nleft \{left}\nright \{right}\nresult \{rt}\n");
+   rt
 );
 
 let least-upper-bound(left: List<Type>, right: List<Type>): List<Type>? = (
