@@ -126,14 +126,14 @@ let .clone(self: Vector<t>): Vector<t> = (
 
 let $"[]"( v: Vector<t>, i: U64 ): t = (
    if i >= (v.length as U64) {
-      fail("Vector Index Out of Bounds");
+      fail("Vector Index Out of Bounds"); ()
    };
    v.data[i]
 );
 
 let $"set[]"( v: Vector<t>, i: U64, val: t ): Nil = (
    if i >= v.length {
-      fail("Vector Index Out of Bounds");
+      fail("Vector Index Out of Bounds"); ()
    };
    v.data[i] = val; 
    ()
@@ -248,7 +248,7 @@ let .into(self: Vector<x>, tt: Type<String>): String = (
 
 let .ptr(v: Vector<t>, toelem: U64): t[] = (
    if toelem >= v.capacity {
-      fail("Vector.ptr() index out of capacity bounds");
+      fail("Vector.ptr() index out of capacity bounds"); ()
    };
    ((v.data as U64) + sizeof(t) * toelem) as t[]
 );

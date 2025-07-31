@@ -15,7 +15,7 @@ declare-binop( $"*", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"*
 
 declare-unop( not, raw-type(I64), raw-type(U64), ( l"(!"; x; l")"; ) );
 
-declare-unop( into-branch-conditional, raw-type(I64), raw-type(BranchConditional), x );
+declare-unop( into-branch-conditional, raw-type(I64), raw-type(U64), x );
 
 let minimum-I64 = -2147483648_i64;
 

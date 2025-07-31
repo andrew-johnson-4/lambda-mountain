@@ -14,7 +14,7 @@ declare-binop( $"-", raw-type(base-type[]), raw-type(base-type[]), raw-type(U64)
 
 declare-unop( not, raw-type(base-type[]), raw-type(U64), ( l"(!"; x; l")"; ) );
 
-declare-unop( into-branch-conditional, raw-type(base-type[]), raw-type(BranchConditional), x );
+declare-unop( into-branch-conditional, raw-type(base-type[]), raw-type(U64), x );
 
 declare-binop( $"[]", raw-type(base-type[]), raw-type(U64), raw-type(base-type), ( l"("; x; l"["; y; l"])"; ) );
 declare-ternop( $"set[]", raw-type(base-type[]), raw-type(U64), raw-type(base-type), raw-type(base-type), ( l"("; x; l"["; y; l"]="; z; l")"; ) );
