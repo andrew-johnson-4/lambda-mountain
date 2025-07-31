@@ -1,5 +1,5 @@
 
-let least-upper-bound(tctx: TypeContext?, left: Type, right: Type): (TypeContext?, Type?) = (
+let least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): (TypeContext?, Type?) = (
    let rt = match (left, right) {
       Tuple{ first:TAnd{lconjugate=conjugate}, second:TAnd{rconjugate=conjugate} } => (
          let result = mk-vector(type(Type));
@@ -24,7 +24,7 @@ let least-upper-bound(tctx: TypeContext?, left: Type, right: Type): (TypeContext
                right-phi-state = rconjugate[ri].l1;
                ri = ri + 1;
             } else if li < lconjugate.length && ri < rconjugate.length {
-               (tctx, let tt) = least-upper-bound(tctx,lconjugate[li], rconjugate[ri]);
+               (tctx, let tt) = least-upper-bound(tctx,lconjugate[li], rconjugate[ri], blame);
                if tt.is-some {
                   result = result.push(tt.get-or-panic);
                   li = li + 1;
@@ -33,13 +33,22 @@ let least-upper-bound(tctx: TypeContext?, left: Type, right: Type): (TypeContext
             } else accept = false;
          };
          if non-zero(left-phi-id) || non-zero(right-phi-id) || non-zero(left-phi-state) || non-zero(right-phi-state) {
+            if not(non-zero(left-phi-id)) || not(non-zero(right-phi-id)) || not(non-zero(left-phi-state)) || not(non-zero(right-phi-state)) {
+               exit-error("Unable to Merge Phi States: \{left-phi-state} x \{right-phi-state}", blame);
+            };
+            tctx = tctx.bind-phi(left-phi-id, t1(c"Phi::Moved"), blame);
+            tctx = tctx.bind-phi(right-phi-id, t1(c"Phi::Moved"), blame);
+            let new-phi-id = uuid();
+            let new-phi-state = phi-merge(tctx,left-phi-state,right-phi-state,blame);
+            result = result.push(t2(c"Phi::Id",t1(new-phi-id)));
+            tctx = tctx.bind-phi(new-phi-id, new-phi-state, blame);
             print("Merge Phi States LUB\nleft id \{left-phi-id}\nright id \{right-phi-id}\nleft state \{left-phi-state}\nright state \{right-phi-state}\n");
          };
          if accept then Some(TAnd(result)) else None : Type?
       );
       Tuple{ first:TGround{ltag=tag,lparameters=parameters}, second:TGround{rtag=tag,rparameters=parameters} } => (
          if ltag==rtag {
-            (tctx, let ps) = least-upper-bound(tctx, lparameters, rparameters);
+            (tctx, let ps) = least-upper-bound(tctx, lparameters, rparameters, blame);
             if ps.is-some then Some(ts(ltag,ps.get-or-panic)) else None : Type?
          } else None : Type?
       );
@@ -49,12 +58,12 @@ let least-upper-bound(tctx: TypeContext?, left: Type, right: Type): (TypeContext
    (tctx, rt)
 );
 
-let least-upper-bound(tctx: TypeContext?, left: List<Type>, right: List<Type>): (TypeContext?, List<Type>?) = (
+let least-upper-bound(tctx: TypeContext?, left: List<Type>, right: List<Type>, blame: AST): (TypeContext?, List<Type>?) = (
    let tt = match (left, right) {
       Tuple{ first:[lt..ls], second:[rt..rs] } => (
-         (tctx, let tt) = least-upper-bound(tctx,lt,rt);
+         (tctx, let tt) = least-upper-bound(tctx,lt,rt,blame);
          if tt.is-some {
-            (tctx, let ts) = least-upper-bound(tctx,ls,rs);
+            (tctx, let ts) = least-upper-bound(tctx,ls,rs,blame);
             if ts.is-some then Some(cons(tt.get-or-panic,ts.get-or-panic)) else None : List<Type>?
          } else None : List<Type>?
       );

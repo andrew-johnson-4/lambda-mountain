@@ -5,13 +5,17 @@ let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tct
       if not(seen.contains(sid)) {
          let pt = tctx-primary.lookup(sid,ta);
          if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,pblame), tctx-primary )
-         else if can-unify(st,pt) && can-unify(pt,st) then ()
          else (
-            (_, let rt) = apply-global-callable(tctx-globals, c"phi", t3(c"Cons",pt,st), blame);
-            tctx-primary = cons( PhiContextRow(sid,rt,blame), tctx-primary );
+            let rt = phi-merge(tctx-globals, pt, st, blame);
+            if not(is(pt,rt)) then tctx-primary = cons( PhiContextRow(sid,rt,blame), tctx-primary );
          );
          seen = seen.push(sid);
       };
    };
    tctx-primary
+);
+
+let phi-merge(tctx: TypeContext?, left-phi-state: Type, right-phi-state: Type, blame: AST): Type = (
+   if can-unify(left-phi-state,right-phi-state) && can-unify(right-phi-state,left-phi-state) then left-phi-state
+   else apply-global-callable(tctx, c"phi", t3(c"Cons",left-phi-state,right-phi-state), blame).second;
 );

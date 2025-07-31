@@ -84,7 +84,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
          };
          apply-global-callable(tctx, c"into-branch-conditional", typeof-term-plain(cond), cond);
-         (tctx, let lub) = least-upper-bound(tctx, typeof-term(t),typeof-term(f));
+         (tctx, let lub) = least-upper-bound(tctx, typeof-term(t), typeof-term(f), term);
          ascript(term, lub.get-or(ta));
       );
       ASTEOF{} => ascript(term, t1(c"Nil"));
