@@ -16,7 +16,7 @@ let .has-moved(tt: Type): U64 = (
          };
          moved
       );
-      TGround{tag:c"Linear",parameters:[TGround{tag:c"Phi::Moved",parameters:[]}..]} => true;
+      TGround{tag:c"Phi::Moved",parameters:[]} => true;
       TGround{tag=tag,parameters=parameters} => (
          let moved = false;
          for c in parameters {

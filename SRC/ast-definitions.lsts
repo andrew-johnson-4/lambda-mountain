@@ -46,6 +46,7 @@ let .lookup(trs: List<PhiContextRow>, key: CString, default: Type): Type = (
    }};
    default
 );
+let .into(tr: TypeContextRow, tt: Type<String>): String = "TypeContextRow{ key: \"\{tr.key}\", dt: \"\{tr.dt}\" }";
 
 type alias AContext = List<(CString,AST)>;
 
