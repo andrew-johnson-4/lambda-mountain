@@ -16,7 +16,7 @@ if true {
 
 # merge case: open two linear types and merge them
 if true {
-   let x = $"if"(true) (
+   let x = $"if" (true) (
       let inner = to-chomp(1);
       print("typeof(inner) = \{typeof(inner)}\n");
       inner
