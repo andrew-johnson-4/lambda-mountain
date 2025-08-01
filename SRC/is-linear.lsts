@@ -6,6 +6,7 @@ let .is-linear(tt: Type): U64 = (
          for c in conjugate { return = return || c.is-linear };
          return
       );
+      TGround{tag:c"Linear",parameters:[TGround{tag:c"Phi::Moved",parameters:[]}..]} => false;
       TGround{tag:c"Linear",parameters:[_..]} => true;
       TGround{parameters=parameters} => (
          let return = false;

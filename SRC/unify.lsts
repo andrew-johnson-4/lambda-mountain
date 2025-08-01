@@ -53,7 +53,10 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
                      _ => scan-states = false;
                   }};
                   if can-unify(phi-from, phi-state-in)
-                  then phi-state-out = phi-state-out && phi-to;
+                  then (
+                     result = result && unify(phi-from, phi-state-in, blame);
+                     phi-state-out = phi-state-out && phi-to;
+                  );
                );
                TGround{ltag=tag} => (
                   let this-result-ok = no;

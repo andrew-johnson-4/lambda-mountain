@@ -1,10 +1,11 @@
 
 let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denormal: Type, at: Type, blame: AST): (TypeContext?, Type) = (
-   if not(can-apply(ft-denormal, at)) then fail("Unable to apply and specialize: \{fname}\nFunction: \{ft}\nArguments: \{at}\nAt \{blame.location}\n");
+   if not(can-apply(ft-denormal, at)) then exit-error("Unable to apply and specialize: \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
    let inner-tctx = unify(ft-denormal.domain, at, blame);
-   if inner-tctx.is-none then fail("Unable to apply and specialize (unify): \{fname}\nFunction: \{ft}\nArguments: \{at}\nAt \{blame.location}\n");
+   if inner-tctx.has-moved then exit-error("Linear Value Used After Move", blame);
+   if inner-tctx.is-none then exit-error("Unable to apply and specialize (unify): \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
    let closed-type = substitute(inner-tctx, ft);
-   if closed-type.is-open then fail("Error: Unification Did Not Close Before Specialization\nfunction: \{fname} \{ft}\nargs: \{at}\nAt \{blame.location}\n");
+   if closed-type.is-open then exit-error("Unification Did Not Close Before Specialization\nfunction: \{fname} \{ft}\nargs: \{at}", blame);
    if ft.is-open then try-specialize(fname, ft, inner-tctx, closed-type);
    let r = substitute(inner-tctx, ft.range);
    if ft.is-t(c"Prop",0) then r = r && cons-root(at);

@@ -1,0 +1,21 @@
+
+let phi-linear-moved(tt: Type): Type = (
+   match tt {
+      TAnd{conjugate=conjugate} => (
+         let new-conjugate = mk-vector(type(Type));
+         for c in conjugate {
+            new-conjugate = new-conjugate.push(phi-linear-moved(c));
+         };
+         TAnd(new-conjugate)
+      );
+      TGround{tag:c"Linear", parameters:[_..]} => t2(c"Linear",t1(c"Phi::Moved"));
+      TGround{tag=tag, parameters=parameters} => (
+         let new-parameters = [] : List<Type>;
+         for p in parameters.reverse {
+            new-parameters = cons( phi-linear-moved(p), new-parameters );
+         };
+         ts(tag,new-parameters);
+      );
+      _ => tt;
+   }
+);
