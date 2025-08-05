@@ -29,7 +29,7 @@ if true {
    print("typeof(x) = \{typeof(x)}\n");  
    print("typeof(inner) = \{typeof(inner)}\n");  
    chomp(x);
-   to-chomp(3);
+   send-chomp(to-chomp(3));
 };
 
 
