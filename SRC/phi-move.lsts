@@ -13,7 +13,7 @@ let phi-move(tctx: TypeContext?, tt: Type, blame: AST): TypeContext? = (
          for p in parameters {
             tctx = phi-move(tctx, p, blame);
          }
-      )
+      );
       _ => ();
    };
    tctx
