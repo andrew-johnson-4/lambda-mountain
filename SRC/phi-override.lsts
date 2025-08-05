@@ -1,15 +1,15 @@
 
 # for use during "mov" to override existing binding phi-state with new phi state
 let phi-override(tctx: TypeContext?, from-tt: Type, to-tt: Type, blame: AST): TypeContext? = (
-   match from-tt {
+   match to-tt {
       TAnd{conjugate=conjugate} => (
          for c in conjugate {
-            tctx = phi-override(tctx, c, to-tt, blame);
+            tctx = phi-override(tctx, from-tt, c, blame);
          }
       );
       TGround{tag:c"Phi::Id",parameters:[TGround{phi-id=tag}..]} => (
          let new-phi-type = ta;
-         match to-tt {
+         match from-tt {
             TAnd{conjugate=conjugate} => (
                for c in conjugate { match c {
                   TGround{tag:c"Phi::State",parameters:[phi-state..]} => new-phi-type = new-phi-type && phi-state;
