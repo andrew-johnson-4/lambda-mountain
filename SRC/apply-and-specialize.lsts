@@ -14,10 +14,7 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
       tctx = tctx.bind-phi(pn, pt, pblame);
       phi-modified = phi-modified.push(pn);
    };
-   print("Apply \{fname} \{ft}\n");
-   print("Argument \{at}\n");
    for PhiContextRow{pn=phi-id, pt=phi-tt, pblame=blame} in phi-move(Some(mk-tctx()), at, blame).get-or(mk-tctx()).pctx {
-      print("Phi move in apply \{pn}\n");
       if not(phi-modified.contains(pn))
       then tctx = tctx.bind-phi(pn, pt, pblame);
    };
