@@ -2,7 +2,6 @@
 let validate-pctx-del(tctx: TypeContext?): Nil = (
    let ps-seen = {} : HashtableEq<CString,U64>;
    for Tuple{pid=phi-id, pt=phi-tt, blame=blame} in tctx.get-or(mk-tctx()).pctx {
-      print("See \{pid} : \{pt}\n");
       if not(ps-seen.has(pid)) {
          if pt.is-linear
          then exit-error("Linear Variables Must Be Used: #\{pid} \{pt}", blame);

@@ -31,4 +31,11 @@ if true {
    send-chomp(to-chomp(3));
 };
 
-
+# move case: transfer ownership during move
+if true {
+   let x = to-chomp(1);
+   let y = to-chomp(1);
+   chomp(y);
+   y = x;
+   chomp(y);
+};
