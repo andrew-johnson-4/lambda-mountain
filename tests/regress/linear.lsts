@@ -6,12 +6,13 @@ type phi MustChomp = ToChomp { x: 'a } | Chomped;
 let to-chomp(x: U64): U64+MustChomp::ToChomp<'a> = x;
 
 let chomp(x: U64+(MustChomp::ToChomp<'a> ~> MustChomp::Chomped)): Nil = ();
-let send-chomp(x: U64+MustChomp::ToChomp<'a>): Nil = chomp(x);
+let send-chomp(x: U64+MustChomp::ToChomp<'a>): Nil = (
+   chomp(x);
+);
 
 # simple case: open linear type and close it
 if true {
    let x = to-chomp(1);
-   print("typeof(x) = \{typeof(x)}\n");
    chomp(x);
 };
 
@@ -26,8 +27,6 @@ if true {
       print("typeof(outer) = \{typeof(outer)}\n");
       outer
    );
-   print("typeof(x) = \{typeof(x)}\n");  
-   print("typeof(inner) = \{typeof(inner)}\n");  
    chomp(x);
    send-chomp(to-chomp(3));
 };

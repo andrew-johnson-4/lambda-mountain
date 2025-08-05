@@ -7,10 +7,15 @@ let phi-move(tctx: TypeContext?, tt: Type, blame: AST): TypeContext? = (
          for c in conjugate { match c {
             TGround{tag:c"Phi::Id",parameters:[TGround{pid=tag}..]} => phi-id = pid;
             TGround{tag:c"Phi::State",parameters:[pst..]} => phi-state = pst;
-            _ => ();
+            _ => tctx = phi-move(tctx, c, blame);
          }};
          if non-zero(phi-id) && non-zero(phi-state)
          then tctx = tctx.bind-phi(phi-id, phi-linear-moved(phi-state), blame);
+      );
+      TGround{parameters=parameters} => (
+         for p in parameters {
+            tctx = phi-move(tctx, p, blame);
+         };
       );
       _ => ();
    };
