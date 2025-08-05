@@ -211,7 +211,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 
          if not(is-macro) && not(is-cons) && typeof-term(l).is-arrow && non-zero(var-name-if-var(l)) {
             mark-var-to-def-todo(tctx, var-name-if-var(l), typeof-term(r), l);
-            apply-global-callable(tctx, var-name-if-var(l),typeof-term(r),term);
          };
       );
       _ => fail("Unexpected Term in std-infer-expr\n\{term}\n");
