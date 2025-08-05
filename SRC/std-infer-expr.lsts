@@ -202,15 +202,15 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                if not(is(used,Call())) { rt = cons-tail-or-self(rt); };
                (tctx, rt) = phi-initialize(tctx, rt, term);
                if var-name-if-var-or-lit(l)==c"mov" && typeof-term-plain(r).is-t(c"Cons",2) {
-                  let new-tt = typeof-term-plain(r).slot(c"Cons",2).l1;
-                  let current-tt = typeof-term-plain(r).slot(c"Cons",2).l2;
+                  let from-tt = typeof-term-plain(r).slot(c"Cons",2).l1;
+                  let to-tt = typeof-term-plain(r).slot(c"Cons",2).l2;
                   print("Move \{term}\n");
-                  print("Move From \{current-tt}\n");
-                  print("Move To \{new-tt}\n");
-                  tctx = phi-override(tctx, current-tt, new-tt, term);
-                  tctx = phi-move(tctx, current-tt, term);
-                  print("Moved From \{phi-state(tctx,current-tt)}\n");
-                  print("Moved To \{phi-state(tctx,new-tt)}\n");
+                  print("Move From \{from-tt}\n");
+                  print("Move To \{to-tt}\n");
+                  tctx = phi-override(tctx, from-tt, to-tt, term);
+                  tctx = phi-move(tctx, from-tt, term);
+                  print("Moved From \{phi-state(tctx,from-tt)}\n");
+                  print("Moved To \{phi-state(tctx,to-tt)}\n");
                };
                rt = phi-state(tctx, rt);
                ascript(term, rt);
