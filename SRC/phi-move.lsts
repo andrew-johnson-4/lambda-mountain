@@ -1,0 +1,20 @@
+
+let phi-move(tctx: TypeContext?, tt: Type, blame: AST): TypeContext? = (
+   match tt {
+      TAnd{conjugate=conjugate} => (
+         for c in conjugate {
+            tctx = phi-move(tctx, c, blame);
+         }
+      );
+      TGround{tag:c"Linear",parameters:[TVar{phi-id=name}..]} => (
+         tctx = tctx.bind-phi(phi-id, t2(c"Linear",t1(c"Phi::Moved")), blame);
+      );
+      TGround{parameters=parameters} => (
+         for p in parameters {
+            tctx = phi-move(tctx, p, blame);
+         }
+      )
+      _ => ();
+   };
+   tctx
+);
