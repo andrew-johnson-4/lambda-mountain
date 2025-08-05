@@ -1,4 +1,5 @@
 
+# for use during "mov" to override existing binding phi-state with new phi state
 let phi-override(tctx: TypeContext?, current-tt: Type, new-tt: Type, blame: AST): TypeContext? = (
    match current-tt {
       TAnd{conjugate=conjugate} => (

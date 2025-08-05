@@ -1,0 +1,39 @@
+
+# change phi id's to new phi ids but with the same phi state
+let phi-fresh(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Type) = (
+   match tt {
+      TAnd{conjugate=conjugate} => (
+         let phi-id = c"";
+         let phi-state = ta;
+         let new-conjugate = mk-vector(type(Type));
+         for c in conjugate { match c {
+            TGround{tag:c"Phi::Id",parameters:[TGround{pid=tag}..]} => (
+               phi-id = uuid();
+               new-conjugate = new-conjugate.push(t2(c"Phi::Id",t1(phi-id)));
+            );
+            TGround{tag:c"Phi::State",parameters:[pst..]} => (
+               phi-state = pst;
+               new-conjugate = new-conjugate.push(c);
+            );
+            _ => (
+               (tctx, c) = phi-fresh(tctx, c, blame);
+               new-conjugate = new-conjugate.push(c);
+            );
+         }};
+         if non-zero(phi-id) then print("Phi Fresh \{phi-id} \{phi-state}\nFrom \{tt} \{blame}\n");
+         if non-zero(phi-id) && non-zero(phi-state)
+         then tctx = tctx.bind-phi(phi-id, phi-state, blame);
+         tt = TAnd(new-conjugate);
+      );
+      TGround{tag=tag,parameters=parameters} => (
+         let new-parameters = [] : List<Type>;
+         for p in parameters {
+            (tctx, p) = phi-fresh(tctx, p, blame);
+            new-parameters = cons(p,new-parameters);
+         };
+         tt = ts(tag,new-parameters.reverse);
+      );
+      _ => ();
+   };
+   (tctx, tt)
+);
