@@ -139,7 +139,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       Abs{lhs=lhs, rhs=rhs:App{asc=left:Lit{key:c":"},right:App{inner-rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} => (
          tctx = infer-ctx(tctx, lhs);
-         (_, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type);
+         (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type);
          if not(is(inner-rhs,new-inner-rhs))
          then {
             inner-rhs = new-inner-rhs;
@@ -211,7 +211,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 
          if not(is-macro) && not(is-cons) && typeof-term(l).is-arrow && non-zero(var-name-if-var(l)) {
             mark-var-to-def-todo(tctx, var-name-if-var(l), typeof-term(r), l);
-            apply-global-callable(tctx, var-name-if-var(l),typeof-term(r),term);
          };
       );
       _ => fail("Unexpected Term in std-infer-expr\n\{term}\n");
