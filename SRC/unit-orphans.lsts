@@ -33,6 +33,7 @@ import SRC/phi-linear-moved.lsts;
 import SRC/phi-move.lsts;
 import SRC/phi-fresh.lsts;
 import SRC/has-moved.lsts;
+import SRC/expand-implied-phi.lsts;
 
 let .unroll-seq(t: AST): Vector<AST> = (
    match t {

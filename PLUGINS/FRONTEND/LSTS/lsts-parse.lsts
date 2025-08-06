@@ -586,7 +586,7 @@ let lsts-parse-ascript(tokens: List<Token>): Tuple<AST,List<Token>> = (
    while lsts-parse-head(tokens)==c":" && non-zero(tokens) && lsts-parse-head(tail(tokens)) != c":" {
       tokens = tail(tokens);
       (let tt, tokens) = lsts-parse-type(tokens);
-      tt = phi-as-state(tt);
+      tt = phi-as-state(tt).expand-implied-phi;
       match term {
          App{ constructor=left:Lit{}, right:ASTNil{} } => (
             term = mk-app(constructor.ascript(tt), mk-nil());
@@ -829,6 +829,7 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
          lsts-parse-expect(c"phi", tokens); tokens = tail(tokens);
          (let mt, tokens) = lsts-parse-type(tokens);
          implied-phi = implied-phi && mt;
+         implied-phi-index = implied-phi-index.bind(lhs-type.ground-tag-and-arity, mt);
       };
       if lsts-parse-head(tokens)==c":" {
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
@@ -964,7 +965,7 @@ let lsts-parse-function-signature(fname: CString, tokens: List<Token>, loc: Sour
          had-type = true;
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          (arg-type, tokens) = lsts-parse-type(tokens);
-         if fname!=c"phi" then arg-type = phi-as-state(arg-type);
+         if fname!=c"phi" then arg-type = phi-as-state(arg-type).expand-implied-phi;
       };
       if lsts-parse-head(tokens)==c"," { tokens = tail(tokens); } else { lsts-parse-expect(c")", tokens); };
       let arg-binding = if had-type then mk-cons(
@@ -1971,7 +1972,7 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
             tokens = type-rest.second;
             base = mk-app(
                Var( c"as", with-location(mk-token("as"),loc) ),
-               mk-cons(base, mk-atype(phi-as-state(type-rest.first)))
+               mk-cons(base, mk-atype(phi-as-state(type-rest.first).expand-implied-phi))
             );
          );
          [Token{key:"["}.. rest] => (
