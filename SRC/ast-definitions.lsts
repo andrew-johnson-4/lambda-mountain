@@ -15,7 +15,7 @@ type AST zero ASTEOF implements DefaultFormattable
          | Glb { key: Token , val: AST[] }
          | Typedef2 { location: SourceLocation, lhs-type: Type, implies: Vector<Type>, implements: Vector<Type>,
                       size: Type, alias: Type, opaque-alias: Type, cases: Vector<(CString,Vector<(CString,Type)>)>,
-                      misc-type: Type };
+                      misc-type: Type, implied-phi: Type };
 
 # constructor with a default argument
 let $"App"(left: AST[], right: AST[]): AST = App ( false, left, right );
