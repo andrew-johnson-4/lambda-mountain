@@ -42,6 +42,8 @@ if true {
    chomp(y);
 };
 
-let f(x: A): A = x;
+let f(x: A): A = (
+   x
+);
 
 chomp(f(A(1)));
