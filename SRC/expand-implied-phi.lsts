@@ -2,6 +2,7 @@
 let implied-phi-index = {} : HashtableEq<(CString,U64),Type>;
 
 let .expand-implied-phi(tt: Type): Type = (
+   let original-tt = tt;
    match tt {
       TAnd{conjugate=conjugate} => (
          for c in conjugate {
@@ -23,5 +24,6 @@ let .expand-implied-phi(tt: Type): Type = (
       );
       _ => ();
    };
+   if not(is(original-tt, tt)) then print("Expanded \{original-tt} => \{tt}\n");
    tt
 );
