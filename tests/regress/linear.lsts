@@ -10,7 +10,7 @@ let send-chomp(x: U64+MustChomp::ToChomp<'s>): Nil = (
    chomp(x);
 );
 
-type A implicit phi MustChomp::ToChomp<'a> = { a: U64 };
+type A implies associated MustChomp::ToChomp<'a> = { a: U64 };
 
 # simple case: open linear type and close it
 if true {
