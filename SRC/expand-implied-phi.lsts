@@ -24,6 +24,5 @@ let .expand-implied-phi(tt: Type): Type = (
       );
       _ => ();
    };
-   if not(is(original-tt, tt)) then print("Expanded \{original-tt} => \{tt}\n");
    tt
 );
