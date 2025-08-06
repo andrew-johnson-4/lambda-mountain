@@ -5,10 +5,12 @@ type phi MustChomp = ToChomp { x: 'a } | Chomped;
 
 let to-chomp(x: U64): U64+MustChomp::ToChomp<'a> = x;
 
-let chomp(x: U64+(MustChomp::ToChomp<'a> ~> MustChomp::Chomped)): Nil = ();
+let chomp(x: x+(MustChomp::ToChomp<'a> ~> MustChomp::Chomped)): Nil = ();
 let send-chomp(x: U64+MustChomp::ToChomp<'s>): Nil = (
    chomp(x);
 );
+
+type A implied phi MustChomp::ToChomp<'a> = { a: U64 };
 
 # simple case: open linear type and close it
 if true {
@@ -39,3 +41,9 @@ if true {
    y = x;
    chomp(y);
 };
+
+let f(x: A): A = (
+   x
+);
+
+chomp(f(A(1)));
