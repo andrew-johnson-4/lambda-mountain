@@ -3,7 +3,7 @@ import lib/std/default.lsts;
 
 type phi ABCDEF = A | B | C | D | E | F;
 
-let f(): U64+ABCDEF::A = 123;
+let :Phi::Source f(): U64+ABCDEF::A = 123;
 let g(x: U64+(ABCDEF::A ~> ABCDEF::B)): U64 = 123;
 let h(x: U64+(ABCDEF::B ~> ABCDEF::C)): U64 = 123;
 let i(x: U64+(ABCDEF::B ~> ABCDEF::D)): U64 = 123;
