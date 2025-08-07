@@ -1,7 +1,3 @@
 
-let can-apply(ft: Type, pt: Type): U64 = (
-   let r = can-unify(ft.domain, pt);
-   print("Can Apply \{ft}\nWith Argument \{pt}\nAccept \{r}\n");
-   r
-);
+let can-apply(ft: Type, pt: Type): U64 = can-unify(ft.domain, pt);
 let can-receive(ft: Type, pt: Type): U64 = can-unify(ft.range, pt);

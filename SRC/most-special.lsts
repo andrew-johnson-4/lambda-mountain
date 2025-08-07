@@ -10,11 +10,9 @@
 
 let most-special(t1: Type, t2: Type): Type = (
    if t1.is-arrow && t2.is-arrow {
-      let rt = if can-unify(t1.domain, t2.domain) then t2
+      if can-unify(t1.domain, t2.domain) then t2
       else if can-unify(t2.domain, t1.domain) then t1
-      else ta;
-      if not(non-zero(rt)) then print("Not Most Special\n\{t1}\n\{t2}\n");
-      rt
+      else ta
    } else if can-unify(t1, t2) then t2
      else if can-unify(t2, t1) then t1
      else ta
