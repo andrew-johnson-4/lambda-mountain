@@ -3,7 +3,7 @@ import lib/std/default.lsts;
 
 type phi MustChomp = ToChomp { x: 'a } | Chomped;
 
-let to-chomp(x: U64): U64+MustChomp::ToChomp<'a> = x;
+let :Phi::Source to-chomp(x: U64): U64+MustChomp::ToChomp<'a> = x;
 
 let chomp(x: x+(MustChomp::ToChomp<'a> ~> MustChomp::Chomped)): Nil = ();
 let send-chomp(x: U64+MustChomp::ToChomp<'s>): Nil = (
@@ -22,11 +22,9 @@ if true {
 if true {
    let x = $"if" (true) (
       let inner = to-chomp(1);
-      print("typeof(inner) = \{typeof(inner)}\n");
       inner
    ) (
       let outer = to-chomp(2);
-      print("typeof(outer) = \{typeof(outer)}\n");
       outer
    );
    chomp(x);

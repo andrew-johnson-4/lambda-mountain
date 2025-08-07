@@ -25,14 +25,27 @@ let can-unify(fpt: Type, pt: Type): U64 = (
          for lc in lconjugate {
             if result then (match lc {
                TGround{tag:c"Any"} => ();
-               TGround{tag:c"Phi::Initialize"} => ();
+               TGround{tag:c"Phi::Initialize",parameters:[phi-expect..]} => (
+                  let pt-phi-state = ta;
+                  for rct in rconjugate { match rct {
+                     TGround{tag:c"Phi::State",parameters:[rct-phi-state..]} => pt-phi-state = rct-phi-state;
+                     _ => ();
+                  }};
+                  result = result && can-unify(phi-expect, pt-phi-state);
+               );
                TGround{tag:c"Phi::Transition", parameters:[phi-to..phi-from..]} => (
                   let scan-states = true;
+                  let skip-state-check = false;
                   while scan-states && ri < rconjugate.length { match rconjugate[ri] {
                      TGround{tag:c"Phi::Id",parameters:[TGround{new-phi-id=tag}..]} => ri = ri + 1;
                      TGround{tag:c"Phi::State",parameters:[new-phi-state..]} => (
                         phi-state-in = phi-state-in && new-phi-state;
                         ri = ri + 1;
+                     );
+                     TGround{tag:c"Phi::Transition",parameters:[new-phi-to..new-phi-from..]} => (
+                        result = result && can-unify(phi-to, new-phi-to) && can-unify(phi-from, new-phi-from);
+                        ri = ri + 1;
+                        skip-state-check = true;
                      );
                      TGround{tag=tag} => (
                         if tag < c"Phi::Transition"
@@ -41,7 +54,7 @@ let can-unify(fpt: Type, pt: Type): U64 = (
                      );
                      _ => scan-states = false;
                   }};
-                  result = can-unify(phi-from, phi-state-in)
+                  if not(skip-state-check) then result = result && can-unify(phi-from, phi-state-in);
                );
                TGround{ltag=tag} => (
                   let this-result-ok = false as U64;

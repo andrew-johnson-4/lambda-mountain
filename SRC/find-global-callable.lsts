@@ -17,7 +17,7 @@ let find-global-callable(fname: CString, arg-types: Type, blame: AST): AST = (
       if all-accept { result = t1 };
    }};
    if not(non-zero(result)) && match-set.length > 0 {
-      eprint("Unable to find unambiguous global callable: \{fname} \{arg-types}\n");
+      eprint("Unable to find unambiguous global callable: \{fname} \{arg-types}\nAt: \{blame.location}\n");
       for Tuple{kt=first, t=second} in match-set {
          eprint("\{kt}\n");
       };
@@ -34,7 +34,7 @@ let find-global-callable(fname: CString, arg-types: Type, blame: AST): AST = (
 );
 
 let find-global-constructor(fname: CString, hint: Type, arg-types: Type, blame: AST): AST = (
-   hint = hint.rewrite-type-alias;
+   hint = hint.rewrite-type-alias.without-phi;
    let result = ASTEOF();
    for Tuple{ot=first, kt=second, t=third} in global-type-context-denormal.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
       if not(ot.is-open) && (not(non-zero(hint)) || can-receive(ot, hint)) && can-apply(ot, arg-types) {
