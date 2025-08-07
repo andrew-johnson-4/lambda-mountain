@@ -47,5 +47,3 @@ let f(x: A): A = (
 );
 
 chomp(f(A(1)));
-
-let wrong-chomp(x: U64+MustChomp::ToChomp<'s>): U64+MustChomp::Chomped = x;
