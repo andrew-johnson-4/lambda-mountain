@@ -25,7 +25,14 @@ let can-unify(fpt: Type, pt: Type): U64 = (
          for lc in lconjugate {
             if result then (match lc {
                TGround{tag:c"Any"} => ();
-               TGround{tag:c"Phi::Initialize"} => ();
+               TGround{tag:c"Phi::Initialize",parameters:[phi-expect..]} => (
+                  let pt-phi-state = ta;
+                  for rct in rconjugate { match rct {
+                     TGround{tag:c"Phi::State",parameters:[rct-phi-state..]} => pt-phi-state = rct-phi-state;
+                     _ => ();
+                  }};
+                  result = result && can-unify(phi-expect, pt-phi-state);
+               );
                TGround{tag:c"Phi::Transition", parameters:[phi-to..phi-from..]} => (
                   let scan-states = true;
                   let skip-state-check = false;
