@@ -17,7 +17,7 @@ let find-global-callable(fname: CString, arg-types: Type, blame: AST): AST = (
       if all-accept { result = t1 };
    }};
    if not(non-zero(result)) && match-set.length > 0 {
-      eprint("Unable to find unambiguous global callable: \{fname} \{arg-types}\n");
+      eprint("Unable to find unambiguous global callable: \{fname} \{arg-types}\nAt: \{blame.location}\n");
       for Tuple{kt=first, t=second} in match-set {
          eprint("\{kt}\n");
       };
