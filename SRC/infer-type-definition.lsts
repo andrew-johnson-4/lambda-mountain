@@ -208,6 +208,7 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
    body = mk-cons(body, mk-lit(c";})").ascript(t1(c"L")));
 
    let constructor = mk-glb( mk-token(case-tag).with-location(blame.location), mk-abs(args, body.ascript(base-type.expand-implied-phi.phi-as-initialize), t1(c"Blob")) );
+   if case-tag==c"A" then print("Constructor \{constructor}\n");
 
    type-ast-inserts = type-ast-inserts.push(constructor); ()
 );
