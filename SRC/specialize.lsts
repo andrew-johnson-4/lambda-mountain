@@ -11,10 +11,11 @@ let specialize(key: CString, ft: Type, unify-ctx: TypeContext?, result-type: Typ
       };
       if non-zero(term) {
          mark-as-special(key, result-type);
+         if key==c"id-phi" then print("To Special term \{term}\n");
          let special-term = substitute(unify-ctx, term);
+         if key==c"id-phi" then print("Special term \{special-term}\n");
          infer-global-context(special-term);
          (_, special-term) = std-infer-expr(global-flow-tctx, special-term, false, Used, ta);
-         if key==c"id-phi" then print("Special term \{special-term}\n");
          ast-parsed-program = ast-parsed-program + special-term;
       }
    }
