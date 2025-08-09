@@ -61,3 +61,9 @@ let mangle-identifier(k: CString, kt: Type): CString = (
    );
 );
 
+let mangle-identifier-function(k: CString, kt: Type): CString = (
+   clone-rope(
+      mangle-identifier(k) + SAtom(c"_CL_") + mangle-identifier(normalize(kt) && kt.with-only-phi)
+   );
+);
+
