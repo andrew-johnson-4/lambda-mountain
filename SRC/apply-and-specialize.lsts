@@ -3,7 +3,6 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
    if not(can-apply(ft-denormal, at)) then exit-error("Unable to apply and specialize: \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
    if fname=="id-phi" || fname==c"f" then print("apply id-phi\nFunction \{ft}\nArgs \{at}\n");
    let inner-tctx = unify(ft-denormal.domain, at, blame);
-   inner-tctx = inner-tctx.with-pctx( tctx.get-or(mk-tctx()).pctx );
    let phi-modified = mk-vector(type(CString));
    for PhiContextRow{pn=phi-id, pt=phi-tt, pblame=blame} in inner-tctx.get-or(mk-tctx()).pctx {
       tctx = tctx.bind-phi(pn, pt, pblame);
@@ -25,7 +24,10 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
    if closed-type.is-open then exit-error("Unification Did Not Close Before Specialization\nfunction: \{fname} \{ft}\nargs: \{at}", blame);
    let r = substitute(inner-tctx, initialized-ft.range);
    if ft.is-t(c"Prop",0) then r = r && cons-root(at);
-   if ft.is-open then try-specialize(fname, ft, inner-tctx, closed-type);
+   if ft.is-open then {
+      let special-tctx = inner-tctx.with-pctx( tctx.get-or(mk-tctx()).pctx );
+      try-specialize(fname, ft, special-tctx, closed-type);
+   };
    (tctx, r)
 );
 
