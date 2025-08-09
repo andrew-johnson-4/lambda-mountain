@@ -18,7 +18,6 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
    if inner-tctx.has-moved then exit-error("Linear Value Used After Move", blame);
    if inner-tctx.is-none then exit-error("Unable to apply and specialize (unify): \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
    (tctx, let initialized-ft) = phi-initialize(tctx, ft, blame);
-   print("Initialized \{initialized-ft}\n");
    let closed-type = substitute(inner-tctx, ft);
    if not(ft.is-t(c"Blob",0) || ft.is-t(c"FFI",0)) then closed-type = closed-type.phi-specialize(tctx, blame);
    if fname=="id-phi" then print("apply id-phi closed type \{closed-type}\n");
