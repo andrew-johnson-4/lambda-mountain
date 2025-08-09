@@ -100,6 +100,10 @@ let substitute(tctx: TypeContext?, t: AST, is-return: U64): AST = (
             }
          }; t
       );
+      App{ left:Lit{key:c":",ctk=token}, right:App{ inner-t=left, right:AType{vt=tt} } } => (
+         vt = substitute(tctx, vt).phi-specialize(tctx,t,is-return);
+         mk-app( mk-lit(c":",unique(ctk)), mk-app(substitute(tctx, inner-t), mk-atype(vt)) );
+      );
       Lit{v=key,vtk=token} => mk-lit(v,unique(vtk));
       Var{v=key,vtk=token} => mk-var(v,unique(vtk));
       Abs{lhs=lhs,rhs=rhs,tt=tt} => mk-abs(substitute-lhs(tctx,lhs),substitute(tctx,rhs,true),substitute(tctx,tt));
