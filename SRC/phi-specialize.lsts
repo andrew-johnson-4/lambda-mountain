@@ -1,0 +1,13 @@
+
+# Rewrite Phi Ids as States and Initializers to be used in function signatures
+
+let .phi-specialize(tt: Type, tctx: TypeContext?, blame: AST): Type = tt.phi-specialize(tctx, blame, false);
+);
+
+let .phi-specialize(tt: Type, tctx: TypeContext?, blame: AST, is-return: U64): Type = (
+   match tt {
+      TAnd{conjugate=conjugate} => (
+      );
+ 
+   };
+);
