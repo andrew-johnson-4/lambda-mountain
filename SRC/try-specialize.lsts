@@ -1,5 +1,10 @@
 
 let try-specialize(function-name: CString, ft: Type, unify-ctx: TypeContext?, result-type: Type): Nil = (
+   if function-name == c"id-phi" {
+      print("Specialize \{function-name} : \{ft}\n");
+      print("Context \{unify-ctx.get-or(mk-tctx()).tctx}\n");
+      print("Specialize Result \{function-name} : \{result-type}\n");
+   };
    for Tuple{ kt=first, t=third } in global-type-context-normal.lookup(function-name, [] : List<(Type,Type,AST)>) {
       if kt==ft && not(is-special(function-name,result-type)) { match t {
          Glb{val:Abs{}} => stack-to-specialize = cons( StackToSpecialize(function-name,ft,unify-ctx,result-type), stack-to-specialize );
