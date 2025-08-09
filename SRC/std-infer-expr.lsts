@@ -211,7 +211,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   (tctx, t3(c"Cons", typeof-term(l), typeof-term(r)))
                };
                if not(is(used,Call())) { rt = cons-tail-or-self(rt); };
-               (tctx, rt) = phi-initialize(tctx, rt, term);
                if var-name-if-var-or-lit(l)==c"mov" && typeof-term-plain(r).is-t(c"Cons",2) {
                   let from-tt = typeof-term-plain(r).slot(c"Cons",2).l1;
                   let to-tt = typeof-term-plain(r).slot(c"Cons",2).l2;
