@@ -8,7 +8,8 @@ let .phi-specialize(tt: Type, tctx: TypeContext?, blame: AST, is-return: U64): T
       TAnd{conjugate=conjugate} => (
          let new-conjugate = mk-vector(type(Type));
          for c in conjugate {
-            new-conjugate = new-conjugate.push(c.phi-specialize(tctx, blame, is-return));
+            let ct = c.phi-specialize(tctx, blame, is-return);
+            if non-zero(ct) then new-conjugate = new-conjugate.push(ct);
          };
          TAnd(new-conjugate)
       );
@@ -17,10 +18,10 @@ let .phi-specialize(tt: Type, tctx: TypeContext?, blame: AST, is-return: U64): T
       );
       TGround{tag:c"Phi::Id",parameters:[TGround{phi-id=tag,parameters:[]}..]} => (
          let phi-state = tctx.get-or(mk-tctx()).pctx.lookup(phi-id, ta);
-         if not(non-zero(phi-state)) then exit-error("Could not find phi state for phi id #\{phi-id}", blame);
+         if not(non-zero(phi-state)) then exit-error("Unable to find phi state for phi id in context #\{phi-id}", blame);
          if is-return
          then t2(c"Phi::Initialize", phi-state)
-         else t2(c"Phi::State", phi-state);
+         else t2(c"Phi::State", phi-state)
       );
       TGround{tag=tag,parameters=parameters} => (
          let new-parameters = [] : List<Type>;

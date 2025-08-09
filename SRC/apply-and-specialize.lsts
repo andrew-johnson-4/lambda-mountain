@@ -3,15 +3,6 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
    if not(can-apply(ft-denormal, at)) then exit-error("Unable to apply and specialize: \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
    if fname=="id-phi" then print("apply id-phi\nFunction \{ft}\nArgs \{at}\n");
    let inner-tctx = unify(ft-denormal.domain, at, blame);
-   if fname=="id-phi" then print("apply id-phi tctx \{inner-tctx.get-or(mk-tctx()).tctx}\n");
-   if inner-tctx.has-moved then exit-error("Linear Value Used After Move", blame);
-   if inner-tctx.is-none then exit-error("Unable to apply and specialize (unify): \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
-   let closed-type = substitute(inner-tctx, ft).phi-specialize(tctx, blame);
-   if fname=="id-phi" then print("apply id-phi closed type \{closed-type}\n");
-   if closed-type.is-open then exit-error("Unification Did Not Close Before Specialization\nfunction: \{fname} \{ft}\nargs: \{at}", blame);
-   if ft.is-open then try-specialize(fname, ft, inner-tctx, closed-type);
-   let r = substitute(inner-tctx, ft.range);
-   if ft.is-t(c"Prop",0) then r = r && cons-root(at);
    let phi-modified = mk-vector(type(CString));
    for PhiContextRow{pn=phi-id, pt=phi-tt, pblame=blame} in inner-tctx.get-or(mk-tctx()).pctx {
       tctx = tctx.bind-phi(pn, pt, pblame);
@@ -23,6 +14,15 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
          then tctx = tctx.bind-phi(pn, pt, pblame);
       };
    );
+   if fname=="id-phi" then print("apply id-phi tctx \{inner-tctx.get-or(mk-tctx()).tctx}\n");
+   if inner-tctx.has-moved then exit-error("Linear Value Used After Move", blame);
+   if inner-tctx.is-none then exit-error("Unable to apply and specialize (unify): \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
+   let closed-type = substitute(inner-tctx, ft).phi-specialize(tctx, blame);
+   if fname=="id-phi" then print("apply id-phi closed type \{closed-type}\n");
+   if closed-type.is-open then exit-error("Unification Did Not Close Before Specialization\nfunction: \{fname} \{ft}\nargs: \{at}", blame);
+   if ft.is-open then try-specialize(fname, ft, inner-tctx, closed-type);
+   let r = substitute(inner-tctx, ft.range);
+   if ft.is-t(c"Prop",0) then r = r && cons-root(at);
    (tctx, r)
 );
 
