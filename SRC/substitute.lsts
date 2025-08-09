@@ -64,13 +64,15 @@ let substitute-lhs(tctx: TypeContext?, t: AST): AST = substitute-lhs(tctx, t, 0)
 let substitute-lhs(tctx: TypeContext?, t: AST, idx: U64): AST = (
    match t {
       App{ ps=left, right:App{ left:Lit{key:c":",ctk=token}, right:App{ left:Var{v=key,vtk=token}, right:AType{vt=tt} } } } => (
+         vt = substitute(tctx, vt.accept-interface(idx)).phi-specialize(tctx,t);
          mk-app( substitute-lhs(tctx,ps,idx+1), 
             mk-app( mk-lit(c":",unique(ctk)), mk-app(
-               mk-var(v,unique(vtk)), mk-atype(substitute(tctx, vt.accept-interface(idx)))
+               mk-var(v,unique(vtk)), mk-atype(vt)
             ))
          )
       );
       App{ left:Lit{key:c":",ctk=token}, right:App{ left:Var{v=key,vtk=token}, right:AType{vt=tt} } } => (
+         vt = substitute(tctx, vt.accept-interface(idx)).phi-specialize(tctx,t);
          mk-app( mk-lit(c":",unique(ctk)), mk-app(
             mk-var(v,unique(vtk)), mk-atype(substitute(tctx, vt.accept-interface(idx)))
          ))
@@ -81,23 +83,26 @@ let substitute-lhs(tctx: TypeContext?, t: AST, idx: U64): AST = (
    }
 );
 
-let substitute(tctx: TypeContext?, t: AST): AST = (
+let substitute(tctx: TypeContext?, t: AST): AST = substitute(tctx,t,false);
+
+let substitute(tctx: TypeContext?, t: AST, is-return: U64): AST = (
    match t {
       ASTEOF{} => t;
       ASTNil{} => t;
       App{ left:Lit{key:c":",ctk=token}, right:App{ left:Var{v=key,vtk=token}, right:AType{vt=tt} } } => (
-         t = mk-app( mk-lit(c":",unique(ctk)), mk-app(mk-var(v,unique(vtk)), mk-atype(substitute(tctx,vt))) );
+         vt = substitute(tctx, vt).phi-specialize(tctx,t,is-return);
+         t = mk-app( mk-lit(c":",unique(ctk)), mk-app(mk-var(v,unique(vtk)), mk-atype(vt)) );
          let found = false;
          for TypeContextRow{tk=key,ta=def} in tctx.get-or(mk-tctx()).tctx {
             if not(found) && tk==v {
-               t = mk-app( mk-lit(c":",unique(ctk)), mk-app(substitute(tctx,ta), mk-atype(substitute(tctx,vt))) );
+               t = mk-app( mk-lit(c":",unique(ctk)), mk-app(substitute(tctx,ta), mk-atype(vt)) );
                found = true;
             }
          }; t
       );
       Lit{v=key,vtk=token} => mk-lit(v,unique(vtk));
       Var{v=key,vtk=token} => mk-var(v,unique(vtk));
-      Abs{lhs=lhs,rhs=rhs,tt=tt} => mk-abs(substitute-lhs(tctx,lhs),substitute(tctx,rhs),substitute(tctx,tt));
+      Abs{lhs=lhs,rhs=rhs,tt=tt} => mk-abs(substitute-lhs(tctx,lhs),substitute(tctx,rhs,true),substitute(tctx,tt));
       AType{tt=tt} => mk-atype(substitute(tctx,tt));
       App{is-cons=is-cons,lt=left,rt=right} => mk-cons-or-app(is-cons,substitute(tctx,lt),substitute(tctx,rt));
       Seq{seq=seq} => (
