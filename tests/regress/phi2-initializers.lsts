@@ -24,12 +24,14 @@ let only-phi-transition(phi-x: U64+(ABCDEF::B ~> ABCDEF::B)): Nil = (
 
 let x = f();
 assert( typeof(x) <: type(U64+ABCDEF::A) );
+print("typeof(id-phi(x)) = \{typeof(id-phi(x))}\n");
 assert( typeof(id-phi(x)) <: type(U64+ABCDEF::A) );
 
 g(x);
 only-phi-state(x);
 only-phi-transition(x);
 assert( typeof(x) <: type(U64+ABCDEF::B) );
+print("typeof(id-phi(x)) = \{typeof(id-phi(x))}\n");
 assert( typeof(id-phi(x)) <: type(U64+ABCDEF::B) );
 
 if true {
@@ -39,10 +41,13 @@ if true {
 };
 if true then j(x) else j(x);
 assert( typeof(x) <: type(U64+ABCDEF::F) );
+print("typeof(id-phi(x)) = \{typeof(id-phi(x))}\n");
 assert( typeof(id-phi(x)) <: type(U64+ABCDEF::F) );
 
+print("typeof(id-phi(x)) = \{typeof(id-phi(x))}\n");
 x = id-phi(x);
 
 x = f();
 assert( typeof(x) <: type(U64+ABCDEF::A) );
+print("typeof(id-phi(x)) = \{typeof(id-phi(x))}\n");
 assert( typeof(id-phi(x)) <: type(U64+ABCDEF::A) );
