@@ -10,7 +10,10 @@ let i(x: U64+(ABCDEF::B ~> ABCDEF::D)): U64 = 123;
 let j(x: U64+(ABCDEF::E ~> ABCDEF::F)): U64 = 123;
 let phi(l: ABCDEF::C, r: ABCDEF::D): ABCDEF::E;
 
-let id-phi(phi-x: x): x = phi-x;
+let id-phi(phi-x: x): x = (
+   print("typeof(phi-x) = \{typeof(phi-x)}\n");
+   phi-x;
+);
 
 let only-phi-state(phi-x: U64+ABCDEF::B): Nil = (
    assert( typeof(phi-x) <: type(ABCDEF::B) );
