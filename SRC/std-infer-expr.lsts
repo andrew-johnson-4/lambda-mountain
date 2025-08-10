@@ -230,11 +230,18 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       _ => fail("Unexpected Term in std-infer-expr\n\{term}\n");
    };
-   let term-phi-state = typeof-term(term).slot(c"Phi::State",1);
-   if non-zero(term-phi-state) then print("Phi \{term-phi-state} \{used.discriminator-case-tag}\n\{term}\n");
-   if is(used,Unused) && typeof-term(term).slot(c"Phi::State",1).slot(c"MustDelete::ToDelete",1).is-t(c"Linear",1) {
-      print("To Delete \{term}\n");
+   if is(used,Unused) && typeof-term(term).slot(c"Phi::State",1).l1.slot(c"MustDelete::ToDelete",1).l1.is-t(c"Linear",1) {
+      (tctx, term) = wrap-call(tctx, c"del", term);
    };
    (tctx, term);
 );
 
+let wrap-call(tctx: TypeContext?, fname: CString, term: AST): (TypeContext?, AST) = (
+   let args-type = typeof-term(term);
+   let function-type = typeof-term(find-global-callable(fname, args-type, term));
+   let function-term = mk-var(fname); ascript(function-term, function-type);
+   let result = mk-app(function-term, term);
+   (tctx, let result-type) = apply-global-callable(tctx, fname, args-type, term);
+   ascript(result, result-type);
+   (tctx, result)
+);
