@@ -5,7 +5,13 @@ type phi MustChomp = ToChomp { x: 'a } | Chomped;
 
 let :Phi::Source to-chomp(x: U64): U64+MustChomp::ToChomp<'a> = x;
 
+# this is a known bug, where phi transitions and type variables don't work
+# the V3 rewrite will incorporate phi types more naturally so this isn't important right now
 let chomp(x: x+(MustChomp::ToChomp<'a> ~> MustChomp::Chomped)): Nil = ();
+
+let chomp(x: U64+(MustChomp::ToChomp<'a> ~> MustChomp::Chomped)): Nil = ();
+let chomp(x: A+(MustChomp::ToChomp<'a> ~> MustChomp::Chomped)): Nil = ();
+
 let send-chomp(x: U64+MustChomp::ToChomp<'s>): Nil = (
    chomp(x);
 );
