@@ -1,0 +1,20 @@
+
+import lib/std/default.lsts;
+
+type phi MustDelete = ToDelete { x: 'a } | Deleted;
+
+let :Phi::Source to-delete(x: U64): U64+MustDelete::ToDelete<'a> = x;
+
+let mark-as-deleted(x: U64+(MustDelete::ToDelete<'a> ~> MustDelete::Deleted)): Nil = ();
+
+let del(x: U64+MustDelete::ToDelete<'a>): Nil = (
+   print("Deleted\n");
+   mark-as-deleted(x);
+);
+
+let f(): Nil = (
+   let x = to-delete(123);
+   ()
+);
+
+f();
