@@ -6,6 +6,7 @@ let mangle-identifier(k: CString): S = (
       36 => cs = cs + SAtom(c"_DL_"); # $
       37 => cs = cs + SAtom(c"_MD_"); # %
       38 => cs = cs + SAtom(c"_AM_"); # &
+      39 => cs = cs + SAtom(c"_SQ_"); # '
       42 => cs = cs + SAtom(c"_ML_"); # *
       43 => cs = cs + SAtom(c"_AD_"); # +
       44 => cs = cs + SAtom(c"_CM_"); # ,
@@ -58,6 +59,12 @@ let mangle-identifier(kt: Type): S = (
 let mangle-identifier(k: CString, kt: Type): CString = (
    clone-rope(
       mangle-identifier(k) + SAtom(c"_CL_") + mangle-identifier(normalize(kt))
+   );
+);
+
+let mangle-identifier-function(k: CString, kt: Type): CString = (
+   clone-rope(
+      mangle-identifier(k) + SAtom(c"_CL_") + mangle-identifier(normalize(kt) && kt.with-only-phi)
    );
 );
 

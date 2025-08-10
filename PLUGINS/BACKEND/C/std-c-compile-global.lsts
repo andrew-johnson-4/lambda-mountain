@@ -90,7 +90,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => (
          if k!=c"main" && not(typeof-term(term).is-t(c"C-FFI_s",0)) {
-            k = mangle-identifier(k, typeof-term(term));
+            k = mangle-identifier-function(k, typeof-term(term));
          };
          ctx = std-c-compile-destructure-args( ctx, lhs, false );
          let loc = term.location;

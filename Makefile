@@ -5,6 +5,9 @@ dev: install-production
 	lm tests/regress/linear.lsts
 	cc tmp.c
 	./a.out
+	lm tests/regress/phi2-initializers.lsts
+	cc tmp.c
+	./a.out
 
 build: compile-production
 	time ./production --c -o deploy1.c SRC/index.lsts

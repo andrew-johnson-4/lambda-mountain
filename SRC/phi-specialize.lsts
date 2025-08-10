@@ -1,0 +1,35 @@
+
+# Rewrite Phi Ids as States and Initializers to be used in function signatures
+
+let .phi-specialize(tt: Type, tctx: TypeContext?, blame: AST): Type = tt.phi-specialize(tctx, blame, false);
+
+let .phi-specialize(tt: Type, tctx: TypeContext?, blame: AST, is-return: U64): Type = (
+   match tt {
+      TAnd{conjugate=conjugate} => (
+         let new-conjugate = mk-vector(type(Type));
+         for c in conjugate {
+            let ct = c.phi-specialize(tctx, blame, is-return);
+            if non-zero(ct) then new-conjugate = new-conjugate.push(ct);
+         };
+         TAnd(new-conjugate)
+      );
+      TGround{tag:c"Arrow",parameters:[rng..dom..]} => (
+         t3(c"Arrow", dom.phi-specialize(tctx, blame, false), rng.phi-specialize(tctx, blame, true))
+      );
+      TGround{tag:c"Phi::Id",parameters:[TGround{phi-id=tag,parameters:[]}..]} => (
+         let phi-state = tctx.get-or(mk-tctx()).pctx.lookup(phi-id, ta);
+         if not(non-zero(phi-state)) then exit-error("Unable to find phi state for phi id in context #\{phi-id}", blame);
+         if is-return
+         then t2(c"Phi::Initialize", phi-state)
+         else t2(c"Phi::State", phi-state)
+      );
+      TGround{tag=tag,parameters=parameters} => (
+         let new-parameters = [] : List<Type>;
+         for p in parameters {
+            new-parameters = cons( p.phi-specialize(tctx,blame,is-return), new-parameters );
+         };
+         ts(tag,new-parameters.reverse);
+      );
+      _ => tt;
+   };
+);
