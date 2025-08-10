@@ -13,7 +13,8 @@ let del(x: U64+MustDelete::ToDelete<'a>): Nil = (
 );
 
 let f(): Nil = (
-   let x = to-delete(123);
+   to-delete(123);         # delete if expression is unused
+   let x = to-delete(123); # delete at end of scope
    ()
 );
 
