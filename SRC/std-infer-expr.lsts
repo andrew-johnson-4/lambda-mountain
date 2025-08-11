@@ -279,7 +279,8 @@ let del-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST): 
          (tctx-after, do-del) = std-infer-expr(tctx-after, do-del, false, Used, ta);
          term = mk-cons(term, do-del); ascript(term, t1(c"Nil"));
       };
-      let return-term = mk-var(return-id); ascript(return-term,return-type);
+      let return-term = mk-var(return-id);
+      (tctx-after, return-term) = std-infer-expr(tctx-after, return-term, false, Used, ta);
       term = mk-cons(term, return-term); ascript(term,return-type);
    };
    (tctx-after, term)
