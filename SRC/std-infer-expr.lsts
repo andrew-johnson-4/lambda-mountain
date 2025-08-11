@@ -253,12 +253,16 @@ let wrap-call(tctx: TypeContext?, fname: CString, term: AST): (TypeContext?, AST
 let del-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST): (TypeContext?, AST) = (
    let tctx-before-tctx = tctx-before.get-or(mk-tctx()).tctx;
    let tctx-after-tctx = tctx-after.get-or(mk-tctx()).tctx;
+   let needs-delete = [] : List<TypeContextRow>;
    while non-zero(tctx-after-tctx) && not(is(tctx-before-tctx, tctx-after-tctx)) {
       let tr = head(tctx-after-tctx);
       if tr.denormalized-type.slot(c"Phi::State",1).l1.slot(c"MustDelete::ToDelete",1).l1.is-t(c"Linear",1) {
-         print("Delete \{tr}\n");
+         needs-delete = cons(tr, needs-delete);
       };
       tctx-after-tctx = tail(tctx-after-tctx);
+   };
+   for nd in needs-delete {
+      print("Delete \{nd}\n");
    };
    (tctx-after, term)
 );
