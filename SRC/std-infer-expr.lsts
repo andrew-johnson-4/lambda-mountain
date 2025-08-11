@@ -1,4 +1,13 @@
 
+let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, blame: AST): (TypeContext?, Type) = (
+   let rhs-tt = phi-state(tctx,typeof-term(rhs),blame);
+   let tt = rhs-tt && t1(c"LocalVariable");
+   (tctx, tt) = phi-fresh(tctx, tt, blame);
+   tctx = phi-move(tctx, rhs-tt, blame);
+   tctx = tctx.bind(key, ta, tt, def);
+   (tctx, tt)
+);
+
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
    match term {
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
@@ -6,11 +15,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          then exit-error("Variable Name Is Already Bound In Outer Scope \{lname}", term);
          (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Tail(), ta);
          if not(is(rhs,new-rhs)) then { rhs = new-rhs; term = mk-app(mk-abs(def,mk-nil(),misc-tt),rhs); };
-         let rhs-tt = phi-state(tctx,typeof-term(rhs),term);
-         let tt = rhs-tt && t1(c"LocalVariable");
-         (tctx, tt) = phi-fresh(tctx, tt, term);
-         tctx = phi-move(tctx, rhs-tt, term);
-         tctx = tctx.bind(lname, ta, tt, def);
+         (tctx, let tt) = std-bind-term(tctx, lname, rhs, def, term);
          ascript(def, tt);
          ascript(term, t1(c"Nil"));
       );
@@ -44,7 +49,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          ascript(szof, tt);
       );
       App{szof=left:Var{key:c"scope"}, r=right} => (
+         let before-tctx = tctx;
          (let inner-tctx, let new-r) = std-infer-expr(tctx, r, true, Tail(), ta);
+         (inner-tctx, new-r) = del-locals(before-tctx, inner-tctx, new-r);
          if not(is(r,new-r)) then { r = new-r; term = mk-app(szof, r); };
          ascript(term, typeof-term-plain(r));
          tctx = tctx.with-pctx(inner-tctx.get-or(mk-tctx()).pctx);
@@ -154,7 +161,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       Abs{lhs=lhs, rhs=rhs:App{asc=left:Lit{key:c":"},right:App{inner-rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} => (
          tctx = infer-ctx(tctx, lhs);
+         let before-tctx = tctx;
          (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type);
+         (tctx, new-inner-rhs) = del-locals(before-tctx, tctx, new-inner-rhs);
          if not(is(inner-rhs,new-inner-rhs))
          then {
             inner-rhs = new-inner-rhs;
@@ -244,4 +253,40 @@ let wrap-call(tctx: TypeContext?, fname: CString, term: AST): (TypeContext?, AST
    (tctx, let result-type) = apply-global-callable(tctx, fname, args-type, term);
    ascript(result, result-type);
    (tctx, result)
+);
+
+let del-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST): (TypeContext?, AST) = (
+   let tctx-before-tctx = tctx-before.get-or(mk-tctx()).tctx;
+   let tctx-after-tctx = tctx-after.get-or(mk-tctx()).tctx;
+   let needs-delete = [] : List<TypeContextRow>;
+   while non-zero(tctx-after-tctx) && not(is(tctx-before-tctx, tctx-after-tctx)) {
+      let tr = head(tctx-after-tctx);
+      if tr.denormalized-type.slot(c"Phi::State",1).l1.slot(c"MustDelete::ToDelete",1).l1.is-t(c"Linear",1) {
+         needs-delete = cons(tr, needs-delete);
+      };
+      tctx-after-tctx = tail(tctx-after-tctx);
+   };
+   if non-zero(needs-delete) {
+      let return-id = uuid();
+      let return-type = typeof-term(term);
+      print("Needs delete \{return-type}\n");
+      let rhs = term;
+      let def = mk-var(return-id);
+      if not(return-type.is-t(c"Nil",0)) {
+         term = mk-app( mk-abs(def, mk-nil(), ta), term ); ascript(term, t1(c"Nil"));
+         (tctx-after, let tt) = std-bind-term(tctx-after, return-id, rhs, def, term);
+         ascript(def, tt);
+      };
+      for nd in needs-delete {
+         let do-del = mk-app(mk-var(c"del"),mk-var(nd.key));
+         (tctx-after, do-del) = std-infer-expr(tctx-after, do-del, false, Used, ta);
+         term = mk-cons(term, do-del); ascript(term, t1(c"Nil"));
+      };
+      let return-term = if not(return-type.is-t(c"Nil",0))
+      then mk-var(return-id)
+      else mk-nil();
+      (tctx-after, return-term) = std-infer-expr(tctx-after, return-term, false, Used, ta);
+      term = mk-cons(term, return-term); ascript(term,return-type);
+   };
+   (tctx-after, term)
 );
