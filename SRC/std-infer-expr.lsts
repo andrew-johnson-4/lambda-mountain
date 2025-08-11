@@ -4,8 +4,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
          if typeof-var-raw(term, tctx, lname).is-t(c"LocalVariable",0)
          then exit-error("Variable Name Is Already Bound In Outer Scope \{lname}", term);
-         (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Tail(), ta);
-         if not(is(rhs,new-rhs)) then { rhs = new-rhs; term = mk-app(mk-abs(def,mk-nil(),misc-tt),rhs); };
+         if not(non-zero(typeof-term(rhs))) {
+            (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Tail(), ta);
+            if not(is(rhs,new-rhs)) then { rhs = new-rhs; term = mk-app(mk-abs(def,mk-nil(),misc-tt),rhs); };
+         };
          let rhs-tt = phi-state(tctx,typeof-term(rhs),term);
          let tt = rhs-tt && t1(c"LocalVariable");
          (tctx, tt) = phi-fresh(tctx, tt, term);
@@ -261,8 +263,18 @@ let del-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST): 
       };
       tctx-after-tctx = tail(tctx-after-tctx);
    };
-   for nd in needs-delete {
-      print("Delete \{nd}\n");
+   if non-zero(needs-delete) {
+      let return-id = uuid();
+      let return-type = typeof-term(term);
+      term = mk-app( mk-abs(mk-var(return-id), mk-nil(), ta), term ); ascript(term, t1(c"Nil"));
+      (tctx-after, term) = std-infer-expr(tctx-after, term, false, Used, ta);
+      for nd in needs-delete {
+         let do-del = mk-app(mk-var(c"del"),mk-var(nd.key));
+         (tctx-after, do-del) = std-infer-expr(tctx-after, do-del, false, Used, ta);
+         term = mk-cons(term, do-del); ascript(term, t1(c"Nil"));
+      };
+      let return-term = mk-var(return-id); ascript(return-term,return-type);
+      term = mk-cons(term, return-term); ascript(term,return-type);
    };
    (tctx-after, term)
 );
