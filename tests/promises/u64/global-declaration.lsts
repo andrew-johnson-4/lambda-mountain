@@ -1,0 +1,5 @@
+
+import lib2/core/bedrock.lsts;
+
+let x = 1_u64;
+let y = 2_u64;

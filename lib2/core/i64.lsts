@@ -1,0 +1,2 @@
+
+type opaque alias I64 suffix _i64 = C<"int64_t">;
