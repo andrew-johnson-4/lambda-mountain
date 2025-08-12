@@ -1,0 +1,5 @@
+
+type opaque alias Bool = C<"uint8_t">;
+
+let true = 1 as Bool;
+let false = 0 as Bool;
