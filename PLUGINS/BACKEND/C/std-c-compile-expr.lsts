@@ -99,6 +99,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       Lit{val=key} => (
          let tt = typeof-term(t);
+         print("Lit \{val} : \{tt}\n");
          if tt.is-t(c"C",1) && tt.r1.is-t(c"uint8_t",0) then mk-expression(val)
          else if tt.is-t(c"C",1) && tt.r1.is-t(c"uint16_t",0) then mk-expression(val)
          else if tt.is-t(c"C",1) && tt.r1.is-t(c"uint32_t",0) then mk-expression(val)
@@ -110,7 +111,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          else if tt.is-t(c"C",1) && tt.r1.is-t(c":Label",0) then mk-expression(val)
          else if tt.is-t(c"L",0) then mk-expression(val)
          else if tt.is-t(c"CString",0) then mk-expression(val.escape-as-cstring)
-         else if tt.slot(c"Array",2).l1.is-t(c"char",0) then mk-expression(val.escape-as-cstring)
+         else if tt.slot(c"Array",2).l1.slot(c"C",1).l1.is-t(c"char",0) then mk-expression(val.escape-as-cstring)
          else if tt.is-t(c"String",0) then std-c-compile-smart-string(ctx, val, t)
          else if tt.is-t(c"Regex",0) {
             let rgx-id = uuid();
