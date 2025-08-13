@@ -1,2 +1,20 @@
 
 type opaque alias U64 suffix _u64 = C<"uint64_t">;
+
+declare-binop( $"!=", raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"&", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"&"; y; l")"; ) );
+declare-binop( $"|", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"|"; y; l")"; ) );
+declare-binop( $"^", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"^"; y; l")"; ) );
+declare-binop( $"+", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"/", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"/"; y; l")"; ) );
+declare-binop( $"%", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"%"; y; l")"; ) );
+declare-binop( $"*", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"*"; y; l")"; ) );
+
+declare-unop( $"~", raw-type(U64), raw-type(U64), ( l"((uint64_t)(~"; x; l"))"; ) );

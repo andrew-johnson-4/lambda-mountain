@@ -4,4 +4,9 @@ type opaque alias Bool = C<"uint8_t">;
 let true = 1 as Bool;
 let false = 0 as Bool;
 
+# These are logical operators, not bitwise operators
+# so `!=` is used for xor instead of bitwise `^`
 declare-unop( not, raw-type(Bool), raw-type(Bool), ( l"(!"; x; l")"; ) );
+declare-binop( xor, raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( and, raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"&&"; y; l")"; ) );
+declare-binop( or, raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"||"; y; l")"; ) );
