@@ -1,0 +1,8 @@
+
+import lib2/core/bedrock.lsts;
+
+let :Unsafe f(): Nil = ();
+
+unsafe {
+   f();
+};

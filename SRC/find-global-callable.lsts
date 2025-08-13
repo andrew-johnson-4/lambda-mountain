@@ -114,6 +114,8 @@ let apply-global-callable(tctx: TypeContext?, fname: CString, arg-types: Type, b
       };
       if all-accept { result-normal = ot1; result-denormal = kt1; };
    }};
+   if result-denormal.is-t(c"Unsafe",0) && not(tctx.get-or(mk-tctx()).is-unsafe)
+   then exit-error("Call to unsafe function outside of unsafe block", blame);
    if can-fail && not(non-zero(result-normal)) && match-set.length > 0 {
       eprint("Unable to find unambiguous global callable: \{fname} \{arg-types}\nAt \{blame.location}\n");
       for Tuple{kt=second, t=third} in match-set {

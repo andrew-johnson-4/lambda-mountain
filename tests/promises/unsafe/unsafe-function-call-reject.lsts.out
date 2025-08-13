@@ -1,0 +1,2 @@
+Call to unsafe function outside of unsafe block
+In File tests/promises/unsafe/unsafe-function-call-reject.lsts Line 6 Column 1
