@@ -92,7 +92,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
             tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
          };
-         apply-global-callable(tctx, c"into-branch-conditional", typeof-term-plain(cond), cond);
+         if not(typeof-term-plain(cond).is-t(c"Bool",0)) {
+            apply-global-callable(tctx, c"into-branch-conditional", typeof-term-plain(cond), cond);
+         };
          let lub = if typeof-term(t).is-t(c"Never",0) then typeof-term(f)
          else if typeof-term(f).is-t(c"Never",0) || typeof-term(f).is-t(c"Nil",0) then typeof-term(t)
          else { (tctx, let lub) = least-upper-bound(tctx, typeof-term(t), typeof-term(f), term); lub.get-or(ta); };

@@ -1,0 +1,6 @@
+
+deprecated macro ( rl"assert"(c) ) (
+   $"if"( not(c) )
+        ( fputs(c"Assertion Failed At ", stderr); fputs(p(rl":Location:") : Constant+Literal+CString, stderr); exit(1); )
+        ()
+);

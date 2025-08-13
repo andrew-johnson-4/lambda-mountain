@@ -1,0 +1,5 @@
+
+import lib2/core/bedrock.lsts;
+
+assert( true );
+assert( not(false) );

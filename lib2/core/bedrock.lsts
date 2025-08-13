@@ -1,6 +1,8 @@
 
 import stdint.h;
 
+import lib2/core/platform-macros.lsts;
+import lib2/core/common-macros.lsts;
 import lib2/core/bool.lsts;
 import lib2/core/u8.lsts;
 import lib2/core/u64.lsts;
