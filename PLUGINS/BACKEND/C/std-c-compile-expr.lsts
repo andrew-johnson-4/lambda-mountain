@@ -19,11 +19,15 @@ let std-c-compile-smart-string(ctx: FContext, val: CString, blame: AST): Fragmen
 let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
    let f = match t {
       Var{ key=key } => (
-         let def = var-to-def(t);
-         let e = std-c-fragment-context.lookup(def, mk-fragment());
-         if not(non-zero(e)) {
-            exit-error( untern("Unable to Find Variable Fragment in Context: \{key}"), t );
-         }; e
+         if typeof-term(t).is-t(c"C-FFI",0) {
+            mk-fragment().set(c"expression",SAtom(key));
+         } else {
+            let def = var-to-def(t);
+            let e = std-c-fragment-context.lookup(def, mk-fragment());
+            if not(non-zero(e)) {
+               exit-error( untern("Unable to Find Variable Fragment in Context: \{key}"), t );
+            }; e
+         }
       );
       AType{ tt=tt } => (
          if tt.is-t(c"Type",1) {
@@ -65,18 +69,19 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          );
       );
       App{ left:App{left:App{left:Var{key:c"if"}, cond=right}, tr=right}, fa=right } => (
-         let ec = std-c-compile-call(ctx, c"into-branch-conditional", cond);
+         let ec = if typeof-term(cond).is-t(c"Bool",0)
+         then std-c-compile-expr(ctx, cond, false )
+         else std-c-compile-call(ctx, c"into-branch-conditional", cond);
          let et = std-c-compile-expr( open(ec.context), tr, false );
          let ef = std-c-compile-expr( open(ec.context), fa, false );
          if typeof-term(fa).is-t(c"Never",0) then ef = never-as-expr(ef, typeof-term(tr), t);
 
          let ictx = mk-fragment();
-         ctx = ctx.bind(c"ictx", t1(c"ImplicitContext"), ictx);
-         ctx = ctx.bind(c"c", t1(c"U64"), ec);
+         ctx = ctx.bind(c"c", t1(c"Bool"), ec);
          ctx = ctx.bind(c"t", typeof-term(tr), et);
          ctx = ctx.bind(c"f", typeof-term(fa), ef);
 
-         let a-tt = t3(c"Cons",t3(c"Cons",t3(c"Cons",t1(c"ImplicitContext"),typeof-term(fa)),typeof-term(tr)),t1(c"U64"));
+         let a-tt = t3(c"Cons",t3(c"Cons",typeof-term(fa),typeof-term(tr)),t1(c"Bool"));
          let f = cc-blob(ctx, c"primitive::if", a-tt, t);
          f.context = et.context; f
       );
@@ -105,6 +110,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          else if tt.is-t(c"C",1) && tt.r1.is-t(c":Label",0) then mk-expression(val)
          else if tt.is-t(c"L",0) then mk-expression(val)
          else if tt.is-t(c"CString",0) then mk-expression(val.escape-as-cstring)
+         else if tt.slot(c"Array",2).l1.slot(c"C",1).l1.is-t(c"char",0) then mk-expression(val.escape-as-cstring)
          else if tt.is-t(c"String",0) then std-c-compile-smart-string(ctx, val, t)
          else if tt.is-t(c"Regex",0) {
             let rgx-id = uuid();

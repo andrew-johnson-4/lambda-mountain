@@ -1,0 +1,7 @@
+
+type L suffix _l;
+
+let :Blob $":expression"(x: Any): L = ();
+let :Blob $":frame"(x: Any): L = ();
+
+let :Blob $":function-id"(x: ImplicitContext): L = ();

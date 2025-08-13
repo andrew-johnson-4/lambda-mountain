@@ -1,0 +1,33 @@
+
+declare-unop( $"cdecl::return", raw-type(Any), raw-type(Nil), (l"return "; x; l";";) );
+declare-unop( $"cdecl::return", raw-type(Nil), raw-type(Nil), (x; l";";) );
+
+# needs to be declared to prevent a special case during inference
+# this only needs to be declared if you want to support casting type information into String literals
+# EXAMPLE: print(typeof(x))
+declare-binop( $".into", type(Any), type(String), raw-type(String), () );
+
+# this operator is hard-coded in the compiler for now
+# but this definition being in the library is simplest for inference
+declare-binop( $"<:", type(Any), type(Any), raw-type(Bool), () );
+
+let :Blob $"primitive::while"(body: Any, cond: Bool): Nil = (
+   $":frame"( $":frame"(body); $":frame"(cond) );
+   $":expression"(
+      l"({while("; $":expression"(cond); l"){"; $":expression"(body); l";};})";
+   );
+);
+
+let :Blob $"primitive::if"(f: Any, t: Any, c: Bool): Nil = (
+   $":frame"( $":frame"(c); $":frame"(t); $":frame"(f); );
+   $":expression"(
+      l"("; $":expression"(c); l"?"; $":expression"(t); l":"; $":expression"(f); l")";
+   );
+);
+
+let :Blob $"primitive::call"(ictx: ImplicitContext, args: Any): Nil = (
+   $":frame"( $":frame"(ictx); $":frame"(args); );
+   $":expression"(
+      l"("; $":function-id"(ictx); l"("; $":expression"(args); l"))";
+   );
+);
