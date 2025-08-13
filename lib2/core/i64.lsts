@@ -21,6 +21,6 @@ declare-unop( $"~", raw-type(I64), raw-type(I64), ( l"((int64_t)(~"; x; l"))"; )
 
 let cmp(l: I64, r: I64): Ord = (
    if l < r then LessThan
-   else if r > l then GreaterThan
+   else if l > r then GreaterThan
    else Equal
 );

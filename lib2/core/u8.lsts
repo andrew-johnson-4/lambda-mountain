@@ -23,6 +23,6 @@ declare-unop( $"~", raw-type(U8), raw-type(U8), ( l"((uint8_t)(~"; x; l"))"; ) )
 
 let cmp(l: U8, r: U8): Ord = (
    if l < r then LessThan
-   else if r > l then GreaterThan
+   else if l > r then GreaterThan
    else Equal
 );
