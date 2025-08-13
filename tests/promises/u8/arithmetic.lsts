@@ -3,6 +3,10 @@ import lib2/core/bedrock.lsts;
 
 assert( 1 == 1 );
 assert( 2 == 2 );
+assert( not(2 == 1) );
+assert( 2 != 1 );
+assert( 1 != 2 );
+assert( not(1 != 1) );
 assert( 2 <= 2 );
 assert( 2 <= 3 );
 assert( not(2 < 2) );
@@ -12,3 +16,19 @@ assert( 3 >= 2 );
 assert( not(2 >= 3) );
 assert( 3 > 2 );
 assert( not(2 > 2) );
+
+assert( 4 & 4 == 4 );
+assert( 12 & 4 == 4 );
+assert( 4 | 4 == 4 );
+assert( 12 | 4 == 12 );
+
+#declare-binop( $"&", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"&"; y; l")"; ) );
+#declare-binop( $"|", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"|"; y; l")"; ) );
+#declare-binop( $"^", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"^"; y; l")"; ) );
+#declare-binop( $"+", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"+"; y; l")"; ) );
+#declare-binop( $"-", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"-"; y; l")"; ) );
+#declare-binop( $"/", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"/"; y; l")"; ) );
+#declare-binop( $"%", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"%"; y; l")"; ) );
+#declare-binop( $"*", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"*"; y; l")"; ) );
+
+#declare-unop( $"~", raw-type(U8), raw-type(U8), ( l"(~"; x; l")"; ) );

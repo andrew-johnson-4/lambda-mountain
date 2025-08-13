@@ -558,8 +558,24 @@ let lsts-parse-add(tokens: List<Token>): Tuple<AST,List<Token>> = (
    Tuple ( term, tokens )
 );
 
-let lsts-parse-cmp(tokens: List<Token>): Tuple<AST,List<Token>> = (
+let lsts-parse-bitwise(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let term-rest = lsts-parse-add(tokens);
+   let term = term-rest.first;
+   tokens = term-rest.second;
+   while lsts-parse-head(tokens)==c"&" || lsts-parse-head(tokens)==c"|" || lsts-parse-head(tokens)==c"^" {
+      let op-t = head(tokens); let op = op-t.key; tokens = tail(tokens);
+      let term2-rest = lsts-parse-add(tokens);
+      tokens = term2-rest.second;
+      term = mk-app( 
+         Var( op, op-t ),
+         mk-cons(term, term2-rest.first)
+      );
+   };
+   Tuple ( term, tokens )
+);
+
+let lsts-parse-cmp(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   let term-rest = lsts-parse-bitwise(tokens);
    let term = term-rest.first;
    tokens = term-rest.second;
    while lsts-parse-head(tokens)==c"==" || lsts-parse-head(tokens)==c"!=" ||
@@ -571,7 +587,7 @@ let lsts-parse-cmp(tokens: List<Token>): Tuple<AST,List<Token>> = (
          (op==c">" && lsts-parse-head(tokens)==c">") {
          op = op + op; op-t = with-key(op-t, op); tokens = tail(tokens);
       };
-      let term2-rest = lsts-parse-add(tokens);
+      let term2-rest = lsts-parse-bitwise(tokens);
       tokens = term2-rest.second;
       term = mk-app( 
          Var( op, op-t ),
@@ -602,7 +618,6 @@ let lsts-parse-andor(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let term = term-rest.first;
    tokens = term-rest.second;
    while lsts-parse-head(tokens)==c"&&" || lsts-parse-head(tokens)==c"||"
-      || lsts-parse-head(tokens)==c"&" || lsts-parse-head(tokens)==c"|" || lsts-parse-head(tokens)==c"^"
       || lsts-parse-head(tokens)==c"and" || lsts-parse-head(tokens)==c"or" || lsts-parse-head(tokens)==c"xor" {
       let op-t = head(tokens); let op = op-t.key; tokens = tail(tokens);
       let term2-rest = lsts-parse-cmp(tokens);
