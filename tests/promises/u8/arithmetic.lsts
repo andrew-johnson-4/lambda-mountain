@@ -21,6 +21,15 @@ assert( 4 & 4 == 4 );
 assert( 12 & 4 == 4 );
 assert( 4 | 4 == 4 );
 assert( 12 | 4 == 12 );
+assert( 4 ^ 4 == 0 );
+assert( 12 ^ 4 == 8 );
+assert( ~4 == 251 );
+
+#declare-binop( $"+", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"+"; y; l")"; ) );
+#declare-binop( $"-", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"-"; y; l")"; ) );
+#declare-binop( $"/", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"/"; y; l")"; ) );
+#declare-binop( $"%", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"%"; y; l")"; ) );
+#declare-binop( $"*", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"*"; y; l")"; ) );
 
 #declare-binop( $"&", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"&"; y; l")"; ) );
 #declare-binop( $"|", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"|"; y; l")"; ) );
