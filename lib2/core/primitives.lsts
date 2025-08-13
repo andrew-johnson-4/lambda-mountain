@@ -25,13 +25,6 @@ let :Blob $"primitive::if"(f: Any, t: Any, c: Bool): Nil = (
    );
 );
 
-let :Blob $"primitive::while"(body: Any, cond: Bool): Nil = (
-   $":frame"( $":frame"(body); $":frame"(cond) );
-   $":expression"(
-      l"({while("; $":expression"(cond); l"){"; $":expression"(body); l";};})";
-   );
-);
-
 let :Blob $"primitive::call"(ictx: ImplicitContext, args: Any): Nil = (
    $":frame"( $":frame"(ictx); $":frame"(args); );
    $":expression"(

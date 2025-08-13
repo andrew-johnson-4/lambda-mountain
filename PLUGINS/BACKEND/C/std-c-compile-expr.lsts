@@ -73,11 +73,11 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          if typeof-term(fa).is-t(c"Never",0) then ef = never-as-expr(ef, typeof-term(tr), t);
 
          let ictx = mk-fragment();
-         ctx = ctx.bind(c"c", t1(c"U64"), ec);
+         ctx = ctx.bind(c"c", t1(c"Bool"), ec);
          ctx = ctx.bind(c"t", typeof-term(tr), et);
          ctx = ctx.bind(c"f", typeof-term(fa), ef);
 
-         let a-tt = t3(c"Cons",t3(c"Cons",typeof-term(fa),typeof-term(tr)),t1(c"U64"));
+         let a-tt = t3(c"Cons",t3(c"Cons",typeof-term(fa),typeof-term(tr)),t1(c"Bool"));
          let f = cc-blob(ctx, c"primitive::if", a-tt, t);
          f.context = et.context; f
       );
