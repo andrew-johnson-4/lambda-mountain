@@ -65,7 +65,9 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          );
       );
       App{ left:App{left:App{left:Var{key:c"if"}, cond=right}, tr=right}, fa=right } => (
-         let ec = std-c-compile-call(ctx, c"into-branch-conditional", cond);
+         let ec = if typeof-term(cond).is-t(c"Bool",0)
+         then std-c-compile-expr(ctx, cond, false )
+         else std-c-compile-call(ctx, c"into-branch-conditional", cond);
          let et = std-c-compile-expr( open(ec.context), tr, false );
          let ef = std-c-compile-expr( open(ec.context), fa, false );
          if typeof-term(fa).is-t(c"Never",0) then ef = never-as-expr(ef, typeof-term(tr), t);
