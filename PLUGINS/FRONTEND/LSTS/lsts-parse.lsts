@@ -1861,6 +1861,16 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
    } else if lsts-parse-head(tokens).has-suffix(c"_rl") {
       term = mk-lit(lsts-parse-head(tokens).remove-suffix(c"_rl"));
       tokens = tail(tokens);
+   } else if lsts-parse-head(tokens)==c"unsafe" {
+      let loc = head(tokens).location;
+      lsts-parse-expect(c"unsafe", tokens); tokens = tail(tokens);
+      lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+      (term, tokens) = lsts-parse-expression(tokens);
+      lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+      term = mk-app(
+         Var( c"unsafe", with-location(mk-token(c"unsafe"),loc) ),
+         term
+      );
    } else if lsts-parse-head(tokens)==c"sizeof" {
       let loc = head(tokens).location;
       tokens = tail(tokens);
