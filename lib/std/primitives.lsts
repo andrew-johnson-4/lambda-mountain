@@ -43,6 +43,13 @@ let :Blob $"primitive::if"(ictx: ImplicitContext, f: Any, t: Any, c: U64): Nil =
    );
 );
 
+let :Blob $"primitive::if"(f: Any, t: Any, c: U64): Nil = (
+   $":frame"( $":frame"(c); $":frame"(t); $":frame"(f); );
+   $":expression"(
+      l"("; $":expression"(c); l"?"; $":expression"(t); l":"; $":expression"(f); l")";
+   );
+);
+
 let :Blob $"primitive::while"(body: Any, cond: BranchConditional): Nil = (
    $":frame"( $":frame"(body); $":frame"(cond) );
    $":expression"(
