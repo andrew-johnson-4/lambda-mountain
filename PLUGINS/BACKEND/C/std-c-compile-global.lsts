@@ -16,7 +16,8 @@ let compile-global-c-main-term = mk-eof();
 
 let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    std-c-force-import-clib(c"string.h");
-   if k==c"div_t" then std-c-force-import-clib(c"stdlib.h")
+   if k==c"" then ()
+   else if k==c"div_t" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"ldiv_t" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"lldiv_t" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"__fpos_t" then std-c-force-import-clib(c"stdlib.h")
