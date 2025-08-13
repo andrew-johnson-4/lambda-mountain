@@ -56,6 +56,14 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          ascript(term, typeof-term-plain(r));
          tctx = tctx.with-pctx(inner-tctx.get-or(mk-tctx()).pctx);
       );
+      App{szof=left:Var{key:c"unsafe"}, r=right} => (
+         let direct-tctx = tctx.get-or(mk-tctx());
+         let is-unsafe = direct-tctx.is-unsafe;
+         direct-tctx.is-unsafe = true;
+         (tctx, term) = std-infer-expr(Some(direct-tctx), r, false, Tail, ta);
+         direct-tctx.is-unsafe = is-unsafe;
+         tctx = Some(direct-tctx);
+      );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
          add-concrete-type-instance(tt, term);

@@ -9,20 +9,23 @@ let .bind(tctx: HashtableEq<CString,List<Tuple<Type,Type,AST>>>, k: CString, kt:
 let .bind(tctx: TypeContext?, k: CString, kt-normal: Type, kt-denormal: Type, kv: AST): TypeContext? = (
    Some(TypeContext(
       cons( TypeContextRow(k, kt-normal, kt-denormal, kv), tctx.get-or(mk-tctx()).tctx ),
-      tctx.get-or(mk-tctx()).pctx
+      tctx.get-or(mk-tctx()).pctx,
+      tctx.get-or(mk-tctx()).is-unsafe
    ));
 );
 
 let .bind-phi(tctx: TypeContext?, k: CString, kt: Type, blame: AST): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
-      cons( PhiContextRow(k,kt,blame) , tctx.get-or(mk-tctx()).pctx )
+      cons( PhiContextRow(k,kt,blame) , tctx.get-or(mk-tctx()).pctx ),
+      tctx.get-or(mk-tctx()).is-unsafe
    ));
 );
 
 let .with-pctx(tctx: TypeContext?, pctx: List<PhiContextRow>): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
-      pctx
+      pctx,
+      tctx.get-or(mk-tctx()).is-unsafe
    ));   
 );
