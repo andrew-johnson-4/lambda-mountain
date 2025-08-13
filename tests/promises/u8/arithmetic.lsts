@@ -25,19 +25,8 @@ assert( 4 ^ 4 == 0 );
 assert( 12 ^ 4 == 8 );
 assert( ~4 == 251 );
 
-#declare-binop( $"+", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"+"; y; l")"; ) );
-#declare-binop( $"-", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"-"; y; l")"; ) );
-#declare-binop( $"/", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"/"; y; l")"; ) );
-#declare-binop( $"%", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"%"; y; l")"; ) );
-#declare-binop( $"*", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"*"; y; l")"; ) );
-
-#declare-binop( $"&", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"&"; y; l")"; ) );
-#declare-binop( $"|", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"|"; y; l")"; ) );
-#declare-binop( $"^", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"^"; y; l")"; ) );
-#declare-binop( $"+", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"+"; y; l")"; ) );
-#declare-binop( $"-", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"-"; y; l")"; ) );
-#declare-binop( $"/", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"/"; y; l")"; ) );
-#declare-binop( $"%", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"%"; y; l")"; ) );
-#declare-binop( $"*", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"*"; y; l")"; ) );
-
-#declare-unop( $"~", raw-type(U8), raw-type(U8), ( l"(~"; x; l")"; ) );
+assert( 2 + 2 == 4 );
+assert( 2 - 2 == 0 );
+assert( 5 / 3 == 1 );
+assert( 5 % 3 == 2 );
+assert( 5 * 3 == 15 );
