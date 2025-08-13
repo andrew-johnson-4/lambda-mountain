@@ -1,6 +1,6 @@
 
 type opaque alias U8 suffix _u8
-     implies C<"int">
+     implies C<"int">, U64, I64
      = C<"uint8_t">;
 
 declare-binop( $"!=", raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
@@ -20,3 +20,9 @@ declare-binop( $"%", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"%"; 
 declare-binop( $"*", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"*"; y; l")"; ) );
 
 declare-unop( $"~", raw-type(U8), raw-type(U8), ( l"((uint8_t)(~"; x; l"))"; ) );
+
+let cmp(l: U8, r: U8): Ord = (
+   if l < r then LessThan
+   else if l > r then GreaterThan
+   else Equal
+);

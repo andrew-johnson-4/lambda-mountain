@@ -4,3 +4,7 @@ deprecated macro ( rl"assert"(c) ) (
         ( fputs(c"Assertion Failed At ", stderr); fputs(p(rl":Location:") : Constant+Literal+CString, stderr); exit(1); )
         ()
 );
+
+typed macro macro::let(lhs: lazy, rhs: lazy): lazy = (
+   (fn(lhs) = ()) (rhs)
+);

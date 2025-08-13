@@ -1,2 +1,9 @@
 
 type alias CString suffix _s = C<"char">[];
+
+let cmp(l: CString, r: CString): Ord = (
+   let c = strcmp( l, r ) as I64;
+   if c < 0 then LessThan
+   else if c > 0 then GreaterThan
+   else Equal
+);

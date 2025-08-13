@@ -31,3 +31,6 @@ let :Blob $"primitive::call"(ictx: ImplicitContext, args: Any): Nil = (
       l"("; $":function-id"(ictx); l"("; $":expression"(args); l"))";
    );
 );
+
+declare-unop( $".discriminator-case-tag", raw-type(LM2Struct+CaseNumber<cn>), raw-type(USize), ( l"("; cn : L; l")"; ) );
+declare-unop( $".discriminator-case-tag", raw-type(LM2Struct), raw-type(USize), ( l"("; x; l".discriminator_case_tag)"; ) );

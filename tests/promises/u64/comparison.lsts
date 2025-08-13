@@ -1,0 +1,6 @@
+
+import lib2/core/bedrock.lsts;
+
+assert( cmp(1_u64, 1_u64) == Equal );
+assert( cmp(1_u64, 2_u64) == LessThan );
+assert( cmp(2_u64, 1_u64) == GreaterThan );

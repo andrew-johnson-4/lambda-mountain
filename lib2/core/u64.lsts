@@ -18,3 +18,9 @@ declare-binop( $"%", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"%
 declare-binop( $"*", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"*"; y; l")"; ) );
 
 declare-unop( $"~", raw-type(U64), raw-type(U64), ( l"((uint64_t)(~"; x; l"))"; ) );
+
+let cmp(l: U64, r: U64): Ord = (
+   if l < r then LessThan
+   else if l > r then GreaterThan
+   else Equal
+);

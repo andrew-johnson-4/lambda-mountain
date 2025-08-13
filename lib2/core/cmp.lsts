@@ -1,0 +1,24 @@
+
+## order is important here because
+## [type(LessThan).discriminator-case-tag] = 0
+## [type(Equal).discriminator-case-tag] = 1
+## [type(GreaterThan).discriminator-case-tag] = 2
+type Ord = LessThan | Equal | GreaterThan;
+
+let $"=="(l: Ord, r: Ord): Bool = l.discriminator-case-tag == r.discriminator-case-tag;
+let $"!="(l: Ord, r: Ord): Bool = l.discriminator-case-tag != r.discriminator-case-tag;
+let $"<"(l: Ord, r: Ord): Bool  = l.discriminator-case-tag <  r.discriminator-case-tag;
+let $"<="(l: Ord, r: Ord): Bool = l.discriminator-case-tag <= r.discriminator-case-tag;
+let $">"(l: Ord, r: Ord): Bool  = l.discriminator-case-tag >  r.discriminator-case-tag;
+let $">="(l: Ord, r: Ord): Bool = l.discriminator-case-tag >= r.discriminator-case-tag;
+
+# TODO: add a Comparable interface and check arg type here
+# PREREQUISITE: total quick-prop inferences `C<"char">[] => Comparable`
+let $"=="(l: x, r: x): Bool = cmp(l, r) == Equal;
+let $"!="(l: x, r: x): Bool = cmp(l, r) != Equal;
+let $"<"(l: x, r: x): Bool  = cmp(l, r) <  Equal;
+let $"<="(l: x, r: x): Bool = cmp(l, r) <= Equal;
+let $">"(l: x, r: x): Bool  = cmp(l, r) >  Equal;
+let $">="(l: x, r: x): Bool = cmp(l, r) >= Equal;
+
+let $"&&"(l: Ord, r: Ord): Ord = if l == Equal then r else l;
