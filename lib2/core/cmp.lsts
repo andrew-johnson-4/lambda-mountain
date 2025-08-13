@@ -5,10 +5,6 @@
 ## [type(GreaterThan).discriminator-case-tag] = 2
 type Ord = LessThan | Equal | GreaterThan;
 
-interface self implements Comparable {
-   let cmp(l: self, r: self): Ord;
-};
-
 let $"=="(l: Ord, r: Ord): Bool = l.discriminator-case-tag == r.discriminator-case-tag;
 let $"!="(l: Ord, r: Ord): Bool = l.discriminator-case-tag != r.discriminator-case-tag;
 let $"<"(l: Ord, r: Ord): Bool  = l.discriminator-case-tag <  r.discriminator-case-tag;
@@ -16,11 +12,13 @@ let $"<="(l: Ord, r: Ord): Bool = l.discriminator-case-tag <= r.discriminator-ca
 let $">"(l: Ord, r: Ord): Bool  = l.discriminator-case-tag >  r.discriminator-case-tag;
 let $">="(l: Ord, r: Ord): Bool = l.discriminator-case-tag >= r.discriminator-case-tag;
 
-let $"=="(l: x+Comparable, r: x+Comparable): Bool = cmp(l, r) == Equal;
-let $"!="(l: x+Comparable, r: x+Comparable): Bool = cmp(l, r) != Equal;
-let $"<"(l: x+Comparable, r: x+Comparable): Bool  = cmp(l, r) <  Equal;
-let $"<="(l: x+Comparable, r: x+Comparable): Bool = cmp(l, r) <= Equal;
-let $">"(l: x+Comparable, r: x+Comparable): Bool  = cmp(l, r) >  Equal;
-let $">="(l: x+Comparable, r: x+Comparable): Bool = cmp(l, r) >= Equal;
+# TODO: add a Comparable interface and check arg type here
+# PREREQUISITE: total quick-prop inferences `C<"char">[] => Comparable`
+let $"=="(l: x, r: x): Bool = cmp(l, r) == Equal;
+let $"!="(l: x, r: x): Bool = cmp(l, r) != Equal;
+let $"<"(l: x, r: x): Bool  = cmp(l, r) <  Equal;
+let $"<="(l: x, r: x): Bool = cmp(l, r) <= Equal;
+let $">"(l: x, r: x): Bool  = cmp(l, r) >  Equal;
+let $">="(l: x, r: x): Bool = cmp(l, r) >= Equal;
 
 let $"&&"(l: Ord, r: Ord): Ord = if l == Equal then r else l;

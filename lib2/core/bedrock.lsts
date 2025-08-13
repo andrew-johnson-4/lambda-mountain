@@ -2,6 +2,7 @@
 import stdint.h;
 import stdio.h;
 import stdlib.h;
+import string.h;
 
 import lib2/core/platform-macros.lsts;
 import lib2/core/common-macros.lsts;
