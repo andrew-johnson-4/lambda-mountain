@@ -1,0 +1,32 @@
+
+import lib2/core/bedrock.lsts;
+
+assert( 1_i64 == 1_i64 );
+assert( 2_i64 == 2_i64 );
+assert( not(2_i64 == 1_i64) );
+assert( 2_i64 != 1_i64 );
+assert( 1_i64 != 2_i64 );
+assert( not(1_i64 != 1_i64) );
+assert( 2_i64 <= 2_i64 );
+assert( 2_i64 <= 3_i64 );
+assert( not(2_i64 < 2_i64) );
+assert( 2_i64 < 3_i64 );
+assert( 2_i64 >= 2_i64 );
+assert( 3_i64 >= 2_i64 );
+assert( not(2_i64 >= 3_i64) );
+assert( 3_i64 > 2_i64 );
+assert( not(2_i64 > 2_i64) );
+
+assert( 4_i64 & 4_i64 == 4_i64 );
+assert( 12_i64 & 4_i64 == 4_i64 );
+assert( 4_i64 | 4_i64 == 4_i64 );
+assert( 12_i64 | 4_i64 == 12_i64 );
+assert( 4_i64 ^ 4_i64 == 0_i64 );
+assert( 12_i64 ^ 4_i64 == 8_i64 );
+assert( ~4_i64 == -5_i64 );
+
+assert( 2_i64 + 2_i64 == 4_i64 );
+assert( 2_i64 - 2_i64 == 0_i64 );
+assert( 5_i64 / 3_i64 == 1_i64 );
+assert( 5_i64 % 3_i64 == 2_i64 );
+assert( 5_i64 * 3_i64 == 15_i64 );
