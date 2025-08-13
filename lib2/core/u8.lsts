@@ -2,3 +2,21 @@
 type opaque alias U8 suffix _u8
      implies C<"int">
      = C<"uint8_t">;
+
+declare-binop( $"!=", raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"&", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"&"; y; l")"; ) );
+declare-binop( $"|", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"|"; y; l")"; ) );
+declare-binop( $"^", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"^"; y; l")"; ) );
+declare-binop( $"+", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"/", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"/"; y; l")"; ) );
+declare-binop( $"%", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"%"; y; l")"; ) );
+declare-binop( $"*", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"*"; y; l")"; ) );
+
+declare-unop( $"~", raw-type(U8), raw-type(U8), ( l"(~"; x; l")"; ) );

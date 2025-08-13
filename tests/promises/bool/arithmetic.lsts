@@ -4,17 +4,17 @@ import lib2/core/bedrock.lsts;
 assert( true );
 assert( not(false) );
 
-assert( not(true ^ true) );
-assert( true ^ false );
-assert( false ^ true );
-assert( not(false ^ false) );
+assert( not(true xor true) );
+assert( true xor false );
+assert( false xor true );
+assert( not(false xor false) );
 
-assert( true && true );
-assert( not(true && false) );
-assert( not(false && true) );
-assert( not(false && false) );
+assert( true and true );
+assert( not(true and false) );
+assert( not(false and true) );
+assert( not(false and false) );
 
-assert( true || true );
-assert( true || false );
-assert( false || true );
-assert( not(false || false) );
+assert( true or true );
+assert( true or false );
+assert( false or true );
+assert( not(false or false) );

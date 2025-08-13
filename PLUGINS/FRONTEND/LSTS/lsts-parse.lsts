@@ -601,7 +601,9 @@ let lsts-parse-andor(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let term-rest = lsts-parse-cmp(tokens);
    let term = term-rest.first;
    tokens = term-rest.second;
-   while lsts-parse-head(tokens)==c"&&" || lsts-parse-head(tokens)==c"||" || lsts-parse-head(tokens)==c"^" {
+   while lsts-parse-head(tokens)==c"&&" || lsts-parse-head(tokens)==c"||"
+      || lsts-parse-head(tokens)==c"&" || lsts-parse-head(tokens)==c"|" || lsts-parse-head(tokens)==c"^"
+      || lsts-parse-head(tokens)==c"and" || lsts-parse-head(tokens)==c"or" || lsts-parse-head(tokens)==c"xor" {
       let op-t = head(tokens); let op = op-t.key; tokens = tail(tokens);
       let term2-rest = lsts-parse-cmp(tokens);
       tokens = term2-rest.second;
@@ -1869,6 +1871,14 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       (let rhs, tokens) = lsts-parse-small-expression(tokens);
       if non-zero(func-sig.return-type) then rhs = mk-app(mk-lit(c":"), mk-cons(rhs, mk-atype(func-sig.return-type)));
       term = mk-abs(func-sig.args-list, rhs, misc-type);
+   } else if lsts-parse-head(tokens)==c"~" {
+      let amp = head(tokens);
+      tokens = tail(tokens);
+      (let inner-term, tokens) = lsts-parse-atom-without-tail(tokens);
+      term = mk-app(
+         Var( amp.key, amp ),
+         inner-term
+      );
    } else if lsts-parse-head(tokens)==c"&" {
       let amp = head(tokens);
       tokens = tail(tokens);

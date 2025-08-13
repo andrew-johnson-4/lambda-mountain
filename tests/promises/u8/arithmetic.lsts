@@ -1,0 +1,14 @@
+
+import lib2/core/bedrock.lsts;
+
+assert( 1 == 1 );
+assert( 2 == 2 );
+assert( 2 <= 2 );
+assert( 2 <= 3 );
+assert( not(2 < 2) );
+assert( 2 < 3 );
+assert( 2 >= 2 );
+assert( 3 >= 2 );
+assert( not(2 >= 3) );
+assert( 3 > 2 );
+assert( not(2 > 2) );
