@@ -3,3 +3,18 @@ import lib2/core/bedrock.lsts;
 
 assert( true );
 assert( not(false) );
+
+assert( not(true ^ true) );
+assert( true ^ false );
+assert( false ^ true );
+assert( not(false ^ false) );
+
+assert( true && true );
+assert( not(true && false) );
+assert( not(false && true) );
+assert( not(false && false) );
+
+assert( true || true );
+assert( true || false );
+assert( false || true );
+assert( not(false || false) );

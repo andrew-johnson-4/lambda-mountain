@@ -5,3 +5,6 @@ let true = 1 as Bool;
 let false = 0 as Bool;
 
 declare-unop( not, raw-type(Bool), raw-type(Bool), ( l"(!"; x; l")"; ) );
+declare-binop( $"^", raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"^"; y; l")"; ) );
+declare-binop( $"&&", raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"&&"; y; l")"; ) );
+declare-binop( $"||", raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"||"; y; l")"; ) );
