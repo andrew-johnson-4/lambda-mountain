@@ -1,2 +1,9 @@
 
-type alias CString suffix _s = C<"char">[];
+type alias CString suffix _s implements Comparable = C<"char">[];
+
+let cmp(l: CString, r: CString): Ord = (
+   let c = strcmp( l, r );
+   if c < 0 then LessThan
+   else if c > 0 then GreaterThan
+   else Equal
+);

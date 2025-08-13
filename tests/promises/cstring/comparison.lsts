@@ -1,0 +1,14 @@
+
+import lib2/core/bedrock.lsts;
+
+assert( c"a" == c"a" );
+assert( c"a" != c"b" );
+assert( c"a" <= c"a" );
+assert( c"a" < c"b" );
+assert( c"a" >= c"a" );
+assert( c"b" >= c"a" );
+assert( c"b" > c"a" );
+
+assert( cmp(c"a", c"a") == Equal );
+assert( cmp(c"a", c"b") == LessThan );
+assert( cmp(c"b", c"a") == GreaterThan );
