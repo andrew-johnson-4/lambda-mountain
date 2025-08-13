@@ -1,0 +1,2 @@
+
+type opaque alias U8 suffix _u8 = C<"uint8_t">;

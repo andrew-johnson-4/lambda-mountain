@@ -1,0 +1,2 @@
+
+type opaque alias U64 suffix _u64 = C<"uint64_t">;
