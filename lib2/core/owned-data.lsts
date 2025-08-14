@@ -6,15 +6,18 @@ type OwnedData<t> = {
    data: t[]+FlexibleArrayMember
 };
 
-let mk-owned-data(tt: Type<t>, maximum-length: USize): OwnedData<t>[] = (
+# TODO: change "maximum_length" parameter to "maximum-length"
+# The C backend doesn't support C types having arbitrary names
+# They currently need to be proper C identifiers for now
+let mk-owned-data(tt: Type<t>, maximum_length: USize): OwnedData<t>[] = (
    let od = safe-alloc(
       # TODO: make sizeof return USize
-      (sizeof(OwnedData<t>) as USize) + (sizeof(t) as USize) * maximum-length,
+      (sizeof(OwnedData<t>) as USize) + (sizeof(t) as USize) * maximum_length,
       type(OwnedData<t>)
    );
    od.reference-count = 0;
    od.current-length = 0;
-   od.maximum-length = maximum-length;
+   od.maximum-length = maximum_length;
    od
 );
 
