@@ -2,6 +2,19 @@
 declare-binop( $"[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), ( l"("; x; l"["; y; l"])"; ) );
 declare-ternop( $"set[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), raw-type(base-type), ( l"("; x; l"["; y; l"]="; z; l")"; ) );
 
+declare-binop( $"!=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"+", raw-type(base-type[]), raw-type(U64), raw-type(base-type[]), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"+", raw-type(base-type[]), raw-type(I64), raw-type(base-type[]), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(U64), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(I64), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(base-type[]), raw-type(USize), ( l"("; x; l"-"; y; l")"; ) );
+
 let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
    # BEFORE CHANGING THIS: talk to alex
 
@@ -40,7 +53,7 @@ let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
 let safe-alloc(len: USize, ty: Type<t>): t[] = (
    # BEFORE CHANGING THIS: talk to alex
 
-   let nb = len * sizeof(t);
+   let nb = len * (sizeof(t) as USize);
    safe-alloc-impl(nb) as t[]
 );
 
@@ -48,6 +61,6 @@ let safe-alloc(len: USize, ty: Type<t>): t[] = (
 let safe-realloc(ptr: t[], len: USize, ty: Type<t>): t[] = (
    # BEFORE CHANGING THIS: talk to alex
 
-   let nb = len * sizeof(t);
+   let nb = len * (sizeof(t) as USize);
    safe-realloc-impl(ptr as ?[], nb) as t[]
 );

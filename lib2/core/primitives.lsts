@@ -13,8 +13,8 @@ declare-binop( $".into", type(Any), type(String), raw-type(String), () );
 # but this definition being in the library is simplest for inference
 declare-binop( $"<:", type(Any), type(Any), raw-type(Bool), () );
 
-let :Blob $"primitive::while"(body: Any, cond: Bool): Nil = (
-   $":frame"( $":frame"(body); $":frame"(cond) );
+let :Blob $"primitive::while"(cond: Bool, body: Any): Nil = (
+   $":frame"( $":frame"(cond); $":frame"(body) );
    $":expression"(
       l"({while("; $":expression"(cond); l"){"; $":expression"(body); l";};})";
    );

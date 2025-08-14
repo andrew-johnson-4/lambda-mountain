@@ -15,6 +15,7 @@ let mk-owned-data(tt: Type<t>, maximum-length: USize): OwnedData<t>[] = (
    od.reference-count = 0;
    od.current-length = 0;
    od.maximum-length = maximum-length;
+   od
 );
 
 let .push(od: OwnedData<t>[], d: t): Nil = (
