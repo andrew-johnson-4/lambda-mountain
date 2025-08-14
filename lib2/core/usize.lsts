@@ -1,2 +1,4 @@
 
-type alias USize = U64;
+type alias USize suffix _sz
+     implies U64
+     = C<"size_t">;

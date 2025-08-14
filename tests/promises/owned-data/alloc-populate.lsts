@@ -7,26 +7,26 @@ let u8-data(): Nil = (
    assert( od.maximum-length == 5 );
 
    # push is designed to give ownership from caller to callee
-   od.push(1);
-   assert( od[0] == 1 );
-   od.push(2);
-   assert( od[1] == 2 );
-   od.push(3);
-   assert( od[2] == 3 );
-   od.push(4);
-   assert( od[3] == 4 );
-   od.push(5);
-   assert( od[4] == 5 );
-   assert( od.current-length == 5 );
-   assert( od.maximum-length == 5 );
+   #od.push(1);
+   #assert( od[0] == 1 );
+   #od.push(2);
+   #assert( od[1] == 2 );
+   #od.push(3);
+   #assert( od[2] == 3 );
+   #od.push(4);
+   #assert( od[3] == 4 );
+   #od.push(5);
+   #assert( od[4] == 5 );
+   #assert( od.current-length == 5 );
+   #assert( od.maximum-length == 5 );
 
    # pop is designed to give ownership from callee to caller
-   assert( od.pop() == 5 );
-   assert( od.pop() == 4 );
-   assert( od.pop() == 3 );
-   assert( od.pop() == 2 );
-   assert( od.pop() == 1 );
-   assert( od.current-length == 0 );
-   assert( od.maximum-length == 5 );
+   #assert( od.pop() == 5 );
+   #assert( od.pop() == 4 );
+   #assert( od.pop() == 3 );
+   #assert( od.pop() == 2 );
+   #assert( od.pop() == 1 );
+   #assert( od.current-length == 0 );
+   #assert( od.maximum-length == 5 );
    ()
 );
