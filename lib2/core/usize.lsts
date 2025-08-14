@@ -2,3 +2,27 @@
 type alias USize suffix _sz
      implies U64
      = C<"size_t">;
+
+declare-binop( $"!=", raw-type(USize), raw-type(USize), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(USize), raw-type(USize), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(USize), raw-type(USize), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(USize), raw-type(USize), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(USize), raw-type(USize), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(USize), raw-type(USize), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"&", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"&"; y; l")"; ) );
+declare-binop( $"|", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"|"; y; l")"; ) );
+declare-binop( $"^", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"^"; y; l")"; ) );
+declare-binop( $"+", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"/", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"/"; y; l")"; ) );
+declare-binop( $"%", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"%"; y; l")"; ) );
+declare-binop( $"*", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"*"; y; l")"; ) );
+
+declare-unop( $"~", raw-type(USize), raw-type(USize), ( l"((size_t)(~"; x; l"))"; ) );
+
+let cmp(l: USize, r: USize): Ord = (
+   if l < r then LessThan
+   else if l > r then GreaterThan
+   else Equal
+);

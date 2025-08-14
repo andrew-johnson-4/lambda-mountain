@@ -8,8 +8,9 @@ type OwnedData<t> = {
 
 let mk-owned-data(tt: Type<t>, maximum-length: USize): OwnedData<t>[] = (
    let od = safe-alloc(
-      type(OwnedData<t>),
-      sizeof(OwnedData<t>) + sizeof(t)*maximum-length
+      # TODO: make sizeof return USize
+      (sizeof(OwnedData<t>) as USize) + (sizeof(t) as USize) * maximum-length,
+      type(OwnedData<t>)
    );
    od.reference-count = 0;
    od.current-length = 0;
