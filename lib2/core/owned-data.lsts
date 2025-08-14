@@ -1,0 +1,31 @@
+
+type OwnedData<t> = {
+   reference-count: USize,
+   current-length: USize,
+   maximum-length: USize,
+   data: t[]+FlexibleArrayMember
+};
+
+let mk-owned-data(tt: Type<t>, maximum-length: USize): OwnedData<t>[] = (
+   let od = safe-alloc(
+      type(OwnedData<t>),
+      sizeof(OwnedData<t>) + sizeof(t)*maximum-length
+   );
+   od.reference-count = 0;
+   od.current-length = 0;
+   od.maximum-length = maximum-length;
+);
+
+let .push(od: OwnedData<t>[], d: t): Nil = (
+   if od.current-length == od.maximum-length
+   then fail(c"OwnedData .push Exceeds Maximum Length");
+   od[od.current-length] = d;
+   od.current-length = od.current-length + 1;
+);
+
+let .pop(od: OwnedData<t>[]): t = (
+   if od.current-length == 0
+   then fail(c"OwnedData .pop From Empty Data");
+   od.current-length = od.current-length - 1;
+   od[od.current-length]
+);
