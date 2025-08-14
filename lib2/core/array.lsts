@@ -28,7 +28,7 @@ let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
 let safe-alloc-impl(nb: USize): ?[] = (
    # BEFORE CHANGING THIS: talk to alex
 
-   let ptr = malloc(nb);
+   let ptr = malloc(nb) as ?[];
    if ptr as USize == 0_sz {
       fail(c"malloc fail");
    };
