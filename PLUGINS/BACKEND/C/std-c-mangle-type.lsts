@@ -60,7 +60,7 @@ let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
       TGround{tag:c"Arrow"} => (
          (let pre, let post) = std-c-mangle-declaration-internal(tt, blame);
          let td-id = uuid();
-         assemble-header-section = assemble-header-section
+         assemble-header-typedef-section = assemble-header-typedef-section
                                  + SAtom(c"typedef ")
                                  + pre
                                  + SAtom(c" ")

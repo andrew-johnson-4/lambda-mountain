@@ -1,5 +1,6 @@
 
 let assemble-header-section = SNil;
+let assemble-header-typedef-section = SNil;
 let assemble-types-section = SNil;
 let assemble-gdecl-section = SNil;
 let assemble-text-section = SNil;

@@ -4,9 +4,9 @@ import stdio.h;
 import stdlib.h;
 import string.h;
 
+import lib2/core/l.lsts;
 import lib2/core/platform-macros.lsts;
 import lib2/core/common-macros.lsts;
-import lib2/core/l.lsts;
 import lib2/core/primitives.lsts;
 import lib2/core/bool.lsts;
 import lib2/core/u8.lsts;
@@ -14,4 +14,7 @@ import lib2/core/u64.lsts;
 import lib2/core/i64.lsts;
 import lib2/core/usize.lsts;
 import lib2/core/cstring.lsts;
+import lib2/core/array.lsts;
+import lib2/core/io.lsts;
 import lib2/core/cmp.lsts;
+import lib2/core/owned-data.lsts;

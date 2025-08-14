@@ -1,21 +1,32 @@
 
 let std-c-mangle-declaration(tt: Type, blame: AST): Tuple<S,S> = (
-   std-c-mangle-declaration-internal(normalize(tt).rewrite-opaque-type-alias, blame)
+   let is-flexible-array-member = tt.is-t(c"FlexibleArrayMember",0);
+   std-c-mangle-declaration-internal(normalize(tt).rewrite-opaque-type-alias, is-flexible-array-member, blame)
 );
 
-let std-c-mangle-declaration-internal(tt: Type, blame: AST): Tuple<S,S> = (
+let std-c-mangle-declaration-internal(tt: Type, blame: AST): Tuple<S,S> = std-c-mangle-declaration-internal(tt, false, blame);
+
+let std-c-mangle-declaration-internal(tt: Type, is-flexible-array-member: U64, blame: AST): Tuple<S,S> = (
    match tt {
       TGround{tag:c"Array", parameters:[ TGround{tag:c"CONST"}.. array-base.. ]} => (
-         let rest = std-c-mangle-declaration-internal(array-base, blame);
+         let rest = std-c-mangle-declaration-internal(array-base, false, blame);
          ( rest.first, rest.second + SAtom(c"[]") )
       );
       TGround{tag:c"Array", parameters:[ TGround{tag:c"C",parameters:[TGround{width=tag}..]}.. array-base.. ]} => (
-         let rest = std-c-mangle-declaration-internal(array-base, blame);
+         let rest = std-c-mangle-declaration-internal(array-base, false, blame);
          ( rest.first, rest.second + SAtom(c"[") + SAtom(width) + SAtom(c"]") )
       );
       TGround{tag:c"Array", parameters:[ TGround{width=tag}.. array-base.. ]} => (
-         let rest = std-c-mangle-declaration-internal(array-base, blame);
+         let rest = std-c-mangle-declaration-internal(array-base, false, blame);
          ( rest.first, rest.second + SAtom(c"[") + SAtom(width) + SAtom(c"]") )
+      );
+      TGround{tag:c"Array", parameters:[ TAny{}.. array-base.. ]} => (
+         if is-flexible-array-member {
+            let rest = std-c-mangle-declaration-internal(array-base, false, blame);
+            ( rest.first, rest.second + SAtom(c"[]") )
+         } else {
+            (std-c-mangle-type-internal(tt, blame), SNil());
+         }
       );
       TGround{tag:c"Arrow", parameters:[ rng.. dom.. ]} => (
          let returns = std-c-mangle-type-internal(rng, blame);
