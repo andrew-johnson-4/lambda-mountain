@@ -81,7 +81,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
 
             let inner-expr = std-c-compile-expr( ctx, t, false );
             if can-unify(t2(c"C",t1(c"typedef")), tt) {
-               assemble-header-section = assemble-header-section + text;
+               assemble-header-typedef-section = assemble-header-typedef-section + text;
             } else {
                assemble-gdecl-section = assemble-gdecl-section + text;
                text = SAtom(k) + SAtom(c" = ") + inner-expr.get(c"expression") + SAtom(c";\n");
@@ -116,7 +116,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             text = text + std-c-compile-function-args(ctx, lhs);
             text = text + SAtom(c");\n");
             if can-unify(t2(c"C",t1(c"typedef")), tt) {
-               assemble-header-section = assemble-header-section + text;
+               assemble-header-typedef-section = assemble-header-typedef-section + text;
             } else {
                assemble-gdecl-section = assemble-gdecl-section + text;
             }
