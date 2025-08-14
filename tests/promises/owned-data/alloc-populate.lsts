@@ -28,4 +28,5 @@ let u8-data(): Nil = (
    assert( od.pop() == 1 );
    assert( od.current-length == 0 );
    assert( od.maximum-length == 5 );
+   ()
 );

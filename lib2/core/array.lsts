@@ -1,0 +1,3 @@
+
+declare-binop( $"[]", raw-type(base-type[]), raw-type(U64), raw-type(base-type), ( l"("; x; l"["; y; l"])"; ) );
+declare-ternop( $"set[]", raw-type(base-type[]), raw-type(U64), raw-type(base-type), raw-type(base-type), ( l"("; x; l"["; y; l"]="; z; l")"; ) );
