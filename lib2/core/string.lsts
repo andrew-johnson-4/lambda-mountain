@@ -5,6 +5,7 @@ type String suffix _ss
 let .length(s: String): USize = s.end-offset - s.start-offset;
 
 let cmp(l: String, r: String): Ord = (
+   print("cmp('\{l}','\{r}')\n");
    let l_size = l.end-offset - l.start-offset;
    let r_size = r.end-offset - r.start-offset;
    let c = memcmp(
@@ -20,6 +21,7 @@ let cmp(l: String, r: String): Ord = (
 );
 
 let intern(cs: CString): String = cs.into(type(String));
+let .into(s: String, tt: Type<String>): String = s;
 let .into(cs: CString, tt: Type<String>): String = (
    let cs_length = cs.length;
    let od = mk-owned-data(type(U8), cs_length);
@@ -47,3 +49,14 @@ let print(s: String): Nil = (
    fwrite((s.data.data + s.start-offset) as C<"void">[], sizeof(U8) as USize, s.length as USize, stdout);
    ()
 );
+
+let $"+"(l: String, r: String): String = (
+   let l_length = l.length;
+   let r_length = r.length;
+   let cs_length = l_length + r_length;
+   let od = mk-owned-data(type(U8), cs_length);
+   memcpy(od.data as C<"void">[], l.data.data as C<"void">[], l_length as USize);
+   memcpy((od.data + l_length) as C<"void">[], r.data.data as C<"void">[], r_length as USize);
+   String(0 as USize, cs_length, od) 
+);
+
