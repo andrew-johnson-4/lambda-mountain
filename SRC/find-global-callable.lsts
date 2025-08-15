@@ -46,7 +46,7 @@ let find-global-constructor(fname: CString, hint: Type, arg-types: Type, blame: 
       for Tuple{ot=first, kt=second, t=third} in global-type-context-denormal.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
          print("Candidate \{fname} : \{kt}\n");
       };
-      fail("Unable to find appropriate global constructor: \{fname} :: \{hint} (\{arg-types})At: \{blame.location}\n");
+      exit-error("Unable to find appropriate global constructor: \{fname} :: \{hint} (\{arg-types})", blame);
    };
    result
 );
@@ -77,7 +77,7 @@ let apply-global-constructor(tctx: TypeContext?, fname: CString, hint: Type, arg
       };
    };
    if not(non-zero(result)) && non-zero(hint) && not(hint.is-type) then result = hint
-   else if not(non-zero(result)) then fail("Unable to apply appropriate global constructor: \{fname} :: \{hint}At: \{blame.location}\n");
+   else if not(non-zero(result)) then exit-error("Unable to apply appropriate global constructor: \{fname} :: \{hint} (\{arg-types})", blame);
    if result.is-arrow && non-zero(arg-types) {
       let inner-tctx = if non-zero(hint)
       then unify(simple.range, hint, blame)

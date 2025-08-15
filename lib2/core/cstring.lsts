@@ -1,6 +1,8 @@
 
 type alias CString suffix _s = C<"char">[];
 
+let .length(l: CString): USize = strlen(l);
+
 let cmp(l: CString, r: CString): Ord = (
    let c = strcmp( l, r ) as I64;
    if c < 0 then LessThan

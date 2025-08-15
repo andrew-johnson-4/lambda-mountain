@@ -1,0 +1,30 @@
+
+type String suffix _ss
+          = { start-offset:USize, end-offset:USize, data:OwnedData<U8>[] };
+
+let cmp(l: String, r: String): Ord = (
+   let l_size = l.end-offset - l.start-offset;
+   let r_size = r.end-offset - r.start-offset;
+   let c = memcmp(
+      (l.data.data + l.start-offset) as C<"void">[],
+      (r.data.data + r.start-offset) as C<"void">[],
+      min(l_size, r_size)
+   ) as I64;
+   if c < 0 then LessThan
+   else if c > 0 then GreaterThan
+   else if l_size < r_size then LessThan
+   else if l_size > r_size then GreaterThan
+   else Equal
+);
+
+let intern(cs: CString): String = cs.into(type(String));
+let .into(cs: CString, tt: Type<String>): String = (
+   let cs_length = cs.length;
+   let od = mk-owned-data(type(U8), cs_length);
+   let csi = 0_sz;
+   while csi < cs_length {
+      od.push(cs[csi] as U8);
+      csi = csi + 1;
+   };
+   String(0 as USize, cs_length, od)
+);
