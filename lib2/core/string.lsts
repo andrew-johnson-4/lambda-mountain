@@ -6,9 +6,9 @@ let cmp(l: String, r: String): Ord = (
    let l-size = l.end-offset - l.start-offset;
    let r-size = r.end-offset - r.start-offset;
    let c = memcmp(
-      l.data.data + l.start-offset,
-      r.data.data + r.start-offset,
-      min(l.size, r-size)
+      (l.data.data + l.start-offset) as C<"void">[],
+      (r.data.data + r.start-offset) as C<"void">[],
+      min(l-size, r-size)
    ) as I64;
    if c < 0 then LessThan
    else if c > 0 then GreaterThan

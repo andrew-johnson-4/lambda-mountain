@@ -9,10 +9,8 @@ declare-binop( $"<=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Boo
 declare-binop( $">",  raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
 declare-binop( $">=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
 
-declare-binop( $"+", raw-type(base-type[]), raw-type(U64), raw-type(base-type[]), ( l"("; x; l"+"; y; l")"; ) );
-declare-binop( $"+", raw-type(base-type[]), raw-type(I64), raw-type(base-type[]), ( l"("; x; l"+"; y; l")"; ) );
-declare-binop( $"-", raw-type(base-type[]), raw-type(U64), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
-declare-binop( $"-", raw-type(base-type[]), raw-type(I64), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"+", raw-type(base-type[]), raw-type(USize), raw-type(base-type[]), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(USize), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
 declare-binop( $"-", raw-type(base-type[]), raw-type(base-type[]), raw-type(USize), ( l"("; x; l"-"; y; l")"; ) );
 
 let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
