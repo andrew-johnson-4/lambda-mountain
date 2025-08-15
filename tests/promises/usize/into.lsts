@@ -1,0 +1,7 @@
+
+import lib2/core/bedrock.lsts;
+
+assert( 0_sz.into(type(String)) == "0" );
+assert( 1_sz.into(type(String)) == "1" );
+assert( 12_sz.into(type(String)) == "12" );
+assert( 123_sz.into(type(String)) == "123" );

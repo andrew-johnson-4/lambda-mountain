@@ -1,0 +1,11 @@
+
+import lib2/core/bedrock.lsts;
+
+assert( 0_i64.into(type(String)) == "0" );
+assert( 1_i64.into(type(String)) == "1" );
+assert( 12_i64.into(type(String)) == "12" );
+assert( 123_i64.into(type(String)) == "123" );
+assert( -0_i64.into(type(String)) == "0" );
+assert( -1_i64.into(type(String)) == "-1" );
+assert( -12_i64.into(type(String)) == "-12" );
+assert( -123_i64.into(type(String)) == "-123" );
