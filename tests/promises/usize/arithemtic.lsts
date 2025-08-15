@@ -1,0 +1,36 @@
+
+import lib2/core/bedrock.lsts;
+
+assert( 1_sz == 1_sz );
+assert( 2_sz == 2_sz );
+assert( not(2_sz == 1_sz) );
+assert( 2_sz != 1_sz );
+assert( 1_sz != 2_sz );
+assert( not(1_sz != 1_sz) );
+assert( 2_sz <= 2_sz );
+assert( 2_sz <= 3_sz );
+assert( not(2_sz < 2_sz) );
+assert( 2_sz < 3_sz );
+assert( 2_sz >= 2_sz );
+assert( 3_sz >= 2_sz );
+assert( not(2_sz >= 3_sz) );
+assert( 3_sz > 2_sz );
+assert( not(2_sz > 2_sz) );
+
+assert( 4_sz & 4_sz == 4_sz );
+assert( 12_sz & 4_sz == 4_sz );
+assert( 4_sz | 4_sz == 4_sz );
+assert( 12_sz | 4_sz == 12_sz );
+assert( 4_sz ^ 4_sz == 0_sz );
+assert( 12_sz ^ 4_sz == 8_sz );
+
+assert( 2_sz + 2_sz == 4_sz );
+assert( 2_sz - 2_sz == 0_sz );
+assert( 5_sz / 3_sz == 1_sz );
+assert( 5_sz % 3_sz == 2_sz );
+assert( 5_sz * 3_sz == 15_sz );
+
+assert( min(1_sz, 2_sz) == 1_sz );
+assert( min(3_sz, 2_sz) == 2_sz );
+assert( max(1_sz, 2_sz) == 2_sz );
+assert( max(3_sz, 2_sz) == 3_sz );
