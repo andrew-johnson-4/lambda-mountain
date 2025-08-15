@@ -28,3 +28,14 @@ let .into(cs: CString, tt: Type<String>): String = (
    };
    String(0 as USize, cs_length, od)
 );
+
+let $"[:]"(s: String, begin: I64, end: I64): String = (
+   let s_length = s.length as I64;
+   if begin < 0_i64 then begin = s_length + begin;
+   if end < 0_i64 then end = s_length + end;
+   if begin < 0_i64 || begin > s_length then fail(c"String [:] Slice Start Index Out of Bounds");
+   if end < 0_i64 || end > s_length then fail(c"String [:] Slice End Index Out of Bounds");
+   let start-offset = ((s.start-offset as I64) + begin) as USize;
+   let end-offset = ((s.end-offset as I64) + end) as USize;
+   String(start-offset, end-offset, s.data);
+);

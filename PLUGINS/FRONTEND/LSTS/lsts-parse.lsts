@@ -614,6 +614,7 @@ let lsts-parse-ascript(tokens: List<Token>): Tuple<AST,List<Token>> = (
 );
 
 let lsts-parse-andor(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   print("Enter Andor\n");
    let term-rest = lsts-parse-cmp(tokens);
    let term = term-rest.first;
    tokens = term-rest.second;
@@ -627,6 +628,7 @@ let lsts-parse-andor(tokens: List<Token>): Tuple<AST,List<Token>> = (
          mk-cons(term, term2-rest.first)
       );
    };
+   print("Exit Andor\n");
    Tuple ( term, tokens )
 );
 
