@@ -1,6 +1,6 @@
 
 type String suffix _ss
-          = { start-offset:USize, end-offset:USize, data:OwnedData<U8> };
+          = { start-offset:USize, end-offset:USize, data:OwnedData<U8>[] };
 
 let cmp(l: String, r: String): Ord = (
    let l-size = l.end-offset - l.start-offset;
@@ -17,6 +17,7 @@ let cmp(l: String, r: String): Ord = (
    else Equal
 );
 
+let intern(cs: CString): String = cs.into(type(String));
 let .into(cs: CString, tt: Type<String>): String = (
    let cs-length = cs.length;
    let od = mk-owned-data(type(U8), cs-length);
