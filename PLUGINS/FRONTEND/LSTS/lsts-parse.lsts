@@ -614,7 +614,6 @@ let lsts-parse-ascript(tokens: List<Token>): Tuple<AST,List<Token>> = (
 );
 
 let lsts-parse-andor(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   print("Enter Andor\n");
    let term-rest = lsts-parse-cmp(tokens);
    let term = term-rest.first;
    tokens = term-rest.second;
@@ -628,7 +627,6 @@ let lsts-parse-andor(tokens: List<Token>): Tuple<AST,List<Token>> = (
          mk-cons(term, term2-rest.first)
       );
    };
-   print("Exit Andor\n");
    Tuple ( term, tokens )
 );
 
@@ -1485,7 +1483,6 @@ let lsts-parse-match2-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
       endi = endi - 1;
    };
    if endi != starti then {
-      print("Presufs: \{presufs}\n");
       fail("Invalid Prefix/Suffix Chain", original-tokens.formatted-location);
    };
    lhs = presufs[starti];

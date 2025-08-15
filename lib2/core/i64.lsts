@@ -1,6 +1,8 @@
 
 type opaque alias I64 suffix _i64 = C<"int64_t">;
 
+let minimum-I64 = −9223372036854775808_i64;
+
 declare-binop( $"!=", raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
 declare-binop( $"==", raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
 declare-binop( $"<",  raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );

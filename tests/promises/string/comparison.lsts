@@ -19,12 +19,12 @@ assert( "".length == 0 );
 assert( "a".length == 1 );
 assert( "ab".length == 2 );
 
-assert( "a"[1 : ] = "" );
-assert( "ab"[1 : ] = "b" );
-assert( "ab"[ : 1] = "a" );
-assert( "ab"[-1 : ] = "b" );
-assert( "ab"[ : -1] = "a" );
-assert( "ab"[ : ] = "ab" );
+assert( "a"[1 : ] == "" );
+assert( "ab"[1 : ] == "b" );
+assert( "ab"[ : 1] == "a" );
+assert( "ab"[-1 : ] == "b" );
+assert( "ab"[ : -1] == "a" );
+assert( "ab"[ : ] == "ab" );
 
 #assert( "abc"[0] == 'a' );
 #assert( "abc"[1] == 'b' );

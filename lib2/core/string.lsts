@@ -2,6 +2,8 @@
 type String suffix _ss
           = { start-offset:USize, end-offset:USize, data:OwnedData<U8>[] };
 
+let .length(s: String): USize = s.end-offset - s.start-offset;
+
 let cmp(l: String, r: String): Ord = (
    let l_size = l.end-offset - l.start-offset;
    let r_size = r.end-offset - r.start-offset;
