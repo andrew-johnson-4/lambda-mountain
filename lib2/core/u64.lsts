@@ -35,6 +35,10 @@ let cmp(l: U64, r: U64): Ord = (
 let .into(i: U64, tt: Type<String>): String = (
    let od = mk-owned-data(type(U8), 20_sz);
    let cs_length = 0_sz;
+   if i == 0_u64 {
+      od.push(48);
+      cs_length = cs_length + 1;
+   };
    while i != 0_u64 {
       od.push(48 + ((i % 10) as U8));
       cs_length = cs_length + 1;
