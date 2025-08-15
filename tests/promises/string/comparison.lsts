@@ -19,6 +19,9 @@ assert( "".length == 0 );
 assert( "a".length == 1 );
 assert( "ab".length == 2 );
 
+print("Empty '"); print(""); print("'\n");
+print("\"a\"[1:] '"); print("a"[1:]); print("'\n");
+
 assert( "a"[1 : ] == "" );
 assert( "ab"[1 : ] == "b" );
 assert( "ab"[ : 1] == "a" );
