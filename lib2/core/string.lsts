@@ -1,0 +1,29 @@
+
+type String suffix _ss
+          = { start-offset:USize, end-offset:USize, data:OwnedData<U8> };
+
+let cmp(l: String, r: String): Ord = (
+   let l-size = l.end-offset - l.start-offset;
+   let r-size = r.end-offset - r.start-offset;
+   let c = memcmp(
+      l.data.data + l.start-offset,
+      r.data.data + r.start-offset,
+      min(l.size, r-size)
+   ) as I64;
+   if c < 0 then LessThan
+   else if c > 0 then GreaterThan
+   else if l-size < r-size then LessThan
+   else if l-size > r-size then GreaterThan
+   else Equal
+);
+
+let .into(cs: CString, tt: Type<String>): String = (
+   let cs-length = cs.length;
+   let od = mk-owned-data(type(U8), cs-length);
+   let csi = 0_sz;
+   while csi < cs-length {
+      od.push(cs[csi]);
+      csi = csi + 1;
+   };
+   String(0, cs-length, od)
+);
