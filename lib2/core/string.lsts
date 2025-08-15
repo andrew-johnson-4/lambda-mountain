@@ -34,6 +34,9 @@ let .into(cs: CString, tt: Type<String>): String = (
 );
 
 let $"[:]"(s: String, begin: I64, end: I64): String = (
+   print("S \{s}\n");
+   print("Begin \{begin}\n");
+   print("End \{end}\n");
    let s_length = s.length as I64;
    if end == minimum-I64 then end = s_length;
    if begin < 0_i64 then begin = s_length + begin;
@@ -42,7 +45,11 @@ let $"[:]"(s: String, begin: I64, end: I64): String = (
    if end < 0_i64 or end > s_length then fail(c"String [:] Slice End Index Out of Bounds");
    let start_offset = ((s.start-offset as I64) + begin) as USize;
    let end_offset = ((s.end-offset as I64) + end) as USize;
-   String(start_offset, end_offset, s.data);
+   let rs = String(start_offset, end_offset, s.data);
+   print("Start Offset \{start_offset}\n");
+   print("End Offset \{end_offset}\n");
+   print("Result [:] = '\{rs}'\n");
+   rs
 );
 
 let print(s: String): Nil = (

@@ -33,3 +33,18 @@ let cmp(l: I64, r: I64): Ord = (
    else if l > r then GreaterThan
    else Equal
 );
+
+let .into(i: I64, tt: Type<String>): String = (
+   let od = mk-owned-data(type(U8), 20_sz);
+   let cs_length = 0_sz;
+   if i < 0_i64 {
+      od.push(45);
+      cs_length = cs_length + 1;
+   };
+   while i != 0_i64 {
+      od.push(48 + ((i % 10) as U8));
+      cs_length = cs_length + 1;
+      i = i / 10;
+   };
+   String(0 as USize, cs_length, od)
+);
