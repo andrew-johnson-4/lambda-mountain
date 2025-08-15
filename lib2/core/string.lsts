@@ -44,6 +44,6 @@ let $"[:]"(s: String, begin: I64, end: I64): String = (
 );
 
 let print(s: String): Nil = (
-   fwrite(s.data.data as C<"void">[], sizeof(U8) as USize, s.length as USize, stdout);
+   fwrite((s.data.data + s.start-offset) as C<"void">[], sizeof(U8) as USize, s.length as USize, stdout);
    ()
 );
