@@ -19,6 +19,13 @@ declare-binop( $"*", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"*
 
 declare-unop( $"~", raw-type(I64), raw-type(I64), ( l"((int64_t)(~"; x; l"))"; ) );
 
+let min(l: I64, r: I64): I64 = (
+   if l < r then l else r
+);
+let max(l: I64, r: I64): I64 = (
+   if l > r then l else r
+);
+
 let cmp(l: I64, r: I64): Ord = (
    if l < r then LessThan
    else if l > r then GreaterThan

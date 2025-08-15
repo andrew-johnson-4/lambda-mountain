@@ -30,3 +30,12 @@ assert( 2_i64 - 2_i64 == 0_i64 );
 assert( 5_i64 / 3_i64 == 1_i64 );
 assert( 5_i64 % 3_i64 == 2_i64 );
 assert( 5_i64 * 3_i64 == 15_i64 );
+
+assert( min(1_i64, 2_i64) == 1_i64 );
+assert( min(3_i64, 2_i64) == 2_i64 );
+assert( max(1_i64, 2_i64) == 2_i64 );
+assert( max(3_i64, 2_i64) == 3_i64 );
+assert( min(-1_i64, -2_i64) == -2_i64 );
+assert( min(-3_i64, -2_i64) == -3_i64 );
+assert( max(-1_i64, -2_i64) == -1_i64 );
+assert( max(-3_i64, -2_i64) == -2_i64 );
