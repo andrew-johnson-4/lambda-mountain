@@ -25,5 +25,5 @@ let .into(cs: CString, tt: Type<String>): String = (
       od.push(cs[csi]);
       csi = csi + 1;
    };
-   String(0, cs-length, od)
+   String(0 as USize, cs-length, od)
 );
