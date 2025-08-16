@@ -1,0 +1,2 @@
+
+type alias I32 suffix _i32 = I64;

@@ -1483,7 +1483,6 @@ let lsts-parse-match2-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
       endi = endi - 1;
    };
    if endi != starti then {
-      print("Presufs: \{presufs}\n");
       fail("Invalid Prefix/Suffix Chain", original-tokens.formatted-location);
    };
    lhs = presufs[starti];

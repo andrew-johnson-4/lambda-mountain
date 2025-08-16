@@ -1,0 +1,2 @@
+
+type alias U16 suffix _u16 = U64;

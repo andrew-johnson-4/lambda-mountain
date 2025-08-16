@@ -33,3 +33,5 @@ let cmp(l: USize, r: USize): Ord = (
    else if l > r then GreaterThan
    else Equal
 );
+
+let .into(i: USize, tt: Type<String>): String = (i as U64).into(type(String));
