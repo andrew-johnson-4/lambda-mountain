@@ -1,0 +1,7 @@
+
+import lib2/core/bedrock.lsts;
+
+assert( 0_u8.into(type(String)) == "0" );
+assert( 1_u8.into(type(String)) == "1" );
+assert( 12_u8.into(type(String)) == "12" );
+assert( 123_u8.into(type(String)) == "123" );

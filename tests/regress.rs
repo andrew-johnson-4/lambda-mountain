@@ -141,8 +141,7 @@ fn regression_tests() {
    for entry in glob("tests/promises/*/*.lsts").unwrap() {
       let path = entry.unwrap().display().to_string();
       if !std::path::Path::new(&(path.clone() + ".skip")).exists() {
-         let expected = std::fs::read_to_string(path.clone() + ".out")
-                       .expect(&format!("Could not load expected output {}.out", path));
+         let expected = std::fs::read_to_string(path.clone() + ".out").unwrap_or("");
          let expected = expected.trim().to_string();
          let actual = run_bootstrap(&path, false);
          let actual = actual.trim().to_string();
