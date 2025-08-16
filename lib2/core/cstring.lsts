@@ -1,7 +1,7 @@
 
 type alias CString suffix _s = C<"char">[];
 
-let .length(l: CString): USize = strlen(l);
+let .length(l: CString): USize = strlen(l) as USize;
 
 let cmp(l: CString, r: CString): Ord = (
    let c = strcmp( l, r ) as I64;
