@@ -58,7 +58,13 @@ type ApplyResult = { function-type:Type , return-type:Type };
 
 type CompileMode = ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
-type IsUsed = Used | Unused | Tail | Return | Call;
+type IsUsed = Used | Unused | Tail | Return | Call { function-name: CString };
+let .is-call(used: IsUsed): U64 = (
+   match used {
+      Call{} => true;
+      _ => false;
+   }
+);
 
 type FContext zero FCtxEOF = FCtxEOF | FCtxBind{ remainder:FContext[] , k:CString , kt:Type , kv:Fragment };
 

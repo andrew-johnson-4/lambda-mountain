@@ -188,7 +188,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{ is-cons=is-cons, l=left, r=right } => (
          let is-macro = false;
          if is-cons {
-            (tctx, let new-l) = std-infer-expr(tctx, l, false, if is(used,Call) then Call else Unused, ta);
+            (tctx, let new-l) = std-infer-expr(tctx, l, false, if used.is-call then used else Unused, ta);
             (tctx, let new-r) = std-infer-expr(tctx, r, false, if is(used,Tail()) then used else Used(), ta);
             if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-cons(new-l, new-r) };
             ascript(term, if is(used, Tail()) then typeof-term(r) else t3(c"Cons", typeof-term(l), typeof-term(r)));
@@ -196,7 +196,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             let rt = ta;
             if var-name-if-var(l)==c"list::cons" { match r {
                App{k=left, m=right} => (
-                  (_, let new-k) = std-infer-expr(tctx, k, false, Call(), ta);
+                  (_, let new-k) = std-infer-expr(tctx, k, false, Call(c"list::cons"), ta);
                   (_, let new-m) = std-infer-expr(tctx, m, false, Used(), t2(c"List",normalize(typeof-term(k))));
                   if not(is(k,new-k)) || not(is(m,new-m)) then { r = mk-cons(new-k, new-m) };
                );
@@ -204,7 +204,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             }};
             if var-name-if-var(l)==c"map::cons" { match r {
                App{kv=left, m=right} => (
-                  (_, let new-kv) = std-infer-expr(tctx, kv, false, Call(), ta);
+                  (_, let new-kv) = std-infer-expr(tctx, kv, false, Call(c"map::cons"), ta);
                   (_, let new-m) = std-infer-expr(tctx, m, false, Used(), t3(c"HashtableEq",normalize(typeof-term(kv)).r2,normalize(typeof-term(kv)).r1));
                   if not(is(kv,new-kv)) || not(is(m,new-m)) then { r = mk-cons(new-kv, new-m) };
                );
@@ -217,7 +217,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             } else {
                (tctx, let new-l) = std-infer-expr(tctx, l, false, used, ta);
                if typeof-term(l).is-arrow {
-                  (tctx, let new-r) = std-infer-expr(tctx, r, false, if var-name-if-var(l)==c".retain" then Used else Call, ta);
+                  (tctx, let new-r) = std-infer-expr(tctx, r, false, Call(var-name-if-var(l)), ta);
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
                } else {
                   (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, ta);
@@ -231,7 +231,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                } else {
                   (tctx, t3(c"Cons", typeof-term(l), typeof-term(r)))
                };
-               if not(is(used,Call())) { rt = cons-tail-or-self(rt); };
+               if not(used.is-call) { rt = cons-tail-or-self(rt); };
                if var-name-if-var-or-lit(l)==c"mov" && typeof-term(r).is-t(c"Cons",2) {
                   let from-tt = typeof-term(r).slot(c"Cons",2).l1;
                   let to-tt = typeof-term(r).slot(c"Cons",2).l2;
@@ -251,9 +251,15 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
    };
    if is(used,Unused) && typeof-term(term).slot(c"Phi::State",1).l1.slot(c"MustDelete::ToDelete",1).l1.is-t(c"Linear",1) {
       (tctx, term) = wrap-call(tctx, c"del", term);
-   } else if is(used,Call) && typeof-term(term).is-t(c"MustRetain",0) {
-      (tctx, term) = wrap-call(tctx, c".retain", term);
-   };
+   } else if typeof-term(term).is-t(c"MustRetain",0) then (match used {
+      Call{ function-name=function-name } => (
+         if function-name==c".retain" then ()
+         else if function-name==c".discriminator-case-tag" then ()
+         else if function-name.has-prefix(c".") && typeof-term(term).is-t(c"Field::"+tail-string(function-name),1) then ()
+         else (tctx, term) = wrap-call(tctx, c".retain", term);
+      );
+      _ => ();
+   });
    (tctx, term);
 );
 
