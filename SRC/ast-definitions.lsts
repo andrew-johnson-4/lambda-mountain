@@ -58,10 +58,28 @@ type ApplyResult = { function-type:Type , return-type:Type };
 
 type CompileMode = ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
-type IsUsed = Used | Unused | Tail | Return | Call { function-name: CString };
+type IsUsed = Used | Unused | Tail | Call { function-name: CString };
 let .is-call(used: IsUsed): U64 = (
    match used {
       Call{} => true;
+      _ => false;
+   }
+);
+let .is-used(used: IsUsed): U64 = (
+   match used {
+      Used{} => true;
+      _ => false;
+   }
+);
+let .is-unused(used: IsUsed): U64 = (
+   match used {
+      Unused{} => true;
+      _ => false;
+   }
+);
+let .is-tail(used: IsUsed): U64 = (
+   match used {
+      Tail{} => true;
       _ => false;
    }
 );

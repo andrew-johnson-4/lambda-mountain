@@ -192,9 +192,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          let is-macro = false;
          if is-cons {
             (tctx, let new-l) = std-infer-expr(tctx, l, false, if used.is-call then used else Unused, ta);
-            (tctx, let new-r) = std-infer-expr(tctx, r, false, if is(used,Tail()) then used else Used(), ta);
+            (tctx, let new-r) = std-infer-expr(tctx, r, false, if used.is-tail then used else Used, ta);
             if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-cons(new-l, new-r) };
-            ascript(term, if is(used, Tail()) then typeof-term(r) else t3(c"Cons", typeof-term(l), typeof-term(r)));
+            ascript(term, if used.is-tail then typeof-term(r) else t3(c"Cons", typeof-term(l), typeof-term(r)));
          } else {
             let rt = ta;
             if var-name-if-var(l)==c"list::cons" { match r {
@@ -252,7 +252,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       _ => fail("Unexpected Term in std-infer-expr\n\{term}\n");
    };
-   if is(used,Unused) && typeof-term(term).slot(c"Phi::State",1).l1.slot(c"MustDelete::ToDelete",1).l1.is-t(c"Linear",1) {
+   if used.is-unused && typeof-term(term).slot(c"Phi::State",1).l1.slot(c"MustDelete::ToDelete",1).l1.is-t(c"Linear",1) {
       (tctx, term) = wrap-call(tctx, c"del", term);
    } else if typeof-term(term).is-t(c"MustRetain",0) then (match used {
       Call{ function-name=function-name } => (
