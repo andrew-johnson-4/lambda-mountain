@@ -279,7 +279,6 @@ let del-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST): 
    if non-zero(needs-delete) {
       let return-id = uuid();
       let return-type = typeof-term(term);
-      print("Needs delete \{return-type}\n");
       let rhs = term;
       let def = mk-var(return-id);
       if not(return-type.is-t(c"Nil",0)) {
