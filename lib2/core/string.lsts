@@ -28,6 +28,7 @@ let intern(cs: CString): String = cs.into(type(String));
 let .into(cs: CString, tt: Type<String>): String = (
    let cs_length = cs.length;
    let od = mk-owned-data(type(U8), cs_length);
+   od.retain;
    let csi = 0_sz;
    while csi < cs_length {
       od.push(cs[csi] as U8);

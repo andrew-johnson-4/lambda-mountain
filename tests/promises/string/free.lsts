@@ -9,5 +9,4 @@ let implicit-alloc-implicit-free(): Nil = (
 );
 
 implicit-alloc-implicit-free();
-exit(safe-alloc-block-count);
 assert( safe-alloc-block-count == 0 );
