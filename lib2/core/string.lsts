@@ -1,5 +1,5 @@
 
-type String suffix _ss
+type String suffix _ss implied phi MustDelete::ToDelete<'a>
           = { start-offset:USize, end-offset:USize, data:OwnedData<U8>[] };
 
 let .length(s: String): USize = s.end-offset - s.start-offset;
