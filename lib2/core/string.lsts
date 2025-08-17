@@ -7,6 +7,7 @@ let :Phi::Source del(x: String+(MustDelete::ToDelete<'a> ~> MustDelete::Deleted)
 );
 
 let :Phi::Source .retain(x: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>)): String = (
+   print(c"implicit retain\n");
    x.data.retain; x
 );
 
