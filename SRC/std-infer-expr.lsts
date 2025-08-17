@@ -263,6 +263,7 @@ let wrap-call(tctx: TypeContext?, fname: CString, term: AST): (TypeContext?, AST
    let function-term = mk-var(fname); ascript(function-term, function-type);
    let result = mk-app(function-term, term);
    (tctx, let result-type) = apply-global-callable(tctx, fname, args-type, term);
+   result-type = phi-state(tctx, result-type, term);
    ascript(result, result-type);
    (tctx, result)
 );
