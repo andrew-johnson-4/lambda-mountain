@@ -11,7 +11,7 @@ let :Phi::Source .retain(x: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDe
    x.data.retain; x
 );
 
-let :Phi::Source .length(s: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>)): USize = s.end-offset - s.start-offset;
+let :Phi::Source .length(s: String): USize = s.end-offset - s.start-offset;
 
 let :Phi::Source cmp(l: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>), r: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>)): Ord = (
    let l_size = l.end-offset - l.start-offset;
@@ -42,7 +42,7 @@ let .into(cs: CString, tt: Type<String>): String = (
    String(0 as USize, cs_length, od)
 );
 
-#let :Phi::Source $"[:]"(s: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>), begin: I64, end: I64): String = (
+#let $"[:]"(s: String, begin: I64, end: I64): String = (
 #   let s_length = s.length as I64;
 #   if end == minimum-I64 then end = s_length;
 #   if begin < 0_i64 then begin = s_length + begin;

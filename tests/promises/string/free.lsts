@@ -11,5 +11,6 @@ let implicit-alloc-implicit-free(): Nil = (
 implicit-alloc-implicit-free();
 assert( safe-alloc-block-count == 0 );
 
-let :Phi::Source implicit-retain(s: String): Nil = ();
-implicit-retain(c"abc".into(type(String)));
+#let implicit-retain(s: String): Nil = ();
+#implicit-retain(c"abc".into(type(String)));
+#assert( safe-alloc-block-count == 0 );
