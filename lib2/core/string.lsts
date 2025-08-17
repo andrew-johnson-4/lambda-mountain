@@ -1,14 +1,18 @@
 
-type String suffix _ss implied phi MustDelete::ToDelete<'a>
+type String suffix _ss implied phi MustDelete::ToDelete<'a> implies MustRetain
           = { start-offset:USize, end-offset:USize, data:OwnedData<U8>[] };
 
 let :Phi::Source del(x: String+(MustDelete::ToDelete<'a> ~> MustDelete::Deleted)): Nil = (
    x.data.release
 );
 
-let :Phi::Source .length(s: String): USize = s.end-offset - s.start-offset;
+let :Phi::Source .retain(x: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>)): String = (
+   x.data.retain; x
+);
 
-let :Phi::Source cmp(l: String, r: String): Ord = (
+let :Phi::Source .length(s: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>)): USize = s.end-offset - s.start-offset;
+
+let :Phi::Source cmp(l: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>), r: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>)): Ord = (
    let l_size = l.end-offset - l.start-offset;
    let r_size = r.end-offset - r.start-offset;
    let c = memcmp(
@@ -37,30 +41,30 @@ let .into(cs: CString, tt: Type<String>): String = (
    String(0 as USize, cs_length, od)
 );
 
-let :Phi::Source $"[:]"(s: String, begin: I64, end: I64): String = (
-   let s_length = s.length as I64;
-   if end == minimum-I64 then end = s_length;
-   if begin < 0_i64 then begin = s_length + begin;
-   if end < 0_i64 then end = s_length + end;
-   if begin < 0_i64 or begin > s_length then fail(c"String [:] Slice Start Index Out of Bounds");
-   if end < 0_i64 or end > s_length then fail(c"String [:] Slice End Index Out of Bounds");
-   let start_offset = ((s.start-offset as I64) + begin) as USize;
-   let end_offset = ((s.start-offset as I64) + end) as USize;
-   let rs = String(start_offset, end_offset, s.data);
-   rs
-);
+#let :Phi::Source $"[:]"(s: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>), begin: I64, end: I64): String = (
+#   let s_length = s.length as I64;
+#   if end == minimum-I64 then end = s_length;
+#   if begin < 0_i64 then begin = s_length + begin;
+#   if end < 0_i64 then end = s_length + end;
+#   if begin < 0_i64 or begin > s_length then fail(c"String [:] Slice Start Index Out of Bounds");
+#   if end < 0_i64 or end > s_length then fail(c"String [:] Slice End Index Out of Bounds");
+#   let start_offset = ((s.start-offset as I64) + begin) as USize;
+#   let end_offset = ((s.start-offset as I64) + end) as USize;
+#   let rs = String(start_offset, end_offset, s.data);
+#   rs
+#);
 
-let :Phi::Source print(s: String): Nil = (
+let :Phi::Source print(s: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>)): Nil = (
    fwrite((s.data.data + s.start-offset) as C<"void">[], sizeof(U8) as USize, s.length as USize, stdout);
    ()
 );
 
-let :Phi::Source eprint(s: String): Nil = (
+let :Phi::Source eprint(s: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>)): Nil = (
    fwrite((s.data.data + s.start-offset) as C<"void">[], sizeof(U8) as USize, s.length as USize, stderr);
    ()
 );
 
-let :Phi::Source $"+"(l: String, r: String): String = (
+let :Phi::Source $"+"(l: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>), r: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>)): String = (
    let l_length = l.length;
    let r_length = r.length;
    let cs_length = l_length + r_length;
