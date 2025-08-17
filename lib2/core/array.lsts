@@ -29,7 +29,6 @@ let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
 let safe-alloc-block-count = 0_u64;
 
 let safe-alloc-impl(nb: USize): ?[] = (
-   print(c"safe alloc\n");
    # BEFORE CHANGING THIS: talk to alex
 
    let ptr = malloc(nb) as ?[];
