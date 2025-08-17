@@ -1,6 +1,6 @@
 
-type alias USize suffix _sz
-     implies U64
+type opaque alias USize suffix _sz
+     implies I64, U64, C<"size_t">
      = C<"size_t">;
 
 declare-binop( $"!=", raw-type(USize), raw-type(USize), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );

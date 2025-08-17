@@ -34,3 +34,13 @@ let .pop(od: OwnedData<t>[]): t = (
    od.current-length = od.current-length - 1;
    od.data[od.current-length]
 );
+
+let .release(od: OwnedData<t>[]): Nil = (
+   od.reference-count = od.reference-count - 1;
+   if od.reference-count == 0
+   then safe-free(od);
+);
+
+let .retain(od: OwnedData<t>[]): Nil = (
+   od.reference-count = od.reference-count + 1;
+);

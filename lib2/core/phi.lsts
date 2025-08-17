@@ -1,0 +1,2 @@
+
+type phi MustDelete = ToDelete{ promise:'a } | Deleted;

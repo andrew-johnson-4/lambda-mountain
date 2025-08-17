@@ -1,0 +1,16 @@
+
+import lib2/core/bedrock.lsts;
+
+let implicit-alloc-implicit-free(): Nil = (
+   # this is cast from CString -> String in order to force an allocation
+   # otherwise there may be a static string cache for interned strings
+   # which would mess up the reference count here
+   c"abc".into(type(String)); ()
+);
+
+implicit-alloc-implicit-free();
+assert( safe-alloc-block-count == 0 );
+
+#let implicit-retain(s: String): Nil = ();
+#implicit-retain(c"abc".into(type(String)));
+#assert( safe-alloc-block-count == 0 );
