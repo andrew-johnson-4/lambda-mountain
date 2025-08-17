@@ -50,6 +50,11 @@ let print(s: String): Nil = (
    ()
 );
 
+let eprint(s: String): Nil = (
+   fwrite((s.data.data + s.start-offset) as C<"void">[], sizeof(U8) as USize, s.length as USize, stderr);
+   ()
+);
+
 let $"+"(l: String, r: String): String = (
    let l_length = l.length;
    let r_length = r.length;

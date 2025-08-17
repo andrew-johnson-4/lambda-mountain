@@ -1,6 +1,1 @@
 
-let fail(msg: CString): Nil = (
-   fputs(msg, stderr);
-   exit(1);
-   ()
-);

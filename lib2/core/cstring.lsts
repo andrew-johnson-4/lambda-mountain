@@ -9,3 +9,17 @@ let cmp(l: CString, r: CString): Ord = (
    else if c > 0 then GreaterThan
    else Equal
 );
+
+let fail(msg: CString): Nil = (
+   fputs(msg, stderr);
+   exit(1);
+   ()
+);
+
+let print(msg: CString): Nil = (
+   fputs(msg, stdout); ()
+);
+
+let eprint(msg: CString): Nil = (
+   fputs(msg, stderr); ()
+);

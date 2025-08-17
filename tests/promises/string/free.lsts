@@ -1,0 +1,8 @@
+
+import lib2/core/bedrock.lsts;
+
+let implicit-alloc-implicit-free(): Nil = (
+   "abc"; ()
+);
+implicit-alloc-implicit-free();
+assert( safe-alloc-block-count == 0 );

@@ -23,7 +23,13 @@ let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
    };
 );
 
+# TODO: configure this with conditional compilation to remove if unused
+# EXAMPLE: # if CFG.debug
+#          # endif
+let safe-alloc-block-count = 0_u64;
+
 let safe-alloc-impl(nb: USize): ?[] = (
+   print(c"safe alloc\n");
    # BEFORE CHANGING THIS: talk to alex
 
    let ptr = malloc(nb) as ?[];
@@ -32,6 +38,7 @@ let safe-alloc-impl(nb: USize): ?[] = (
    };
 
    mark-memory-as-safe(ptr as U8[], nb);
+   safe-alloc-block-count = safe-alloc-block-count + 1; # TODO conditional compilation
    ptr
 );
 
@@ -61,4 +68,11 @@ let safe-realloc(ptr: t[], len: USize, ty: Type<t>): t[] = (
 
    let nb = len * (sizeof(t) as USize);
    safe-realloc-impl(ptr as ?[], nb) as t[]
+);
+
+let safe-free(ptr: ?[]): Nil = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   safe-alloc-block-count = safe-alloc-block-count - 1; # TODO conditional compilation
+   free(ptr as C<"void">[]); ()
 );
