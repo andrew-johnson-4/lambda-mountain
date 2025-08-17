@@ -3,5 +3,5 @@ let union(lctx: Maybe<TypeContext>, rctx: Maybe<TypeContext>): Maybe<TypeContext
    Some(TypeContext( rctx.get-or(mk-tctx()).tctx +
                      lctx.get-or(mk-tctx()).tctx,
                      rctx.get-or(mk-tctx()).pctx +
-                     lctx.get-or(mk-tctx()).pctx, false ))
+                     lctx.get-or(mk-tctx()).pctx, false, false ))
 );

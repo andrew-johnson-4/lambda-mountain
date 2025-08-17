@@ -170,6 +170,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          }
       );
       Abs{lhs=lhs, rhs=rhs:App{asc=left:Lit{key:c":"},right:App{inner-rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} => (
+         let direct-tctx = tctx.get-or(mk-tctx());
+         direct-tctx.is-unsafe = misc-tt.is-t(c"Blob",0);
+         tctx = Some(direct-tctx);
          tctx = infer-ctx(tctx, lhs);
          let before-tctx = tctx;
          (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type);
@@ -255,6 +258,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       Call{ function-name=function-name } => (
          if function-name==c".retain" then ()
          else if function-name==c".discriminator-case-tag" then ()
+         else if tctx.get-or(mk-tctx()).is-blob then ()
          else if function-name.has-prefix(c".") && typeof-term(term).is-t(c"Field::"+tail-string(function-name),1) then ()
          else (tctx, term) = wrap-call(tctx, c".retain", term);
       );
