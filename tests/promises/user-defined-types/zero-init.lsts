@@ -1,0 +1,9 @@
+
+import lib2/core/bedrock.lsts;
+
+type Flags = Flag1 | Flag2 | Flag3 { x: C<"int"> };
+
+assert( is(Flag1, Flag1) );
+assert( is(Flag2, Flag2) );
+assert( not(is(Flag1, Flag2)) );
+assert( not(is(Flag2, Flag1)) );

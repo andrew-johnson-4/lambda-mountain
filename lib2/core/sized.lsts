@@ -1,0 +1,12 @@
+
+let is(l: t, r: t): Bool = (
+   let i = 0_sz;
+   let return = true;
+   while i < sizeof(t) {
+      let li = (&l as U8[])[i];
+      let ri = (&r as U8[])[i];
+      if li != ri then return = false;
+      i = i + 1;
+   };
+   return
+);
