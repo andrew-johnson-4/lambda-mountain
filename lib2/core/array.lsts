@@ -13,6 +13,8 @@ declare-binop( $"+", raw-type(base-type[]), raw-type(USize), raw-type(base-type[
 declare-binop( $"-", raw-type(base-type[]), raw-type(USize), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
 declare-binop( $"-", raw-type(base-type[]), raw-type(base-type[]), raw-type(USize), ( l"("; x; l"-"; y; l")"; ) );
 
+declare-unop( $"&", raw-type(t), raw-type(t[]), (l"(&"; x; l")";) );
+
 let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
    # BEFORE CHANGING THIS: talk to alex
 

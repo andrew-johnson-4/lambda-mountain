@@ -18,6 +18,7 @@ import lib2/core/i8.lsts;
 import lib2/core/i16.lsts;
 import lib2/core/i32.lsts;
 import lib2/core/i64.lsts;
+import lib2/core/sized.lsts;
 import lib2/core/usize.lsts;
 import lib2/core/cstring.lsts;
 import lib2/core/string.lsts;

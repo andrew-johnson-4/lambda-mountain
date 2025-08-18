@@ -175,7 +175,12 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
    body = mk-cons(body, mk-lit(c" ").ascript(t1(c"L")));
    body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")));
    body = mk-cons(body, mk-app(mk-var(c"mangle-post"),mk-atype(t2(c"Type",base-type))) );
-   body = mk-cons(body, mk-lit(c"={};").ascript(t1(c"L")));
+   body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
+   body = mk-cons(body, mk-lit(c"memset(&").ascript(t1(c"L")));
+   body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")));
+   body = mk-cons(body, mk-lit(c",0,sizeof ").ascript(t1(c"L")));
+   body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")));
+   body = mk-cons(body, mk-lit(c");").ascript(t1(c"L")));
 
    if has-tag-case {
       body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")) );
