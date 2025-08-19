@@ -33,7 +33,9 @@ let main(argc: C_int, argv: CString[]): Nil = (
    let input = [] : List<CString>;
    let highlight = false;
    let dump-tokens = false;
+   let has-args = false;
    while argi < (argc as U64) {
+      has-args = true;
       match argv[argi] {
          c"--typecheck" => config-mode = ModeTypecheck();
          c"--compile" => config-mode = ModeCompile();
@@ -58,6 +60,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
       };
       argi = argi + 1;
    };
+   if not(has-args) then doby-say();
    match config-mode {
       ModeTokenize{} => (
          if highlight {
@@ -84,4 +87,20 @@ let main(argc: C_int, argv: CString[]): Nil = (
          };
       );
    }
+);
+
+let doby-say(): Nil = (
+   print("  ______________                \n");
+   print(" < Like No Udder >              \n");
+   print("  --------------                \n");
+   print("         \\   ^__^               \n");
+   print("          \\  (oo)\\_______       \n");
+   print("             (__)\\       )\\/\\   \n");
+   print("                 ||-----||      \n");
+   print("                 ||     ||      \n");
+   print("                                \n");
+   print(" OPTIONS:                       \n");
+   print("    [input-file]                \n");
+   print("    -o [output-file]            \n");
+   print("    --typecheck                 \n");
 );
