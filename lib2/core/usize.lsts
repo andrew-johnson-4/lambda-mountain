@@ -34,4 +34,4 @@ let cmp(l: USize, r: USize): Ord = (
    else Equal
 );
 
-let .into(i: USize, tt: Type<String>): String = (i as U64).into(type(String));
+#let .into(i: USize, tt: Type<String>): String = (i as U64).into(type(String));
