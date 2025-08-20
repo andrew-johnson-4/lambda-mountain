@@ -15,10 +15,8 @@ let retain-args(tctx: TypeContext?, args: AST, function-type: Type, args-type: T
             (tctx, args, args-type)
          );
       }
-   } else if args-type.is-t(c"MustRetain",0) &&
+   } else if args-type.is-t(c"MustRetain",0) && not(function-type.is-t(c"MustNotRetain",0))
       ( not(function-type.is-t(c"Blob",0)) || function-type.is-t(c"Constructor",0) ) {
-      print("Must Retain \{args} : \{args-type}\n");
-      print("Must Retain F \{function-type}\n");
       (tctx, args) = wrap-call(tctx, c".retain", args);
       (tctx, args, typeof-term(args))
    } else (tctx, args, args-type)
