@@ -18,7 +18,6 @@ let retain-args(tctx: TypeContext?, args: AST, function-type: Type, args-type: T
       }
    } else if args-type.is-t(c"MustRetain",0) && function-type.is-t(c"MustRetain",0) {
       (tctx, args) = wrap-call(tctx, c".retain", args);
-      print("retain \{args}\n");
       (tctx, args, typeof-term(args))
    } else (tctx, args, args-type)
 );
