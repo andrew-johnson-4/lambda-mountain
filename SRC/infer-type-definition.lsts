@@ -212,7 +212,7 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
    body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")));
    body = mk-cons(body, mk-lit(c";})").ascript(t1(c"L")));
 
-   let constructor = mk-glb( mk-token(case-tag).with-location(blame.location), mk-abs(args, body.ascript(base-type.expand-implied-phi.phi-as-initialize), t1(c"Blob") && t1(c"Constructor") ) );
+   let constructor = mk-glb( mk-token(case-tag).with-location(blame.location), mk-abs(args, body.ascript(base-type.expand-implied-phi.phi-as-initialize), t1(c"Blob") && t1(c"MustRetain") ) );
 
    type-ast-inserts = type-ast-inserts.push(constructor); ()
 );

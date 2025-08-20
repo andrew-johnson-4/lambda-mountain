@@ -1,0 +1,19 @@
+
+import lib2/core/bedrock.lsts;
+
+type A implies MustRetain = {};
+
+let .retain(x: A): A = (
+   print(c"retain\n");
+   x
+);
+
+A();
+
+# Retains happen when
+# 1) The type is MustRetain
+# 2) The reference count might go up
+
+# Retains might be a noop
+# However, they always result in a nominal call to a .retain
+# For example, linear types can be used to "remove" unnecessary retain calls
