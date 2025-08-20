@@ -237,6 +237,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   let ft = typeof-term(find-global-callable(var-name-if-var-or-lit(l), typeof-term(r), term));
                   (tctx, let new-r, let new-argt) = retain-args(tctx, r, ft, typeof-term(r));
                   if not(is(r,new-r)) then { r = new-r; term = mk-app(l,r); print("Retain \{term}\n"); };
+                  (tctx, term, rt) = retain-args(tctx, term, ft, rt);
                   (tctx, rt)
                } else if typeof-term(l).is-arrow && non-zero(var-name-if-var-or-lit(l)) {
                   (tctx, rt) = apply-global-callable(tctx, var-name-if-var-or-lit(l), typeof-term(r), term);
