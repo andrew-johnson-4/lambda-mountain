@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm tests/promises/string/comparison.lsts
+	lm tests/promises/u64/into.lsts
 	cc tmp.c
 	./a.out
 
