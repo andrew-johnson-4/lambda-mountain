@@ -1,0 +1,4 @@
+
+let retain-args(tctx: TypeContext?, term: AST, function-type: Type, args-type: Type): (TypeContext?, AST, Type) = (
+   (tctx, term, args-type)
+);
