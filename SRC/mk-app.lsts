@@ -24,6 +24,13 @@ let mk-typedef2(loc: SourceLocation, lhs-type: Type): AST = (
              ta, ta, ta, mk-vector(type((CString,Vector<(CString,Type)>))), ta, ta )
 );
 
+let .is-cons(t: AST): U64 = (
+   match t {
+      App{is-cons=is-cons} => is-cons;
+      _ => false;
+   }
+);
+
 let .with-implies(term: AST, implies: Vector<Type>): AST = (
    match term {
       Typedef2{} => (

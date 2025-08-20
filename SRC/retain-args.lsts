@@ -1,0 +1,23 @@
+
+let retain-args(tctx: TypeContext?, args: AST, function-type: Type, args-type: Type): (TypeContext?, AST, Type) = (
+   if args-type.is-t(c"Cons",1) && args.is-cons {
+      match args {
+         App{ left=left, right=right } => (
+            let left-type = args-type.slot(c"Cons",1).l1;
+            let right-type = args-type.slot(c"Cons",1).l2;
+            (tctx, let new-left, left-type) = retain-args(tctx, left, function-type, left-type);
+            (tctx, let new-right, right-type) = retain-args(tctx, left, function-type, right-type);
+            if not(is(left, new-left)) || not(is(right,new-right)) {
+               args = mk-cons(new-left, new-right);
+               args-type = t3(c"Cons", left-type, right-type);
+               ascript(args, args-type);
+            };
+            (tctx, args, args-type)
+         );
+      }
+   } else if args-type.is-t(c"MustRetain",0) && not(function-type.is-t(c"MustNotRetain",0))
+      ( not(function-type.is-t(c"Blob",0)) || function-type.is-t(c"Constructor",0) ) {
+      (tctx, args) = wrap-call(tctx, c".retain", args);
+      (tctx, args, typeof-term(args))
+   } else (tctx, args, args-type)
+);
