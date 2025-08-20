@@ -234,15 +234,15 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                (tctx, rt) = if typeof-term(l).is-arrow && non-zero(lit-name-if-lit(l)) {
                   let direct-hint = hint-if-hint(l);
                   (tctx, rt) = apply-global-constructor(tctx, lit-name-if-lit(l), direct-hint, typeof-term(r), term);
-                  #let ft = typeof-term(find-global-constructor(lit-name-if-lit(l), direct-hint, rt, term));
-                  #(tctx, let new-r, rt) = retain-args(tctx, r, ft, rt);
-                  #if not(is(r,new-r)) then { r = new-r; term = mk-app(l,r); };
+                  let ft = typeof-term(find-global-callable(var-name-if-var-or-lit(l), typeof-term(r), term));
+                  (tctx, let new-r, let new-argt) = retain-args(tctx, r, ft, typeof-term(r));
+                  if not(is(r,new-r)) then { r = new-r; term = mk-app(l,r); };
                   (tctx, rt)
                } else if typeof-term(l).is-arrow && non-zero(var-name-if-var-or-lit(l)) {
                   (tctx, rt) = apply-global-callable(tctx, var-name-if-var-or-lit(l), typeof-term(r), term);
-                  #let ft = typeof-term(find-global-callable(var-name-if-var-or-lit(l), rt, term));
-                  #(tctx, let new-r, rt) = retain-args(tctx, r, ft, rt);
-                  #if not(is(r,new-r)) then { r = new-r; term = mk-app(l,r); };
+                  let ft = typeof-term(find-global-callable(var-name-if-var-or-lit(l), typeof-term(r), term));
+                  (tctx, let new-r, let new-argt) = retain-args(tctx, r, ft, typeof-term(r));
+                  if not(is(r,new-r)) then { r = new-r; term = mk-app(l,r); };
                   (tctx, rt)
                } else {
                   (tctx, t3(c"Cons", typeof-term(l), typeof-term(r)))
