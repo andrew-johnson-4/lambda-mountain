@@ -167,6 +167,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          );
          mark-var-to-def-todo(tctx, key, ta, term);
          if not(hint.is-t(c"MustNotRetain",0)) {
+            if typeof-term(term).is-t(c"MustRetain",0) then print("Retain Var \{key} : \{hint}\n");
             (tctx, term) = maybe-retain(tctx, term);
          }
       );
