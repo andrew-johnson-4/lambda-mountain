@@ -10,7 +10,8 @@ let .retain(x: A): A = (
 
 if true {
    let a = A();
-   let b = a as MustNotRetain;
+   let b = a;
+   let c = a as MustNotRetain;
 };
 
 # Retains happen when
