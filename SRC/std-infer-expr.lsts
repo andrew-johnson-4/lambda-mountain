@@ -162,6 +162,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             ascript(term, vt);
          );
          mark-var-to-def-todo(tctx, key, ta, term);
+         (tctx, term) = maybe-retain(tctx, term);
       );
       Lit{key=key, token=token} => (
          if hint.is-t(c"Literal",0) {
