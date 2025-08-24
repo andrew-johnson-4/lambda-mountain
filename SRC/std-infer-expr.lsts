@@ -80,7 +80,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{asc=left:Var{key:c"as"}, right:App{t=left,right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
          add-concrete-type-instance(tt, term);
-         (tctx, let new-t) = std-infer-expr(tctx, t, false, used, ta);
+         (tctx, let new-t) = std-infer-expr(tctx, t, false, used, tt);
          if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
          let inner-tt = normalize(typeof-term(t));
          if tt.tag.has-prefix(c"Tag::") then tt = tt && inner-tt
@@ -162,7 +162,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             ascript(term, vt);
          );
          mark-var-to-def-todo(tctx, key, ta, term);
-         (tctx, term) = maybe-retain(tctx, term);
+         if not(hint.is-t(c"MustNotRetain",0)) {
+            (tctx, term) = maybe-retain(tctx, term);
+         }
       );
       Lit{key=key, token=token} => (
          if hint.is-t(c"Literal",0) {
@@ -253,7 +255,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                ascript(term, rt);
                if not(rt.is-t(c"Cons",2)) {
                   let function-type = typeof-term(find-global-callable(var-name-if-var-or-lit(l), typeof-term(r), term));
-                  if function-type.is-t(c"MustRetainOnCall",0) {
+                  if function-type.is-t(c"MustRetainOnCall",0) && not(hint.is-t(c"MustNotRetain",0)) {
                      (tctx, term) = maybe-retain(tctx, term);
                   }
                }

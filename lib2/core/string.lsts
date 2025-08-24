@@ -8,7 +8,7 @@ let :Phi::Source del(x: String+(MustDelete::ToDelete<'a> ~> MustDelete::Deleted)
 
 let .retain(x: String): String = (
    print(c"implicit retain\n");
-   x.data.retain; x
+   (x as MustNotRetain).data.retain; x
 );
 
 let :Phi::Source .length(s: String): USize = s.end-offset - s.start-offset;
