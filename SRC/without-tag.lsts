@@ -29,6 +29,8 @@ let .without-tag(tt: Type): Type = (
       TGround { tag:c"Phi::Transition" } => ta;
       TGround { tag:c"Phi::Initialize" } => ta;
       TGround { tag:c"Phi::State" } => ta;
+      TGround { tag:c"MustNotRetain" } => ta;
+      TGround { tag:c"MustNotMove" } => ta;
       TGround { tag:tag } => if tag.has-prefix(c"Tag::") then ta
                         else if tag.has-prefix(c"Field::") then ta
                         else tt;

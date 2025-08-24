@@ -5,10 +5,11 @@ type A implies MustRetain = {};
 
 let .retain(x: A): A = (
    print(c"retain\n");
-   x
+   x as MustNotRetain
 );
 
 A();
+A() as MustNotRetain;
 
 # Retains happen when
 # 1) The type is MustRetain
