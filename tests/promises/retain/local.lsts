@@ -9,7 +9,7 @@ let .retain(x: A): A = (
 );
 
 if true {
-   let a = A();
+   let a = A() as MustNotRetain;
    let b = a;
    let c = a as MustNotRetain;
 };
