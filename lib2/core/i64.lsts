@@ -1,7 +1,8 @@
 
 type opaque alias I64 suffix _i64 = C<"int64_t">;
 
-let minimum-I64 = -9223372036854775808_i64;
+# C can't handle this literal directly because it needs to store as unsigned first before converting to signed
+let minimum-I64 = -9223372036854775807_i64 - 1_i64;
 
 declare-binop( $"!=", raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
 declare-binop( $"==", raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
