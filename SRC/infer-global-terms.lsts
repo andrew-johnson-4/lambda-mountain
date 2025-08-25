@@ -13,6 +13,7 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
       Glb{k=key, rhs=val} => (
          (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Used(), ta);
          if not(is(rhs,new-rhs)) then {
+            print("New global \{k.key} = \{new-rhs}\n");
             let new-term = mk-glb(k, new-rhs);
             mark-var-to-def(new-term, term);
             term = new-term;
