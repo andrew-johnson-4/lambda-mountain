@@ -275,8 +275,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       _ => fail("Unexpected Term in std-infer-expr\n\{term}\n");
    };
-   if used.is-unused && typeof-term(term).slot(c"Phi::State",1).l1.slot(c"MustDelete::ToDelete",1).l1.is-t(c"Linear",1) {
-      (tctx, term) = wrap-call(tctx, c"del", term);
+   if used.is-unused && typeof-term(term).slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1) {
+      (tctx, term) = wrap-call(tctx, c".release", term);
    };
    (tctx, term);
 );
@@ -298,7 +298,7 @@ let del-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST, h
    let needs-delete = [] : List<TypeContextRow>;
    while non-zero(tctx-after-tctx) && not(is(tctx-before-tctx, tctx-after-tctx)) {
       let tr = head(tctx-after-tctx);
-      if tr.denormalized-type.slot(c"Phi::State",1).l1.slot(c"MustDelete::ToDelete",1).l1.is-t(c"Linear",1) {
+      if tr.denormalized-type.slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1) {
          needs-delete = cons(tr, needs-delete);
       };
       tctx-after-tctx = tail(tctx-after-tctx);
