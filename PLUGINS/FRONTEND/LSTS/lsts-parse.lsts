@@ -1255,47 +1255,6 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             )
          );         
       );
-      [Token{key:c"match2"}.. rest] => (
-         (base, tokens) = lsts-parse-match2(tokens);
-      );
-      [Token{key:c"match"}.. rest] => (
-         let loc = head(tokens).location; tokens = rest;
-         
-         let raw = if lsts-parse-head(tokens)==c"raw" {
-            tokens = tail(tokens); true;
-         } else false;
-         let e-rest = lsts-parse-small-expression(tokens);
-         tokens = e-rest.second;
-         if raw {
-            e-rest.first = mk-app(
-               Var( c"macro::bind-raw", with-location(mk-token("macro::bind-raw"),loc) ),
-               e-rest.first
-            );
-         };
-         let pats = mk-nil();
-         lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-         while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
-            let lhs-rest = lsts-parse-lhs(tokens);
-            tokens = lhs-rest.second;
-            lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-            lsts-parse-expect(c">", tokens); tokens = tail(tokens);
-            if lsts-parse-head(tokens) == c"{" {
-               fail("Please wrap map literals in match cases in parenthesis. At \{tokens.formatted-location}\n");
-            };
-            let rhs-rest = lsts-parse-small-expression(tokens);
-            tokens = rhs-rest.second;
-            lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-            pats = mk-cons(pats, mk-cons(lhs-rest.first, rhs-rest.first));
-         };
-         lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-         base = mk-app(
-            mk-app(
-               Var( c"match", with-location(mk-token("match"),loc) ),
-               e-rest.first
-            ),
-            pats
-         );
-      );
       _ => (
          let assign-rest = lsts-parse-assign(tokens);
          base = assign-rest.first;
@@ -1855,6 +1814,44 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       tokens = term-rest.second;
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
       term = AType( term-rest.first );
+   } else if lsts-parse-head(tokens)==c"match2" {
+      (term, tokens) = lsts-parse-match2(tokens);
+   } else if lsts-parse-head(tokens)==c"match" {
+      let loc = head(tokens).location; tokens = tail(tokens);
+      let raw = if lsts-parse-head(tokens)==c"raw" {
+         tokens = tail(tokens); true;
+      } else false;
+      let e-rest = lsts-parse-small-expression(tokens);
+      tokens = e-rest.second;
+      if raw {
+         e-rest.first = mk-app(
+            Var( c"macro::bind-raw", with-location(mk-token("macro::bind-raw"),loc) ),
+            e-rest.first
+         );
+      };
+      let pats = mk-nil();
+      lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+      while non-zero(tokens) && lsts-parse-head(tokens)!=c"}" {
+         let lhs-rest = lsts-parse-lhs(tokens);
+         tokens = lhs-rest.second;
+         lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+         lsts-parse-expect(c">", tokens); tokens = tail(tokens);
+         if lsts-parse-head(tokens) == c"{" {
+            fail("Please wrap map literals in match cases in parenthesis. At \{tokens.formatted-location}\n");
+         };
+         let rhs-rest = lsts-parse-small-expression(tokens);
+         tokens = rhs-rest.second;
+         lsts-parse-expect(c";", tokens); tokens = tail(tokens);
+         pats = mk-cons(pats, mk-cons(lhs-rest.first, rhs-rest.first));
+      };
+      lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+      term = mk-app(
+         mk-app(
+            Var( c"match", with-location(mk-token("match"),loc) ),
+            e-rest.first
+         ),
+         pats
+      );
    } else if lsts-parse-head(tokens).has-suffix(c"_ss") {
       (term, tokens) = lsts-parse-lit(tokens);
    } else if lsts-parse-head(tokens).has-suffix(c"_rl") {
