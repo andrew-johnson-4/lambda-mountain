@@ -1,0 +1,26 @@
+
+let maybe-not-retain-args(tctx: TypeContext?, function-type: Type, term: AST): (TypeContext?, AST) = (
+   match term {
+      App{left=left, right=right} => (
+         (tctx, let new-right) = maybe-not-retain-args-each(tctx, function-type.domain, right);
+         if not(is(right,new-right)) then term = mk-app(left, new-right);
+         (tctx, term)
+      );
+   }
+);
+
+let maybe-not-retain-args-each(tctx: TypeContext?, args-type: Type, args: AST): (TypeContext?, AST) = (
+   if args-type.is-t(c"Cons",2) then (match args {
+      App{left=left,right=right} => (
+         (tctx, let new-left) = maybe-not-retain-args-each(tctx, args-type.slot(c"Cons",2).l1, left);
+         (tctx, let new-right) = maybe-not-retain-args-one(tctx, args-type.slot(c"Cons",1).l2, right);
+         if not(is(left,new-left)) || not(is(right,new-right)) then args = mk-cons(new-left,new-right);
+         (tctx, args)
+      );
+   }) else maybe-not-retain-args-one(tctx, args-type, args)
+);
+
+let maybe-not-retain-args-one(tctx: TypeContext?, args-type: Type, args: AST): (TypeContext?, AST) = (
+   if args-type.is-t(c"MustNotRetain",0) then print("MustNotRetain \{args-type} \{args}\n");
+   (tctx, args)
+);
