@@ -1,0 +1,8 @@
+
+import lib2/core/default.lsts;
+
+type A implies MustRetain = {};
+type B implies MustRetain = { a: A };
+
+let a = A() as MustNotRetain;
+let b = B(a as MustNotRetain) as MustNotRetain;

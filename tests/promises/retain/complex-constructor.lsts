@@ -1,0 +1,13 @@
+
+import lib2/core/bedrock.lsts;
+
+type A implies MustRetain = {};
+type B implies MustRetain = { a: A };
+
+let .retain(x: x): x = (
+   print(c"retain\n");
+   x as MustNotRetain
+);
+
+let a = A() as MustNotRetain;
+let b = B(a);
