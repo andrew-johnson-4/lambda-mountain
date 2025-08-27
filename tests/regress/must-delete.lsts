@@ -9,7 +9,7 @@ let mark-as-deleted(x: U64+(MustRelease::ToRelease<'a> ~> MustRelease::Released)
 
 let .release(x: U64+MustRelease::ToRelease<'a>): Nil = (
    print("Deleted\n");
-   mark-as-Released(x);
+   mark-as-deleted(x);
 );
 
 let f(): Nil = (
