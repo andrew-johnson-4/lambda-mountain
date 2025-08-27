@@ -1,13 +1,13 @@
 
 import lib/std/default.lsts;
 
-type phi MustDelete = ToDelete { x: 'a } | Deleted;
+type phi MustRelease = ToRelease { x: 'a } | Released;
 
-let :Phi::Source to-delete(x: U64): U64+MustDelete::ToDelete<'a> = x;
+let :Phi::Source to-delete(x: U64): U64+MustRelease::ToRelease<'a> = x;
 
-let mark-as-deleted(x: U64+(MustDelete::ToDelete<'a> ~> MustDelete::Deleted)): Nil = ();
+let mark-as-deleted(x: U64+(MustRelease::ToRelease<'a> ~> MustRelease::Released)): Nil = ();
 
-let del(x: U64+MustDelete::ToDelete<'a>): Nil = (
+let .release(x: U64+MustRelease::ToRelease<'a>): Nil = (
    print("Deleted\n");
    mark-as-deleted(x);
 );

@@ -1,8 +1,8 @@
 
-#type String suffix _ss implied phi MustDelete::ToDelete<'a> implies MustRetain
+#type String suffix _ss implied phi MustRelease::ToRelease<'a> implies MustRetain
 #          = { start-offset:USize, end-offset:USize, data:OwnedData<U8>[] };
 
-#let :Phi::Source del(x: String+(MustDelete::ToDelete<'a> ~> MustDelete::Deleted)): Nil = (
+#let :Phi::Source del(x: String+(MustRelease::ToRelease<'a> ~> MustRelease::Released)): Nil = (
 #   x.data.release
 #);
 
@@ -54,17 +54,17 @@
 #   rs
 #);
 
-#let :Phi::Source print(s: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>)): Nil = (
+#let :Phi::Source print(s: String+(MustRelease::ToRelease<'a> ~> MustRelease::ToRelease<'a>)): Nil = (
 #   fwrite((s.data.data + s.start-offset) as C<"void">[], sizeof(U8) as USize, s.length as USize, stdout);
 #   ()
 #);
 
-#let :Phi::Source eprint(s: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>)): Nil = (
+#let :Phi::Source eprint(s: String+(MustRelease::ToRelease<'a> ~> MustRelease::ToRelease<'a>)): Nil = (
 #   fwrite((s.data.data + s.start-offset) as C<"void">[], sizeof(U8) as USize, s.length as USize, stderr);
 #   ()
 #);
 
-#let :Phi::Source $"+"(l: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>), r: String+(MustDelete::ToDelete<'a> ~> MustDelete::ToDelete<'a>)): String = (
+#let :Phi::Source $"+"(l: String+(MustRelease::ToRelease<'a> ~> MustRelease::ToRelease<'a>), r: String+(MustRelease::ToRelease<'a> ~> MustRelease::ToRelease<'a>)): String = (
 #   let l_length = l.length;
 #   let r_length = r.length;
 #   let cs_length = l_length + r_length;

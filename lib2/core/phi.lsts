@@ -1,2 +1,2 @@
 
-type phi MustDelete = ToDelete{ promise:'a } | Deleted;
+type phi MustRelease = ToRelease{ promise:'a } | Released;

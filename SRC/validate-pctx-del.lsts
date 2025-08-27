@@ -1,5 +1,5 @@
 
-let validate-pctx-del(tctx: TypeContext?): Nil = (
+let validate-pctx-release(tctx: TypeContext?): Nil = (
    let ps-seen = {} : HashtableEq<CString,U64>;
    for Tuple{pid=phi-id, pt=phi-tt, blame=blame} in tctx.get-or(mk-tctx()).pctx {
       if not(ps-seen.has(pid)) {
