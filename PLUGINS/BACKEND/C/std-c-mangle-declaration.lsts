@@ -1,7 +1,7 @@
 
 let std-c-mangle-declaration(tt: Type, blame: AST): Tuple<S,S> = (
    let is-flexible-array-member = tt.is-t(c"FlexibleArrayMember",0);
-   std-c-mangle-declaration-internal(normalize(tt).rewrite-opaque-type-alias, is-flexible-array-member, blame)
+   std-c-mangle-declaration-internal(normalize(tt).rewrite-opaque-type-alias.without-phi, is-flexible-array-member, blame)
 );
 
 let std-c-mangle-declaration-internal(tt: Type, blame: AST): Tuple<S,S> = std-c-mangle-declaration-internal(tt, false, blame);
