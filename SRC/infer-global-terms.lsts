@@ -13,9 +13,11 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
       Glb{k=key, rhs=val} => (
          (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Used, ta);
          if not(is(rhs,new-rhs)) then {
+            tctx = phi-move(tctx, typeof-term(rhs), term);
             let new-term = mk-glb(k, new-rhs);
             mark-var-to-def(new-term, term);
             term = new-term;
+            rhs = new-rhs;
          };
          let kto = typeof-term(rhs);
          match rhs {
@@ -36,7 +38,7 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
             );
          };
          let ktn = normalize(kto);
-         let ktd = typeof-term(rhs) && t1(c"GlobalVariable");
+         let ktd = kto && t1(c"GlobalVariable");
          global-type-context-normal = global-type-context-normal.bind(k.key, ktn, term);
          global-type-context-denormal = global-type-context-denormal.bind(k.key, ktd, term);
          mark-global-as-seen(k.key, ktd, ta);
