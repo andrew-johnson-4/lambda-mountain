@@ -344,7 +344,7 @@ let release-globals(tctx: TypeContext?): TypeContext? = (
          if phi-tt.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1) {
             tctx = tctx.bind-phi(
                phi-id,
-               phi-tt.without-slot(c"MustRelease::ToRelease",1) && t2(c"MustRelease::Released",t2(c"Linear",t1(uuid()))),
+               phi-tt.without-slot(c"MustRelease::ToRelease",1) && t1(c"MustRelease::Released"),
                blame
             );
          };

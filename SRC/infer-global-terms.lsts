@@ -24,7 +24,10 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
                   (tctx, let new-kto) = phi-fresh(tctx, kto, term);
                   tctx = phi-move(tctx, kto, term);
                   kto = new-kto;
-               };
+               } else {
+                  (tctx, let new-kto) = phi-fresh(tctx, kto, term);
+                  kto = new-kto;
+               }
             );
             _ => (
                (tctx, let new-kto) = phi-fresh(tctx, kto, term);
