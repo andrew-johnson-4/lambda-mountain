@@ -1,7 +1,7 @@
 
 import lib2/core/bedrock.lsts;
 
-type A implies MustRetain + MustRelease = {};
+type A implies MustRetain, MustRelease = {};
 
 let .retain(x: A): A = (
    print(c"retain\n");
