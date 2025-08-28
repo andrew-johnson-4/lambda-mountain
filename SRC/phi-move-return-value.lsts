@@ -1,9 +1,33 @@
 
 let phi-move-return-value(tctx: TypeContext?, rhs: AST): (TypeContext?, AST) = (
-   if typeof-term(rhs).is-t(c"MustRelease",0) {
-      print("TODO: maybe unretain \{rhs} : \{typeof-term(rhs)}\n");
+   if typeof-term(rhs).is-t(c"MustRelease",0) && typeof-term(rhs).is-t(c"LocalVariable",0) {
+      (tctx, rhs, let name) = phi-unretain-return-value(tctx, rhs);
+      if non-zero(name) {
+         print("Unretain \{rhs}\n");
+         let def = defof-var(rhs, tctx, name);
+         tctx = phi-move(tctx, typeof-term(def), def);
+      };
    } else {
       tctx = phi-move(tctx, typeof-term(rhs), rhs);
    };
    (tctx, rhs)
+);
+
+let phi-unretain-return-value(tctx: TypeContext?, rhs: AST): (TypeContext?, AST, CString) = (
+   match rhs {
+      App{is-cons=is-cons, left:Var{key:c".retain"}, right=right:Var{name=key}} => (
+         (tctx, right, name)
+      );
+      App{is-cons=is-cons, left=left, right=right} => (
+         if is-cons {
+            (right, let name) = phi-unretain-return-value(tctx, rhs);
+            if non-zero(name) {
+               rhs = mk-cons(left, right);
+               ascript(rhs, typeof-term(right));
+            };
+            (tctx, rhs, name)
+         } else (tctx, rhs, c"")
+      );
+      _ => (tctx, rhs, c"");
+   };
 );
