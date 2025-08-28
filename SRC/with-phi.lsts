@@ -1,4 +1,4 @@
 
 let .with-phi(tt: Type): Type = (
-   tt && enrich-quick-prop(tt).with-only-phi
+   tt && enrich-quick-prop(tt).with-only-phi-state
 );
