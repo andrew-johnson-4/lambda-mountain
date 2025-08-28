@@ -11,7 +11,7 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
       );
       Glb{val:Abs{}} => ();
       Glb{k=key, rhs=val} => (
-         (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Used(), ta);
+         (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Used, ta);
          if not(is(rhs,new-rhs)) then {
             let new-term = mk-glb(k, new-rhs);
             mark-var-to-def(new-term, term);
@@ -25,7 +25,7 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
          ascript(term, ktd);
          maybe-apply-global-callable(global-flow-tctx,c"mov", t3(c"Cons",ktd,ktd), term);
       );
-      _ => (tctx, term) = std-infer-expr(tctx, term, false, Used, ta);
+      _ => (tctx, term) = std-infer-expr(tctx, term, false, Unused, ta);
    };
    (tctx, term)
 );
