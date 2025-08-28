@@ -1,2 +1,4 @@
 
 type phi MustRelease = ToRelease{ promise:'a } | Released;
+
+let :Blob mark-as-released(x: x+(MustRelease::ToRelease<'a> ~> MustRelease::Released)): Nil = ();

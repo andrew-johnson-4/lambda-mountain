@@ -10,6 +10,7 @@ let .retain(x: A): A = (
 
 let .release(x: A): Nil = (
    print(c"release\n");
+   mark-as-released(x);
 );
 
 A();
