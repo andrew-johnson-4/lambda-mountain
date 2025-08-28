@@ -1,13 +1,14 @@
 
 let phi-move-return-value(tctx: TypeContext?, rhs: AST): (TypeContext?, AST) = (
    if typeof-term(rhs).is-t(c"MustRelease",0) {
+      let pre-rhs = rhs;
       (tctx, rhs, let name) = phi-unretain-return-value(tctx, rhs);
       if non-zero(name) {
-         print("Unretained \{rhs}\n");
          let def = defof-var(rhs, tctx, name);
          tctx = phi-move(tctx, typeof-term(def), def);
       };
       tctx = phi-move(tctx, typeof-term(rhs), rhs);
+      tctx = phi-move(tctx, typeof-term(pre-rhs), pre-rhs);
    } else {
       tctx = phi-move(tctx, typeof-term(rhs), rhs);
    };
