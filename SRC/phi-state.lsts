@@ -18,7 +18,7 @@ let phi-state(tctx: TypeContext?, tt: Type, blame: AST): Type = (
       );
       TGround{tag:c"Phi::Id",parameters:[TGround{phi-id=tag,parameters:[]}..]} => (
          let phi-state = tctx.get-or(mk-tctx()).pctx.lookup(phi-id, ta);
-         if not(non-zero(phi-state)) then exit-error("Unable to find Phi::Id<\{phi-id}>\n", blame);
+         if not(non-zero(phi-state)) then exit-error("Unable to find Phi::Id<\{phi-id}> \{blame}\n", blame);
          tt && t2(c"Phi::State",phi-state);
       );
       TGround{tag:c"Phi::Initialize",parameters:[init-tt..]} => ta;
