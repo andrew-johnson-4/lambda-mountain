@@ -905,6 +905,10 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
          }
       };
    };
+   for i in infers {
+      if i.is-t(c"MustRelease",0) && not(implied-phi.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1))
+      then implied-phi = implied-phi && t2(c"MustRelease::ToRelease",t2(c"Linear",tv(c"x")));
+   };
    let cases = mk-vector(type( (CString,Vector<(CString,Type)>) ));
    let alias = ta;
    let opaque-alias = ta;
