@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm tests/promises/retain/return-position-local.lsts
+	lm tests/promises/retain/return-position-global.lsts
 	cc tmp.c
 	./a.out
 
