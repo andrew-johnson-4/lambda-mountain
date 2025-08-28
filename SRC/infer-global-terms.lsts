@@ -17,23 +17,28 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
             mark-var-to-def(new-term, term);
             term = new-term;
          };
-         let ktn = normalize(typeof-term(rhs));
+         let kto = typeof-term(rhs);
+         match rhs {
+            App{left:Lit{key:c":"}, right:App{right:AType{hint=tt}}} => (
+               if not(hint.is-t(c"MustNotMove",0)) {
+                  (tctx, let new-kto) = phi-fresh(tctx, kto, term);
+                  tctx = phi-move(tctx, kto, term);
+                  kto = new-kto;
+               };
+            );
+            _ => (
+               (tctx, let new-kto) = phi-fresh(tctx, kto, term);
+               tctx = phi-move(tctx, kto, term);
+               kto = new-kto;
+            );
+         };
+         let ktn = normalize(kto);
          let ktd = typeof-term(rhs) && t1(c"GlobalVariable");
          global-type-context-normal = global-type-context-normal.bind(k.key, ktn, term);
          global-type-context-denormal = global-type-context-denormal.bind(k.key, ktd, term);
          mark-global-as-seen(k.key, ktd, ta);
          ascript(term, ktd);
          maybe-apply-global-callable(global-flow-tctx,c"mov", t3(c"Cons",ktd,ktd), term);
-         match rhs {
-            App{left:Lit{key:c":"}, right:App{right:AType{hint=tt}}} => (
-               if not(hint.is-t(c"MustNotMove",0)) {
-                  tctx = phi-move(tctx, ktd, term);
-               };
-            );
-            _ => (
-               tctx = phi-move(tctx, ktd, term);
-            );
-         };
       );
       _ => (tctx, term) = std-infer-expr(tctx, term, false, Unused, ta);
    };
