@@ -6,7 +6,6 @@ let typecheck(): Nil = (
    infer-global-context(ast-parsed-program);
    assert-no-infinite-types();
    (global-flow-tctx, ast-parsed-program) = infer-global-terms(global-flow-tctx, ast-parsed-program);
-   global-flow-tctx = release-globals(global-flow-tctx); # TODO: allow automatic .release of globals
    validate-pctx-release(global-flow-tctx); # pctx must be resolved at this point
    (global-flow-tctx, ast-parsed-program) = std-infer-expr(global-flow-tctx, ast-parsed-program, false, Used, ta);
    while non-zero(stack-to-specialize) { match stack-to-specialize {

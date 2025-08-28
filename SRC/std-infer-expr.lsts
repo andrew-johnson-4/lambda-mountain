@@ -335,21 +335,3 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    };
    (tctx-after, term)
 );
-
-let release-globals(tctx: TypeContext?): TypeContext? = (
-   # TODO: optionally allow explicit release of globals before exit
-   let seen = {} : HashtableEq<CString,U64>;
-   for PhiContextRow{phi-id=phi-id,phi-tt=phi-tt,blame=blame} in tctx.get-or(mk-tctx()).pctx {
-      if not(seen.has(phi-id)) {
-         if phi-tt.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1) {
-            tctx = tctx.bind-phi(
-               phi-id,
-               phi-tt.without-slot(c"MustRelease::ToRelease",1) && t1(c"MustRelease::Released"),
-               blame
-            );
-         };
-         seen = seen.bind(phi-id, true);
-      };
-   };
-   tctx
-);
