@@ -28,7 +28,6 @@ let .without-tag(tt: Type): Type = (
       TGround { tag:c"GlobalVariable" } => ta;
       TGround { tag:c"Phi::Transition" } => ta;
       TGround { tag:c"Phi::Initialize" } => ta;
-      TGround { tag:c"Phi::Id" } => ta;
       TGround { tag:c"Phi::State" } => ta;
       TGround { tag:c"MustNotRetain" } => ta;
       TGround { tag:c"MustNotMove" } => ta;
