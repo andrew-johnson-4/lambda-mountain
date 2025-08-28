@@ -39,6 +39,7 @@ import SRC/with-only-phi.lsts;
 import SRC/maybe-retain.lsts;
 import SRC/maybe-not-retain-args.lsts;
 import SRC/phi-move-return-value.lsts;
+import SRC/with-phi.lsts;
 
 let .unroll-seq(t: AST): Vector<AST> = (
    match t {
