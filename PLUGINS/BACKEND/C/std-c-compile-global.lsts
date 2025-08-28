@@ -94,6 +94,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          }
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => (
+         if k == ".retain" then print("compile global .retain \{term}\n");
          if k!=c"main" && not(typeof-term(term).is-t(c"C-FFI_s",0)) {
             k = mangle-identifier-function(k, typeof-term(term));
          };

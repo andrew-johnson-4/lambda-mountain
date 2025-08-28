@@ -145,7 +145,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   if not(rhs-tt.is-t(c"MustNotMove",0)) {
                      (inner-tctx, let new-rhs) = phi-move-return-value(inner-tctx, rhs);
                      if not(is(rhs,new-rhs)) {
+                        let old-tt = typeof-term(new-val);
                         new-val = mk-abs(lhs, mk-app(akey, mk-app(new-rhs, mk-atype(rhs-tt))), tlt);
+                        ascript(new-val, old-tt);
                      };
                   };
                   if not(tlt.is-t(c"Blob",0) || tlt.is-t(c"C-FFI",0) || tlt.is-t(c"FFI",0) || tlt.is-t(c"Phi::Source",0) ) {
