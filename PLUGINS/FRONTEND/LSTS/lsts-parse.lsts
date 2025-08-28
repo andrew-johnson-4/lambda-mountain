@@ -897,12 +897,10 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
       if lsts-parse-head(tokens)==c"implies" {
          lsts-parse-expect(c"implies", tokens); tokens = tail(tokens);
          (let i, tokens) = lsts-parse-type(tokens);
-         print("Implies \{i}\n");
          infers = infers.push(i);
          while lsts-parse-head(tokens)==c"," {
             lsts-parse-expect(c",", tokens); tokens = tail(tokens);
             (i, tokens) = lsts-parse-type(tokens);
-            print("Implies \{i}\n");
             infers = infers.push(i);
          }
       };
@@ -914,7 +912,6 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
          implied-phi = implied-phi && mt;
          implied-phi-index = implied-phi-index.bind(lhs-type.ground-tag-and-arity, mt);
       };
-      print("Infer \{i}\nInferred \{implied-phi}\n");
    };
    let cases = mk-vector(type( (CString,Vector<(CString,Type)>) ));
    let alias = ta;
