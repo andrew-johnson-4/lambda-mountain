@@ -157,7 +157,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                _ => ();
             };
             if not(is(val,new-val)) then {
+               let old-tt = typeof-term(term);
                let new-term = mk-glb(key,new-val);
+               ascript(new-term, old-tt);
                mark-var-to-def(new-term, term);
                term = new-term;
             };

@@ -94,8 +94,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          }
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => (
-         if k == ".retain" then print("compile global .retain \{term}\n");
          if k!=c"main" && not(typeof-term(term).is-t(c"C-FFI_s",0)) {
+            print("Mangle 1 \{typeof-term(term)}\n");
             k = mangle-identifier-function(k, typeof-term(term));
          };
          ctx = std-c-compile-destructure-args( ctx, lhs, false );
@@ -113,6 +113,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
                text = text + SAtom(loc.filename);
                text = text + SAtom(c"\"\n");
             };
+            print("Mangle 2 \{typeof-term(rhs)}\n");
             if k==c"main" then text = text + SAtom(c"int")
             else text = text + std-c-mangle-type(typeof-term(rhs), term);
             text = text + SAtom(c" ");
@@ -136,6 +137,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
                text = text + SAtom(loc.filename);
                text = text + SAtom(c"\"\n");
             };
+            print("Mangle 3 \{typeof-term(rhs)}\n");
             if k==c"main" then text = text + SAtom(c"int")
             else text = text + std-c-mangle-type(typeof-term(rhs), term);
             text = text + SAtom(c" ");
