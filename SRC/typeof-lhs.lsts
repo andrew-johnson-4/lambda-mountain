@@ -2,8 +2,8 @@
 let typeof-lhs(lhs: AST): Type = typeof-lhs(lhs,0);
 
 let typeof-lhs(lhs: AST, idx: U64): Type = match lhs {
-   App{ left:Lit{key:c":"}, right:App{ right:AType{tt=tt} } } => tt.rewrite-type-alias.accept-interface(idx).with-phi;
+   App{ left:Lit{key:c":"}, right:App{ right:AType{tt=tt} } } => tt.rewrite-type-alias.accept-interface(idx);
    App{ ps=left, right:App{ left:Lit{key:c":"}, right:App{ right:AType{tt=tt} } } } =>
-     t3(c"Cons", typeof-lhs(ps,idx+1), tt.rewrite-type-alias.accept-interface(idx).with-phi);
+     t3(c"Cons", typeof-lhs(ps,idx+1), tt.rewrite-type-alias.accept-interface(idx));
    ASTNil{} => t1(c"Nil");
 };
