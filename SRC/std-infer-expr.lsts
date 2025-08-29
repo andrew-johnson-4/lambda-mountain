@@ -136,14 +136,21 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          if rough-tt.is-arrow && not(rough-tt.is-open) && not(rough-tt.is-t(c"TypedMacro",0)) {
             (let inner-tctx, let new-val) = std-infer-expr(tctx, val, is-scoped, Used(), ta);
             match new-val {
-               Abs{rhs:App{ left:Lit{key:c":"}, right:App{ rhs=left, right:AType{rhs-tt=tt} } }, tlt=tt} => (
+               Abs{lhs=lhs, old-wrapped-rhs=rhs:App{ akey=left:Lit{key:c":"}, right:App{ rhs=left, right:AType{rhs-tt=tt} } }, tlt=tt} => (
                   if not(tlt.is-t(c"Blob",0) || tlt.is-t(c"C-FFI",0) || tlt.is-t(c"FFI",0) || tlt.is-t(c"Phi::Source",0) ) {
                      rhs-tt = rhs-tt.rewrite-type-alias;
                      if not(can-unify(rhs-tt, typeof-term(rhs)))
                      then exit-error("Return value does not match declared type:\nExpected \{rhs-tt}\nFound \{typeof-term(rhs)}\n", term);
                   };
                   if not(rhs-tt.is-t(c"MustNotMove",0)) {
-                     inner-tctx = phi-move(inner-tctx, typeof-term(rhs), term);
+                     (inner-tctx, let new-rhs) = phi-move-return-value(inner-tctx, rhs);
+                     if not(is(rhs,new-rhs)) {
+                        let old-tt = typeof-term(new-val);
+                        let new-wrapped-rhs = mk-app(akey, mk-app(new-rhs, mk-atype(rhs-tt)));
+                        ascript(new-wrapped-rhs, typeof-term(old-wrapped-rhs));
+                        new-val = mk-abs(lhs, new-wrapped-rhs, tlt);
+                        ascript(new-val, old-tt);
+                     };
                   };
                   if not(tlt.is-t(c"Blob",0) || tlt.is-t(c"C-FFI",0) || tlt.is-t(c"FFI",0) || tlt.is-t(c"Phi::Source",0) ) {
                      validate-pctx-release(inner-tctx);

@@ -15,3 +15,20 @@ let .with-only-phi(tt: Type): Type = (
       _ => ta;
    };
 );
+
+let .with-only-phi-state(tt: Type): Type = (
+   match tt {
+      TAnd{conjugate=conjugate} => (
+         let rt = ta;
+         for c in conjugate { rt = rt && c.with-only-phi-state };
+         rt         
+      );
+      TGround{tag:c"Phi::State",parameters:[phi-state..]} => tt;
+      TGround{parameters=parameters} => (
+         let rt = ta;
+         for p in parameters { rt = rt && p.with-only-phi-state };
+         rt
+      );
+      _ => ta;
+   };
+);

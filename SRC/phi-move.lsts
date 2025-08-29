@@ -1,6 +1,6 @@
 
 let phi-move(tctx: TypeContext?, tt: Type, blame: AST): TypeContext? = (
-   match tt {
+   if not(tctx.get-or(mk-tctx()).is-blob) then match tt {
       TAnd{conjugate=conjugate} => (
          let phi-id = c"";
          let phi-state = ta;

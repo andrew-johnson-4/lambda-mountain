@@ -4,7 +4,10 @@ let validate-pctx-release(tctx: TypeContext?): Nil = (
    for Tuple{pid=phi-id, pt=phi-tt, blame=blame} in tctx.get-or(mk-tctx()).pctx {
       if not(ps-seen.has(pid)) {
          if pt.is-linear
-         then exit-error("Linear Variables Must Be Used: #\{pid} \{pt}", blame);
+         then match blame {
+            Glb{} => (); # ignore globals for now, because they don't get an automatic .retain
+            _ => exit-error("Linear Variables Must Be Used: #\{pid} \{pt}", blame);
+         };
          ps-seen = ps-seen.bind(pid,true);
       }
    };

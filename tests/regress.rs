@@ -9,12 +9,12 @@ fn rm(p: &str) {
 }
 
 fn compile_bootstrap() {
-   rm("bootstrap");
+   rm("bootstrap.exe");
    let exit = Command::new("cc")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .arg("-o")
-                      .arg("bootstrap")
+                      .arg("bootstrap.exe")
                       .arg("BOOTSTRAP/cli.c")
                       .spawn()
                       .expect("failed to execute process")
@@ -30,7 +30,7 @@ fn run_bootstrap(target: &str, leave_tmp: bool) -> String {
    if !leave_tmp { rm("tmp.c"); };
    rm("a.out");
    
-   let exit = Command::new("./bootstrap")
+   let exit = Command::new("./bootstrap.exe")
            .stdout(std::process::Stdio::piped())
            .stderr(std::process::Stdio::piped())
            .arg("-o")

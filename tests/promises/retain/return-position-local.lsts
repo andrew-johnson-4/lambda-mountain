@@ -1,0 +1,21 @@
+
+import lib2/core/bedrock.lsts;
+
+type A implies MustRetain, MustRelease = {};
+
+let .retain(x: A): A = (
+   print(c"retain\n");
+   x
+);
+
+let .release(x: A): Nil = (
+   print(c"release\n");
+   mark-as-released(x);
+);
+
+A();
+
+# The constructor here should naturally retain
+# However, the `x` variable in .retain should neither retain nor release
+# because they cancel each other out
+# This optimization naturally prevents infinite recursion in the .retain definition

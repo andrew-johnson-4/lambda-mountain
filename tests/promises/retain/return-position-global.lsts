@@ -1,0 +1,24 @@
+
+import lib2/core/bedrock.lsts;
+
+type A implies MustRetain, MustRelease = {};
+
+let .retain(x: A): A = (
+   print(c"retain\n");
+   x
+);
+
+let .release(x: A): Nil = (
+   print(c"release\n");
+   mark-as-released(x);
+);
+
+let x = A();
+
+let f(): A = (
+   x;
+);
+
+f();
+
+# Even in return position here, the global should still retain

@@ -1,0 +1,22 @@
+
+import lib2/core/bedrock.lsts;
+
+type A implies MustRetain, MustRelease = {};
+
+let .retain(x: A): A = (
+   print(c"retain\n");
+   x
+);
+
+let .release(x: A): Nil = (
+   print(c"release\n");
+   mark-as-released(x);
+);
+
+let f(): A = (
+   A();
+);
+
+f();
+
+# Even in return position here, the constructor should still retain
