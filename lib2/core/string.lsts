@@ -1,14 +1,14 @@
 
-#type String suffix _ss implied phi MustRelease::ToRelease<'a> implies MustRetain
-#          = { start-offset:USize, end-offset:USize, data:OwnedData<U8>[] };
+type String suffix _ss implied phi MustRelease::ToRelease<'a> implies MustRetain
+          = { start-offset:USize, end-offset:USize, data:OwnedData<U8>[] };
 
-#let :Phi::Source del(x: String+(MustRelease::ToRelease<'a> ~> MustRelease::Released)): Nil = (
+#let :Phi::Source .release(x: String+(MustRelease::ToRelease<'a> ~> MustRelease::Released)): Nil = (
 #   x.data.release
 #);
 
-#let .retain(x: String): String = (
-#   (x as MustNotRetain+MustNotMove).data.retain; x
-#);
+let .retain(x: String): String = (
+   x.data.retain; x
+);
 
 #let .length(s: String): USize = s.end-offset - s.start-offset;
 
