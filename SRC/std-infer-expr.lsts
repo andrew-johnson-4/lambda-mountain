@@ -241,9 +241,12 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             } else {
                (tctx, let new-l) = std-infer-expr(tctx, l, false, used, ta);
                if typeof-term(l).is-arrow {
-                  (_, let new-r) = std-infer-expr(tctx, r, false, Call(var-name-if-var-or-lit(l)), t1(c"MustNotMove"));
+                  let pre-retain-tctx = tctx;
+                  (tctx, let new-r) = std-infer-expr(tctx, r, false, Call(var-name-if-var-or-lit(l)), ta);
                   let ftype = typeof-term(find-global-callable( var-name-if-var-or-lit(l), typeof-term(new-r), term ));
-                  (tctx, new-r) = std-infer-expr(tctx, r, false, Call(var-name-if-var-or-lit(l)), ftype.domain);
+                  if ftype.domain.is-any-must-not-retain {
+                     (tctx, new-r) = std-infer-expr(pre-retain-tctx, r, false, Call(var-name-if-var-or-lit(l)), ftype.domain);
+                  };
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
                } else {
                   (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, ta);
