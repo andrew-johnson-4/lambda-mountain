@@ -10,3 +10,16 @@ let .is-t(tt: Type, tt-tag: CString, tt-length: U64): U64 = (
       _ => false;
    }
 );
+
+let .is-any-must-not-retain(tt: Type): U64 = (
+   match tt {
+      TAnd { conjugate=conjugate } => (
+         let result = false as U64;
+         for c in conjugate { result = result || c.is-any-must-not-retain };
+         result
+      );
+      TGround { tag:c"Cons", parameters:[l1..l2..] } => l1.is-any-must-not-retain || l2.is-any-must-not-retain;
+      TGround { tag:c"MustNotRetain", parameters:[] } => true;
+      _ => false;
+   } 
+);

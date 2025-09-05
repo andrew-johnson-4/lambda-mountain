@@ -15,6 +15,7 @@ let can-unify(fpt: Type, pt: Type): U64 = (
       Tuple{ first:TAny{} } => true;
       Tuple{ first:TGround{tag:c"Any"} } => true;
       Tuple{ first:TGround{tag:c"MustNotRetain"} } => true;
+      Tuple{ first:TGround{tag:c"MustNotMove"} } => true;
       Tuple{ first:TGround{tag:c"Phi::Initialize"} } => true;
       Tuple{ first:TGround{tag:c"Linear",parameters:[_..]}, second:TGround{tag:c"Linear",parameters:[_..]} } => true;
       Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => false;
@@ -27,6 +28,7 @@ let can-unify(fpt: Type, pt: Type): U64 = (
             if result then (match lc {
                TGround{tag:c"Any"} => ();
                TGround{tag:c"MustNotRetain"} => ();
+               TGround{tag:c"MustNotMove"} => ();
                TGround{tag:c"Phi::Initialize",parameters:[phi-expect..]} => (
                   let pt-phi-state = ta;
                   for rct in rconjugate { match rct {

@@ -173,7 +173,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             ascript(term, vt);
          );
          mark-var-to-def-todo(tctx, key, ta, term);
-         if not(hint.is-t(c"MustNotRetain",0)) {
+         if not(hint.is-t(c"MustNotRetain",0)) && not(tctx.get-or(mk-tctx()).is-blob) {
             (tctx, term) = maybe-retain(tctx, term);
          }
       );
@@ -210,8 +210,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{ is-cons=is-cons, l=left, r=right } => (
          let is-macro = false;
          if is-cons {
-            (tctx, let new-l) = std-infer-expr(tctx, l, false, if used.is-call then used else Unused, ta);
-            (tctx, let new-r) = std-infer-expr(tctx, r, false, if used.is-tail then used else Used, ta);
+            let lhint = hint.slot(c"Cons",2).l1 && hint.slot(c"MustNotRetain",0);
+            let rhint = hint.slot(c"Cons",2).l2 && hint.slot(c"MustNotRetain",0);
+            (tctx, let new-l) = std-infer-expr(tctx, l, false, if used.is-call then used else Unused, lhint);
+            (tctx, let new-r) = std-infer-expr(tctx, r, false, if used.is-tail then used else Used, rhint);
             if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-cons(new-l, new-r) };
             ascript(term, if used.is-tail then typeof-term(r) else t3(c"Cons", typeof-term(l), typeof-term(r)));
          } else {
@@ -239,7 +241,12 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             } else {
                (tctx, let new-l) = std-infer-expr(tctx, l, false, used, ta);
                if typeof-term(l).is-arrow {
-                  (tctx, let new-r) = std-infer-expr(tctx, r, false, Call(var-name-if-var(l)), ta);
+                  let pre-retain-tctx = tctx;
+                  (tctx, let new-r) = std-infer-expr(tctx, r, false, Call(var-name-if-var-or-lit(l)), ta);
+                  let ftype = typeof-term(find-global-callable( var-name-if-var-or-lit(l), typeof-term(new-r), term ));
+                  if ftype.domain.is-any-must-not-retain {
+                     (tctx, new-r) = std-infer-expr(pre-retain-tctx, r, false, Call(var-name-if-var-or-lit(l)), ftype.domain);
+                  };
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
                } else {
                   (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, ta);
@@ -268,8 +275,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                ascript(term, rt);
                if not(rt.is-t(c"Cons",2)) {
                   let function-type = typeof-term(find-global-callable(var-name-if-var-or-lit(l), typeof-term(r), term));
-                  (tctx, term) = maybe-not-retain-args(tctx, function-type, term);
-                  if function-type.is-t(c"MustRetainOnCall",0) && not(hint.is-t(c"MustNotRetain",0)) {
+                  if function-type.is-t(c"MustRetainOnCall",0) && not(hint.is-t(c"MustNotRetain",0)) && not(tctx.get-or(mk-tctx()).is-blob) {
                      (tctx, term) = maybe-retain(tctx, term);
                   }
                }

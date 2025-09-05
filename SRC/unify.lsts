@@ -15,6 +15,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       Tuple{ first:TAny{} } => ctx = yes;
       Tuple{ first:TGround{tag:c"Any"} } => ctx = yes;
       Tuple{ first:TGround{tag:c"MustNotRetain"} } => ctx = yes;
+      Tuple{ first:TGround{tag:c"MustNotMove"} } => ctx = yes;
       Tuple{ first:TGround{tag:c"Phi::Initialize"} } => ctx = yes;
       Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => no;
       Tuple{ first:TVar{name=name}, second:TGround{tag=tag} } => (
@@ -33,6 +34,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
             if result.is-some then (match lc {
                TGround{tag:c"Any"} => ();
                TGround{tag:c"MustNotRetain"} => ();
+               TGround{tag:c"MustNotMove"} => ();
                TGround{tag:c"Phi::Initialize"} => ();
                TGround{tag:c"Phi::Transition", parameters:[phi-to..phi-from..]} => (
                   let scan-states = true;
