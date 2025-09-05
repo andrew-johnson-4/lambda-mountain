@@ -42,6 +42,7 @@ import SRC/phi-move-return-value.lsts;
 import SRC/with-phi.lsts;
 import SRC/without-slot.lsts;
 import SRC/phi-unmove.lsts;
+import SRC/phi-move-args.lsts;
 
 let .unroll-seq(t: AST): Vector<AST> = (
    match t {
