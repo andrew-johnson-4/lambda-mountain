@@ -1,0 +1,16 @@
+
+let phi-unmove(tctx: TypeContext?, ftype: Type, args: Type): TypeContext? = (
+   phi-unmove-args(tctx, ftype.domain, args);
+);
+
+let phi-unmove-args(tctx: TypeContext?, params: Type, args: Type): TypeContext? = (
+   if params.is-t(c"Cons",2) {
+      tctx = phi-unmove-args(tctx, params.slot(c"Cons",2).l1, args.slot(c"Cons",2).l1);
+      tctx = phi-unmove-args(tctx, params.slot(c"Cons",2).l2, args.slot(c"Cons",2).l2);
+   } else {
+      if params.is-t(c"MustNotMove",0) {
+         print("Unmove \{params} <- \{args}\n");
+      }
+   };
+   tctx
+);

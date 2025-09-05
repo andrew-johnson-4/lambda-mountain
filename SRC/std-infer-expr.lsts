@@ -239,8 +239,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             } else {
                (tctx, let new-l) = std-infer-expr(tctx, l, false, used, ta);
                if typeof-term(l).is-arrow {
-                  (tctx, let new-r) = std-infer-expr(tctx, r, false, Call(var-name-if-var(l)), ta);
+                  (tctx, let new-r) = std-infer-expr(tctx, r, false, Call(var-name-if-var-or-lit(l)), ta);
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
+                  let ftype = typeof-term(find-global-callable( var-name-if-var-or-lit(l), typeof-term(r), term ));
+                  tctx = phi-unmove(tctx, ftype, typeof-term(r)); # unmove linear variables if arg is marked as MustNotMove
                } else {
                   (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, ta);
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };

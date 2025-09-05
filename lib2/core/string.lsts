@@ -6,9 +6,8 @@ type String suffix _ss implies MustRetain, MustRelease
 #   x.data.release
 #);
 
-let .retain(retain_x: String): String = (
-   #x.data.retain; x
-   retain_x
+let .retain(x: String): String = (
+   x.data.retain; x
 );
 
 #let .length(s: String): USize = s.end-offset - s.start-offset;
