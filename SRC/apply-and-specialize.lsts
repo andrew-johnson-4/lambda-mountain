@@ -15,7 +15,7 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
          then tctx = tctx.bind-phi(pn, pt, pblame);
       };
    );
-   if not(tctx.get-or(mk-tctx()).is-blob) && inner-tctx.has-moved then exit-error("Linear Value Used After Move", blame);
+   if not(tctx.get-or(mk-tctx()).is-blob) && inner-tctx.has-moved then exit-error("Linear Value Used After Move In Call To \{fname} : \{ft-denormal}\nWith Arg \{at}", blame);
    if inner-tctx.is-none then exit-error("Unable to apply and specialize (unify): \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
    (tctx, let initialized-ft) = phi-initialize(tctx, ft, blame);
    let closed-type = substitute(inner-tctx, ft);
