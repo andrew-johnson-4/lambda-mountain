@@ -1,6 +1,5 @@
 
 let phi-move-args(ftype: Type, args: Type, blame: AST): TypeContext? = (
-   print("Move Args \{ftype}\n");
    phi-move-args(Some(mk-tctx()), ftype.domain, args, blame);
 );
 
@@ -10,7 +9,6 @@ let phi-move-args(tctx: TypeContext?, params: Type, args: Type, blame: AST): Typ
       tctx = phi-move-args(tctx, params.slot(c"Cons",2).l2, args.slot(c"Cons",2).l2, blame);
    } else {
       if not(params.is-t(c"MustNotMove",0)) && args.is-t(c"Phi::State",1) {
-         print("Move arg P \{params}\nMove arg \{args}\n");
          tctx = phi-move(tctx, args, blame);
       };
    };
