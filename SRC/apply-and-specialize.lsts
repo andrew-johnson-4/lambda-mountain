@@ -27,7 +27,7 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
       let special-tctx = inner-tctx.with-pctx( tctx.get-or(mk-tctx()).pctx );
       try-specialize(fname, ft, special-tctx, closed-type);
    };
-   if at.is-t(c"String",0) then print("apply \{fname} with arg : \{phi-state(tctx,at,blame)}\n");
+   if at.is-t(c"String",0) then print("apply \{fname} with arg : \{phi-state(tctx,r,blame)}\n");
    (tctx, r)
 );
 
