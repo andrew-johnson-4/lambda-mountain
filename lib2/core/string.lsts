@@ -2,9 +2,9 @@
 type String suffix _ss implies MustRetain, MustRelease
           = { start-offset:USize, end-offset:USize, data:OwnedData<U8>[] };
 
-#let :Phi::Source .release(x: String+(MustRelease::ToRelease<'a> ~> MustRelease::Released)): Nil = (
-#   x.data.release
-#);
+let .release(x: String): Nil = (
+   x.data.release; mark-as-released(x);
+);
 
 let .retain(x: String): String = (
    x.data.retain; x
