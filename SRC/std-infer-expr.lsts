@@ -304,38 +304,3 @@ let wrap-call(tctx: TypeContext?, fname: CString, term: AST): (TypeContext?, AST
    ascript(result, result-type);
    (tctx, result)
 );
-
-let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST, hint: Type): (TypeContext?, AST) = (
-   let tctx-before-tctx = tctx-before.get-or(mk-tctx()).tctx;
-   let tctx-after-tctx = tctx-after.get-or(mk-tctx()).tctx;
-   let needs-release = [] : List<TypeContextRow>;
-   while non-zero(tctx-after-tctx) && not(is(tctx-before-tctx, tctx-after-tctx)) {
-      let tr = head(tctx-after-tctx);
-      if tr.denormalized-type.slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1) {
-         needs-release = cons(tr, needs-release);
-      };
-      tctx-after-tctx = tail(tctx-after-tctx);
-   };
-   if non-zero(needs-release) {
-      let return-id = uuid();
-      let return-type = typeof-term(term);
-      let rhs = term;
-      let def = mk-var(return-id);
-      if not(return-type.is-t(c"Nil",0)) {
-         term = mk-app( mk-abs(def, mk-nil(), ta), term ); ascript(term, t1(c"Nil"));
-         (tctx-after, let tt) = std-bind-term(tctx-after, return-id, rhs, def, term, hint);
-         ascript(def, tt);
-      };
-      for nd in needs-release {
-         let do-release = mk-app(mk-var(c".release"),mk-var(nd.key));
-         (tctx-after, do-release) = std-infer-expr(tctx-after, do-release, false, Used, ta);
-         term = mk-cons(term, do-release); ascript(term, t1(c"Nil"));
-      };
-      let return-term = if not(return-type.is-t(c"Nil",0))
-      then mk-var(return-id)
-      else mk-nil();
-      (tctx-after, return-term) = std-infer-expr(tctx-after, return-term, false, Used, ta);
-      term = mk-cons(term, return-term); ascript(term,return-type);
-   };
-   (tctx-after, term)
-);
