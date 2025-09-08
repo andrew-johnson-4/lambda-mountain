@@ -7,7 +7,7 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
       tctx = tctx.bind-phi(pn, pt, pblame);
       phi-modified = phi-modified.push(pn);
    };
-   if ft-denormal.domain.is-linear then (
+   if ft-denormal.domain.is-linear-live then (
       let move-args = phi-move-args(ft-denormal, at, blame); 
       for PhiContextRow{pn=phi-id, pt=phi-tt, pblame=blame} in move-args.get-or(mk-tctx()).pctx {
          if not(phi-modified.contains(pn))

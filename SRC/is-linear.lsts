@@ -1,16 +1,16 @@
 
-let .is-linear(tt: Type): U64 = (
+let .is-linear-live(tt: Type): U64 = (
    match tt {
       TAnd{conjugate=conjugate} => (
          let return = false;
-         for c in conjugate { return = return || c.is-linear };
+         for c in conjugate { return = return || c.is-linear-live };
          return
       );
       TGround{tag:c"Linear",parameters:[TGround{tag:c"Phi::Moved",parameters:[]}..]} => false;
       TGround{tag:c"Linear",parameters:[_..]} => true;
       TGround{parameters=parameters} => (
          let return = false;
-         for c in parameters { return = return || c.is-linear };
+         for c in parameters { return = return || c.is-linear-live };
          return
       );
       _ => false;
