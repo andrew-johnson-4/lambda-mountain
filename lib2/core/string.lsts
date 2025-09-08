@@ -10,7 +10,7 @@ let .retain(x: String): String = (
    x.data.retain; x
 );
 
-#let .length(s: String): USize = s.end-offset - s.start-offset;
+let .length(s: String): USize = s.end-offset - s.start-offset;
 
 #let cmp(l: String, r: String): Ord = (
 #   let l_size = l.end-offset - l.start-offset;
