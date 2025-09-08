@@ -5,9 +5,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    let needs-release = [] : List<TypeContextRow>;
    while non-zero(tctx-after-tctx) && not(is(tctx-before-tctx, tctx-after-tctx)) {
       let tr = head(tctx-after-tctx);
-      print("Local \{tr.def} : \{tr.denormalized-and-phi-type(tctx-after)}\n");
       if tr.denormalized-and-phi-type(tctx-after).slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1) {
-         print("Local needs release \{tr.def}\n");
          needs-release = cons(tr, needs-release);
       };
       tctx-after-tctx = tail(tctx-after-tctx);

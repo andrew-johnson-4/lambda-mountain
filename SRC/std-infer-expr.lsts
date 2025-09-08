@@ -11,6 +11,7 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
+   print("Infer \{term}\n");
    match term {
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
          if typeof-var-raw(term, tctx, lname).is-t(c"LocalVariable",0)
@@ -145,16 +146,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      if not(can-unify(rhs-tt, typeof-term(rhs)))
                      then exit-error("Return value does not match declared type:\nExpected \{rhs-tt}\nFound \{typeof-term(rhs)}\n", term);
                   };
-                  if not(rhs-tt.is-t(c"MustNotMove",0)) {
-                     (inner-tctx, let new-rhs) = phi-move-return-value(inner-tctx, rhs);
-                     if not(is(rhs,new-rhs)) {
-                        let old-tt = typeof-term(new-val);
-                        let new-wrapped-rhs = mk-app(akey, mk-app(new-rhs, mk-atype(rhs-tt)));
-                        ascript(new-wrapped-rhs, typeof-term(old-wrapped-rhs));
-                        new-val = mk-abs(lhs, new-wrapped-rhs, tlt);
-                        ascript(new-val, old-tt);
-                     };
-                  };
                   if not(tlt.is-t(c"Blob",0) || tlt.is-t(c"C-FFI",0) || tlt.is-t(c"FFI",0) || tlt.is-t(c"Phi::Source",0) ) {
                      validate-pctx-release(inner-tctx);
                   }
@@ -176,7 +167,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             ascript(term, vt);
          );
          mark-var-to-def-todo(tctx, key, ta, term);
-         if not(hint.is-t(c"MustNotRetain",0)) && not(tctx.get-or(mk-tctx()).is-blob) {
+         if hint.is-t(c"TailPosition",0) {
+            tctx = phi-move(tctx, typeof-term(term), term);
+         } else if not(hint.is-t(c"MustNotRetain",0))
+                && not(tctx.get-or(mk-tctx()).is-blob) {
             (tctx, term) = maybe-retain(tctx, term);
          }
       );
@@ -197,7 +191,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = Some(direct-tctx);
          let before-tctx = tctx; # make sure to capture locals as "local" scope
          tctx = infer-ctx(tctx, lhs);
-         (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type);
+         (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type && t1(c"TailPosition"));
          (tctx, new-inner-rhs) = release-locals(before-tctx, tctx, new-inner-rhs, misc-tt);
          if not(is(inner-rhs,new-inner-rhs))
          then {
