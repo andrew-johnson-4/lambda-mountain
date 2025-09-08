@@ -192,8 +192,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          let direct-tctx = tctx.get-or(mk-tctx());
          direct-tctx.is-blob = misc-tt.is-t(c"Blob",0);
          tctx = Some(direct-tctx);
+         let before-tctx = tctx; # make sure to capture locals as "local" scope
          tctx = infer-ctx(tctx, lhs);
-         let before-tctx = tctx;
          (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type);
          (tctx, new-inner-rhs) = release-locals(before-tctx, tctx, new-inner-rhs, misc-tt);
          if not(is(inner-rhs,new-inner-rhs))
