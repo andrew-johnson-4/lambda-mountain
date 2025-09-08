@@ -166,10 +166,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             ascript(term, vt);
          );
          mark-var-to-def-todo(tctx, key, ta, term);
-         if hint.is-t(c"TailPosition",0) {
-            tctx = phi-move(tctx, typeof-term(term), term);
-         } else if not(hint.is-t(c"MustNotRetain",0))
-                && not(tctx.get-or(mk-tctx()).is-blob) {
+         if not(hint.is-t(c"TailPosition",0))
+         && not(hint.is-t(c"MustNotRetain",0))
+         && not(tctx.get-or(mk-tctx()).is-blob) {
             (tctx, term) = maybe-retain(tctx, term);
          }
       );
@@ -191,6 +190,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          let before-tctx = tctx; # make sure to capture locals as "local" scope
          tctx = infer-ctx(tctx, lhs);
          (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type && t1(c"TailPosition"));
+         tctx = phi-move(tctx, typeof-term(new-inner-rhs), term);
          (tctx, new-inner-rhs) = release-locals(before-tctx, tctx, new-inner-rhs, misc-tt);
          if not(is(inner-rhs,new-inner-rhs))
          then {
