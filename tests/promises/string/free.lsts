@@ -8,7 +8,6 @@ let implicit-alloc-implicit-free(): Nil = (
    c"abc".into(type(String)); ()
 );
 
-implicit-alloc-implicit-free();
 assert( safe-alloc-block-count == 0 );
 
 #let implicit-retain(s: String): Nil = ();

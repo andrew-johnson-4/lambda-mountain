@@ -37,3 +37,5 @@ assert( "ab".length == 2 );
 #assert( "abc"[0] == 'a' );
 #assert( "abc"[1] == 'b' );
 #assert( "abc"[2] == 'c' );
+
+assert( safe-alloc-block-count == 0 );
