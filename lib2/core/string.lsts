@@ -39,19 +39,19 @@ let .length(s: String): USize = s.end-offset - s.start-offset;
 #   else Equal
 #);
 
-#let intern(cs: CString): String = cs.into(type(String));
-#let .into(s: String, tt: Type<String>): String = s;
-#let .into(cs: CString, tt: Type<String>): String = (
-#   let cs_length = cs.length;
-#   let od = mk-owned-data(type(U8), cs_length);
-#   od.retain;
-#   let csi = 0_sz;
-#   while csi < cs_length {
-#      od.push(cs[csi] as U8);
-#      csi = csi + 1;
-#   };
-#   String(0 as USize, cs_length, od)
-#);
+let intern(cs: CString): String = cs.into(type(String));
+let .into(s: String, tt: Type<String>): String = s;
+let .into(cs: CString, tt: Type<String>): String = (
+   let cs_length = cs.length;
+   let od = mk-owned-data(type(U8), cs_length);
+   od.retain;
+   let csi = 0_sz;
+   while csi < cs_length {
+      od.push(cs[csi] as U8);
+      csi = csi + 1;
+   };
+   String(0 as USize, cs_length, od)
+);
 
 #let $"[:]"(s: String, begin: I64, end: I64): String = (
 #   let s_length = s.length as I64;
