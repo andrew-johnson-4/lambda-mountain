@@ -22,7 +22,15 @@ let .retain(x: String): String = (
    x.data.retain; x
 );
 
-let .length(s: String): USize = s.end-offset - s.start-offset;
+let .length(s: String): USize = (
+   print(c".length\n");
+   let l = s.end-offset;
+   print(c"after s.end-offset\n");
+   let r = s.start-offset;
+   print(c"after s.start-offset\n");
+   l - r
+   #s.end-offset - s.start-offset
+);
 
 #let cmp(l: String, r: String): Ord = (
 #   let l_size = l.end-offset - l.start-offset;
@@ -42,14 +50,19 @@ let .length(s: String): USize = s.end-offset - s.start-offset;
 let intern(cs: CString): String = cs.into(type(String));
 let .into(s: String, tt: Type<String>): String = s;
 let .into(cs: CString, tt: Type<String>): String = (
+   print(c"CString into String\n");
    let cs_length = cs.length;
+   print(c"mk-owned-data\n");
    let od = mk-owned-data(type(U8), cs_length);
+   print(c"owned-data.retain\n");
    od.retain;
+   print(c"owned-data.retain\n");
    let csi = 0_sz;
    while csi < cs_length {
       od.push(cs[csi] as U8);
       csi = csi + 1;
    };
+   print(c"Construct String\n");
    String(0 as USize, cs_length, od)
 );
 
