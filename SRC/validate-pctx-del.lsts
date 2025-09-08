@@ -3,9 +3,9 @@ let validate-pctx-release(tctx: TypeContext?): Nil = (
    let ps-seen = {} : HashtableEq<CString,U64>;
    for Tuple{pid=phi-id, pt=phi-tt, blame=blame} in tctx.get-or(mk-tctx()).pctx {
       if not(ps-seen.has(pid)) {
-         if pt.is-linear
+         if pt.is-linear-live
          then match blame {
-            Glb{} => (); # ignore globals for now, because they don't get an automatic .retain
+            Glb{} => (); # ignore globals for now, because they don't get an automatic .release
             _ => exit-error("Linear Variables Must Be Used: #\{pid} \{pt}", blame);
          };
          ps-seen = ps-seen.bind(pid,true);

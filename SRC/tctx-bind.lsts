@@ -11,7 +11,8 @@ let .bind(tctx: TypeContext?, k: CString, kt-normal: Type, kt-denormal: Type, kv
       cons( TypeContextRow(k, kt-normal, kt-denormal, kv), tctx.get-or(mk-tctx()).tctx ),
       tctx.get-or(mk-tctx()).pctx,
       tctx.get-or(mk-tctx()).is-unsafe,
-      tctx.get-or(mk-tctx()).is-blob
+      tctx.get-or(mk-tctx()).is-blob,
+      tctx.get-or(mk-tctx()).function-name
    ));
 );
 
@@ -20,7 +21,8 @@ let .bind-phi(tctx: TypeContext?, k: CString, kt: Type, blame: AST): TypeContext
       tctx.get-or(mk-tctx()).tctx,
       cons( PhiContextRow(k,kt,blame) , tctx.get-or(mk-tctx()).pctx ),
       tctx.get-or(mk-tctx()).is-unsafe,
-      tctx.get-or(mk-tctx()).is-blob
+      tctx.get-or(mk-tctx()).is-blob,
+      tctx.get-or(mk-tctx()).function-name
    ));
 );
 
@@ -29,6 +31,7 @@ let .with-pctx(tctx: TypeContext?, pctx: List<PhiContextRow>): TypeContext? = (
       tctx.get-or(mk-tctx()).tctx,
       pctx,
       tctx.get-or(mk-tctx()).is-unsafe,
-      tctx.get-or(mk-tctx()).is-blob
+      tctx.get-or(mk-tctx()).is-blob,
+      tctx.get-or(mk-tctx()).function-name
    ));   
 );
