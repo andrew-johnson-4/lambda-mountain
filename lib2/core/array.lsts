@@ -72,6 +72,7 @@ let safe-realloc(ptr: t[], len: USize, ty: Type<t>): t[] = (
 );
 
 let safe-free(ptr: ?[]): Nil = (
+   print(c"Safe Free\n");
    # BEFORE CHANGING THIS: talk to alex
 
    safe-alloc-block-count = safe-alloc-block-count - 1; # TODO conditional compilation

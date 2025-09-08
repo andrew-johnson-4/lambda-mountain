@@ -36,11 +36,13 @@ let .pop(od: OwnedData<t>[]): t = (
 );
 
 let .release(od: OwnedData<t>[]): Nil = (
+   print(c"Release Owned Data\n");
    od.reference-count = od.reference-count - 1;
    if od.reference-count == 0
    then safe-free(od);
 );
 
 let .retain(od: OwnedData<t>[]): Nil = (
+   print(c"Retain Owned Data\n");
    od.reference-count = od.reference-count + 1;
 );
