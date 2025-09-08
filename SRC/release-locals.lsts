@@ -3,6 +3,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    let tctx-before-tctx = tctx-before.get-or(mk-tctx()).tctx;
    let tctx-after-tctx = tctx-after.get-or(mk-tctx()).tctx;
    let needs-release = [] : List<TypeContextRow>;
+   if tctx-after.get-or(mk-tctx()).function-name!=c".release" {
    while non-zero(tctx-after-tctx) && not(is(tctx-before-tctx, tctx-after-tctx)) {
       let tr = head(tctx-after-tctx);
       print("Local \{tr.def} : \{tr.denormalized-and-phi-type(tctx-after)}\n");
@@ -11,7 +12,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
          needs-release = cons(tr, needs-release);
       };
       tctx-after-tctx = tail(tctx-after-tctx);
-   };
+   }};
    if non-zero(needs-release) {
       let return-id = uuid();
       let return-type = typeof-term(term);
