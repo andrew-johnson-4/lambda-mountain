@@ -167,7 +167,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          );
          mark-var-to-def-todo(tctx, key, ta, term);
          if hint.is-t(c"TailPosition",0) {
-            print("Move tail position \{term}\n");
             tctx = phi-move(tctx, typeof-term(term), term);
          } else if not(hint.is-t(c"MustNotRetain",0))
                 && not(tctx.get-or(mk-tctx()).is-blob) {
