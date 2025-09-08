@@ -8,14 +8,11 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
       phi-modified = phi-modified.push(pn);
    };
    if ft-denormal.domain.is-linear then (
-      let move-count = 0_u64;
       let move-args = phi-move-args(ft-denormal, at, blame); 
       for PhiContextRow{pn=phi-id, pt=phi-tt, pblame=blame} in move-args.get-or(mk-tctx()).pctx {
          if not(phi-modified.contains(pn))
          then tctx = tctx.bind-phi(pn, pt, pblame);
-         move-count = move-count + 1;
       };
-      print("Move count \{move-count}\n");
    );
    if not(tctx.get-or(mk-tctx()).is-blob) && inner-tctx.has-moved then exit-error("Linear Value Used After Move In Call To \{fname} : \{ft-denormal}\nWith Arg \{at}", blame);
    if inner-tctx.is-none then exit-error("Unable to apply and specialize (unify): \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
