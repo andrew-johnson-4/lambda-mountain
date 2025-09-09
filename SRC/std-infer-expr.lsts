@@ -301,7 +301,7 @@ let wrap-call(tctx: TypeContext?, fname: CString, term: AST, hint: Type): (TypeC
    let function-type = typeof-term(find-global-callable(fname, args-type, term));
    let function-term = mk-var(fname); ascript(function-term, function-type);
    let result = mk-app(function-term, term);
-   (tctx, let result-type) = apply-global-callable(tctx, fname, args-type, term);
+   (tctx, let result-type) = apply-global-callable(tctx, fname, args-type, term, hint);
    result-type = phi-state(tctx, result-type, term);
    ascript(result, result-type);
    (tctx, result)
