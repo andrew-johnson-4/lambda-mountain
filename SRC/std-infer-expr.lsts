@@ -159,19 +159,23 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          };
       );
       Var{key=key, token=token} => (
+         let vt = ta;
          if key==c"__uninitialized" then ascript(term, hint)
          else (
-            let vt = typeof-var(term, tctx, key);
+            vt = typeof-var(term, tctx, key);
             vt = phi-state(tctx, vt, term);
-            ascript(term, vt);
          );
          mark-var-to-def-todo(tctx, key, ta, term);
          # TailPosition LocalVariables don't need to be retained because +1/-1 retain/release cancels itself out
-         if not(hint.is-t(c"TailPosition",0) && typeof-term(term).is-t(c"LocalVariable",0))
+         if not(hint.is-t(c"TailPosition",0) && vt.is-t(c"LocalVariable",0))
          && not(hint.is-t(c"MustNotRetain",0))
          && not(tctx.get-or(mk-tctx()).is-blob) {
+            if vt.is-t(c"LocalVariable",0) || vt.is-t(c"GlobalVariable",0) then vt = vt && t1(c"MustNotMove");
+            ascript(term, vt);
             (tctx, term) = maybe-retain(tctx, term);
-         }
+         } else {
+            ascript(term, vt);
+         };
       );
       Lit{key=key, token=token} => (
          if hint.is-t(c"Literal",0) {

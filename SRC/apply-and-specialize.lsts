@@ -12,6 +12,7 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
       phi-modified = phi-modified.push(pn);
    };
    if true {
+      if fname==c".retain" then print(".retain move \{at}\n");
       let move-args = phi-move-args(ft-denormal, at, blame); 
       for PhiContextRow{pn=phi-id, pt=phi-tt, pblame=blame} in move-args.get-or(mk-tctx()).pctx {
          if not(phi-modified.contains(pn))
