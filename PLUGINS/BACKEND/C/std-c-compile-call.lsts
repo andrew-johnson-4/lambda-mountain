@@ -5,9 +5,7 @@ let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor
    let fterm = if non-zero(return-hint-if-constructor) {
       find-global-constructor(fname, return-hint-if-constructor, typeof-term(args), args);
    } else {
-      let ff = find-global-callable(fname, typeof-term(args), args);
-      if fname==c".push" then print("Push \{typeof-term(args)} \{typeof-term(ff)}\n");
-      ff
+      find-global-callable(fname, typeof-term(args), args);
    };
    if not(non-zero(fterm)) then fail("std-c-compile-call Function was null: \{fterm}\nArguments: \{typeof-term(args)}\n");
    if typeof-term(fterm).is-t(c"Blob",0) {

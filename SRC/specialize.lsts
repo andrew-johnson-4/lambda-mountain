@@ -13,7 +13,6 @@ let specialize(key: CString, ft: Type, unify-ctx: TypeContext?, result-type: Typ
          let special-term = substitute(unify-ctx, term);
          infer-global-context(special-term);
          (_, special-term) = std-infer-expr(global-flow-tctx, special-term, false, Used, ta);
-         if key==c"==" then print("specialize \{key} : \{result-type}\n\{special-term}\n");
          ast-parsed-program = ast-parsed-program + special-term;
       }
    }

@@ -1,10 +1,8 @@
 
 let find-global-callable(fname: CString, arg-types: Type, blame: AST): AST = (
    arg-types = denormalize-strong(arg-types);
-   if fname==".push" then print(".push args \{arg-types}\n");
    let match-set = mk-vector(type((Type,AST)), 16);
    for Tuple{kt=second, t=third} in global-type-context-denormal.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
-      if fname==".push" then print(".push candidate \{kt}\n");
       if can-apply(kt, arg-types) {
          match-set = match-set.push( (kt, t) );
       }
