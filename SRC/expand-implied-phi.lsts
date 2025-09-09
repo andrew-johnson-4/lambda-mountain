@@ -26,3 +26,13 @@ let .expand-implied-phi(tt: Type): Type = (
    };
    tt
 );
+
+let .expand-implied-phi(tctx: TypeContext?): TypeContext? = (
+   let tctx-inner = tctx.get-or(mk-tctx());
+   let tctx-expanded = [] : List<TypeContextRow>;
+   for TypeContextRow{key=key, nt=nt, dt=dt, def=def} in tctx-inner.tctx.reverse {
+      tctx-expanded = cons( TypeContextRow(key,nt,dt.expand-implied-phi,def), tctx-expanded )
+   };
+   tctx-inner.tctx = tctx-expanded;
+   Some(tctx-inner)
+);

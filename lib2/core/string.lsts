@@ -3,6 +3,7 @@ type String suffix _ss implies MustRetain, MustRelease
           = { start-offset:USize, end-offset:USize, data:OwnedData<U8>[] };
 
 let .release(x: String): Nil = (
+   print(c"release string\n");
    # normally if x is not released by the end of scope, then it will be auto-released
    # however, mark-as-released prevents this case of infinite recursion
    # this is necessary when writing custom .release implementations
@@ -11,6 +12,7 @@ let .release(x: String): Nil = (
 );
 
 let .retain(x: String): String = (
+   print(c"retain string\n");
    # Several inference rules are at play here
    # > normally a reference to a variable will auto-retain
    # > however field access is marked as MustNotRetain, so x.data does not auto-retain

@@ -1,7 +1,9 @@
 
 import lib2/core/bedrock.lsts;
 
+print(c"start string comparison\n");
 assert( "" == "" );
+print(c"after 1st string comparison\n");
 #assert( "a" == "a" );
 #assert( "a" != "b" );
 #assert( "a" <= "a" );
