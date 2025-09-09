@@ -1,7 +1,7 @@
 
 import lib2/core/bedrock.lsts;
 
-#assert( "" == "" );
+assert( "" == "" );
 #assert( "a" == "a" );
 #assert( "a" != "b" );
 #assert( "a" <= "a" );

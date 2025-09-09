@@ -24,20 +24,20 @@ let .retain(x: String): String = (
 
 let .length(s: String): USize = s.end-offset - s.start-offset;
 
-#let cmp(l: String, r: String): Ord = (
-#   let l_size = l.end-offset - l.start-offset;
-#   let r_size = r.end-offset - r.start-offset;
-#   let c = memcmp(
-#      (l.data.data + l.start-offset) as C<"void">[],
-#      (r.data.data + r.start-offset) as C<"void">[],
-#      min(l_size, r_size)
-#   ) as I64;
-#   if c < 0 then LessThan
-#   else if c > 0 then GreaterThan
-#   else if l_size < r_size then LessThan
-#   else if l_size > r_size then GreaterThan
-#   else Equal
-#);
+let cmp(l: String, r: String): Ord = (
+   let l_size = l.end-offset - l.start-offset;
+   let r_size = r.end-offset - r.start-offset;
+   let c = memcmp(
+      (l.data.data + l.start-offset) as C<"void">[],
+      (r.data.data + r.start-offset) as C<"void">[],
+      min(l_size, r_size)
+   ) as I64;
+   if c < 0 then LessThan
+   else if c > 0 then GreaterThan
+   else if l_size < r_size then LessThan
+   else if l_size > r_size then GreaterThan
+   else Equal
+);
 
 let intern(cs: CString): String = cs.into(type(String));
 let .into(s: String, tt: Type<String>): String = s;
