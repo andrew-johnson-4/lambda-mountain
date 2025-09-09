@@ -27,7 +27,7 @@ let substitute(tctx: Maybe<TypeContext>, tt: Type): Type = (
       TGround{tag=tag,parameters=parameters} => TGround(tag,close(substitute-normalized(tctx,parameters)));
       TVar{name=name} => (
          let tn = tctx.get-or(mk-tctx()).tctx.lookup(name,TypeContextRow(c"",ta,ta,mk-eof())).direct-type;
-         tn = normalize(tn).without-phi-id && tn.with-only-phi.without-phi-id;
+         tn = normalize(tn).without-phi-id && tn.with-only-phi-state;
          if non-zero(tn) then tn else tt;
       );
       _ => tt;

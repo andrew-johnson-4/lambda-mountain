@@ -8,6 +8,7 @@ let phi-as-state(tt: Type): Type = (
          };
          TAnd(new-conjugate);
       );
+      TGround{tag:c"Cons",parameters:[t2..t1..]} => t3(c"Cons",t1,t2);
       TGround{} => if tt.is-phi-type then t2(c"Phi::State",tt) else tt;
       _ => tt;
    }
