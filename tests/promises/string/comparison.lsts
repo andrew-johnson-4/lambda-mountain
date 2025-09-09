@@ -12,9 +12,9 @@ assert( "" == "" );
 #assert( "aa" > "a" );
 #assert( "a" < "aa" );
 
-#assert( cmp("a", "a") == Equal );
-#assert( cmp("a", "b") == LessThan );
-#assert( cmp("b", "a") == GreaterThan );
+assert( cmp("a", "a") == Equal );
+assert( cmp("a", "b") == LessThan );
+assert( cmp("b", "a") == GreaterThan );
 
 assert( "".length == 0 );
 assert( "a".length == 1 );
