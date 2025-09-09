@@ -2,7 +2,7 @@
 let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denormal: Type, at: Type, blame: AST, hint: Type): (TypeContext?, Type) = (
    if not(can-apply(ft-denormal, at)) then exit-error("Unable to apply and specialize: \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
    let original-tctx = tctx;
-   let inner-tctx = unify(ft-denormal.domain, at, blame).without-phi-id.without-modifiers;
+   let inner-tctx = unify(ft-denormal.domain, at, blame);
    let phi-modified = mk-vector(type(CString));
    for PhiContextRow{pn=phi-id, pt=phi-tt, pblame=blame} in inner-tctx.get-or(mk-tctx()).pctx {
       tctx = tctx.bind-phi(pn, pt, pblame);
