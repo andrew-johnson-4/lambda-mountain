@@ -45,7 +45,7 @@ let substitute-normalized(tctx: Maybe<TypeContext>, tt: Type): Type = (
       TAnd{conjugate=conjugate} => (
          let result = mk-vector(type(Type), 0_u64);
          for c in conjugate {
-            match substitute(tctx,c) {
+            match substitute-normalized(tctx,c) {
                TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
                TAny{} => ();
                rc => ( result = result.push(rc); () );
@@ -56,7 +56,7 @@ let substitute-normalized(tctx: Maybe<TypeContext>, tt: Type): Type = (
          else tand(result)
       );
       TGround{tag:c"Linear",parameters:[TVar{}..]} => tt;
-      TGround{tag=tag,parameters=parameters} => TGround(tag,close(substitute(tctx,parameters)));
+      TGround{tag=tag,parameters=parameters} => TGround(tag,close(substitute-normalized(tctx,parameters)));
       TVar{name=name} => (
          let tn = tctx.get-or(mk-tctx()).tctx.lookup(name,TypeContextRow(c"",ta,ta,mk-eof())).normalized-type;
          if non-zero(tn) then tn else tt;
