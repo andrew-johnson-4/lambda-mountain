@@ -14,6 +14,9 @@ let .expand-implied-phi(tt: Type): Type = (
             }
          }
       );
+      TGround{tag:c"Cons",parameters:[t2..t1..]} => (
+         tt = t3(c"Cons", t1.expand-implied-phi, t2.expand-implied-phi);
+      );
       TGround{} => (
          let ga = tt.ground-tag-and-arity;
          let ip = implied-phi-index.lookup(ga,ta);
@@ -25,14 +28,4 @@ let .expand-implied-phi(tt: Type): Type = (
       _ => ();
    };
    tt
-);
-
-let .expand-implied-phi(tctx: TypeContext?): TypeContext? = (
-   let tctx-inner = tctx.get-or(mk-tctx());
-   let tctx-expanded = [] : List<TypeContextRow>;
-   for TypeContextRow{key=key, nt=nt, dt=dt, def=def} in tctx-inner.tctx.reverse {
-      tctx-expanded = cons( TypeContextRow(key,nt,dt.expand-implied-phi,def), tctx-expanded )
-   };
-   tctx-inner.tctx = tctx-expanded;
-   Some(tctx-inner)
 );
