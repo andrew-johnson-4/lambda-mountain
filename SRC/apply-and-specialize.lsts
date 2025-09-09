@@ -1,6 +1,7 @@
 
 let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denormal: Type, at: Type, blame: AST): (TypeContext?, Type) = (
    if not(can-apply(ft-denormal, at)) then exit-error("Unable to apply and specialize: \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
+   let original-tctx = tctx;
    let inner-tctx = unify(ft-denormal.domain, at, blame);
    let phi-modified = mk-vector(type(CString));
    for PhiContextRow{pn=phi-id, pt=phi-tt, pblame=blame} in inner-tctx.get-or(mk-tctx()).pctx {
@@ -14,7 +15,7 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
          then tctx = tctx.bind-phi(pn, pt, pblame);
       };
    );
-   if not(tctx.get-or(mk-tctx()).is-blob) && inner-tctx.has-moved then exit-error("Linear Value Used After Move In Call To \{fname} : \{ft-denormal}\nWith Arg \{at}\nTerm \{blame}", blame);
+   if not(tctx.get-or(mk-tctx()).is-blob) && inner-tctx.has-moved then exit-error("Linear Value Used After Move In Call To \{fname} : \{ft-denormal}\nWith Arg \{at}", blame);
    if inner-tctx.is-none then exit-error("Unable to apply and specialize (unify): \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
    (tctx, let initialized-ft) = phi-initialize(tctx, ft, blame);
    let closed-type = substitute(inner-tctx, ft);
@@ -23,7 +24,7 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
    let r = substitute(inner-tctx, initialized-ft.range);
    if ft.is-t(c"Prop",0) then r = r && cons-root(at);
    if ft.is-open then {
-      let special-tctx = inner-tctx.with-pctx( tctx.get-or(mk-tctx()).pctx );
+      let special-tctx = inner-tctx.with-pctx( original-tctx.get-or(mk-tctx()).pctx );
       try-specialize(fname, ft, special-tctx, closed-type);
    };
    (tctx, r)
