@@ -1,6 +1,7 @@
 
 let specialize(key: CString, ft: Type, unify-ctx: TypeContext?, result-type: Type): Nil = (
    if not(is-special(key, result-type)) {
+      if key==c"==" then print("specialize \{key} : \{result-type}\n");
       let term = mk-eof();
       for Tuple{kt=first, t=third} in global-type-context-normal.lookup(key, [] : List<(Type,Type,AST)>) {
          if ft == kt { match t {

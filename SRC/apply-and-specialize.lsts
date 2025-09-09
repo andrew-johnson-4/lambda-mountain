@@ -4,7 +4,7 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
    let original-tctx = tctx;
    let inner-tctx = unify(ft-denormal.domain, at, blame).without-phi-id;
    for tr in inner-tctx.get-or(mk-tctx()).tctx {
-      if fname==c"==" then print("== Inner Arg : \{tr.nt}\n");
+      if fname==c"==" then print("== Inner Arg : \{tr.direct-type}\n");
    };
    let phi-modified = mk-vector(type(CString));
    for PhiContextRow{pn=phi-id, pt=phi-tt, pblame=blame} in inner-tctx.get-or(mk-tctx()).pctx {
