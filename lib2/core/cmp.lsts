@@ -14,12 +14,7 @@ let $">="(l: Ord, r: Ord): Bool = l.discriminator-case-tag >= r.discriminator-ca
 
 # TODO: add a Comparable interface and check arg type here
 # PREREQUISITE: total quick-prop inferences `C<"char">[] => Comparable`
-let $"=="(l: x, r: x): Bool = (
-   print(c"before ==\n");
-   let return = cmp(l, r) == Equal;
-   print(c"after cmp in ==\n");
-   return
-);
+let $"=="(l: x, r: x): Bool = cmp(l, r) == Equal;
 let $"!="(l: x, r: x): Bool = cmp(l, r) != Equal;
 let $"<"(l: x, r: x): Bool  = cmp(l, r) <  Equal;
 let $"<="(l: x, r: x): Bool = cmp(l, r) <= Equal;

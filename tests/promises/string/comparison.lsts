@@ -1,18 +1,16 @@
 
 import lib2/core/bedrock.lsts;
 
-print(c"start string comparison\n");
 assert( "" == "" );
-print(c"after 1st string comparison\n");
-#assert( "a" == "a" );
-#assert( "a" != "b" );
-#assert( "a" <= "a" );
-#assert( "a" < "b" );
-#assert( "a" >= "a" );
-#assert( "b" >= "a" );
-#assert( "b" > "a" );
-#assert( "aa" > "a" );
-#assert( "a" < "aa" );
+assert( "a" == "a" );
+assert( "a" != "b" );
+assert( "a" <= "a" );
+assert( "a" < "b" );
+assert( "a" >= "a" );
+assert( "b" >= "a" );
+assert( "b" > "a" );
+assert( "aa" > "a" );
+assert( "a" < "aa" );
 
 assert( cmp("a", "a") == Equal );
 assert( cmp("a", "b") == LessThan );
