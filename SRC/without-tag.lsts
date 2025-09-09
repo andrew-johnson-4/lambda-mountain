@@ -44,4 +44,3 @@ let .without-tag(tt: List<Type>): List<Type> = (
       tl => tl;
    }
 );
-

@@ -15,40 +15,6 @@ let .without-modifiers(tt: Type): Type = (
          else tand(result)
       );
       TGround { tag:c"C", parameters:[TGround{tag:c"extern"}..] } => ta;
-      TGround { tag:c"Cons", parameters:[t2..t1..] } => t3(c"Cons",t1.without-modifiers,t2.without-modifiers);
-      TGround { tag:c"Constructor" } => ta;
-      TGround { tag:c"CaseNumber" } => ta;
-      TGround { tag:c"C-FFI", parameters:[] } => ta;
-      TGround { tag:c"Raw" } => ta;
-      TGround { tag:c"LMStruct" } => ta;
-      TGround { tag:c"Constant" } => ta;
-      TGround { tag:c"Literal" } => ta;
-      TGround { tag:c"LocalVariable" } => ta;
-      TGround { tag:c"FlexibleArrayMember" } => ta;
-      TGround { tag:c"GlobalVariable" } => ta;
-      TGround { tag:c"Phi::State" } => ta;
-      TGround { tag:c"MustNotRetain" } => ta;
-      TGround { tag:c"MustNotMove" } => ta;
-      TGround { tag:tag } => if tag.has-prefix(c"Tag::") then ta
-                        else if tag.has-prefix(c"Field::") then ta
-                        else tt;
       _ => tt;
    }
-);
-
-let .without-modifiers(tt: List<Type>): List<Type> = (
-   match tt {
-      [hd..tl] => cons( hd.without-modifiers, tl.without-modifiers );
-      tl => tl;
-   }
-);
-
-let .without-modifiers(tctx: TypeContext?): TypeContext? = (
-   let inner-tctx = tctx.get-or(mk-tctx());
-   let next-tctx = [] : List<TypeContextRow>;
-   for TypeContextRow{key=key,nt=nt,dt=dt,def=def} in inner-tctx.tctx {
-      next-tctx = cons( TypeContextRow(key, nt.without-modifiers, dt.without-modifiers, def), next-tctx );
-   };
-   inner-tctx.tctx = next-tctx;
-   Some(inner-tctx)
 );
