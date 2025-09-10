@@ -6,7 +6,7 @@ let validate-pctx-release(tctx: TypeContext?): Nil = (
          if pt.is-linear-live
          then match blame {
             Glb{} => (); # ignore globals for now, because they don't get an automatic .release
-            _ => exit-error("Linear Variables Must Be Used: #\{pid} \{pt}", blame);
+            _ => exit-error("Linear Variables Must Be Used: #\{pid} \{pt}\n\{blame}", blame);
          };
          ps-seen = ps-seen.bind(pid,true);
       }

@@ -146,6 +146,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      then exit-error("Return value does not match declared type:\nExpected \{rhs-tt}\nFound \{typeof-term(rhs)}\n", term);
                   };
                   if not(tlt.is-t(c"Blob",0) || tlt.is-t(c"C-FFI",0) || tlt.is-t(c"FFI",0) || tlt.is-t(c"Phi::Source",0) ) {
+                     print("validate let \{key.key} = \{new-val}\n");
                      validate-pctx-release(inner-tctx);
                   }
                );
@@ -194,9 +195,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = Some(direct-tctx);
          let before-tctx = tctx; # make sure to capture locals as "local" scope
          tctx = infer-ctx(tctx, lhs);
-         (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type && t1(c"TailPosition"));
+         (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type);
          tctx = phi-move(tctx, typeof-term(new-inner-rhs), term);
-         (tctx, new-inner-rhs) = release-locals(before-tctx, tctx, new-inner-rhs, misc-tt);
+         (tctx, new-inner-rhs) = release-locals(before-tctx, tctx, new-inner-rhs, misc-tt && t1(c"TailPosition"));
          if not(is(inner-rhs,new-inner-rhs))
          then {
             inner-rhs = new-inner-rhs;
