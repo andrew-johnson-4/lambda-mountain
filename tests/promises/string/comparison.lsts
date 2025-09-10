@@ -1,24 +1,44 @@
 
 import lib2/core/bedrock.lsts;
 
+print(c"Compare 1\n");
 assert( "" == "" );
+assert( safe-alloc-block-count == 0 );
+print(c"Compare 2\n");
 assert( "a" == "a" );
+assert( safe-alloc-block-count == 0 );
+print(c"Compare 3\n");
 assert( "a" != "b" );
+assert( safe-alloc-block-count == 0 );
+print(c"Compare 4\n");
 assert( "a" <= "a" );
+assert( safe-alloc-block-count == 0 );
 assert( "a" < "b" );
+assert( safe-alloc-block-count == 0 );
 assert( "a" >= "a" );
+assert( safe-alloc-block-count == 0 );
 assert( "b" >= "a" );
+assert( safe-alloc-block-count == 0 );
 assert( "b" > "a" );
+assert( safe-alloc-block-count == 0 );
 assert( "aa" > "a" );
+assert( safe-alloc-block-count == 0 );
 assert( "a" < "aa" );
+assert( safe-alloc-block-count == 0 );
 
 assert( cmp("a", "a") == Equal );
+assert( safe-alloc-block-count == 0 );
 assert( cmp("a", "b") == LessThan );
+assert( safe-alloc-block-count == 0 );
 assert( cmp("b", "a") == GreaterThan );
+assert( safe-alloc-block-count == 0 );
 
 assert( "".length == 0 );
+assert( safe-alloc-block-count == 0 );
 assert( "a".length == 1 );
+assert( safe-alloc-block-count == 0 );
 assert( "ab".length == 2 );
+assert( safe-alloc-block-count == 0 );
 
 #assert( "" + "a" == "a" );
 #assert( "a" + "b" == "ab" );
