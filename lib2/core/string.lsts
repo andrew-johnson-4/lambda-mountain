@@ -76,14 +76,13 @@ let .into(cs: CString, tt: Type<String>): String = (
 #   ()
 #);
 
-#let :Phi::Source $"+"(l: String+(MustRelease::ToRelease<'a> ~> MustRelease::ToRelease<'a>), r: String+(MustRelease::ToRelease<'a> ~> MustRelease::ToRelease<'a>)): String = (
-#   let l_length = l.length;
-#   let r_length = r.length;
-#   let cs_length = l_length + r_length;
-#   let od = mk-owned-data(type(U8), cs_length);
-#   od.retain;
-#   memcpy(od.data as C<"void">[], l.data.data as C<"void">[], l_length as USize);
-#   memcpy((od.data + l_length) as C<"void">[], r.data.data as C<"void">[], r_length as USize);
-#   String(0 as USize, cs_length, od) 
-#);
+let $"+"(l: String, r: String): String = (
+   let l_length = l.length;
+   let r_length = r.length;
+   let cs_length = l_length + r_length;
+   let od = mk-owned-data(type(U8), cs_length);
+   memcpy(od.data as C<"void">[], l.data.data as C<"void">[], l_length as USize);
+   memcpy((od.data + l_length) as C<"void">[], r.data.data as C<"void">[], r_length as USize);
+   String(0 as USize, cs_length, od) 
+);
 

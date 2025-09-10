@@ -164,16 +164,17 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          else (
             vt = typeof-var(term, tctx, key);
             vt = phi-state(tctx, vt, term);
-            ascript(term, vt);
          );
          mark-var-to-def-todo(tctx, key, ta, term);
          # TailPosition LocalVariables don't need to be retained because +1/-1 retain/release cancels itself out
          if not(hint.is-t(c"TailPosition",0) && vt.is-t(c"LocalVariable",0))
          && not(hint.is-t(c"MustNotRetain",0))
          && not(tctx.get-or(mk-tctx()).is-blob) {
-            let vt-hint = ta;
-            if vt.is-t(c"LocalVariable",0) || vt.is-t(c"GlobalVariable",0) then vt-hint = vt-hint && t1(c"MustNotMove");
-            (tctx, term) = maybe-retain(tctx, term, vt-hint);
+            if vt.is-t(c"LocalVariable",0) || vt.is-t(c"GlobalVariable",0) then vt = vt && t1(c"MustNotMove");
+            (tctx, term) = maybe-retain(tctx, term);
+            ascript(term, vt);
+         } else {
+            ascript(term, vt);
          };
       );
       Lit{key=key, token=token} => (
@@ -278,7 +279,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                if not(rt.is-t(c"Cons",2)) {
                   let function-type = typeof-term(find-global-callable(var-name-if-var-or-lit(l), typeof-term(r), term));
                   if function-type.is-t(c"MustRetainOnCall",0) && not(hint.is-t(c"MustNotRetain",0)) && not(tctx.get-or(mk-tctx()).is-blob) {
-                     (tctx, term) = maybe-retain(tctx, term, ta);
+                     (tctx, term) = maybe-retain(tctx, term);
                   }
                }
             };
@@ -291,17 +292,17 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       _ => fail("Unexpected Term in std-infer-expr\n\{term}\n");
    };
    if used.is-unused && typeof-term(term).slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1) {
-      (tctx, term) = wrap-call(tctx, c".release", term, ta);
+      (tctx, term) = wrap-call(tctx, c".release", term);
    };
    (tctx, term);
 );
 
-let wrap-call(tctx: TypeContext?, fname: CString, term: AST, hint: Type): (TypeContext?, AST) = (
+let wrap-call(tctx: TypeContext?, fname: CString, term: AST): (TypeContext?, AST) = (
    let args-type = typeof-term(term);
    let function-type = typeof-term(find-global-callable(fname, args-type, term));
    let function-term = mk-var(fname); ascript(function-term, function-type);
    let result = mk-app(function-term, term);
-   (tctx, let result-type) = apply-global-callable(tctx, fname, args-type, term, hint);
+   (tctx, let result-type) = apply-global-callable(tctx, fname, args-type, term);
    result-type = phi-state(tctx, result-type, term);
    ascript(result, result-type);
    (tctx, result)
