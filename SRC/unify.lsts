@@ -17,7 +17,8 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       Tuple{ first:TGround{tag:c"MustNotRetain"} } => ctx = yes;
       Tuple{ first:TGround{tag:c"MustNotMove"} } => ctx = yes;
       Tuple{ first:TGround{tag:c"Phi::Initialize"} } => ctx = yes;
-      Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => no;
+      Tuple{ first:TGround{tag:c"Linear",parameters:[_..]}, second:TGround{tag:c"Linear",parameters:[_..]} } => ctx = yes;
+      Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => ctx = no;
       Tuple{ first:TVar{name=name}, second:TGround{tag=tag} } => (
          ctx = ctx.bind(name, ta, pt, Lit(tag, mk-token(tag)));
       );
@@ -51,7 +52,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
                         if tag < c"Phi::Transition"
                         then ri = ri + 1
                         else scan-states = false
-                     );
+                     ); 
                      _ => scan-states = false;
                   }};
                   if can-unify(phi-from, phi-state-in)
