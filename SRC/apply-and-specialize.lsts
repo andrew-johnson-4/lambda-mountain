@@ -1,5 +1,5 @@
 
-let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denormal: Type, at: Type, blame: AST, hint: Type): (TypeContext?, Type) = (
+let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denormal: Type, at: Type, blame: AST): (TypeContext?, Type) = (
    if not(can-apply(ft-denormal, at)) then exit-error("Unable to apply and specialize: \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
    let original-tctx = tctx;
    let inner-tctx = unify(ft-denormal.domain, at, blame);
@@ -9,7 +9,7 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
       phi-modified = phi-modified.push(pn);
    };
    if true {
-      let move-args = phi-move-args(ft-denormal, at && hint, blame); 
+      let move-args = phi-move-args(ft-denormal, at, blame); 
       for PhiContextRow{pn=phi-id, pt=phi-tt, pblame=blame} in move-args.get-or(mk-tctx()).pctx {
          if not(phi-modified.contains(pn))
          then tctx = tctx.bind-phi(pn, pt, pblame);

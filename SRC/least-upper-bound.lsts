@@ -15,12 +15,14 @@ let least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): 
                                         || lconjugate[li].is-t(c"Literal",0)
                                         || lconjugate[li].is-t(c"LocalVariable",0)
                                         || lconjugate[li].is-t(c"GlobalVariable",0)
+                                        || lconjugate[li].is-t(c"MustNotMove",0)
             ) {
                li = li + 1;
             } else if ri < rconjugate.length && ( rconjugate[ri].is-t(c"Constant",0) 
                                                || rconjugate[ri].is-t(c"Literal",0)
                                                || rconjugate[ri].is-t(c"LocalVariable",0)
                                                || rconjugate[ri].is-t(c"GlobalVariable",0)
+                                               || rconjugate[ri].is-t(c"MustNotMove",0)
             ) {
                ri = ri + 1;
             } else if li < lconjugate.length && lconjugate[li].is-t(c"Phi::Id",1) {

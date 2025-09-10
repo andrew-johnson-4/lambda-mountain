@@ -11,14 +11,17 @@ assert( "b" >= "a" );
 assert( "b" > "a" );
 assert( "aa" > "a" );
 assert( "a" < "aa" );
+assert( safe-alloc-block-count == 0 );
 
 assert( cmp("a", "a") == Equal );
 assert( cmp("a", "b") == LessThan );
 assert( cmp("b", "a") == GreaterThan );
+assert( safe-alloc-block-count == 0 );
 
 assert( "".length == 0 );
 assert( "a".length == 1 );
 assert( "ab".length == 2 );
+assert( safe-alloc-block-count == 0 );
 
 #assert( "" + "a" == "a" );
 #assert( "a" + "b" == "ab" );
