@@ -28,7 +28,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       let return-term = if not(return-type.is-t(c"Nil",0))
       then mk-var(return-id)
       else mk-nil();
-      (tctx-after, return-term) = std-infer-expr(tctx-after, return-term, false, Used, ta);
+      (tctx-after, return-term) = std-infer-expr(tctx-after, return-term, false, Used, t1(c"MustNotRetain"));
       tctx-after = phi-move(tctx-after, typeof-term(return-term), term);
       term = mk-cons(term, return-term); ascript(term,return-type);
    };

@@ -146,7 +146,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      then exit-error("Return value does not match declared type:\nExpected \{rhs-tt}\nFound \{typeof-term(rhs)}\n", term);
                   };
                   if not(tlt.is-t(c"Blob",0) || tlt.is-t(c"C-FFI",0) || tlt.is-t(c"FFI",0) || tlt.is-t(c"Phi::Source",0) ) {
-                     print("validate let \{key.key} = \{new-val}\n");
                      validate-pctx-release(inner-tctx);
                   }
                );
@@ -157,6 +156,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                mark-var-to-def(new-term, term);
                term = new-term;
             };
+            print("Global Term \{term}\n");
          };
       );
       Var{key=key, token=token} => (
