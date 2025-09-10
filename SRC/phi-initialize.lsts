@@ -37,7 +37,7 @@ let phi-initialize-linear(tt: Type, blame: AST): Type = (
          };
          TAnd(new-conjugate)
       );
-      TGround{tag:"Linear",parameters:[TVar{}..]} => t2(c"Linear", t1(uuid()));
+      TGround{tag:"Linear",parameters:[TGround{tag:c"Phi::Live"}..]} => t2(c"Linear", t1(c"Phi::Live"));
       TGround{tag=tag,parameters=parameters} => (
          let new-parameters = [] : List<Type>;
          for t in parameters.reverse {

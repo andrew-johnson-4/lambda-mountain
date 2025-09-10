@@ -1,6 +1,6 @@
 
-let maybe-retain(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
+let maybe-retain(tctx: TypeContext?, term: AST, hint: Type): (TypeContext?, AST) = (
    if typeof-term(term).is-t(c"MustRetain",0)
-   then wrap-call(tctx, c".retain", term)
+   then wrap-call(tctx, c".retain", term, hint)
    else (tctx, term)
 );
