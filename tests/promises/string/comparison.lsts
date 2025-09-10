@@ -23,9 +23,10 @@ assert( "a".length == 1 );
 assert( "ab".length == 2 );
 assert( safe-alloc-block-count == 0 );
 
-#assert( "" + "a" == "a" );
-#assert( "a" + "b" == "ab" );
-#assert( "ab" + "" == "ab" );
+assert( "" + "a" == "a" );
+assert( "a" + "b" == "ab" );
+assert( "ab" + "" == "ab" );
+assert( safe-alloc-block-count == 0 );
 
 #assert( "a"[1 : 1] == "" );
 #assert( "ab"[0 : 1] == "a" );
