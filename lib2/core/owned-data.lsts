@@ -18,6 +18,10 @@ let mk-owned-data(tt: Type<t>, capacity: USize): OwnedData<t>[] = (
    od
 );
 
+let $"[]"(od: OwnedData<t>[], idx): t = (
+   od.data[idx]
+);
+
 let .push(od: OwnedData<t>[], d: t): Nil = (
    if od.current-length == od.capacity
    then fail(c"OwnedData .push Exceeds Maximum Length");
