@@ -18,7 +18,7 @@ let mk-owned-data(tt: Type<t>, capacity: USize): OwnedData<t>[] = (
    od
 );
 
-let $"[]"(od: OwnedData<t>[], idx): t = (
+let $"[]"(od: OwnedData<t>[], idx: USize): t = (
    od.data[idx]
 );
 

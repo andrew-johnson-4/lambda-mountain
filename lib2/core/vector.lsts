@@ -1,7 +1,7 @@
 
 ## faster than [type(List<t>)]. should be used when you append or remove data a lot
 type Vector<t> implies MustRetain, MustRelease
-   = { data: OwnedData<t>[], start-offset: USize, end-offset:USize };
+   = { data: OwnedData<t>[], start-offset: USize, end-offset: USize };
 
 let .release(x: Vector<t>): Nil = (
    if x.data as USize != 0 {
@@ -35,7 +35,7 @@ let $"[]"(v: Vector<t>, idx: USize): t = (
 );
 
 let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (
-   let newp = if target-capacity==0
+   if target-capacity==0
    then Vector( 0 as OwnedData<t>[], 0, target-capacity )
    else {
       let new-data = mk-owned-data(type(t), target-capacity);
@@ -52,12 +52,13 @@ let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (
 let .push(v: Vector<t>, i: t): Vector<t> = (
    # if this vector is a view, or if it is full, then we need to reallocate
    if v.end-offset < v.data.current-length or v.end-offset >= v.data.capacity {
-      let new-cap = if v.start-offset==v.end-offset then 4_sz
+      let new_capacity = if v.start-offset==v.end-offset then 4_sz
       else (v.length >> 1_sz) + v.length; # this is mul 1.5, not 3
-      v = v.realloc(new-cap);
+      v.realloc(new_capacity);
+      #v = v.realloc(new_capacity);
    };
    v.data.push(i);
-   v.end-offset = v.end-offset + 1_sz;
+   #v.end-offset = v.end-offset + 1_sz;
    v
 );
 
