@@ -1,0 +1,8 @@
+
+import lib2/core/bedrock.lsts;
+
+mk-vector(type(U64), 0);
+assert( safe-alloc-block-count == 0 );
+
+mk-vector(type(U64), 2);
+assert( safe-alloc-block-count == 0 );
