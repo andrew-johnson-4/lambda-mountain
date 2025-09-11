@@ -1,0 +1,27 @@
+
+## faster than [type(List<t>)]. should be used when you append or remove data a lot
+type Vector<t> implies MustRetain, MustRelease
+   = { data: OwnedData<t>[], start-offset: USize, end-offset:USize };
+
+let .release(x: Vector<t>): Nil = (
+   if x.data as USize != 0 {
+      x.data.release;
+   };
+   mark-as-released(x);
+);
+
+let .retain(x: Vector<t>): Vector<t> = (
+   if x.data as USize != 0 {
+      x.data.retain;
+   };
+   x
+);
+
+let mk-vector(ty: Type<t>, capacity: USize): Vector<t> = (
+   let ptr = if capacity==0 then (0 as OwnedData<t>[]) else mk-owned-data(type(t), capacity);
+   Vector( ptr, 0, 0 )
+);
+
+let mk-vector(ty: Type<t>): Vector<t> = (
+   mk-vector(type(t), 0)
+);
