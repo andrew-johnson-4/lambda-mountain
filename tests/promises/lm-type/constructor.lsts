@@ -1,0 +1,5 @@
+
+import LM/unit-type-core.lsts;
+
+t1(c"T1");
+assert( safe-alloc-block-count == 0 );
