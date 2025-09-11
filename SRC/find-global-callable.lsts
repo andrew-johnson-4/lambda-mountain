@@ -37,7 +37,7 @@ let find-global-constructor(fname: CString, hint: Type, arg-types: Type, blame: 
    hint = hint.rewrite-type-alias.without-phi;
    let result = ASTEOF();
    for Tuple{ot=first, kt=second, t=third} in global-type-context-denormal.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
-      if not(ot.is-open) && ((not(non-zero(hint)) && can-receive(ot, hint)) || can-apply(ot, arg-types)) {
+      if not(ot.is-open) && (not(non-zero(hint)) || can-receive(ot, hint)) && can-apply(ot, arg-types) {
          if non-zero(result) then fail("Duplicate global constructor: \{fname} :: \{hint} (\{arg-types})At: \{blame.location}\n1: \{result}\n2: \{t}\n");
          result = t;
       }
