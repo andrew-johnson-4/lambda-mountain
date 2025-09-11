@@ -6,3 +6,9 @@ assert( safe-alloc-block-count == 0 );
 
 mk-vector(type(U64), 2);
 assert( safe-alloc-block-count == 0 );
+
+mk-vector(type(U64), 2).push(123);
+assert( safe-alloc-block-count == 0 );
+
+#assert( mk-vector(type(U64), 2).push(123).push(456).pop() == 123 );
+#assert( safe-alloc-block-count == 0 );

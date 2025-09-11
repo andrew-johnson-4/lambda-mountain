@@ -25,3 +25,40 @@ let mk-vector(ty: Type<t>, capacity: USize): Vector<t> = (
 let mk-vector(ty: Type<t>): Vector<t> = (
    mk-vector(type(t), 0)
 );
+
+let .length(v: Vector<t>): USize = (
+   v.end-offset - v.start-offset
+);
+
+let .push(v: Vector<t>, i: t): Vector<t> = (
+   # if this vector is a view, or if it is full, then we need to reallocate
+   if v.end-offset < v.data.current-length or v.end-offset >= v.data.capacity {
+      let new-cap = if v.start-offset==v.end-offset then 4_sz
+      else (v.length >> 1_sz) + v.length; # this is mul 1.5, not 3
+      v = v.realloc(new-cap);
+   };
+   v.data.push(i);
+   v.end-offset = v.end-offset + 1_sz;
+   v
+);
+
+#let .pop-front(v: Vector<t>): Tuple<t, Vector<t>> = (
+#    if v.length == 0 then fail(c"Tried to pop from empty Vector.");
+#
+#    let x = v[0];
+#    v = v.remove-front(1);
+#
+#    Tuple ( x, v )
+#);
+
+#let .pop(v: Vector<t>): Tuple<t, Vector<t>> = (
+#   if v.length() == 0 {
+#      fail("Tried to pop from empty Vector.");
+#   };
+#
+#   let lasti = v.length - 1;
+#   let last = v[lasti as U64];
+#   v = v.remove-back(1);
+#
+#   Tuple ( last, v )
+#);

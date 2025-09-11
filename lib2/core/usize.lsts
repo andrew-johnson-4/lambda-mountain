@@ -19,6 +19,9 @@ declare-binop( $"/", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; 
 declare-binop( $"%", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"%"; y; l")"; ) );
 declare-binop( $"*", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"*"; y; l")"; ) );
 
+declare-binop( $"<<", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"<<"; y; l")"; ) );
+declare-binop( $">>", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l">>"; y; l")"; ) );
+
 declare-unop( $"~", raw-type(USize), raw-type(USize), ( l"((size_t)(~"; x; l"))"; ) );
 
 let min(l: USize, r: USize): USize = (
