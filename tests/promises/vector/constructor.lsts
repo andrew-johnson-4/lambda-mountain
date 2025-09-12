@@ -1,15 +1,19 @@
 
 import lib2/core/bedrock.lsts;
 
+print(c"Vector 1\n");
 mk-vector(type(U64), 0);
 assert( safe-alloc-block-count == 0 );
 
+print(c"Vector 2\n");
 mk-vector(type(U64), 2);
 assert( safe-alloc-block-count == 0 );
 
+print(c"Vector 3\n");
 mk-vector(type(U64), 2).push(123);
 assert( safe-alloc-block-count == 0 );
 
+print(c"Vector 4\n");
 mk-vector(type(String), 2).push("A");
 assert( safe-alloc-block-count == 0 );
 

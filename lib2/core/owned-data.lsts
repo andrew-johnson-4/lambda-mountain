@@ -37,7 +37,19 @@ let .pop(od: OwnedData<t>[]): t = (
    od.data[od.current-length]
 );
 
+let :Blob .release(_: Any): Nil = ();
 let .release(od: OwnedData<t>[]): Nil = (
+   # TODO: make the default release implementation unnecessary here
+   # TODO: the insides of this if statement should not be typechecked if the condition is false
+   if type(t) <: type(MustRelease) {
+      let dlo = 0_sz;
+      let dhi = od.capacity;
+      while dlo < dhi {
+         print(c"OwnedData Element Release\n");
+         od.data[dlo].release;
+         dlo = dlo + 1;
+      };
+   };
    od.reference-count = od.reference-count - 1;
    if od.reference-count == 0
    then safe-free(od);
