@@ -3,9 +3,6 @@ let unify(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
    let ctx = (None : Maybe<TypeContext>)();
    if can-unify(fpt, pt) {
       ctx = unify-inner(fpt, pt, blame);
-      let inner-ctx = ctx.get-or(mk-tctx());
-      inner-ctx.tctx = inner-ctx.tctx.reverse; # TODO merge type variables, sorting shouldn't matter
-      ctx = Some(inner-ctx);
    };
    ctx
 );
