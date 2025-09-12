@@ -128,7 +128,6 @@ let apply-global-callable(tctx: TypeContext?, fname: CString, arg-types: Type, b
       for Tuple{kt=second, t=third} in global-type-context-denormal.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
          print("Candidate: \{kt}\n");
       };
-      print("Term \{blame}\n");
       exit(1);
    };
    if non-zero(result-normal) then apply-and-specialize(tctx, fname, result-normal, result-denormal, arg-types, blame) else (tctx, ta)
