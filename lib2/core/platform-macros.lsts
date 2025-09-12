@@ -19,6 +19,13 @@ deprecated macro (rl"declare-binop"(op-alias, x-type, y-type, r-type, op-expr)) 
    );
 );
 
+deprecated macro (rl"declare-binop-retain"(op-alias, x-type, y-type, r-type, op-expr)) (
+   let :Blob+MustRetainOnCall op-alias(x: x-type, y: y-type): r-type = (
+      $":expression"(op-expr);
+      $":frame"($":frame"(x); $":frame"(y));
+   );
+);
+
 deprecated macro (rl"declare-ternop"(op-alias, x-type, y-type, z-type, r-type, op-expr)) (
    let :Blob op-alias(x: x-type, y: y-type, z: z-type): r-type = (
       $":expression"(op-expr);
