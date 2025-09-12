@@ -31,7 +31,7 @@ let .length(v: Vector<t>): USize = (
 );
 
 let $"[]"(v: Vector<t>, idx: USize): t = (
-   v.data[idx]
+   v.data[v.start-offset + idx]
 );
 
 let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (

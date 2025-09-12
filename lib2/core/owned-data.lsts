@@ -19,6 +19,7 @@ let mk-owned-data(tt: Type<t>, capacity: USize): OwnedData<t>[] = (
 );
 
 let $"[]"(od: OwnedData<t>[], idx: USize): t = (
+   if idx >= od.current-length then print(c"OwnedData [] Index Access Out of Bounds");
    od.data[idx]
 );
 
