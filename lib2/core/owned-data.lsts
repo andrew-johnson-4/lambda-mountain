@@ -19,10 +19,11 @@ let mk-owned-data(tt: Type<t>, capacity: USize): OwnedData<t>[] = (
 );
 
 let $"[]"(od: OwnedData<t>[], idx: USize): t = (
+   if idx >= od.current-length then fail(c"OwnedData [] Index Access Out of Bounds");
    od.data[idx]
 );
 
-let .push(od: OwnedData<t>[], d: t): Nil = (
+let .push(od: OwnedData<t>[], d: s): Nil = (
    if od.current-length == od.capacity
    then fail(c"OwnedData .push Exceeds Maximum Length");
    od.data[od.current-length] = d;
@@ -36,7 +37,18 @@ let .pop(od: OwnedData<t>[]): t = (
    od.data[od.current-length]
 );
 
+let :Blob .release(_: Any): Nil = ();
 let .release(od: OwnedData<t>[]): Nil = (
+   # TODO: make the default release implementation unnecessary here
+   # TODO: the insides of this if statement should not be typechecked if the condition is false
+   if type(t) <: type(MustRelease) {
+      let dlo = 0_sz;
+      let dhi = od.current-length;
+      while dlo < dhi {
+         od.data[dlo].release;
+         dlo = dlo + 1;
+      };
+   };
    od.reference-count = od.reference-count - 1;
    if od.reference-count == 0
    then safe-free(od);

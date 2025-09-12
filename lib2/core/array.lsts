@@ -1,6 +1,6 @@
 
-declare-binop( $"[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), ( l"("; x; l"["; y; l"])"; ) );
-declare-ternop( $"set[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), raw-type(base-type), ( l"("; x; l"["; y; l"]="; z; l")"; ) );
+declare-binop-retain( $"[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), ( l"("; x; l"["; y; l"])"; ) );
+declare-ternop( $"set[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), raw-type(Nil), ( l"("; x; l"["; y; l"]="; z; l")"; ) );
 
 declare-binop( $"!=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
 declare-binop( $"==", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
