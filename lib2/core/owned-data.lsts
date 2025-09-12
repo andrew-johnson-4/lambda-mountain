@@ -23,7 +23,7 @@ let $"[]"(od: OwnedData<t>[], idx: USize): t = (
    od.data[idx]
 );
 
-let .push(od: OwnedData<t>[], d: t): Nil = (
+let .push(od: OwnedData<t>[], d: s): Nil = (
    if od.current-length == od.capacity
    then fail(c"OwnedData .push Exceeds Maximum Length");
    od.data[od.current-length] = d;
