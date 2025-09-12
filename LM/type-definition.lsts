@@ -1,7 +1,9 @@
 
 # TGround needs to be the first type (tag 0) or else sorted unification will not work right
 type Type zero TAny
-        = TGround { tag:CString, parameters:Vector<Type> }
+        =
+        #| TGround { tag:CString, parameters:Vector<Type> }
         | TAny	
-        | TVar { name:CString }
-        | TAnd { conjugate:Vector<Type> };
+        #| TVar { name:CString }
+        #| TAnd { conjugate:Vector<Type> };
+        ;

@@ -5,6 +5,10 @@ deprecated macro ( rl"assert"(c) ) (
         ()
 );
 
+deprecated macro ( rl"macro::define-zero"(base-type,constructor,con-tag) ) (
+   let non-zero(t: base-type): Bool = t.discriminator-case-tag != (t as con-tag).discriminator-case-tag;
+);
+
 typed macro macro::let(lhs: lazy, rhs: lazy): lazy = (
    (fn(lhs) = ()) (rhs)
 );
