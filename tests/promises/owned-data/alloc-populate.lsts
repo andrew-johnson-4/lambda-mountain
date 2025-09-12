@@ -4,7 +4,7 @@ import lib2/core/bedrock.lsts;
 let u8-data(): Nil = (
    let od = mk-owned-data(type(U8), 5);
    assert( od.current-length == 0 );
-   assert( od.maximum-length == 5 );
+   assert( od.capacity == 5 );
 
    # push is designed to give ownership from caller to callee
    #od.push(1);

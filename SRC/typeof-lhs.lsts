@@ -6,4 +6,5 @@ let typeof-lhs(lhs: AST, idx: U64): Type = match lhs {
    App{ ps=left, right:App{ left:Lit{key:c":"}, right:App{ right:AType{tt=tt} } } } =>
      t3(c"Cons", typeof-lhs(ps,idx+1), tt.rewrite-type-alias.accept-interface(idx));
    ASTNil{} => t1(c"Nil");
+   _ => (exit-error("typeof-lhs Unexpected LHS \{lhs}\n", lhs); t1(c"Nil"));
 };

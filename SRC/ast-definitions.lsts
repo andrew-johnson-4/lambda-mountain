@@ -85,6 +85,14 @@ let .is-tail(used: IsUsed): U64 = (
       _ => false;
    }
 );
+let .into(used: IsUsed, ty: Type<String>): String = (
+   match used {
+      Used{} => "Used";
+      Unused{} => "Unused";
+      Tail{} => "Tail";
+      Call{} => "Call";
+   }
+);
 
 type FContext zero FCtxEOF = FCtxEOF | FCtxBind{ remainder:FContext[] , k:CString , kt:Type , kv:Fragment };
 

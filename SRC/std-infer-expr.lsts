@@ -142,7 +142,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                Abs{lhs=lhs, old-wrapped-rhs=rhs:App{ akey=left:Lit{key:c":"}, right:App{ rhs=left, right:AType{rhs-tt=tt} } }, tlt=tt} => (
                   if not(tlt.is-t(c"Blob",0) || tlt.is-t(c"C-FFI",0) || tlt.is-t(c"FFI",0) || tlt.is-t(c"Phi::Source",0) ) {
                      rhs-tt = rhs-tt.rewrite-type-alias;
-                     if not(can-unify(rhs-tt, typeof-term(rhs)))
+                     if not(can-unify(rhs-tt.without-phi, typeof-term(rhs)))
                      then exit-error("Return value does not match declared type:\nExpected \{rhs-tt}\nFound \{typeof-term(rhs)}\n", term);
                   };
                   if not(tlt.is-t(c"Blob",0) || tlt.is-t(c"C-FFI",0) || tlt.is-t(c"FFI",0) || tlt.is-t(c"Phi::Source",0) ) {
@@ -214,6 +214,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             let lhint = hint.slot(c"Cons",2).l1 && hint.slot(c"MustNotRetain",0);
             let rhint = hint.slot(c"Cons",2).l2 && hint.slot(c"MustNotRetain",0) && hint.slot(c"TailPosition",0);
             (tctx, let new-l) = std-infer-expr(tctx, l, false, if used.is-call then used else Unused, lhint);
+            let r-used = if used.is-tail then used else Used;
+            if typeof-term(new-l).is-arrow then r-used = Call(var-name-if-var-or-lit(new-l)); # if l was a macro then it could be macro::concat
             (tctx, let new-r) = std-infer-expr(tctx, r, false, if used.is-tail then used else Used, rhint);
             if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-cons(new-l, new-r) };
             ascript(term, if used.is-tail then typeof-term(r) else t3(c"Cons", typeof-term(l), typeof-term(r)));
@@ -241,6 +243,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                is-macro = true;
             } else {
                (tctx, let new-l) = std-infer-expr(tctx, l, false, used, ta);
+               if not(is(l,new-l)) then { l = new-l; term = mk-app(l,r); };
                if typeof-term(l).is-arrow {
                   let rr-args-hint = if var-name-if-var-or-lit(l)==c".retain" || var-name-if-var-or-lit(l)==c".release"
                   then t1(c"MustNotRetain") else ta;
@@ -260,8 +263,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   (tctx, rt) = apply-global-constructor(tctx, lit-name-if-lit(l), direct-hint, typeof-term(r), term);
                   (tctx, rt)
                } else if typeof-term(l).is-arrow && non-zero(var-name-if-var-or-lit(l)) {
-                  (tctx, rt) = apply-global-callable(tctx, var-name-if-var-or-lit(l), typeof-term(r), term);
-                  (tctx, rt)
+                  (tctx, rt) = apply-global-callable(tctx, var-name-if-var-or-lit(l), typeof-term(r), term); (tctx, rt)
                } else {
                   (tctx, t3(c"Cons", typeof-term(l), typeof-term(r)))
                };
@@ -272,7 +274,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   tctx = phi-override(tctx, from-tt, to-tt, term);
                   if not(hint.is-t(c"MustNotMove",0)) {
                      tctx = phi-move(tctx, from-tt, term);
-                  }
+                  };
                };
                rt = phi-state(tctx, rt, term);
                ascript(term, rt);
