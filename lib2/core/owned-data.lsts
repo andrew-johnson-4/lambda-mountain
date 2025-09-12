@@ -19,7 +19,7 @@ let mk-owned-data(tt: Type<t>, capacity: USize): OwnedData<t>[] = (
 );
 
 let $"[]"(od: OwnedData<t>[], idx: USize): t = (
-   if idx >= od.current-length then print(c"OwnedData [] Index Access Out of Bounds");
+   if idx >= od.current-length then fail(c"OwnedData [] Index Access Out of Bounds");
    od.data[idx]
 );
 
@@ -43,9 +43,8 @@ let .release(od: OwnedData<t>[]): Nil = (
    # TODO: the insides of this if statement should not be typechecked if the condition is false
    if type(t) <: type(MustRelease) {
       let dlo = 0_sz;
-      let dhi = od.capacity;
+      let dhi = od.current-length;
       while dlo < dhi {
-         print(c"OwnedData Element Release\n");
          od.data[dlo].release;
          dlo = dlo + 1;
       };
