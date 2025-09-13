@@ -8,4 +8,6 @@ type Type zero TAny
 
 # TODO Remove: the problem is that OwnedData<Type> is somehow not reified
 # fixing this bug in the V2 compiler is lower priority though than migrating to V3
-mk-owned-data(type(Type),0);
+let todo-remove(tt: Type): Nil = (
+   mk-owned-data(type(Type),0);
+);
