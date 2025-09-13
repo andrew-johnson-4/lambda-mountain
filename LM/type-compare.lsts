@@ -1,6 +1,6 @@
 
 let cmp(left: Type, right: Type): Ord = (
-#   match left {
+   match left {
       #TGround { ltag=tag, lparameters=parameters } => (match right {
       #   TGround { rtag=tag, rparameters=parameters } => (
       #      let c1 = cmp(ltag,rtag);
@@ -34,6 +34,6 @@ let cmp(left: Type, right: Type): Ord = (
 #         TAny{} => Equal;
       #   _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
 #      });
-#   }
-    Equal
+      _ => Equal;
+   }
 );
