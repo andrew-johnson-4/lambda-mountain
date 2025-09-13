@@ -1,6 +1,6 @@
 
 # TGround needs to be the first type (tag 0) or else sorted unification will not work right
-type Type implies MustRetain, MustRelease
+type Type zero TAny
         = TGround { tag:CString, parameters:Vector<Type> }
         | TAny	
         | TVar { name:CString }
@@ -12,22 +12,22 @@ let todo-remove(tt: Type): Nil = (
    mk-owned-data(type(Type),0); ()
 );
 
-let .release(x: Type): Nil = (
-   match x { 
-      TGround{parameters=parameters} => (parameters.release; ());
-      TAny{} => ();
-      TVar{} => ();
-      TAnd{conjugate=conjugate} => (conjugate.release; ());
-   };
-   mark-as-released(x);
-);
+#let .release(x: Type): Nil = (
+#   match x { 
+#      TGround{parameters=parameters} => (parameters.release; ());
+#      TAny{} => ();
+#      TVar{} => ();
+#      TAnd{conjugate=conjugate} => (conjugate.release; ());
+#   };
+#   mark-as-released(x);
+#);
 
-let .retain(x: Type): Type = (
-   match x { 
-      TGround{parameters=parameters} => (parameters.retain; ());
-      TAny{} => ();
-      TVar{} => ();
-      TAnd{conjugate=conjugate} => (conjugate.retain; ());
-   };
-   x
-);
+#let .retain(x: Type): Type = (
+#   match x { 
+#      TGround{parameters=parameters} => (parameters.retain; ());
+#      TAny{} => ();
+#      TVar{} => ();
+#      TAnd{conjugate=conjugate} => (conjugate.retain; ());
+#   };
+#   x
+#);
