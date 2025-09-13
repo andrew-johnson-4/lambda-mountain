@@ -321,6 +321,9 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
    } else if lsts-parse-head(tokens)==c"?" {
       lsts-parse-expect(c"?", tokens); tokens = tail(tokens);
       ta
+   } else if lsts-parse-head(tokens)==c"_" {
+      lsts-parse-expect(c"_", tokens); tokens = tail(tokens);
+      ta
    } else if lsts-parse-head(tokens).has-prefix(c"'") && not(lsts-parse-head(tokens).has-suffix(c"'")) {
       let new-tt = t2(c"Linear",t1(c"Phi::Live"));
       tokens = tail(tokens);
