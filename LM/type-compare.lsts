@@ -30,10 +30,9 @@ let cmp(left: Type, right: Type): Ord = (
       #   );
       #   _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
       #});
-#      TAny{} => (match right {
-#         TAny{} => Equal;
+      TAny{} => (match right {
+         TAny{} => Equal;
       #   _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
-#      });
-      _ => Equal;
+      });
    }
 );

@@ -78,4 +78,4 @@ let safe-free(ptr: ?[]): Nil = (
    free(ptr as C<"void">[]); ()
 );
 
-let open(x: x): x = x;
+let open(i: x): x = i;
