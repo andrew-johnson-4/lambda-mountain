@@ -77,3 +77,5 @@ let safe-free(ptr: ?[]): Nil = (
    safe-alloc-block-count = safe-alloc-block-count - 1; # TODO conditional compilation
    free(ptr as C<"void">[]); ()
 );
+
+let open(x: x): x = x;

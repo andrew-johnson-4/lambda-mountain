@@ -85,3 +85,7 @@ let $"+"(l: String, r: String): String = (
    String(0 as USize, cs_length, od) 
 );
 
+let fail(msg: String): Never = (
+   fwrite((msg.data.data + msg.start-offset) as C<"void">[], sizeof(USize) as USize, msg.length, stderr);
+   exit(1) as Never;
+);
