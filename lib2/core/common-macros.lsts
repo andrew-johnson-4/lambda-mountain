@@ -57,5 +57,309 @@ typed macro macro::while(cond: lazy, body: lazy): lazy = (
    primitive::while( cond, body as Nil )
 );
 
+deprecated macro ( rl"let"(x)(y) ) ( (fn(x) = ())(y) );
+
+deprecated macro ( rl"set"(lhs)(rhs) ) ( mov(rhs,lhs) );
+
+deprecated macro ( rl"set"( rl"macro::lhs-field"( base, field ), rhs ) )
+                 ( $"macro::concat"( $"set.", field ) (base, rhs) );
+
+deprecated macro ( rl"set"( rl"macro::lhs-index"( base, index ), rhs ) )
+                 ( $"set[]"( $"macro::lhs-as-rhs"(base), index, rhs ) );
+
+deprecated macro ( rl"macro::lhs-as-rhs"( rl":Variable", v ) )
+                 ( v );
+
+deprecated macro ( rl"macro::lhs-as-rhs"( rl"&", v ) )
+                 ( & v );
+
+deprecated macro ( rl"macro::lhs-as-rhs"( rl"macro::lhs-field"( base, field ) ) )
+                 ( $"macro::concat"( $".", field ) ( base ) );
+
 deprecated macro ( rl"while"(cond)(body) )
       ( $"primitive::while"( cond, body as Nil ) );
+
+deprecated macro (rl"match"(t)(ps)) (scope(
+   let uuid(term) = open(t);
+   match-pats( uuid(term), ps, fail("Pattern Match Failure \{p(rl\":Location:\") : Constant+Literal+CString}") );
+));
+
+deprecated macro (rl"match"(rl"macro::bind-raw"(t))(ps)) (scope(
+   let uuid(term) = t;
+   match-pats( uuid(term), ps, fail("Pattern Match Failure \{p(rl\":Location:\") : Constant+Literal+CString}") );
+));
+
+deprecated macro (rl"match"(
+                     rl"macro::bind-raw"( rl":Field:"(f), t ),
+                     ps
+                 )) (scope(
+   let uuid(term) = f($"raw"(t));
+   match-pats( uuid(term), ps, fail("Pattern Match Failure \{p(rl\":Location:\") : Constant+Literal+CString}") );
+));
+
+deprecated macro (rl"match-pats"(term,(),remainder))
+                 (remainder);
+
+deprecated macro (rl"match-pats"(term,ps(lhs,rhs),remainder)) (
+   match-pats(term,ps,
+      scope($"if"(match-pats-arm(term,lhs))(rhs)(remainder))
+   )
+);
+
+deprecated macro (rl"match-pats-arm"(term,rl":Variable:"(v))) (
+   ($"let"(v)(term); branchtrue())
+);
+
+deprecated macro (rl"match-pats-arm"(term,rl"@"(v,more))) (
+   ($"let"(v)(term); match-pats-arm(v,more))
+);
+
+deprecated macro (rl"match-pats-arm"(term,rl":Any:")) (
+   branchtrue()
+);
+
+deprecated macro (rl"match-pats-arm"(term,rl":Literal:"(l))) (
+   ( $"let"(uuid(v))(term); uuid(v)==l )
+);
+
+deprecated macro (rl"match-pats-arm"(term,rl":Tag:"(l)(lt))) (
+   ( $"let"(uuid(v))(term); uuid(v).discriminator-case-tag==(uuid(v) as lt).discriminator-case-tag )
+);
+
+deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-head"(x,rest))) ((
+   $"let"(uuid(v))(term);
+   $"if"(uuid(v).has-head)
+        ($"if"(match-pats-arm(head(uuid(v)),x))
+              (match-pats-arm(tail(uuid(v)),rest))
+              (branchfalse())
+        )
+        (branchfalse())
+));
+
+deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rl":Literal:"(l), rest ))) ((
+   $"let"(uuid(v))(term);
+   $"if"(uuid(v).has-prefix(l))
+        (match-pats-arm(uuid(v).remove-prefix(l),rest))
+        (branchfalse())
+));
+
+deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rest, rl":Literal:"(l) ))) ((
+   $"let"(uuid(v))(term);
+   $"if"(uuid(v).has-suffix(l))
+        (match-pats-arm(uuid(v).remove-suffix(l),rest))
+        (branchfalse())
+));
+
+deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rl"macro::lhs-bind"(rl":Variable:"(b), rl":Literal:"(l)), rest ))) ((
+   $"let"(uuid(v))(term);
+   $"if"(uuid(v).has-prefix(l)) (
+           $"let"(b)(uuid(v).remove-prefix(l));
+           (match-pats-arm(uuid(v)[b.length:],rest))
+        ) (branchfalse())
+));
+
+
+deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rest, rl"macro::lhs-bind"(rl":Variable:"(b), rl":Literal:"(l)) ))) ((
+   $"let"(uuid(v))(term);
+   $"if"(uuid(v).has-suffix(l)) (
+           $"let"(b)(uuid(v).remove-suffix(l));
+           (match-pats-arm(uuid(v)[:b.length],rest))
+        ) (branchfalse())
+));
+
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x1) )) ((
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+      $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 ))
+         (uuid(m) = true)
+         ()
+   ) ();
+   uuid(m);
+));
+
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x2(x1)) )) ((
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+           $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 )) (
+              $"if"(match-pats-arm( open($".2"(uuid(v) as lt)), x2 ))
+                   (uuid(m) = true)
+                   ()
+           ) ()
+        ) ();
+   uuid(m);
+));
+
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x3(x2)(x1)) )) ((
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+           $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 )) (
+              $"if"(match-pats-arm( open($".2"(uuid(v) as lt)), x2 )) (
+                 $"if"(match-pats-arm( open($".3"(uuid(v) as lt)), x3 ))
+                      (uuid(m) = true)
+                      ()
+              ) ()
+           ) ()
+        ) ();
+   uuid(m);
+));
+
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x4(x3)(x2)(x1)) )) ((
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+           $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 )) (
+              $"if"(match-pats-arm( open($".2"(uuid(v) as lt)), x2 )) (
+                 $"if"(match-pats-arm( open($".3"(uuid(v) as lt)), x3 )) (
+                    $"if"(match-pats-arm( open($".4"(uuid(v) as lt)), x4 ))
+                         (uuid(m) = true)
+                         ()
+                 ) ()
+              ) ()
+           ) ()
+        ) ();
+   uuid(m);
+));
+
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x5(x4)(x3)(x2)(x1)) )) ((
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+           $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 )) (
+              $"if"(match-pats-arm( open($".2"(uuid(v) as lt)), x2 )) (
+                 $"if"(match-pats-arm( open($".3"(uuid(v) as lt)), x3 )) (
+                    $"if"(match-pats-arm( open($".4"(uuid(v) as lt)), x4 )) (
+                       $"if"(match-pats-arm( open($".5"(uuid(v) as lt)), x5 ))
+                            (uuid(m) = true)
+                            ()
+                    ) ()
+                 ) ()
+              ) ()
+           ) ()
+        ) ();
+   uuid(m);
+));
+
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x6(x5)(x4)(x3)(x2)(x1)) )) ((
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+           $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 )) (
+              $"if"(match-pats-arm( open($".2"(uuid(v) as lt)), x2 )) (
+                 $"if"(match-pats-arm( open($".3"(uuid(v) as lt)), x3 )) (
+                    $"if"(match-pats-arm( open($".4"(uuid(v) as lt)), x4 )) (
+                       $"if"(match-pats-arm( open($".5"(uuid(v) as lt)), x5 )) (
+                          $"if"(match-pats-arm( open($".6"(uuid(v) as lt)), x6 ))
+                               (uuid(m) = true)
+                               ()
+                       ) ()
+                    ) ()
+                 ) ()
+              ) ()
+           ) ()
+        ) ();
+   uuid(m);
+));
+
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)() )) ((
+   let uuid(v) = term;
+   uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag
+));
+
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(rl"macro::bind-field-by-key"(x1-key,x1)) )) ((
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+      $"if"(match-pats-arm( open(x1-key(uuid(v) as lt)), x1 ))
+         (uuid(m) = true)
+         ()
+   ) ();
+   uuid(m);
+));
+
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(rl"macro::bind-field-by-key"(x2-key,x2)(rl"macro::bind-field-by-key"(x1-key,x1))) )) ((
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+      $"if"(match-pats-arm( open(x1-key(uuid(v) as lt)), x1 )) (
+         $"if"(match-pats-arm( open(x2-key(uuid(v) as lt)), x2 ))
+              (uuid(m) = true)
+              ()
+      ) ()
+   ) ();
+   uuid(m);
+));
+
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(rl"macro::bind-field-by-key"(x3-key,x3)(rl"macro::bind-field-by-key"(x2-key,x2))(rl"macro::bind-field-by-key"(x1-key,x1))) )) ((
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+      $"if"(match-pats-arm( open(x1-key(uuid(v) as lt)), x1 )) (
+         $"if"(match-pats-arm( open(x2-key(uuid(v) as lt)), x2 )) (
+            $"if"(match-pats-arm( open(x3-key(uuid(v) as lt)), x3 ))
+              (uuid(m) = true)
+              ()
+         ) ()
+      ) ()
+   ) ();
+   uuid(m);
+));
+
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(rl"macro::bind-field-by-key"(x4-key,x4)(rl"macro::bind-field-by-key"(x3-key,x3))(rl"macro::bind-field-by-key"(x2-key,x2))(rl"macro::bind-field-by-key"(x1-key,x1))) )) ((
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+      $"if"(match-pats-arm( open(x1-key(uuid(v) as lt)), x1 )) (
+         $"if"(match-pats-arm( open(x2-key(uuid(v) as lt)), x2 )) (
+            $"if"(match-pats-arm( open(x3-key(uuid(v) as lt)), x3 )) (
+               $"if"(match-pats-arm( open(x4-key(uuid(v) as lt)), x4 ))
+                 (uuid(m) = true)
+                 ()
+            ) ()
+         ) ()
+      ) ()
+   ) ();
+   uuid(m);
+));
+
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(rl"macro::bind-field-by-key"(x5-key,x5)(rl"macro::bind-field-by-key"(x4-key,x4))(rl"macro::bind-field-by-key"(x3-key,x3))(rl"macro::bind-field-by-key"(x2-key,x2))(rl"macro::bind-field-by-key"(x1-key,x1))) )) ((
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+      $"if"(match-pats-arm( open(x1-key(uuid(v) as lt)), x1 )) (
+         $"if"(match-pats-arm( open(x2-key(uuid(v) as lt)), x2 )) (
+            $"if"(match-pats-arm( open(x3-key(uuid(v) as lt)), x3 )) (
+               $"if"(match-pats-arm( open(x4-key(uuid(v) as lt)), x4 )) (
+                  $"if"(match-pats-arm( open(x5-key(uuid(v) as lt)), x5 ))
+                    (uuid(m) = true)
+                    ()
+               ) ()
+            ) ()
+         ) ()
+      ) ()
+   ) ();
+   uuid(m);
+));
+
+deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(rl"macro::bind-field-by-key"(x6-key,x6)(rl"macro::bind-field-by-key"(x5-key,x5))(rl"macro::bind-field-by-key"(x4-key,x4))(rl"macro::bind-field-by-key"(x3-key,x3))(rl"macro::bind-field-by-key"(x2-key,x2))(rl"macro::bind-field-by-key"(x1-key,x1))) )) ((
+   let uuid(v) = term;
+   let uuid(m) = false;
+   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
+      $"if"(match-pats-arm( open(x1-key(uuid(v) as lt)), x1 )) (
+         $"if"(match-pats-arm( open(x2-key(uuid(v) as lt)), x2 )) (
+            $"if"(match-pats-arm( open(x3-key(uuid(v) as lt)), x3 )) (
+               $"if"(match-pats-arm( open(x4-key(uuid(v) as lt)), x4 )) (
+                  $"if"(match-pats-arm( open(x5-key(uuid(v) as lt)), x5 )) (
+                     $"if"(match-pats-arm( open(x6-key(uuid(v) as lt)), x6 ))
+                       (uuid(m) = true)
+                       ()
+                  ) ()
+               ) ()
+            ) ()
+         ) ()
+      ) ()
+   ) ();
+   uuid(m);
+));

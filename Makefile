@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm tests/promises/vector/constructor.lsts
+	lm tests/promises/lm-type/constructor.lsts
 	cc tmp.c
 	./a.out
 
