@@ -57,6 +57,25 @@ typed macro macro::while(cond: lazy, body: lazy): lazy = (
    primitive::while( cond, body as Nil )
 );
 
+deprecated macro ( rl"let"(x)(y) ) ( (fn(x) = ())(y) );
+
+deprecated macro ( rl"set"(lhs)(rhs) ) ( mov(rhs,lhs) );
+
+deprecated macro ( rl"set"( rl"macro::lhs-field"( base, field ), rhs ) )
+                 ( $"macro::concat"( $"set.", field ) (base, rhs) );
+
+deprecated macro ( rl"set"( rl"macro::lhs-index"( base, index ), rhs ) )
+                 ( $"set[]"( $"macro::lhs-as-rhs"(base), index, rhs ) );
+
+deprecated macro ( rl"macro::lhs-as-rhs"( rl":Variable", v ) )
+                 ( v );
+
+deprecated macro ( rl"macro::lhs-as-rhs"( rl"&", v ) )
+                 ( & v );
+
+deprecated macro ( rl"macro::lhs-as-rhs"( rl"macro::lhs-field"( base, field ) ) )
+                 ( $"macro::concat"( $".", field ) ( base ) );
+
 deprecated macro ( rl"while"(cond)(body) )
       ( $"primitive::while"( cond, body as Nil ) );
 
