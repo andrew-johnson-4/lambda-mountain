@@ -37,10 +37,7 @@ let .pop(od: OwnedData<t>[]): t = (
    od.data[od.current-length]
 );
 
-let :Blob .release(_: Any): Nil = ();
 let .release(od: OwnedData<t>[]): Nil = (
-   # TODO: make the default release implementation unnecessary here
-   # TODO: the insides of this if statement should not be typechecked if the condition is false
    if type(t) <: type(MustRelease) {
       let dlo = 0_sz;
       let dhi = od.current-length;

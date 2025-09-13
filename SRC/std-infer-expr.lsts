@@ -90,30 +90,50 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          ascript(term, tt);
       );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
-         if is-scoped {
-            (let tctx-inner, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
-            tctx = tctx.with-pctx(tctx-inner.get-or(mk-tctx()).pctx);
-            (let tctx-t, let new-t) = std-infer-expr(tctx-inner, t, false, Tail(), ta);
-            (let tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
-            if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
-            then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
-            tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
+         let short-circuit = ASTEOF;
+         match cond {
+            App{ left:Var{key:c"<:"}, right:App{left:AType{lt=tt},right:AType{rt=tt}} } => (
+               lt = denormalize-strong(lt.slot(c"Type",1).l1);
+               rt = denormalize-strong(rt.slot(c"Type",1).l1);
+               if non-zero(lt) && non-zero(rt) {
+                  if can-unify(rt, lt) {
+                     (tctx, short-circuit) = std-infer-expr(tctx, t, false, Tail, ta);
+                  } else {
+                     (tctx, short-circuit) = std-infer-expr(tctx, f, false, Tail, ta);
+                  }
+               };
+            );
+            _ => ();
+         };
+         if non-zero(short-circuit) {
+            term = short-circuit;
          } else {
-            (tctx, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
-            (let tctx-t, let new-t) = std-infer-expr(tctx, t, false, Tail(), ta);
-            (let tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
-            tctx = tctx-t;
-            if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
-            then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
-            tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
-         };
-         if not(typeof-term(cond).is-t(c"Bool",0)) {
-            apply-global-callable(tctx, c"into-branch-conditional", typeof-term(cond), cond);
-         };
-         let lub = if typeof-term(t).is-t(c"Never",0) then typeof-term(f)
-         else if typeof-term(f).is-t(c"Never",0) || typeof-term(f).is-t(c"Nil",0) then typeof-term(t)
-         else { (tctx, let lub) = least-upper-bound(tctx, typeof-term(t), typeof-term(f), term); lub.get-or(ta); };
-         ascript(term, lub);
+            if is-scoped {
+               (let tctx-inner, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
+               tctx = tctx.with-pctx(tctx-inner.get-or(mk-tctx()).pctx);
+
+               (let tctx-t, let new-t) = std-infer-expr(tctx-inner, t, false, Tail(), ta);
+               (let tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
+               if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
+               then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
+               tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
+            } else {
+               (tctx, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
+               (let tctx-t, let new-t) = std-infer-expr(tctx, t, false, Tail(), ta);
+               (let tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
+               tctx = tctx-t;
+               if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
+               then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
+               tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
+            };
+            if not(typeof-term(cond).is-t(c"Bool",0)) {
+               apply-global-callable(tctx, c"into-branch-conditional", typeof-term(cond), cond);
+            };
+            let lub = if typeof-term(t).is-t(c"Never",0) then typeof-term(f)
+            else if typeof-term(f).is-t(c"Never",0) || typeof-term(f).is-t(c"Nil",0) then typeof-term(t)
+            else { (tctx, let lub) = least-upper-bound(tctx, typeof-term(t), typeof-term(f), term); lub.get-or(ta); };
+            ascript(term, lub);
+         }
       );
       ASTEOF{} => ascript(term, t1(c"Nil"));
       ASTNil{} => ascript(term, t1(c"Nil"));
