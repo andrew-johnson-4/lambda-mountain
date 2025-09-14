@@ -1016,6 +1016,8 @@ let lsts-parse-function-signature(fname: CString, tokens: List<Token>, loc: Sour
        out.return-type = rtype-rest.first;
        if fname!=c"phi" then out.return-type = out.return-type.expand-implied-phi.phi-as-initialize;
        tokens = rtype-rest.second;
+   } else if non-zero(out.args-type) {
+       out.return-type = t1(c"Nil");
    };
 
    Tuple ( out, tokens )
