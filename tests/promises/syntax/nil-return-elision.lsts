@@ -1,0 +1,5 @@
+
+import lib2/core/bedrock.lsts;
+
+# return type defaults to Nil
+let f() = ();
