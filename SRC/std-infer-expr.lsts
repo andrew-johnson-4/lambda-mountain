@@ -51,12 +51,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          ascript(szof, tt);
       );
       App{szof=left:Var{key:c"scope"}, r=right} => (
-         let before-tctx = tctx;
          (let inner-tctx, let new-r) = std-infer-expr(tctx, r, true, Tail(), ta);
-         (inner-tctx, new-r) = release-locals(before-tctx, inner-tctx, new-r, hint);
+         tctx = tctx.with-pctx(inner-tctx.get-or(mk-tctx()).pctx);
+         (tctx, new-r) = release-locals(tctx, inner-tctx, new-r, hint);
          if not(is(r,new-r)) then { r = new-r; term = mk-app(szof, r); };
          ascript(term, typeof-term(r));
-         tctx = tctx.with-pctx(inner-tctx.get-or(mk-tctx()).pctx);
       );
       App{szof=left:Var{key:c"unsafe"}, r=right} => (
          let direct-tctx = tctx.get-or(mk-tctx());
@@ -108,19 +107,20 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          if non-zero(short-circuit) {
             term = short-circuit;
          } else {
+            let tctx-t = tctx;
+            let tctx-f = tctx;
             if is-scoped {
-               (let tctx-inner, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
-               tctx = tctx.with-pctx(tctx-inner.get-or(mk-tctx()).pctx);
-
-               (let tctx-t, let new-t) = std-infer-expr(tctx-inner, t, false, Tail(), ta);
-               (let tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
+               (let tctx-cond, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
+               (tctx-t, let new-t) = std-infer-expr(tctx-cond, t, false, Tail(), ta);
+               (tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
                if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
                then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
                tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
             } else {
                (tctx, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
-               (let tctx-t, let new-t) = std-infer-expr(tctx, t, false, Tail(), ta);
-               (let tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
+               (tctx-t, let new-t) = std-infer-expr(tctx, t, false, Tail(), ta);
+               (tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
+               (tctx, new-f) = release-locals(tctx, tctx-f, new-f, hint);
                tctx = tctx-t;
                if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
                then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
@@ -133,6 +133,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             else if typeof-term(f).is-t(c"Never",0) || typeof-term(f).is-t(c"Nil",0) then typeof-term(t)
             else { (tctx, let lub) = least-upper-bound(tctx, typeof-term(t), typeof-term(f), term); lub.get-or(ta); };
             ascript(term, lub);
+            if is-scoped {
+               (tctx, term) = release-locals(tctx, tctx-t, term, hint); # tctx-t includes both tctx-cond and tctx-t
+               (tctx, term) = release-locals(tctx, tctx-f, term, hint);
+            };
          }
       );
       ASTEOF{} => ascript(term, t1(c"Nil"));
