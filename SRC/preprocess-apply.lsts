@@ -1,5 +1,7 @@
 
-let preprocess-apply(program: AST): AST = (
+let preprocess-apply(program: AST): AST = preprocess-apply(program, false);
+
+let preprocess-apply(program: AST, is-lhs: U64): AST = (
    match program {
       App{ left:App{ left:Var{key:c"macro::concat",ctk=token}, right:App{ left:Var{lk=key}, right:Var{rk=key} } }, nt=right } => (
          mk-app( mk-var(lk+rk, unique(ctk)), preprocess-apply(nt) )
@@ -26,7 +28,7 @@ let preprocess-apply(program: AST): AST = (
             mk-cons-or-app(is-cons-2,
                mk-lit(c":",unique(ctk)),
                mk-cons-or-app(is-cons-3,t,mk-atype(tt))
-            ), preprocess-apply(nt)
+            ), preprocess-apply(nt,is-lhs)
          );
       );
       App{ is-cons-1=is-cons,
@@ -37,15 +39,24 @@ let preprocess-apply(program: AST): AST = (
                right:AType{tt=tt}
             }
          }, nt=right } => (
+         tt = phi-as-state(tt).expand-implied-phi;
          mk-cons-or-app(is-cons-1,
             mk-cons-or-app(is-cons-2,
                mk-lit(c":",unique(ctk)),
-               mk-cons-or-app(is-cons-3,preprocess-apply(t),mk-atype(tt))
-            ), preprocess-apply(nt)
+               mk-cons-or-app(is-cons-3,preprocess-apply(t,is-lhs),mk-atype(tt))
+            ), preprocess-apply(nt,is-lhs)
          );
       );
       App{is-cons-2=is-cons, left:Lit{key:c":",ctk=token}, right:App{is-cons-3=is-cons,t=left:Lit{},right:AType{tt=tt}}} => (
          if not(tt.is-t(c"String",0)) then t = preprocess-apply(t);
+         mk-cons-or-app(is-cons-2,
+            mk-lit(c":",unique(ctk)),
+            mk-cons-or-app(is-cons-3,t,mk-atype(tt))
+         );
+      );
+      App{is-cons-2=is-cons, left:Lit{key:c":",ctk=token}, right:App{is-cons-3=is-cons,t=left,right:AType{tt=tt}}} => (
+         tt = phi-as-state(tt).expand-implied-phi;
+         t = preprocess-apply(t);
          mk-cons-or-app(is-cons-2,
             mk-lit(c":",unique(ctk)),
             mk-cons-or-app(is-cons-3,t,mk-atype(tt))
@@ -89,7 +100,7 @@ let preprocess-apply(program: AST): AST = (
             mk-cons-or-app(is-cons-1,
                preprocess-apply(mk-cons-or-app(is-cons-2,
                   mk-var(vn,unique(vntk)), vt1
-               )), preprocess-apply(vt2)
+               ),is-lhs), preprocess-apply(vt2,is-lhs)
             )
          }
       );
@@ -99,11 +110,11 @@ let preprocess-apply(program: AST): AST = (
          program
       );
       App{is-cons=is-cons, al=left, ar=right} => (
-         mk-cons-or-app( is-cons, preprocess-apply(al), preprocess-apply(ar) )
+         mk-cons-or-app( is-cons, preprocess-apply(al,is-lhs), preprocess-apply(ar,is-lhs) )
       );
       Abs{al=lhs, ar=rhs, tlt=tt} => (
          if not(tlt.is-t(c"TypedMacro",0))
-         then mk-abs(preprocess-apply(al),preprocess-apply(ar),tlt)
+         then mk-abs(preprocess-apply(al,true),preprocess-apply(ar),tlt)
          else program
       );
       Glb{k=key, ar=val} => mk-glb(unique(k), preprocess-apply(ar));

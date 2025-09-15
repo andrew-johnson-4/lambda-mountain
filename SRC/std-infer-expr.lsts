@@ -11,6 +11,7 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
+   print("Infer \{term}\n");
    match term {
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
          if typeof-var-raw(term, tctx, lname).is-t(c"LocalVariable",0)
@@ -196,6 +197,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          && not(tctx.get-or(mk-tctx()).is-blob) {
             if vt.is-t(c"LocalVariable",0) || vt.is-t(c"GlobalVariable",0) then vt = vt && t1(c"MustNotMove");
             ascript(term, vt);
+            if typeof-term(term).is-t(c"Type",0) then print("Inferred Var \{typeof-term(term)} \{term}\n");
             (tctx, term) = maybe-retain(tctx, term);
          } else {
             ascript(term, vt);
@@ -305,6 +307,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                if not(rt.is-t(c"Cons",2)) {
                   let function-type = typeof-term(find-global-callable(var-name-if-var-or-lit(l), typeof-term(r), term));
                   if function-type.is-t(c"MustRetainOnCall",0) && not(hint.is-t(c"MustNotRetain",0)) && not(tctx.get-or(mk-tctx()).is-blob) {
+                     if typeof-term(term).is-t(c"Type",0) then print("Inferred RetainOnCall \{typeof-term(term)} \{term}\n");
                      (tctx, term) = maybe-retain(tctx, term);
                   }
                }
@@ -320,6 +323,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
    if used.is-unused && typeof-term(term).slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1) {
       (tctx, term) = wrap-call(tctx, c".release", term);
    };
+   if typeof-term(term).is-t(c"Type",0) then print("Inferred \{typeof-term(term)} \{term}\n");
    (tctx, term);
 );
 
