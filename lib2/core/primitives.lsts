@@ -34,7 +34,7 @@ let :Blob $"primitive::call"(ictx: ImplicitContext, args: Any): Nil = (
    );
 );
 
-declare-unop( $".discriminator-case-tag", raw-type(LM2Struct+CaseNumber<cn>), raw-type(USize), ( l"("; cn : L; l")"; ) );
+declare-unop( $".discriminator-case-tag", raw-type(LM2Struct+MustNotRetain+CaseNumber<cn>), raw-type(USize), ( l"("; cn : L; l")"; ) );
 declare-unop( $".discriminator-case-tag", raw-type(LM2Struct+MustNotRetain), raw-type(USize), ( l"("; x; l".discriminator_case_tag)"; ) );
 
 declare-unop-retain( $"primitive::field-get", raw-type(base-type+MustNotMove+MustNotRetain), raw-type(field-type), ( l"("; x; l"."; mangle(field-name : L); l")"; ) );
