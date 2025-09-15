@@ -11,7 +11,6 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
-   print("Infer \{term}\n");
    match term {
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
          if typeof-var-raw(term, tctx, lname).is-t(c"LocalVariable",0)
@@ -53,10 +52,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       App{szof=left:Var{key:c"scope"}, r=right} => (
          (let inner-tctx, let new-r) = std-infer-expr(tctx, r, true, Tail(), ta);
+         tctx = tctx.with-pctx(inner-tctx.get-or(mk-tctx()).pctx);
          (tctx, new-r) = release-locals(tctx, inner-tctx, new-r, hint);
          if not(is(r,new-r)) then { r = new-r; term = mk-app(szof, r); };
          ascript(term, typeof-term(r));
-         tctx = tctx.with-pctx(inner-tctx.get-or(mk-tctx()).pctx);
       );
       App{szof=left:Var{key:c"unsafe"}, r=right} => (
          let direct-tctx = tctx.get-or(mk-tctx());
@@ -110,8 +109,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          } else {
             if is-scoped {
                (let tctx-cond, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
-               tctx = tctx.with-pctx(tctx-cond.get-or(mk-tctx()).pctx);
-
                (let tctx-t, let new-t) = std-infer-expr(tctx-cond, t, false, Tail(), ta);
                (let tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
                if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
@@ -123,7 +120,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                (tctx, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
                (let tctx-t, let new-t) = std-infer-expr(tctx, t, false, Tail(), ta);
                (let tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
-               (tctx-f, new-f) = release-locals(tctx, tctx-f, new-f, hint);
+               (tctx, new-f) = release-locals(tctx, tctx-f, new-f, hint);
                tctx = tctx-t;
                if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
                then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
