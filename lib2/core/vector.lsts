@@ -64,23 +64,25 @@ let .push(v: Vector<t>, i: x): Vector<t> = (
 
 let cmp(x: Vector<x>, y: Vector<x>): Ord = (
    let r = Equal;
-   let xi = 0_sz;
-   let yi = 0_sz;
-   while xi < x.length and yi < y.length {
-      if x[xi] < y[yi] {
-         r = LessThan;
-         xi = x.length;
-         yi = y.length;
-      } else if x[xi] > y[yi] {
-         r = GreaterThan;
-         xi = x.length;
-         yi = y.length;
-      } else {
-         xi = xi + 1;
-         yi = yi + 1;
-      }
+   if not(is(x, y)) {
+      let xi = 0_sz;
+      let yi = 0_sz;
+      while xi < x.length and yi < y.length {
+         if x[xi] < y[yi] {
+            r = LessThan;
+            xi = x.length;
+            yi = y.length;
+         } else if x[xi] > y[yi] {
+            r = GreaterThan;
+            xi = x.length;
+            yi = y.length;
+         } else {
+            xi = xi + 1;
+            yi = yi + 1;
+         }
+      };
+      if xi < x.length { r = GreaterThan };
+      if yi < y.length { r = LessThan };
    };
-   if xi < x.length { r = GreaterThan };
-   if yi < y.length { r = LessThan };
    r
 );
