@@ -13,21 +13,22 @@ let todo-remove(tt: Type): Nil = (
 );
 
 let .release(x: Type): Nil = (
-#   match x { 
-#      TGround{parameters=parameters} => (parameters.release; ());
-#      TAny{} => ();
-#      TVar{} => ();
-#      TAnd{conjugate=conjugate} => (conjugate.release; ());
-#   };
+   match x { 
+      TAny{} => ();
+      TVar{name=name} => name.release;
+      TAnd{conjugate=conjugate} => conjugate.release;
+      TGround{tag=tag,parameters=parameters} => (tag.release; parameters.release);
+   };
    mark-as-released(x);
 );
 
 let .retain(x: Type): Type = (
-#   match x { 
-#      TGround{parameters=parameters} => (parameters.retain; ());
-#      TAny{} => ();
-#      TVar{} => ();
-#      TAnd{conjugate=conjugate} => (conjugate.retain; ());
-#   };
+   match x { 
+      TAny{} => ();
+      TVar{name=name} => (name.retain as MustNotRelease; ());
+      TAnd{conjugate=conjugate} => (conjugate.retain as MustNotRelease; ());
+      TGround{tag=tag,parameters=parameters} => (tag.retain as MustNotRelease; parameters.retain as MustNotRelase; ());
+   };
    x
 );
+
