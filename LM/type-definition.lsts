@@ -14,6 +14,7 @@ let todo-remove(tt: Type): Nil = (
 
 let .release(x: Type): Nil = (
    if mem-is-non-zero(x) {
+      print(c"Release Type Start\n");
       #if x.discriminator-case-tag==(x as Tag::TAny).discriminator-case-tag
       #then {};
       if x.discriminator-case-tag==(x as Tag::TGround).discriminator-case-tag
@@ -25,20 +26,23 @@ let .release(x: Type): Nil = (
       #TGround{tag=tag,parameters=parameters} => (tag.retain as MustNotRelease; parameters.retain as MustNotRelase; ());
       #TVar{name=name} => (name.retain as MustNotRelease; ());
       #TAnd{conjugate=conjugate} => (conjugate.retain as MustNotRelease; ());
+      print(c"Release Type End\n");
    };
    mark-as-released(x);
 );
 
 let .retain(x: Type): Type = (
    if mem-is-non-zero(x) {
+      print(c"Retain Type Start\n");
       #if x.discriminator-case-tag==(x as Tag::TAny).discriminator-case-tag
       #then {};
       if x.discriminator-case-tag==(x as Tag::TGround).discriminator-case-tag
       then {
-         (x as Tag::TGround).tag.retain;
-         (x as Tag::TGround).parameters.retain;
+         let x1 = (x as Tag::TGround).tag.retain; mark-as-released(x1);
+         let x2 = (x as Tag::TGround).parameters.retain; mark-as-released(x2);
          ()
       };
+      print(c"Retain Type End\n");
    };
    x
 );
