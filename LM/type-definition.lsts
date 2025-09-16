@@ -20,7 +20,7 @@ let .release(x: Type): Nil = (
       then {
          print("Release Type TGround\n");
          (x as Tag::TGround+MustNotRetain).tag.release;
-         (x as Tag::TGround+MustNotRetain).parameters.release
+         (x as Tag::TGround+MustNotRetain).parameters.release;
       };
       #TAny{} => ();
       #TGround{tag=tag,parameters=parameters} => (tag.retain as MustNotRelease; parameters.retain as MustNotRelase; ());
@@ -39,6 +39,7 @@ let .retain(x: Type): Type = (
          print("Retain Type TGround\n");
          (x as Tag::TGround+MustNotRetain).tag.retain;
          (x as Tag::TGround+MustNotRetain).parameters.retain;
+         ()
       };
    };
    x
