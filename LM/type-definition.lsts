@@ -13,26 +13,34 @@ let todo-remove(tt: Type): Nil = (
 );
 
 let .release(x: Type): Nil = (
-   print("Type Release Start\n");
-   if mem-is-non-zero(x) { match x { 
-      TAny{} => ();
-      TGround{tag=tag,parameters=parameters} => (tag.release; parameters.release);
-      TVar{name=name} => name.release;
-      TAnd{conjugate=conjugate} => conjugate.release;
-   }};
-   print("Type Release End\n");
+   if mem-is-non-zero(x) {
+      #if x.discriminator-case-tag==(x as Tag::TAny).discriminator-case-tag
+      #then {};
+      if x.discriminator-case-tag==(x as Tag::TGround).discriminator-case-tag
+      then {
+         print("Release Type TGround\n");
+         (x as Tag::TGround+MustNotRetain).tag.release;
+         (x as Tag::TGround+MustNotRetain).parameters.release
+      };
+      #TAny{} => ();
+      #TGround{tag=tag,parameters=parameters} => (tag.retain as MustNotRelease; parameters.retain as MustNotRelase; ());
+      #TVar{name=name} => (name.retain as MustNotRelease; ());
+      #TAnd{conjugate=conjugate} => (conjugate.retain as MustNotRelease; ());
+   };
    mark-as-released(x);
 );
 
 let .retain(x: Type): Type = (
-   print("Type Retain Start\n");
-   if mem-is-non-zero(x) { match x { 
-      TAny{} => ();
-      TGround{tag=tag,parameters=parameters} => (tag.retain as MustNotRelease; parameters.retain as MustNotRelase; ());
-      TVar{name=name} => (name.retain as MustNotRelease; ());
-      TAnd{conjugate=conjugate} => (conjugate.retain as MustNotRelease; ());
-   }};
-   print("Type Retain End\n");
+   if mem-is-non-zero(x) {
+      #if x.discriminator-case-tag==(x as Tag::TAny).discriminator-case-tag
+      #then {};
+      if x.discriminator-case-tag==(x as Tag::TGround).discriminator-case-tag
+      then {
+         print("Retain Type TGround\n");
+         (x as Tag::TGround+MustNotRetain).tag.retain;
+         (x as Tag::TGround+MustNotRetain).parameters.retain;
+      };
+   };
    x
 );
 
