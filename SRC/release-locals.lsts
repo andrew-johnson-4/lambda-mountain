@@ -7,9 +7,9 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    while non-zero(tctx-after-tctx) && not(is(tctx-before-tctx, tctx-after-tctx)) {
       let tr = head(tctx-after-tctx);
       let dt = tr.denormalized-and-phi-type(tctx-after);
-      if dt.slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).is-linear-live && not(dt.is-t(c"MustNotRetain",0)) {
+      if dt.slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).is-linear-live {
          if dt.is-t(c"MustNotRetain",0)
-         then needs-mark-release = cons(tr, needs-release)
+         then needs-mark-release = cons(tr, needs-mark-release)
          else needs-release = cons(tr, needs-release);
       };
       tctx-after-tctx = tail(tctx-after-tctx);
@@ -29,17 +29,15 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
          (tctx-after, do-release) = std-infer-expr(tctx-after, do-release, false, Used, ta);
          term = mk-cons(term, do-release); ascript(term, t1(c"Nil"));
       };
-      for nd in needs-mark-release {
-         let do-release = mk-app(mk-var(c"mark-as-released"),mk-var(nd.key));
-         (tctx-after, do-release) = std-infer-expr(tctx-after, do-release, false, Used, ta);
-         term = mk-cons(term, do-release); ascript(term, t1(c"Nil"));
-      };
       let return-term = if not(return-type.is-t(c"Nil",0)) && not(return-type.is-t(c"Never",0))
       then mk-var(return-id)
       else mk-nil();
       (tctx-after, return-term) = std-infer-expr(tctx-after, return-term, false, Used, t1(c"MustNotRetain"));
       tctx-after = phi-move(tctx-after, typeof-term(return-term), term);
       term = mk-cons(term, return-term); ascript(term,return-type);
+   };
+   for nd in needs-mark-release {
+      tctx-after = phi-move(tctx-after, nd.denormalized-and-phi-type(tctx-after), term);
    };
    tctx-before = tctx-before.with-pctx(tctx-after.get-or(mk-tctx()).pctx);
    (tctx-before, term)
