@@ -7,7 +7,6 @@ type OwnedData<t> = {
 };
 
 let mk-owned-data(tt: Type<t>, capacity: USize): OwnedData<t>[] = (
-   print(c"mk-owned-data\n");
    let od = safe-alloc(
       # TODO: make sizeof return USize
       (sizeof(OwnedData<t>) as USize) + (sizeof(t) as USize) * capacity,
@@ -40,28 +39,22 @@ let .pop(od: OwnedData<t>[]): t = (
 
 let .release(od: OwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
-      print(c"od.release start\n");
       if type(t) <: type(MustRelease) {
          let dlo = 0_sz;
          let dhi = od.current-length;
          while dlo < dhi {
-            print(c"od.release [x] start\n");
             od.data[dlo].release;
-            print(c"od.release [x] end\n");
             dlo = dlo + 1;
          };
       };
       od.reference-count = od.reference-count - 1;
       if od.reference-count == 0
       then safe-free(od);
-      print(c"od.release end\n");
    }
 );
 
 let .retain(od: OwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
-      print(c"od.retain start\n");
       od.reference-count = od.reference-count + 1;
-      print(c"od.retain end\n");
    }
 );
