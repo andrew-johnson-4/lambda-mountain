@@ -19,8 +19,8 @@ let .release(x: Type): Nil = (
       if x.discriminator-case-tag==(x as Tag::TGround).discriminator-case-tag
       then {
          print("Release Type TGround\n");
-         (x as Tag::TGround+MustNotRetain).tag.release;
-         (x as Tag::TGround+MustNotRetain).parameters.release;
+         (x as Tag::TGround).tag.release;
+         (x as Tag::TGround).parameters.release;
       };
       #TAny{} => ();
       #TGround{tag=tag,parameters=parameters} => (tag.retain as MustNotRelease; parameters.retain as MustNotRelase; ());
@@ -37,8 +37,8 @@ let .retain(x: Type): Type = (
       if x.discriminator-case-tag==(x as Tag::TGround).discriminator-case-tag
       then {
          print("Retain Type TGround\n");
-         (x as Tag::TGround+MustNotRetain).tag.retain;
-         (x as Tag::TGround+MustNotRetain).parameters.retain;
+         (x as Tag::TGround).tag.retain;
+         (x as Tag::TGround).parameters.retain;
          ()
       };
    };
