@@ -1,9 +1,9 @@
 
-let is(l: t, r: t): Bool = (
+let is(l: t+MustNotRetain, r: t+MustNotRetain): Bool = (
    memcmp(&l as C<"void">[], &r as C<"void">[], sizeof(t) as USize) as U8 == 0
 );
 
-let mem-is-non-zero(v: t): Bool = (
+let mem-is-non-zero(v: t+MustNotRetain): Bool = (
    let i = 0_sz;
    let r = false;
    while i < sizeof(t) {

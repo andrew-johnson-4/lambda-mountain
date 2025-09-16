@@ -13,22 +13,26 @@ let todo-remove(tt: Type): Nil = (
 );
 
 let .release(x: Type): Nil = (
+   print("Type Release Start\n");
    if mem-is-non-zero(x) { match x { 
       TAny{} => ();
+      TGround{tag=tag,parameters=parameters} => (tag.release; parameters.release);
       TVar{name=name} => name.release;
       TAnd{conjugate=conjugate} => conjugate.release;
-      TGround{tag=tag,parameters=parameters} => (tag.release; parameters.release);
    }};
+   print("Type Release End\n");
    mark-as-released(x);
 );
 
 let .retain(x: Type): Type = (
+   print("Type Retain Start\n");
    if mem-is-non-zero(x) { match x { 
       TAny{} => ();
+      TGround{tag=tag,parameters=parameters} => (tag.retain as MustNotRelease; parameters.retain as MustNotRelase; ());
       TVar{name=name} => (name.retain as MustNotRelease; ());
       TAnd{conjugate=conjugate} => (conjugate.retain as MustNotRelease; ());
-      TGround{tag=tag,parameters=parameters} => (tag.retain as MustNotRelease; parameters.retain as MustNotRelase; ());
    }};
+   print("Type Retain End\n");
    x
 );
 

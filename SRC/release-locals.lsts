@@ -6,6 +6,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    while non-zero(tctx-after-tctx) && not(is(tctx-before-tctx, tctx-after-tctx)) {
       let tr = head(tctx-after-tctx);
       if tr.denormalized-and-phi-type(tctx-after).slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).is-linear-live {
+         print("Needs Release \{tr.denormalized-and-phi-type(tctx-after)}\n");
          needs-release = cons(tr, needs-release);
       };
       tctx-after-tctx = tail(tctx-after-tctx);
