@@ -26,7 +26,7 @@ fn compile_bootstrap() {
    };
 }
 
-fn run_bootstrap(target: &str, leave_tmp: bool, is_v3) -> String {
+fn run_bootstrap(target: &str, leave_tmp: bool, is_v3: bool) -> String {
    if !leave_tmp { rm("tmp.c"); };
    rm("a.out");
    
