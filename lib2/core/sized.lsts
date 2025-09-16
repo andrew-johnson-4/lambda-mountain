@@ -2,3 +2,13 @@
 let is(l: t, r: t): Bool = (
    memcmp(&l as C<"void">[], &r as C<"void">[], sizeof(t) as USize) as U8 == 0
 );
+
+let mem-is-non-zero(v: t): Bool = (
+   let i = 0_sz;
+   let r = false;
+   while i < sizeof(t) {
+      if (&v as U8[])[i] != 0 then r = true;
+      i = i + 1;
+   };
+   r
+);

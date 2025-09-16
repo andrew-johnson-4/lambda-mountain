@@ -90,6 +90,7 @@ let apply-global-constructor(tctx: TypeContext?, fname: CString, hint: Type, arg
       };
    };
    (tctx, result) = phi-initialize(tctx, result, blame);
+   tctx = apply-move-args(tctx, simple, arg-types, blame);
    (tctx, result)
 );
 

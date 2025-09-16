@@ -1,6 +1,7 @@
 
 let specialize(key: CString, ft: Type, unify-ctx: TypeContext?, result-type: Type): Nil = (
-   if not(is-special(key, result-type)) {
+   let result-type-without-phi = result-type.without-any-phi;
+   if not(is-special(key, result-type-without-phi)) {
       let term = mk-eof();
       for Tuple{kt=first, t=third} in global-type-context-normal.lookup(key, [] : List<(Type,Type,AST)>) {
          if ft == kt { match t {
@@ -9,7 +10,7 @@ let specialize(key: CString, ft: Type, unify-ctx: TypeContext?, result-type: Typ
          }}
       };
       if non-zero(term) {
-         mark-as-special(key, result-type);
+         mark-as-special(key, result-type-without-phi);
          let special-term = substitute(unify-ctx, term);
          infer-global-context(special-term);
          (_, special-term) = std-infer-expr(global-flow-tctx, special-term, false, Used, ta);

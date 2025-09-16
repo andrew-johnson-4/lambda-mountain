@@ -1,2 +1,6 @@
 
 let ta = TAny;
+
+let t0(tag: String): Type = TGround(tag, mk-vector(type(Type)));
+let t1(tag: String, t1: Type): Type = TGround(tag, mk-vector(type(Type)).push(t1));
+let t2(tag: String, t1: Type, t2: Type): Type = TGround(tag, mk-vector(type(Type)).push(t1).push(t2));

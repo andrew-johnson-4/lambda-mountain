@@ -9,13 +9,7 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
       tctx = tctx.bind-phi(pn, pt, pblame);
       phi-modified = phi-modified.push(pn);
    };
-   if true {
-      let move-args = phi-move-args(ft-denormal, at, blame); 
-      for PhiContextRow{pn=phi-id, pt=phi-tt, pblame=blame} in move-args.get-or(mk-tctx()).pctx {
-         if not(phi-modified.contains(pn))
-         then tctx = tctx.bind-phi(pn, pt, pblame);
-      };
-   };
+   tctx = apply-move-args(tctx, ft-denormal, at, blame);
    if not(tctx.get-or(mk-tctx()).is-blob) && inner-tctx.has-moved then exit-error("Linear Value Used After Move In Call To \{fname} : \{ft-denormal}\nWith Arg \{at}", blame);
    (tctx, let initialized-ft) = phi-initialize(tctx, ft, blame);
    let closed-type = substitute(inner-tctx, ft);
@@ -31,3 +25,10 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
    (tctx, r)
 );
 
+let apply-move-args(tctx: TypeContext?, function-type: Type, args-type: Type, blame: AST): TypeContext? = (
+   let move-args = phi-move-args(function-type, args-type, blame); 
+   for PhiContextRow{pn=phi-id, pt=phi-tt, pblame=blame} in move-args.get-or(mk-tctx()).pctx {
+      tctx = tctx.bind-phi(pn, pt, pblame);
+   };
+   tctx
+);
