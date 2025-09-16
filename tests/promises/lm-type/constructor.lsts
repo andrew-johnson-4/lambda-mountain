@@ -1,11 +1,12 @@
 
 import LM/unit-type-core.lsts;
 
-#assert( ta == ta );
-#assert( safe-alloc-block-count == 0 );
+assert( ta == ta );
+assert( safe-alloc-block-count == 0 );
 
 assert( t0("A") == t0("A") );
-#assert( t0("A") <= t0("A") );
+assert( safe-alloc-block-count == 0 );
+assert( t0("A") <= t0("A") );
 #assert( t0("A") >= t0("A") );
 #assert( not(t0("A") == t0("B")) );
 #assert( t0("A") != t0("B") );
