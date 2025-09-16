@@ -12,7 +12,7 @@ let mk-owned-data(tt: Type<t>, capacity: USize): OwnedData<t>[] = (
       (sizeof(OwnedData<t>) as USize) + (sizeof(t) as USize) * capacity,
       type(OwnedData<t>)
    );
-   od.reference-count = 0;
+   od.reference-count = 1;
    od.current-length = 0;
    od.capacity = capacity;
    od
