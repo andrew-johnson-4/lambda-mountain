@@ -13,7 +13,7 @@ let .release(x: A): Nil = (
    mark-as-released(x);
 );
 
-A();
+A;
 
 # The constructor here should naturally retain
 # However, the `x` variable in .retain should neither retain nor release

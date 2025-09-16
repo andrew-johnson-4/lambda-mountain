@@ -13,5 +13,5 @@ let .retain(x: B): B = (
    x as MustNotRetain
 );
 
-let a = A() as MustNotRetain;
+let a = A;
 let b = B(a);
