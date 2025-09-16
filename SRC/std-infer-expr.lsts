@@ -171,14 +171,15 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   };
                   if not(tlt.is-t(c"Blob",0) || tlt.is-t(c"C-FFI",0) || tlt.is-t(c"FFI",0) || tlt.is-t(c"Phi::Source",0) ) {
                      validate-pctx-release(inner-tctx);
-                  }
+                  };
                );
                _ => ();
             };
-            if not(is(val,new-val)) then {
+            if not(is(val,new-val))  then {
                let new-term = mk-glb(key,new-val);
                mark-var-to-def(new-term, term);
                term = new-term;
+               print("Global \{term}\n");
             };
          };
       );
@@ -220,7 +221,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = infer-ctx(tctx, lhs);
          (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type && t1(c"TailPosition"));
          tctx = phi-move(tctx, typeof-term(new-inner-rhs), term);
-         (tctx, new-inner-rhs) = release-locals(before-tctx, tctx, new-inner-rhs, misc-tt);
+         if not(tctx.get-or(mk-tctx()).is-blob) {
+            (tctx, new-inner-rhs) = release-locals(before-tctx, tctx, new-inner-rhs, misc-tt);
+         };
          if not(is(inner-rhs,new-inner-rhs))
          then {
             inner-rhs = new-inner-rhs;
