@@ -19,7 +19,7 @@ deploy: build smoke-test
 deploy-lite: build smoke-test-lite
 
 valgrind: install-bootstrap
-	valgrind --tool=callgrind lm SRC/index.lsts
+	valgrind --tool=callgrind lm --v2 SRC/index.lsts
 
 valgrind-view:
 	callgrind_annotate callgrind.out.18778

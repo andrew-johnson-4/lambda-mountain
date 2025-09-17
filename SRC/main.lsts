@@ -39,6 +39,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
       match argv[argi] {
          c"--typecheck" => config-mode = ModeTypecheck();
          c"--compile" => config-mode = ModeCompile();
+         c"--v2" => config-v3 = false;
          c"--v3" => config-v3 = true;
          c"--highlight" => (
             config-mode = ModeTokenize();
