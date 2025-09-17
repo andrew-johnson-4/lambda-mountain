@@ -1,5 +1,6 @@
 
 let cmp(left: Type, right: Type): Ord = (
+   print(c"Type Compare\n");
    match left {
       TAny{} => (match right {
          TAny{} => Equal;

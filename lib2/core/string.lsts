@@ -51,6 +51,7 @@ let cmp(l: String, r: String): Ord = (
 let intern(cs: CString): String = cs.into(type(String));
 let .into(s: String, tt: Type<String>): String = s;
 let .into(cs: CString, tt: Type<String>): String = (
+   print(c"mk-string\n");
    let cs_length = cs.length;
    let od = mk-owned-data(type(U8), cs_length);
    let csi = 0_sz;
