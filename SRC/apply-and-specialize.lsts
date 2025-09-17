@@ -15,7 +15,7 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
    let closed-type = substitute(inner-tctx, ft);
    if not(ft.is-t(c"Blob",0) || ft.is-t(c"FFI",0)) then closed-type = closed-type.phi-specialize(tctx, blame);
    if closed-type.is-open then exit-error("Unification Did Not Close Before Specialization\nfunction: \{fname} \{ft}\nargs: \{at}", blame);
-   let r = phi-state(tctx, substitute(inner-tctx, initialized-ft.range), blame);
+   let r = substitute(inner-tctx, initialized-ft.range);
    if not(r.is-t(c"Phi::Id",1)) then (tctx, r) = phi-initialize-parameter(tctx, r.expand-implied-phi, blame);
    if ft.is-t(c"Prop",0) then r = r && cons-root(at);
    if ft.is-open then {
