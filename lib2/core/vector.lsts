@@ -20,6 +20,7 @@ let .retain(x: Vector<t>): Vector<t> = (
 );
 
 let mk-vector(ty: Type<t>, capacity: USize): Vector<t> = (
+   print(c"mk-vector\n");
    let ptr = mk-owned-data(type(t), capacity);
    Vector( ptr, 0_sz, 0_sz )
 );
