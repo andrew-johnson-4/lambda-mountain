@@ -46,6 +46,7 @@ fn run_bootstrap(target: &str, leave_tmp: bool, is_v3: bool) -> String {
       Command::new("./bootstrap.exe")
               .stdout(std::process::Stdio::piped())
               .stderr(std::process::Stdio::piped())
+              .arg("--v2")
               .arg("-o")
               .arg("tmp.c")
               .arg(target)

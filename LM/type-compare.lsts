@@ -1,6 +1,6 @@
 
 let cmp(left: Type, right: Type): Ord = (
-   let result = match left {
+   match left {
       TAny{} => (match right {
          TAny{} => Equal;
          _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
@@ -14,7 +14,7 @@ let cmp(left: Type, right: Type): Ord = (
       });
       TAnd{ lconjugate=conjugate } => (match right {
          TAnd{ rconjugate=conjugate } => (
-            let result = Equal();
+            let result = Equal;
             if lconjugate.length < rconjugate.length then result = LessThan()
             else if lconjugate.length > rconjugate.length then result = GreaterThan()
             else {
@@ -35,5 +35,4 @@ let cmp(left: Type, right: Type): Ord = (
          _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
       });
    };
-   result
 );

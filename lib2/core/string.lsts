@@ -3,23 +3,28 @@ type String suffix _ss implies MustRetain, MustRelease
           = { start-offset:USize, end-offset:USize, data:OwnedData<U8>[] };
 
 let .release(x: String): Nil = (
-   # normally if x is not released by the end of scope, then it will be auto-released
-   # however, mark-as-released prevents this case of infinite recursion
-   # this is necessary when writing custom .release implementations
-   # but normally most users won't need to use "mark-as-released" very often
-   x.data.release; mark-as-released(x);
+   if mem-is-non-zero(x) {
+      # normally if x is not released by the end of scope, then it will be auto-released
+      # however, mark-as-released prevents this case of infinite recursion
+      # this is necessary when writing custom .release implementations
+      # but normally most users won't need to use "mark-as-released" very often
+      x.data.release;
+   };
+   mark-as-released(x);
 );
 
 let .retain(x: String): String = (
-   # Several inference rules are at play here
-   # > normally a reference to a variable will auto-retain
-   # > however field access is marked as MustNotRetain, so x.data does not auto-retain
-   # > the second case of the return value is also not retained
-   # > when a local variable is returned
-   #    1) the local variable is referenced (retain)
-   #    2) the local variable goes out of scope (release)
-   #    3) so they cancel each other out
-   x.data.retain;
+   if mem-is-non-zero(x) {
+      # Several inference rules are at play here
+      # > normally a reference to a variable will auto-retain
+      # > however field access is marked as MustNotRetain, so x.data does not auto-retain
+      # > the second case of the return value is also not retained
+      # > when a local variable is returned
+      #    1) the local variable is referenced (retain)
+      #    2) the local variable goes out of scope (release)
+      #    3) so they cancel each other out
+      x.data.retain;
+   };
    x
 );
 
