@@ -21,8 +21,12 @@ assert( t0("B") > t0("A") );
 assert( t0("B") >= t0("A") );
 assert( safe-alloc-block-count == 0 );
 
+print(c"t1 comparison 1\n");
 assert( t1("A",t0("T")) == t1("A",t0("T")) );
-#assert( t1("A",t0("T")) < t1("B",t0("T")) );
-#assert( t1("T",t0("A")) < t1("T",t0("B")) );
-#assert( t1("T",t0("A")) < t2("T",t0("A"),t0("B")) );
+print(c"t1 comparison 2\n");
+assert( t1("A",t0("T")) < t1("B",t0("T")) );
+print(c"t1 comparison 3\n");
+assert( t1("T",t0("A")) < t1("T",t0("B")) );
+print(c"t1 comparison 4\n");
+assert( t1("T",t0("A")) < t2("T",t0("A"),t0("B")) );
 assert( safe-alloc-block-count == 0 );
