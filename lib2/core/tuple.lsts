@@ -6,14 +6,14 @@ type Tuple<w,x,y,z> implies MustRetain, MustRelease = { first: w, second: x, thi
 
 let .release(t: Tuple<x,y>): Nil = (
    if type(x) <: type(MustRelease) { t.first.release; };
-   if type(y) <: type(MustRelease) { t.second.retain; };
+   if type(y) <: type(MustRelease) { t.second.release; };
    mark-as-released(t);
 );
 
-let .retain(t: Tuple<x,y>): Vector<x,y> = (
+let .retain(t: Tuple<x,y>): Tuple<x,y> = (
    if type(x) <: type(MustRetain) { let r = t.first.retain; mark-as-released(r); };
    if type(y) <: type(MustRetain) { let r = t.second.retain; mark-as-released(r); };
-   x
+   t
 );
 
 let cmp(l: Tuple<x,y>, r: Tuple<x,y>): Ord = (
