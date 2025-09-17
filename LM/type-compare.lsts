@@ -1,6 +1,5 @@
 
 let cmp(left: Type, right: Type): Ord = (
-   print(c"Type Compare\n");
    match left {
       TAny{} => (match right {
          TAny{} => Equal;
@@ -13,27 +12,27 @@ let cmp(left: Type, right: Type): Ord = (
          );
          _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
       });
-      #TAnd{ lconjugate=conjugate } => (match right {
-      #   TAnd{ rconjugate=conjugate } => (
-      #      let result = Equal;
-      #      if lconjugate.length < rconjugate.length then result = LessThan()
-      #      else if lconjugate.length > rconjugate.length then result = GreaterThan()
-      #      else {
-      #         let ci = 0_sz;
-      #         while ci < lconjugate.length and result==Equal {
-      #            result = result && cmp(lconjugate[ci], rconjugate[ci]);
-      #            ci = ci + 1;
-      #         };
-      #      };
-      #      result;
-      #   );
-      #   _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
-      #});
-      #TVar{ left-name=name } => (match right {
-      #   TVar{ right-name=name } => (
-      #      cmp(left-name,right-name)
-      #   );
-      #   _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
-      #});
+      TAnd{ lconjugate=conjugate } => (match right {
+         TAnd{ rconjugate=conjugate } => (
+            let result = Equal;
+            if lconjugate.length < rconjugate.length then result = LessThan()
+            else if lconjugate.length > rconjugate.length then result = GreaterThan()
+            else {
+               let ci = 0_sz;
+               while ci < lconjugate.length and result==Equal {
+                  result = result && cmp(lconjugate[ci], rconjugate[ci]);
+                  ci = ci + 1;
+               };
+            };
+            result;
+         );
+         _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
+      });
+      TVar{ left-name=name } => (match right {
+         TVar{ right-name=name } => (
+            cmp(left-name,right-name)
+         );
+         _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
+      });
    };
 );
