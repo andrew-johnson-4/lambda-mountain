@@ -26,7 +26,6 @@ let .retain(x: String): String = (
       #    2) the local variable goes out of scope (release)
       #    3) so they cancel each other out
       x.data.retain;
-      print(c"Retain String End\n");
    };
    x
 );
