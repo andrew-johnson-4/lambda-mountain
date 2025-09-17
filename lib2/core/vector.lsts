@@ -68,11 +68,12 @@ let cmp(x: Vector<x>, y: Vector<x>): Ord = (
       let xi = 0_sz;
       let yi = 0_sz;
       while xi < x.length and yi < y.length {
-         if x[xi] < y[yi] {
+         let xycmp = cmp(x[xi], y[yi]);
+         if is(xycmp,LessThan) {
             r = LessThan;
             xi = x.length;
             yi = y.length;
-         } else if x[xi] > y[yi] {
+         } else if is(xycmp,GreaterThan) {
             r = GreaterThan;
             xi = x.length;
             yi = y.length;
