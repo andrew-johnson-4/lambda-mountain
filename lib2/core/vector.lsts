@@ -51,6 +51,7 @@ let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (
 
 # TODO: Vector<t> and i: t should have the same type variable and it should unify
 let .push(v: Vector<t>, i: x): Vector<t> = (
+   print(c"push Vector Start\n");
    # if this vector is a view, or if it is full, then we need to reallocate
    if (v.data as USize)==0 or v.end-offset < v.data.current-length or v.end-offset >= v.data.capacity {
       let new_capacity = if v.start-offset==v.end-offset then 4_sz
@@ -61,6 +62,7 @@ let .push(v: Vector<t>, i: x): Vector<t> = (
    };
    v.data.push(i);
    v.end-offset = v.end-offset + 1_sz;
+   print(c"push Vector End\n");
    v
 );
 

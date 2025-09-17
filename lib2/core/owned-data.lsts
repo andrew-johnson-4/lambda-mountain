@@ -45,6 +45,7 @@ let .pop(od: OwnedData<t>[]): t = (
 
 let .release(od: OwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
+      print(c"Release Owned Data\n");
       if type(t) <: type(MustRelease) {
          let dlo = 0_sz;
          let dhi = od.current-length;
@@ -61,6 +62,7 @@ let .release(od: OwnedData<t>[]): Nil = (
 
 let .retain(od: OwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
+      print(c"Retain Owned Data\n");
       od.reference-count = od.reference-count + 1;
    }
 );
