@@ -7,9 +7,9 @@ dev: install-production
 	./a.out
 
 build: compile-production
-	time ./production --c -o deploy1.c SRC/index.lsts
+	time ./production --v2 --c -o deploy1.c SRC/index.lsts
 	$(CC) $(CFLAGS) deploy1.c -o deploy1
-	time ./deploy1 --c -o deploy2.c SRC/index.lsts
+	time ./deploy1 --v2 --c -o deploy2.c SRC/index.lsts
 	diff deploy1.c deploy2.c
 	mv deploy1.c BOOTSTRAP/cli.c
 	rm -f deploy1 deploy1.c deploy2.c
@@ -35,7 +35,7 @@ gprof-view-call-graph:
 	gprof -q bootstrap.exe gmon.out
 
 profile: install-bootstrap
-	perf record lm SRC/index.lsts
+	perf record lm --v2 SRC/index.lsts
 	./report.sh
 
 compile-bootstrap:
