@@ -26,20 +26,34 @@ fn compile_bootstrap() {
    };
 }
 
-fn run_bootstrap(target: &str, leave_tmp: bool) -> String {
+fn run_bootstrap(target: &str, leave_tmp: bool, is_v3: bool) -> String {
    if !leave_tmp { rm("tmp.c"); };
    rm("a.out");
    
-   let exit = Command::new("./bootstrap.exe")
-           .stdout(std::process::Stdio::piped())
-           .stderr(std::process::Stdio::piped())
-           .arg("-o")
-           .arg("tmp.c")
-           .arg(target)
-           .spawn()
-           .expect("failed to execute process")
-           .wait_with_output()
-           .expect("failed to wait for process");
+   let exit = if is_v3 {
+      Command::new("./bootstrap.exe")
+              .stdout(std::process::Stdio::piped())
+              .stderr(std::process::Stdio::piped())
+              .arg("--v3")
+              .arg("-o")
+              .arg("tmp.c")
+              .arg(target)
+              .spawn()
+              .expect("failed to execute process")
+              .wait_with_output()
+              .expect("failed to wait for process")
+   } else {
+      Command::new("./bootstrap.exe")
+              .stdout(std::process::Stdio::piped())
+              .stderr(std::process::Stdio::piped())
+              .arg("-o")
+              .arg("tmp.c")
+              .arg(target)
+              .spawn()
+              .expect("failed to execute process")
+              .wait_with_output()
+              .expect("failed to wait for process")
+   };
 
    let mut output = "".to_string();
    if !exit.status.success() {
@@ -92,7 +106,7 @@ fn regression_tests() {
          let expected = std::fs::read_to_string(path.clone() + ".out")
                        .expect(&format!("Could not load expected output {}.out", path));
          let expected = expected.trim().to_string();
-         let actual = run_bootstrap(&path, false);
+         let actual = run_bootstrap(&path, false, false);
          let actual = actual.trim().to_string();
          if expected != actual {
             failures.push(( "--compile", path, expected, actual ));
@@ -105,7 +119,7 @@ fn regression_tests() {
          let expected = std::fs::read_to_string(path.clone() + ".out")
                        .expect(&format!("Could not load expected output {}.out", path));
          let expected = expected.trim().to_string();
-         let actual = run_bootstrap(&path, false);
+         let actual = run_bootstrap(&path, false, false);
          let actual = actual.trim().to_string();
          if expected != actual {
             failures.push(( "--compile", path, expected, actual ));
@@ -118,7 +132,7 @@ fn regression_tests() {
          let expected = std::fs::read_to_string(path.clone() + ".out")
                        .expect(&format!("Could not load expected output {}.out", path));
          let expected = expected.trim().to_string();
-         let actual = run_bootstrap(&path, false);
+         let actual = run_bootstrap(&path, false, false);
          let actual = actual.trim().to_string();
          if expected != actual {
             failures.push(( "--compile", path, expected, actual ));
@@ -131,7 +145,7 @@ fn regression_tests() {
          let expected = std::fs::read_to_string(path.clone() + ".out")
                        .expect(&format!("Could not load expected output {}.out", path));
          let expected = expected.trim().to_string();
-         let actual = run_bootstrap(&path, false);
+         let actual = run_bootstrap(&path, false, false);
          let actual = actual.trim().to_string();
          if expected != actual {
             failures.push(( "--compile", path, expected, actual ));
@@ -143,7 +157,7 @@ fn regression_tests() {
       if !std::path::Path::new(&(path.clone() + ".skip")).exists() {
          let expected = std::fs::read_to_string(path.clone() + ".out").unwrap_or("".to_string());
          let expected = expected.trim().to_string();
-         let actual = run_bootstrap(&path, false);
+         let actual = run_bootstrap(&path, false, true);
          let actual = actual.trim().to_string();
          if expected != actual {
             failures.push(( "--compile", path, expected, actual ));

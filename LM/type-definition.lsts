@@ -13,21 +13,43 @@ let todo-remove(tt: Type): Nil = (
 );
 
 let .release(x: Type): Nil = (
-#   match x { 
-#      TGround{parameters=parameters} => (parameters.release; ());
-#      TAny{} => ();
-#      TVar{} => ();
-#      TAnd{conjugate=conjugate} => (conjugate.release; ());
-#   };
+   if mem-is-non-zero(x) {
+      if x.discriminator-case-tag==(x as Tag::TGround).discriminator-case-tag
+      then {
+         (x as Tag::TGround).tag.release;
+         (x as Tag::TGround).parameters.release;
+      };
+      if x.discriminator-case-tag==(x as Tag::TVar).discriminator-case-tag
+      then {
+         (x as Tag::TVar).name.release;
+      };
+      if x.discriminator-case-tag==(x as Tag::TAnd).discriminator-case-tag
+      then {
+         (x as Tag::TAnd).conjugate.release;
+      };
+   };
    mark-as-released(x);
 );
 
 let .retain(x: Type): Type = (
-#   match x { 
-#      TGround{parameters=parameters} => (parameters.retain; ());
-#      TAny{} => ();
-#      TVar{} => ();
-#      TAnd{conjugate=conjugate} => (conjugate.retain; ());
-#   };
+   if mem-is-non-zero(x) {
+      if x.discriminator-case-tag==(x as Tag::TGround).discriminator-case-tag
+      then {
+         let x1 = (x as Tag::TGround).tag.retain; mark-as-released(x1);
+         let x2 = (x as Tag::TGround).parameters.retain; mark-as-released(x2);
+         ()
+      };
+      if x.discriminator-case-tag==(x as Tag::TVar).discriminator-case-tag
+      then {
+         let x1 = (x as Tag::TVar).name.retain; mark-as-released(x1);
+         ()
+      };
+      if x.discriminator-case-tag==(x as Tag::TAnd).discriminator-case-tag
+      then {
+         let x1 = (x as Tag::TAnd).conjugate.retain; mark-as-released(x1);
+         ()
+      };
+   };
    x
 );
+

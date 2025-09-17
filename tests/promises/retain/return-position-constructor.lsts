@@ -14,7 +14,7 @@ let .release(x: A): Nil = (
 );
 
 let f(): A = (
-   A();
+   A;
 );
 
 f();
