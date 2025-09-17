@@ -62,7 +62,6 @@ let .release(od: OwnedData<t>[]): Nil = (
 
 let .retain(od: OwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
-      print(c"Retain OwnedData\n");
       od.reference-count = od.reference-count + 1;
    }
 );

@@ -11,8 +11,8 @@ let .release(t: Tuple<x,y>): Nil = (
 );
 
 let .retain(t: Tuple<x,y>): Tuple<x,y> = (
-   if type(x) <: type(MustRetain) { let r = t.first.retain; mark-as-released(r); };
-   if type(y) <: type(MustRetain) { let r = t.second.retain; mark-as-released(r); };
+   if type(x) <: type(MustRetain) { t.first.retain as MustNotRetain };
+   if type(y) <: type(MustRetain) { t.second.retain as MustNotRetain };
    t
 );
 
