@@ -20,14 +20,14 @@ let mk-owned-data(tt: Type<t>, capacity: USize): OwnedData<t>[] = (
 );
 
 let $"[]"(od: OwnedData<t>[], idx: USize): t = (
-   if (od as USize)!=0
+   if (od as USize)==0
    then fail(c"OwnedData [] Access Null Pointer");
    if idx >= od.current-length then fail(c"OwnedData [] Index Access Out of Bounds");
    od.data[idx]
 );
 
 let .push(od: OwnedData<t>[], d: s): Nil = (
-   if (od as USize)!=0
+   if (od as USize)==0
    then fail(c"OwnedData .push Into Null Pointer");
    if od.current-length >= od.capacity
    then fail(c"OwnedData .push Exceeds Maximum Length");
@@ -36,7 +36,7 @@ let .push(od: OwnedData<t>[], d: s): Nil = (
 );
 
 let .pop(od: OwnedData<t>[]): t = (
-   if (od as USize)!=0
+   if (od as USize)==0
    then fail(c"OwnedData .pop From Null Pointer");
    if od.current-length == 0
    then fail(c"OwnedData .pop From Empty Data");
