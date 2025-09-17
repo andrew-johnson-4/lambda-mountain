@@ -38,6 +38,7 @@ let $"[]"(v: Vector<t>, idx: USize): t = (
 );
 
 let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (
+   print(c"Realloc\n");
    if target-capacity==0
    then Vector( 0 as OwnedData<t>[], 0, target-capacity )
    else {
