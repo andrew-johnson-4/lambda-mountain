@@ -5,14 +5,17 @@ type Vector<t> implies MustRetain, MustRelease
 
 let .release(x: Vector<t>): Nil = (
    if x.data as USize != 0 {
+      print(c"Vector Release Start\n");
       x.data.release;
+      print(c"Vector Release End\n");
    };
-   mark-as-released(x);
-);
+   mark-as-released(x); );
 
 let .retain(x: Vector<t>): Vector<t> = (
    if x.data as USize != 0 {
+      print(c"Vector Retain Start\n");
       x.data.retain;
+      print(c"Vector Retain End\n");
    };
    x
 );
