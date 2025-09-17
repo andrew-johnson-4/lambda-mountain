@@ -47,13 +47,16 @@ let cmp(l: String, r: String): Ord = (
 let intern(cs: CString): String = cs.into(type(String));
 let .into(s: String, tt: Type<String>): String = s;
 let .into(cs: CString, tt: Type<String>): String = (
+   print(c"String .into\n");
    let cs_length = cs.length;
    let od = mk-owned-data(type(U8), cs_length);
    let csi = 0_sz;
    while csi < cs_length {
+      print(c"Push CS []\n");
       od.push(cs[csi] as U8);
       csi = csi + 1;
    };
+   print(c"End String Into\n");
    # This constructor will call .retain on itself before exiting
    String(0 as USize, cs_length, od)
 );
