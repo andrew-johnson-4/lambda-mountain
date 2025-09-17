@@ -45,10 +45,7 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
          ascript(term, ktd);
          (tctx, _) = maybe-apply-global-callable(tctx,c"mov", t3(c"Cons",ktd,ktd), term);
       );
-      _ => (
-         (tctx, term) = std-infer-expr(tctx, term, false, Unused, ta);
-         print("Global Pre \{term}\n");
-      );
+      _ => (tctx, term) = std-infer-expr(tctx, term, false, Unused, ta);
    };
    (tctx, term)
 );
