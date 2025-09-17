@@ -43,3 +43,7 @@ assert( not(tv("B") <= tv("A")) );
 assert( tv("B") > tv("A") );
 assert( tv("B") >= tv("A") );
 assert( safe-alloc-block-count == 0 );
+
+assert( (t0("A") && t0("B")) == (t0("A") && t0("B")) );
+assert( (t0("A") && t0("B")) == (t0("B") && t0("A")) );
+assert( safe-alloc-block-count == 0 );

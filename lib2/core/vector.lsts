@@ -85,3 +85,26 @@ let cmp(x: Vector<x>, y: Vector<x>): Ord = (
    };
    r
 );
+
+let .sort(v: Vector<t>): Vector<t> = (
+   let n = v.length;
+   let i = 0_sz;
+   while i < n - 1_sz {
+      let swapped = false;
+      let j = 0_sz;
+      while j < n - i - 1_sz {
+         if v[j + 1_sz] < v[j] {
+            let tmp = v[j];
+            v[j] = v[j + 1_sz];
+            v[j + 1_sz] = tmp;
+            swapped = true;
+         };
+         j = j + 1_sz;
+      };
+      i = i + 1_sz;
+      if not(swapped) {
+         i = n;
+      };
+   };
+   v
+);
