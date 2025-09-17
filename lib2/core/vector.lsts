@@ -55,9 +55,9 @@ let .push(v: Vector<t>, i: x): Vector<t> = (
    if (v.data as USize)==0 or v.end-offset < v.data.current-length or v.end-offset >= v.data.capacity {
       let new_capacity = if v.start-offset==v.end-offset then 4_sz
       else (v.length >> 1_sz) + v.length; # this is mul 1.5, not 3
-      let old-v = v as MustNotRetain; # TODO: do this automatically for mov destinations
+      let old-data = v; # TODO automatically call .release on mov destination
       v = v.realloc(new_capacity);
-      old-v.release;
+      old-data.release;
    };
    v.data.push(i);
    v.end-offset = v.end-offset + 1_sz;
