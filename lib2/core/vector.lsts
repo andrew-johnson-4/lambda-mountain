@@ -37,6 +37,7 @@ let $"[]"(v: Vector<t>, idx: USize): t = (
 );
 
 let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (
+   let old-data = v.data;
    let new-data = mk-owned-data(type(t), target-capacity);
    let dlo = 0_sz;
    let dhi = v.length;
@@ -44,6 +45,7 @@ let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (
       new-data.push(v[dlo]);
       dlo = dlo + 1;
    };
+   old-data.release;
    Vector( new-data, 0, new-data.current-length )
 );
 
