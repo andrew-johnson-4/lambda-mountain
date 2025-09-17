@@ -5,6 +5,7 @@ type Vector<t> implies MustRetain, MustRelease
 
 let .release(x: Vector<t>): Nil = (
    if x.data as USize != 0 {
+      print(c"Release Vector\n");
       x.data.release;
    };
    mark-as-released(x);
@@ -12,13 +13,14 @@ let .release(x: Vector<t>): Nil = (
 
 let .retain(x: Vector<t>): Vector<t> = (
    if x.data as USize != 0 {
+      print(c"Retain Vector\n");
       x.data.retain;
    };
    x
 );
 
 let mk-vector(ty: Type<t>, capacity: USize): Vector<t> = (
-   let ptr = if capacity==0 then (0 as OwnedData<t>[]) else mk-owned-data(type(t), capacity);
+   let ptr = mk-owned-data(type(t), capacity);
    Vector( ptr, 0_sz, 0_sz )
 );
 
@@ -35,18 +37,14 @@ let $"[]"(v: Vector<t>, idx: USize): t = (
 );
 
 let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (
-   if target-capacity==0
-   then Vector( 0 as OwnedData<t>[], 0, target-capacity )
-   else {
-      let new-data = mk-owned-data(type(t), target-capacity);
-      let dlo = 0_sz;
-      let dhi = v.length;
-      while dlo < dhi {
-         new-data.push(v[dlo]);
-         dlo = dlo + 1;
-      };
-      Vector( new-data, 0, new-data.current-length )
-   }
+   let new-data = mk-owned-data(type(t), target-capacity);
+   let dlo = 0_sz;
+   let dhi = v.length;
+   while dlo < dhi {
+      new-data.push(v[dlo]);
+      dlo = dlo + 1;
+   };
+   Vector( new-data, 0, new-data.current-length )
 );
 
 # TODO: Vector<t> and i: t should have the same type variable and it should unify
