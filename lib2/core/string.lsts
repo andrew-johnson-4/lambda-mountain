@@ -3,17 +3,14 @@ type String suffix _ss implies MustRetain, MustRelease
           = { start-offset:USize, end-offset:USize, data:OwnedData<U8>[] };
 
 let .release(x: String): Nil = (
-   print(c"String Release Start "); print(x); print(c"\n");
    # normally if x is not released by the end of scope, then it will be auto-released
    # however, mark-as-released prevents this case of infinite recursion
    # this is necessary when writing custom .release implementations
    # but normally most users won't need to use "mark-as-released" very often
    x.data.release; mark-as-released(x);
-   print(c"String Release End\n");
 );
 
 let .retain(x: String): String = (
-   print(c"String Retain Start "); print(x); print(c"\n");
    # Several inference rules are at play here
    # > normally a reference to a variable will auto-retain
    # > however field access is marked as MustNotRetain, so x.data does not auto-retain
@@ -23,7 +20,6 @@ let .retain(x: String): String = (
    #    2) the local variable goes out of scope (release)
    #    3) so they cancel each other out
    x.data.retain;
-   print(c"String Retain End "); print(x); print(c"\n");
    x
 );
 
@@ -47,16 +43,13 @@ let cmp(l: String, r: String): Ord = (
 let intern(cs: CString): String = cs.into(type(String));
 let .into(s: String, tt: Type<String>): String = s;
 let .into(cs: CString, tt: Type<String>): String = (
-   print(c"String .into\n");
    let cs_length = cs.length;
    let od = mk-owned-data(type(U8), cs_length);
    let csi = 0_sz;
    while csi < cs_length {
-      print(c"Push CS []\n");
       od.push(cs[csi] as U8);
       csi = csi + 1;
    };
-   print(c"End String Into\n");
    # This constructor will call .retain on itself before exiting
    String(0 as USize, cs_length, od)
 );

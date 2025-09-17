@@ -1,7 +1,6 @@
 
 let cmp(left: Type, right: Type): Ord = (
-   print(c"Type Compare Start\n");
-   let result = match left {
+   match left {
       TAny{} => (match right {
          TAny{} => Equal;
          _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
@@ -36,6 +35,4 @@ let cmp(left: Type, right: Type): Ord = (
          _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
       });
    };
-   print(c"Type Compare End\n");
-   result
 );

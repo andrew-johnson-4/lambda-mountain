@@ -5,17 +5,14 @@ type Vector<t> implies MustRetain, MustRelease
 
 let .release(x: Vector<t>): Nil = (
    if x.data as USize != 0 {
-      print(c"Vector Release Start\n");
       x.data.release;
-      print(c"Vector Release End\n");
    };
-   mark-as-released(x); );
+   mark-as-released(x);
+);
 
 let .retain(x: Vector<t>): Vector<t> = (
    if x.data as USize != 0 {
-      print(c"Vector Retain Start\n");
       x.data.retain;
-      print(c"Vector Retain End\n");
    };
    x
 );
@@ -38,7 +35,6 @@ let $"[]"(v: Vector<t>, idx: USize): t = (
 );
 
 let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (
-   print(c"Realloc\n");
    if target-capacity==0
    then Vector( 0 as OwnedData<t>[], 0, target-capacity )
    else {
@@ -55,7 +51,6 @@ let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (
 
 # TODO: Vector<t> and i: t should have the same type variable and it should unify
 let .push(v: Vector<t>, i: x): Vector<t> = (
-   print(c"Vector Push Start\n");
    # if this vector is a view, or if it is full, then we need to reallocate
    if (v.data as USize)==0 or v.end-offset < v.data.current-length or v.end-offset >= v.data.capacity {
       let new_capacity = if v.start-offset==v.end-offset then 4_sz
@@ -64,7 +59,6 @@ let .push(v: Vector<t>, i: x): Vector<t> = (
    };
    v.data.push(i);
    v.end-offset = v.end-offset + 1_sz;
-   print(c"Vector Push End\n");
    v
 );
 
