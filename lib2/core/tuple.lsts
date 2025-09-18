@@ -24,36 +24,66 @@ let deep-hash(l: Tuple<x,y>): U64 = (
    deep-hash(l.first) + deep-hash(l.second)
 );
 
-#let .into(l: Tuple<x,y>, tt: Type<String>): String = (
-#   "(" + l.first.into(type(String)) + ","
-#       + l.second.into(type(String)) + ")"
-#);
+let .into(l: Tuple<x,y>, tt: Type<String>): String = (
+   "(" + l.first.into(type(String)) + ","
+       + l.second.into(type(String)) + ")"
+);
 
-#let cmp(l: Tuple<x,y,z>, r: Tuple<x,y,z>): Ord = (
-#   cmp(l.first, r.first) && cmp(l.second, r.second) && cmp(l.third, r.third)
-#);
+let .release(t: Tuple<x,y,z>): Nil = (
+   if type(x) <: type(MustRelease) { t.first.release; };
+   if type(y) <: type(MustRelease) { t.second.release; };
+   if type(z) <: type(MustRelease) { t.third.release; };
+   mark-as-released(t);
+);
 
-#let deep-hash(l: Tuple<x,y,z>): U64 = (
-#   deep-hash(l.first) + deep-hash(l.second) + deep-hash(l.third)
-#);
+let .retain(t: Tuple<x,y,z>): Tuple<x,y,z> = (
+   if type(x) <: type(MustRetain) { let r = t.first.retain; mark-as-released(r); };
+   if type(y) <: type(MustRetain) { let r = t.second.retain; mark-as-released(r); };
+   if type(z) <: type(MustRetain) { let r = t.third.retain; mark-as-released(r); };
+   t
+);
 
-#let .into(l: Tuple<x,y,z>, tt: Type<String>): String = (
-#   "(" + l.first.into(type(String)) + ","
-#       + l.second.into(type(String)) + ","
-#       + l.third.into(type(String)) + ")"
-#);
+let cmp(l: Tuple<x,y,z>, r: Tuple<x,y,z>): Ord = (
+   cmp(l.first, r.first) && cmp(l.second, r.second) && cmp(l.third, r.third)
+);
 
-#let cmp(l: Tuple<w,x,y,z>, r: Tuple<w,x,y,z>): Ord = (
-#   cmp(l.first, r.first) && cmp(l.second, r.second) && cmp(l.third, r.third) && cmp(l.fourth, r.fourth)
-#);
+let deep-hash(l: Tuple<x,y,z>): U64 = (
+   deep-hash(l.first) + deep-hash(l.second) + deep-hash(l.third)
+);
 
-#let deep-hash(l: Tuple<x,y,z>): U64 = (
-#   deep-hash(l.first) + deep-hash(l.second) + deep-hash(l.third) + deep-hash(l.fourth)
-#);
+let .into(l: Tuple<x,y,z>, tt: Type<String>): String = (
+   "(" + l.first.into(type(String)) + ","
+       + l.second.into(type(String)) + ","
+       + l.third.into(type(String)) + ")"
+);
 
-#let .into(l: Tuple<w,x,y,z>, tt: Type<String>): String = (
-#   "(" + l.first.into(type(String)) + ","
-#       + l.second.into(type(String)) + ","
-#       + l.third.into(type(String)) + ","
-#       + l.fourth.into(type(String)) + ")"
-#);
+let .release(t: Tuple<w,x,y,z>): Nil = (
+   if type(w) <: type(MustRelease) { t.first.release; };
+   if type(x) <: type(MustRelease) { t.second.release; };
+   if type(y) <: type(MustRelease) { t.third.release; };
+   if type(z) <: type(MustRelease) { t.fourth.release; };
+   mark-as-released(t);
+);
+
+let .retain(t: Tuple<w,x,y,z>): Tuple<w,x,y,z> = (
+   if type(w) <: type(MustRetain) { let r = t.first.retain; mark-as-released(r); };
+   if type(x) <: type(MustRetain) { let r = t.second.retain; mark-as-released(r); };
+   if type(y) <: type(MustRetain) { let r = t.third.retain; mark-as-released(r); };
+   if type(z) <: type(MustRetain) { let r = t.fourth.retain; mark-as-released(r); };
+   t
+);
+
+let cmp(l: Tuple<w,x,y,z>, r: Tuple<w,x,y,z>): Ord = (
+   cmp(l.first, r.first) && cmp(l.second, r.second) && cmp(l.third, r.third) && cmp(l.fourth, r.fourth)
+);
+
+let deep-hash(l: Tuple<w,x,y,z>): U64 = (
+   deep-hash(l.first) + deep-hash(l.second) + deep-hash(l.third) + deep-hash(l.fourth)
+);
+
+let .into(l: Tuple<w,x,y,z>, tt: Type<String>): String = (
+   "(" + l.first.into(type(String)) + ","
+       + l.second.into(type(String)) + ","
+       + l.third.into(type(String)) + ","
+       + l.fourth.into(type(String)) + ")"
+);
