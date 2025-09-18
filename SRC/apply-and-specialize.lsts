@@ -22,6 +22,7 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
       let special-tctx = inner-tctx.with-pctx( original-tctx.get-or(mk-tctx()).pctx );
       try-specialize(fname, ft, special-tctx, closed-type);
    };
+   if fname==c"mark-as-released" then tctx = phi-move(tctx,at,blame);
    (tctx, r)
 );
 
