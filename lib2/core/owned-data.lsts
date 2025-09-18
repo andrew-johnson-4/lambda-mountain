@@ -46,17 +46,17 @@ let .pop(od: OwnedData<t>[]): t = (
 let .release(od: OwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
       od.reference-count = od.reference-count - 1;
-      if type(t) <: type(MustRelease) {
       if od.reference-count == 0 {
-         let dlo = 0_sz;
-         let dhi = od.current-length;
-         while dlo < dhi {
-            od.data[dlo].release;
-            dlo = dlo + 1;
+         if type(t) <: type(MustRelease) {
+            let dlo = 0_sz;
+            let dhi = od.current-length;
+            while dlo < dhi {
+               od.data[dlo].release;
+               dlo = dlo + 1;
+            };
          };
-      }};
-      if od.reference-count == 0
-      then safe-free(od);
+         safe-free(od);
+      };
    }
 );
 

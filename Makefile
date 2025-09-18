@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm --v3 tests/promises/lm-type/constructor.lsts
+	lm --v3 tests/promises/tuple/comparison.lsts
 	cc tmp.c
 	./a.out
 
@@ -44,7 +44,7 @@ compile-bootstrap:
 
 compile-production: compile-bootstrap
 	rm -f production
-	./bootstrap.exe --c -o production.c SRC/index.lsts
+	./bootstrap.exe --v2 --c -o production.c SRC/index.lsts
 	$(CC) $(CFLAGS) -o production production.c
 	rm -f production.c
 
