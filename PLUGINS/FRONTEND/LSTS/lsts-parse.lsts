@@ -1117,6 +1117,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
                matched-rest;
             }
          };
+         if lsts-parse-head(tokens)==c";" && lsts-parse-head(tail(tokens))==c"else" then tokens = tail(tokens);
          let default-rest = if lsts-parse-head(tokens) == c"else" {
             lsts-parse-expect(c"else", tokens); tokens = tail(tokens);
             if lsts-parse-head(tokens) == c"{" {
@@ -1172,6 +1173,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             t-rest.first;
          };
          let f = mk-nil();
+         if lsts-parse-head(tokens)==c";" && lsts-parse-head(tail(tokens))==c"else" then tokens = tail(tokens);
          if lsts-parse-head(tokens) == "else" {
             lsts-parse-expect(c"else", tokens); tokens = tail(tokens);
             f = if lsts-parse-head(tokens) == c"{" {
