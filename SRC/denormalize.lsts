@@ -7,6 +7,7 @@ let denormalize(tt: Type): Type = (
       ct = tt.rewrite-type-alias;
       ct = with-size(ct);
       ct = enrich-quick-prop(ct);
+      ct = ct.sanitize-phi;
       denormalize-cache = denormalize-cache.bind(tt, ct);
       ct
    )
