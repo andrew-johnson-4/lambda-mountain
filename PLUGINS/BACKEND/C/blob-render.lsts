@@ -58,8 +58,8 @@ let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContex
       );
       App{ left:Var{key:c"uuid"} } => r = SAtom(uuid());
       App{ left:Var{key:c"mangle"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{id=key}, right:AType{} } } } => r = mangle-identifier(id);
-      App{ left:Var{key:c"mangle-pre"}, right:AType{tt=tt} } => r = std-c-mangle-declaration-internal(normalize-strong(tt.l1).rewrite-opaque-type-alias.without-phi, term).first;
-      App{ left:Var{key:c"mangle-post"}, right:AType{tt=tt} } => r = std-c-mangle-declaration-internal(normalize-strong(tt.l1).rewrite-opaque-type-alias.without-phi, term).second;
+      App{ left:Var{key:c"mangle-pre"}, right:AType{tt=tt} } => r = std-c-mangle-declaration-internal(normalize-strong(tt.l1).rewrite-opaque-type-alias.without-any-phi, term).first;
+      App{ left:Var{key:c"mangle-post"}, right:AType{tt=tt} } => r = std-c-mangle-declaration-internal(normalize-strong(tt.l1).rewrite-opaque-type-alias.without-any-phi, term).second;
       App{ left:Abs{ lhs-t=lhs:Var{lhs=key}, rhs:ASTNil{}, tlt=tt }, rhs=right } => (
          let s = blob-render-simple(ctx, context-key, rhs).second;
          let f = mk-fragment().set(context-key,s).set(c"expression",s);

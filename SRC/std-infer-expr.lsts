@@ -145,7 +145,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       ASTNil{} => ascript(term, t1(c"Nil"));
       Meta{} => ascript(term, t1(c"Nil"));
       Typedef2{} => ();
-      AType{tt=tt} => ascript(term, tt);
+      AType{tt:TGround{tag:c"Type",parameters:[p1..]}} => ascript(term, t2(c"Type",p1.sanitize-phi));
+      AType{tt=tt} => ascript(term, tt.sanitize-phi);
       Seq{seq=seq} => (
          let def-i = 0_u64;
          while def-i < seq.length { match seq[def-i] {

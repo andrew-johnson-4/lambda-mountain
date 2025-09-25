@@ -14,9 +14,9 @@ let .sanitize-phi(tt: Type): Type = (
          else if result.length==1 then result[0]
          else tand(result)
       );
-      TGround { tag:c"Tuple" } => tt.without-phi;
+      TGround { tag:c"Tuple" } => tt.without-any-phi;
       TGround { tag:tag, parameters:[p1..] } => if tag.has-prefix(c"Field::")
-                        then t2(tag,p1.without-phi)
+                        then t2(tag,p1.without-any-phi)
                         else tt;
       _ => tt;
    }
