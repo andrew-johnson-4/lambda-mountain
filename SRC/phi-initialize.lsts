@@ -9,6 +9,7 @@ let phi-initialize(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Typ
          };
          (tctx, TAnd(new-conjugate))
       );
+      TGround{tag:c"Arrow"} => (tctx, tt);
       TGround{tag:c"Phi::Initialize",parameters:[init-tt..]} => (
          let phi-id = uuid();
          tctx = tctx.bind-phi(phi-id, init-tt, blame);

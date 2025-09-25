@@ -106,7 +106,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
    (tctx, result)
 );
 
-let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type): (Type, AST) = (
+let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type): (TypeContext?, Type, AST) = (
    match peep {
       TGround{tag:c"Cons", parameters:[p2.. p1..]} => (
          match t {
@@ -115,16 +115,17 @@ let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type): (T
                (let rt, let new-right) = std-infer-peeped-arguments(tctx, right, p2);
                if not(is(left,new-left)) || not(is(right,new-right))
                then t = mk-cons-or-app(is-cons,new-left,new-right);
-               (t3(c"Cons",lt,rt), t)
+               (tctx, t3(c"Cons",lt,rt), t)
             );
             _ => fail("std-infer-peeped-arguments expected cons term: \{t}\n");
          }
       );
-      TAny{} => (ta, t);
-      TVar{} => (ta, t);
+      TAny{} => (tctx, ta, t);
+      TVar{} => (tctx, ta, t);
       _ => (
-         (_, t) = std-infer-expr(tctx, t, false, Used(), ta);
-         (typeof-term(t), t);
+         (let protected-tctx, t) = std-infer-expr(tctx, t, false, Used(), ta);
+         tctx = tctx.with-pctx( protected-tctx.get-or(mk-tctx()).pctx );
+         (tctx, typeof-term(t), t);
       );
    }
 );

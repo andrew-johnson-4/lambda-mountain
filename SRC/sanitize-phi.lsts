@@ -1,0 +1,30 @@
+
+let .sanitize-phi(tt: Type): Type = (
+   match tt {
+      TAnd { conjugate=conjugate } => (
+         let result = mk-vector(type(Type), 0_u64);
+         for c in conjugate {
+            match c.sanitize-phi {
+               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
+               TAny{} => ();
+               rc => ( result = result.push(rc); () );
+            }
+         };
+         if result.length==0 then ta
+         else if result.length==1 then result[0]
+         else tand(result)
+      );
+      TGround { tag:c"Tuple" } => tt.without-any-phi;
+      TGround { tag:tag, parameters:[p1..] } => if tag.has-prefix(c"Field::")
+                        then t2(tag,p1.without-any-phi)
+                        else tt;
+      _ => tt;
+   }
+);
+
+let .sanitize-phi(tt: List<Type>): List<Type> = (
+   match tt {
+      [hd..tl] => cons( hd.sanitize-phi, tl.sanitize-phi );
+      tl => tl;
+   }
+);

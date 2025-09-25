@@ -120,7 +120,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                (tctx, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
                (tctx-t, let new-t) = std-infer-expr(tctx, t, false, Tail(), ta);
                (tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
-               (tctx, new-f) = release-locals(tctx, tctx-f, new-f, hint);
+               (tctx-f, new-f) = release-locals(tctx, tctx-f, new-f, hint);
                tctx = tctx-t;
                if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
                then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
@@ -143,7 +143,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       ASTNil{} => ascript(term, t1(c"Nil"));
       Meta{} => ascript(term, t1(c"Nil"));
       Typedef2{} => ();
-      AType{tt=tt} => ascript(term, tt);
+      AType{tt:TGround{tag:c"Type",parameters:[p1..]}} => ascript(term, t2(c"Type",p1.sanitize-phi));
+      AType{tt=tt} => ascript(term, tt.sanitize-phi);
       Seq{seq=seq} => (
          let def-i = 0_u64;
          while def-i < seq.length { match seq[def-i] {
@@ -206,10 +207,17 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             ascript(term,hint);
          } else if not(non-zero(typeof-term(term))) {
             if hint.is-t(c"List",1) && hint.is-type && key==c"LEOF"
-            then ascript(term,apply-global-constructor(tctx, key, hint, t1(c"Nil"), term).second)
-            else if hint.is-t(c"HashtableEq",2) && hint.is-type && key==c"HashtableEqEOF"
-            then ascript(term,apply-global-constructor(tctx, key, hint, t1(c"Nil"), term).second)
-            else ascript(term,apply-global-constructor(tctx, key, hint, ta, term).second);
+            then {
+               (tctx, let lit-tt) = apply-global-constructor(tctx, key, hint, t1(c"Nil"), term);
+               ascript(term,lit-tt);
+            } else if hint.is-t(c"HashtableEq",2) && hint.is-type && key==c"HashtableEqEOF"
+            then {
+               (tctx, let lit-tt) = apply-global-constructor(tctx, key, hint, t1(c"Nil"), term);
+               ascript(term,lit-tt);
+            } else {
+               (tctx, let lit-tt) = apply-global-constructor(tctx, key, hint, ta, term);
+               ascript(term,lit-tt);
+            }
          }
       );
       Abs{lhs=lhs, rhs=rhs:App{asc=left:Lit{key:c":"},right:App{inner-rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} => (
@@ -322,6 +330,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
    if used.is-unused && typeof-term(term).slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1) {
       (tctx, term) = wrap-call(tctx, c".release", term);
    };
+   phi-state(tctx,typeof-term(term),term); # TODO REMOVE
    (tctx, term);
 );
 
