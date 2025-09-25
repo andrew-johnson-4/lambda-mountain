@@ -122,7 +122,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                (tctx, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
                (tctx-t, let new-t) = std-infer-expr(tctx, t, false, Tail(), ta);
                (tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
-               (tctx, new-f) = release-locals(tctx, tctx-f, new-f, hint);
+               (tctx-f, new-f) = release-locals(tctx, tctx-f, new-f, hint);
                tctx = tctx-t;
                if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
                then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
