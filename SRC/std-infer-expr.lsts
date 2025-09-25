@@ -1,6 +1,5 @@
 
 let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, blame: AST, hint: Type): (TypeContext?, Type) = (
-   print("Bind Term \{key} : \{typeof-term(rhs)}\n");
    let rhs-tt = phi-state(tctx,typeof-term(rhs),blame);
    let tt = rhs-tt && t1(c"LocalVariable");
    (tctx, tt) = phi-fresh(tctx, tt, blame);
@@ -12,7 +11,6 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
-   print("term \{term}\n");
    match term {
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
          if typeof-var-raw(term, tctx, lname).is-t(c"LocalVariable",0)
@@ -190,7 +188,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          if key==c"__uninitialized" then ascript(term, hint)
          else (
             vt = typeof-var(term, tctx, key);
-            print("Ref Var\n");
             vt = phi-state(tctx, vt, term);
          );
          mark-var-to-def-todo(tctx, key, ta, term);
@@ -313,7 +310,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      tctx = phi-move(tctx, from-tt, term);
                   };
                };
-               print("App\n");
                rt = phi-state(tctx, rt, term);
                ascript(term, rt);
                if not(rt.is-t(c"Cons",2)) {
@@ -339,7 +335,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 );
 
 let wrap-call(tctx: TypeContext?, fname: CString, term: AST): (TypeContext?, AST) = (
-   print("Wrap Call \{fname}\n");
    let args-type = typeof-term(term);
    let function-type = typeof-term(find-global-callable(fname, args-type, term));
    let function-term = mk-var(fname); ascript(function-term, function-type);

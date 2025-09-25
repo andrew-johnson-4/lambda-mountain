@@ -1,6 +1,5 @@
 
 let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST, hint: Type): (TypeContext?, AST) = (
-   print("Release Locals\n");
    let tctx-before-tctx = tctx-before.get-or(mk-tctx()).tctx;
    let tctx-after-tctx = tctx-after.get-or(mk-tctx()).tctx;
    let needs-release = [] : List<TypeContextRow>;
@@ -41,6 +40,5 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       tctx-after = phi-move(tctx-after, nd.denormalized-and-phi-type(tctx-after), term);
    };
    tctx-before = tctx-before.with-pctx( phi-merge(tctx-before,tctx-after.get-or(mk-tctx()).pctx,tctx-before.get-or(mk-tctx()).pctx,term) );
-   print("Released Locals\n");
    (tctx-before, term)
 );
