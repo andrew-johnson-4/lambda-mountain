@@ -3,7 +3,7 @@ CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
 	lm tests/promises/string/comparison.lsts
-	cc tmp.c
+	gcc tmp.c
 	./a.out
 
 build: compile-production
