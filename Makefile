@@ -2,8 +2,8 @@ CC = cc
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm tests/promises/lm-type/constructor.lsts
-	cc tmp.c
+	lm tests/promises/string/comparison.lsts
+	gcc tmp.c
 	./a.out
 
 build: compile-production
