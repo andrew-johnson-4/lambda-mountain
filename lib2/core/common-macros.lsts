@@ -1,7 +1,7 @@
 
 deprecated macro ( rl"assert"(c) ) (
    $"if"( not(c) )
-        ( fputs(c"Assertion Failed At ", stderr); fputs(p(rl":Location:") : Constant+Literal+CString, stderr); exit(1); )
+        ( fail(c"Assertion Failed At ", p(rl":Location:") : Constant+Literal+CString) )
         ()
 );
 
@@ -81,12 +81,12 @@ deprecated macro ( rl"while"(cond)(body) )
 
 deprecated macro (rl"match"(t)(ps)) (scope(
    let uuid(term) = open(t);
-   match-pats( uuid(term), ps, fail(c"Pattern Match Failure " + (p(rl":Location:") : Constant+Literal+CString)) );
+   match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", p(rl":Location:") : Constant+Literal+CString) );
 ));
 
 deprecated macro (rl"match"(rl"macro::bind-raw"(t))(ps)) (scope(
    let uuid(term) = t;
-   match-pats( uuid(term), ps, fail(c"Pattern Match Failure " + (p(rl":Location:") : Constant+Literal+CString)) );
+   match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", p(rl":Location:") : Constant+Literal+CString) );
 ));
 
 deprecated macro (rl"match"(
@@ -94,7 +94,7 @@ deprecated macro (rl"match"(
                      ps
                  )) (scope(
    let uuid(term) = f($"raw"(t));
-   match-pats( uuid(term), ps, fail(c"Pattern Match Failure " + (p(rl":Location:") : Constant+Literal+CString)) );
+   match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", p(rl":Location:") : Constant+Literal+CString) );
 ));
 
 deprecated macro (rl"match-pats"(term,(),remainder))
