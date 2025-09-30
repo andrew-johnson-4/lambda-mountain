@@ -1,6 +1,5 @@
 
 let least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): (TypeContext?, Type?) = (
-   print("LUB \{left} x \{right}\n");
    let rt = match (left, right) {
       Tuple{ first:TAnd{lconjugate=conjugate}, second:TAnd{rconjugate=conjugate} } => (
          let result = mk-vector(type(Type));

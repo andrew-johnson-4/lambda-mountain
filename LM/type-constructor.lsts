@@ -8,9 +8,9 @@ let t2(tag: String, p1: Type, p2: Type): Type = TGround(tag, mk-vector(type(Type
 let tv(name: String): Type = TVar(name);
 
 let $"&&"(lt: Type, rt: Type): Type = (
-   match (lt, rt) {
-      Tuple{first:TAny{}} => rt;
-      Tuple{second:TAny{}} => lt;
+   #match (lt, rt) {
+   #   Tuple{first:TAny{}} => rt;
+   #   Tuple{second:TAny{}} => lt;
       #Tuple{first:TAnd{lconjugate=conjugate},second:TAnd{rconjugate=conjugate}} => (
       #   let result = mk-vector(type(Type), lconjugate.length+rconjugate.length);
       #   #for c in lconjugate { result = result.push(c) };
@@ -35,6 +35,6 @@ let $"&&"(lt: Type, rt: Type): Type = (
       #   result = result.push(second);
       #   TAnd(result)#.sort
       #);
-   };
+   #};
    lt
 );
