@@ -10,6 +10,10 @@ let cmp(l: CString, r: CString): Ord = (
    else Equal
 );
 
+let $"+"(s1: CString, s2: CString): CString = (
+   strcat(s1 as C<"char">[], s2 as C<"char">[]) as CString
+);
+
 let fail(msg: CString): Nil = (
    fputs(msg, stderr);
    exit(1);
