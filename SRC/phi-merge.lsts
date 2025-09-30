@@ -19,3 +19,15 @@ let phi-merge(tctx: TypeContext?, left-phi-state: Type, right-phi-state: Type, b
    if can-unify(left-phi-state,right-phi-state) && can-unify(right-phi-state,left-phi-state) then left-phi-state
    else apply-global-callable(tctx, c"phi", t3(c"Cons",left-phi-state,right-phi-state), blame).second;
 );
+
+let phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>): List<PhiContextRow> = (
+   let seen = mk-vector(type(CString));
+   for Tuple{ sid=phi-id, st=phi-tt, pblame=blame } in tctx-secondary {
+      if not(seen.contains(sid)) {
+         let pt = tctx-primary.lookup(sid,ta);
+         if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,pblame), tctx-primary );
+         seen = seen.push(sid);
+      };
+   };
+   tctx-primary
+);

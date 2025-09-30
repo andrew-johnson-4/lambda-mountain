@@ -39,6 +39,6 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    for nd in needs-mark-release {
       tctx-after = phi-move(tctx-after, nd.denormalized-and-phi-type(tctx-after), term);
    };
-   tctx-before = tctx-before.with-pctx( phi-merge(tctx-before,tctx-after.get-or(mk-tctx()).pctx,tctx-before.get-or(mk-tctx()).pctx,term) );
+   tctx-before = tctx-before.with-pctx( phi-append(tctx-after.get-or(mk-tctx()).pctx,tctx-before.get-or(mk-tctx()).pctx) );
    (tctx-before, term)
 );
