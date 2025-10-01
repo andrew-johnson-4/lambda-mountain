@@ -1,5 +1,6 @@
 
 let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST, hint: Type): (TypeContext?, AST) = (
+   #tctx-after = tctx-after.with-pctx( phi-append(tctx-after.get-or(mk-tctx()).pctx,tctx-before.get-or(mk-tctx()).pctx) );
    let tctx-before-tctx = tctx-before.get-or(mk-tctx()).tctx;
    let tctx-after-tctx = tctx-after.get-or(mk-tctx()).tctx;
    let needs-release = [] : List<TypeContextRow>;
