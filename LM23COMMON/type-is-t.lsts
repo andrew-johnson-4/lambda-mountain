@@ -1,0 +1,12 @@
+
+let .is-t(tt: Type, tt-tag: CString, tt-length: U64): U64 = (
+   match tt {
+      TAnd { conjugate=conjugate } => (
+         let result = false as U64;
+         for c in conjugate { result = result || c.is-t(tt-tag, tt-length) };
+         result
+      );
+      TGround { tag=tag, parameters=parameters } => tag == tt-tag && parameters.length == tt-length;
+      _ => false;
+   }
+);

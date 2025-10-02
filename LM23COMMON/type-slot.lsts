@@ -1,0 +1,14 @@
+
+let .slot(tt: Type, sl: CString, si: U64): Type = (
+   match tt {
+      TGround{ tag=tag, parameters=parameters } => (
+         if tag==sl && parameters.length==si then tt else ta
+      );
+      TAnd{ conjugate=conjugate } => (
+         let return = ta;
+         for c in conjugate { if not(non-zero(return)) then return = c.slot(sl,si) };
+         return
+      );
+      _ => ta;
+   }
+);

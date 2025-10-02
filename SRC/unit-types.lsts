@@ -8,11 +8,8 @@ import SRC/deep-hash.lsts;
 import SRC/type-into-string.lsts;
 
 # Constructors / Destructors
-import SRC/range.lsts;
-import SRC/domain.lsts;
 import SRC/arity.lsts;
 import SRC/ground-tag-and-arity.lsts;
-import SRC/slot.lsts;
 import SRC/type-tag.lsts;
 import SRC/cons-tail-or-self.lsts;
 

@@ -7,3 +7,7 @@ import LM23COMMON/type-definition.lsts;
 import LM23COMMON/type-constructor.lsts;
 import LM23COMMON/type-destructor.lsts;
 import LM23COMMON/type-compare.lsts;
+import LM23COMMON/type-domain.lsts;
+import LM23COMMON/type-range.lsts;
+import LM23COMMON/type-is-t.lsts;
+import LM23COMMON/type-slot.lsts;

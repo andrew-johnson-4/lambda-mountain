@@ -1,0 +1,7 @@
+
+import LM23COMMON/unit-type-core.lsts;
+
+assert( (t0(c"A") && t0(c"B")).is-t(c"A",0) );
+assert( (t0(c"A") && t0(c"B")).is-t(c"B",0) );
+assert( not((t0(c"A") && t0(c"B")).is-t(c"C",0)) );
+assert( safe-alloc-block-count == 0 );
