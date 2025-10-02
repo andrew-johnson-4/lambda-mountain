@@ -10,7 +10,6 @@ import SRC/type-into-string.lsts;
 # Constructors / Destructors
 import SRC/arity.lsts;
 import SRC/ground-tag-and-arity.lsts;
-import SRC/slot.lsts;
 import SRC/type-tag.lsts;
 import SRC/cons-tail-or-self.lsts;
 

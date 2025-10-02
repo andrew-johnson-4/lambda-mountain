@@ -40,3 +40,8 @@ assert( safe-alloc-block-count == 0 );
 assert( t2(c"Array",t2(c"Arrow",t0(c"A"),t0(c"B")),ta).domain == t0(c"A") );
 assert( t2(c"Array",t2(c"Arrow",t0(c"A"),t0(c"B")),ta).range == t0(c"B") );
 assert( safe-alloc-block-count == 0 );
+
+assert( (t0(c"A") && t0(c"B")).slot(c"A",0) == t0(c"A") );
+assert( (t0(c"A") && t0(c"B")).slot(c"B",0) == t0(c"B") );
+assert( (t0(c"A") && t0(c"B")).slot(c"C",0) == ta );
+assert( safe-alloc-block-count == 0 );
