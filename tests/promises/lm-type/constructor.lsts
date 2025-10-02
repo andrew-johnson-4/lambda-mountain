@@ -47,3 +47,13 @@ assert( safe-alloc-block-count == 0 );
 assert( (t0(c"A") && t0(c"B")) == (t0(c"A") && t0(c"B")) );
 assert( (t0(c"A") && t0(c"B")) == (t0(c"B") && t0(c"A")) );
 assert( safe-alloc-block-count == 0 );
+
+assert( ts(c"B",[t0(c"A")]) == t1(c"B",t0(c"A")) );
+assert( safe-alloc-block-count == 0 );
+
+assert( tand(mk-vector(type(Type)).push(t0(c"A")).push(t0(c"B"))) == (t0(c"B") && t0(c"A")) );
+assert( safe-alloc-block-count == 0 );
+
+assert( (ta || t0(c"A")) == t0(c"A") );
+assert( (t0(c"A") || ta) == t0(c"A") );
+assert( safe-alloc-block-count == 0 );

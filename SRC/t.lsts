@@ -1,5 +1,0 @@
-
-let ts(tag: CString, ps: List<Type>): Type = TGround( tag, close(ps) );
-let tand(t: Vector<Type>): Type = TAnd(t.sort);
-let $"||"(lt: Type, rt: Type): Type = if non-zero(lt) then lt else rt;
-
