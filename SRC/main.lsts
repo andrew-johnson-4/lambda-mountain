@@ -17,8 +17,6 @@ let print-toks-json(fp: CString): Nil = (
       };
       print("{\n \"key\":\"");
       print(tok.key);
-      print("\",\n \"skey\":\"");
-      print(tok.skey);
       print("\",\n \"line\": ");
       print(tok.location.line);
       print(",\n \"column\": ");

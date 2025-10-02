@@ -1,21 +1,6 @@
 
-type SourceLocation = { filename: CString, line: U64, column: U64 };
-type Token = { skey: String, key: CString, nonce: U64, location: SourceLocation };
-
-type AST zero ASTEOF implements DefaultFormattable
-         = Meta { val: AST[] }
-         | ASTEOF
-         | ASTNil
-         | App { is-cons: U64, left: AST[], right: AST[] }
-         | Var { key: CString, token: Token }
-         | Lit { key: CString, token: Token }
-         | Abs { lhs: AST[], rhs: AST[], tt: Type }
-         | AType { tt: Type }
-         | Seq { seq: Vector<AST> }
-         | Glb { key: Token , val: AST[] }
-         | Typedef2 { location: SourceLocation, lhs-type: Type, implies: Vector<Type>, implements: Vector<Type>,
-                      size: Type, alias: Type, opaque-alias: Type, cases: Vector<(CString,Vector<(CString,Type)>)>,
-                      misc-type: Type, implied-phi: Type };
+let .skey(t: Token): String = intern(t.key);
+type AST implements DefaultFormattable;
 
 # constructor with a default argument
 let $"App"(left: AST[], right: AST[]): AST = App ( false, left, right );
