@@ -19,7 +19,6 @@ let can-unify(fpt: Type, pt: Type): U64 = (
       Tuple{ first:TGround{tag:c"MustNotRetain"} } => true;
       Tuple{ first:TGround{tag:c"MustNotMove"} } => true;
       Tuple{ first:TGround{tag:c"Phi::Initialize"} } => true;
-      Tuple{ first:TGround{tag:c"Linear",parameters:[_..]}, second:TGround{tag:c"Linear",parameters:[_..]} } => true;
       Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => false;
       Tuple{ first:TVar{} } => true;
       Tuple{ first:TAnd{ lconjugate=conjugate }, second:TAnd{ rconjugate=conjugate } } => (
@@ -104,11 +103,6 @@ let can-unify(fpt: Type, pt: Type): U64 = (
 
       # Ignore C Access Modifiers For Now
       Tuple{ first:TGround{tag:c"C", parameters:[TGround{tag:c"const"}..]} } => true;
-
-      # Literal Constants
-      Tuple{ first:TGround{tag:c"CONST"}, second:TGround{c=tag} } => (
-         c.is-digit || c==c"CONST"
-      );
 
       # Varargs
       Tuple{
