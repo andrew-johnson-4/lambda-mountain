@@ -1,4 +1,6 @@
 
+let $"<:"(pt: Type, fpt: Type): U64 = can-unify(fpt,pt);
+
 let can-unify(fpt: List<Type>, pt: List<Type>): U64 = (
    if fpt.length == pt.length {
       let ok = true;
@@ -147,12 +149,7 @@ let can-unify(fpt: Type, pt: Type): U64 = (
           second:TGround{tag:c"Arrow", parameters:[rrng.. rdom..]}
       } => (
          if can-unify(rdom, ldom) {
-            if rdom.is-open {
-               let tctx = unify(rdom, ldom, ASTEOF);
-               can-unify(lrng, substitute(tctx,rrng));
-            } else {
-               can-unify(lrng, rrng)
-            }
+            can-unify(lrng, rrng)
          } else false
       );
 
