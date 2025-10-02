@@ -1,6 +1,8 @@
 
 import std/minimal.lsts;
 
+import LM23COMMON/index.lsts;
+
 import SRC/unit-drivers.lsts;
 
 import SRC/unit-types.lsts;
