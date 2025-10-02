@@ -40,5 +40,4 @@ let $"&&"(lt: Type, rt: Type): Type = (
          TAnd(result)
       );
    };
-   lt
 );
