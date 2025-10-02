@@ -1,0 +1,34 @@
+
+import LM23COMMON/unit-type-core.lsts;
+
+assert( ta.l1 == ta );
+assert( ta.l2 == ta );
+assert( safe-alloc-block-count == 0 );
+
+assert( ta.r1 == ta );
+assert( ta.r2 == ta );
+assert( safe-alloc-block-count == 0 );
+
+assert( ta.l(0) == ta );
+assert( ta.l(1) == ta );
+assert( safe-alloc-block-count == 0 );
+
+assert( ta.r(0) == ta );
+assert( ta.r(1) == ta );
+assert( safe-alloc-block-count == 0 );
+
+assert( t2(c"A",t0(c"A"),t0(c"B")).l1 == t0(c"A") );
+assert( t2(c"A",t0(c"A"),t0(c"B")).l2 == t0(c"B") );
+assert( safe-alloc-block-count == 0 );
+
+assert( t2(c"A",t0(c"A"),t0(c"B")).r1 == t0(c"B") );
+assert( t2(c"A",t0(c"A"),t0(c"B")).r2 == t0(c"A") );
+assert( safe-alloc-block-count == 0 );
+
+assert( t2(c"A",t0(c"A"),t0(c"B")).l(0) == t0(c"A") );
+assert( t2(c"A",t0(c"A"),t0(c"B")).l(1) == t0(c"B") );
+assert( safe-alloc-block-count == 0 );
+
+assert( t2(c"A",t0(c"A"),t0(c"B")).l(1) == t0(c"B") );
+assert( t2(c"A",t0(c"A"),t0(c"B")).l(0) == t0(c"A") );
+assert( safe-alloc-block-count == 0 );
