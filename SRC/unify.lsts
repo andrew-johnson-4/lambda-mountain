@@ -128,7 +128,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
           second:rp1
       } => (
          if can-unify(lp1, rp1)
-         then { ctx = unify-inner(lp1,rp1,blame) && unify-inner(lpr, t1(c"Nil"), blame); }
+         then { ctx = unify-inner(lp1,rp1,blame) && unify-inner(lpr, t0(c"Nil"), blame); }
          else { ctx = unify-inner(lpr,rp1,blame); }
       );
       Tuple{

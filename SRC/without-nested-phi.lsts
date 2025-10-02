@@ -14,7 +14,7 @@ let .without-nested-phi(tt: Type): Type = (
          else if result.length==1 then result[0]
          else tand(result)
       );
-      TGround { tag:c"Cons", parameters:[c2..c1..] } => t3(c"Cons",c1.without-nested-phi,c2.without-nested-phi);
+      TGround { tag:c"Cons", parameters:[c2..c1..] } => t2(c"Cons",c1.without-nested-phi,c2.without-nested-phi);
       TGround { tag=tag, parameters=parameters } => ts(tag,parameters.without-nested-phi);
       _ => tt;
    }

@@ -38,7 +38,7 @@ let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContex
          while non-zero(rngs) { match rngs {
             SCons{ a=left, rst=right } => (
                let f = mk-expression(a);
-               let inner-ctx = ctx.bind(lhs, t1(c"L"), f);
+               let inner-ctx = ctx.bind(lhs, t0(c"L"), f);
                std-c-fragment-context = std-c-fragment-context.bind(lhs-t,f);
                r = r + blob-render-simple(inner-ctx, context-key, iter).second;
                rngs = rst;

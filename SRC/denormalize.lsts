@@ -29,10 +29,10 @@ let denormalize-arrow(pt: Type): Type = (
          else tand(result)
       );
       TGround{tag:c"Arrow", parameters:[rng.. dom..]} => (
-         t3( c"Arrow", denormalize-cons(dom), rng )
+         t2( c"Arrow", denormalize-cons(dom), rng )
       );
       TGround{tag:c"Array", parameters:[rng.. dom..]} => (
-         t3( c"Array", denormalize-arrow(dom), rng )
+         t2( c"Array", denormalize-arrow(dom), rng )
       );
       TGround{} => denormalize(pt);
       _ => pt;
@@ -55,7 +55,7 @@ let denormalize-cons(pt: Type): Type = (
          else tand(result)
       );
       TGround{tag:c"Cons", parameters:[rng.. dom..]} => (
-         t3( c"Cons", denormalize-cons(dom), denormalize-cons(rng) )
+         t2( c"Cons", denormalize-cons(dom), denormalize-cons(rng) )
       );
       TGround{} => denormalize(pt);
       _ => pt;

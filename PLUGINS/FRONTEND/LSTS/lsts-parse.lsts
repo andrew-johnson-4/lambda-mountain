@@ -281,7 +281,7 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    (mk-glb(
       mk-token(mname),
-      mk-abs(margs, mk-app(mk-lit(c":"), mk-cons(without-location(mbody),mk-atype(mrett))), t1(c"TypedMacro"))
+      mk-abs(margs, mk-app(mk-lit(c":"), mk-cons(without-location(mbody),mk-atype(mrett))), t0(c"TypedMacro"))
    ), tokens)
 );
 
@@ -293,12 +293,12 @@ let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
          lsts-parse-expect(c"-", tokens); tokens = tail(tokens);
          lsts-parse-expect(c">", tokens); tokens = tail(tokens);
          (let tail-type, tokens) = lsts-parse-type-conjugate(tokens);
-         base-type = t3(c"Arrow", base-type, tail-type);
+         base-type = t2(c"Arrow", base-type, tail-type);
       } else {
          lsts-parse-expect(c"~", tokens); tokens = tail(tokens);
          lsts-parse-expect(c">", tokens); tokens = tail(tokens);
          (let tail-type, tokens) = lsts-parse-type-conjugate(tokens);
-         base-type = t3(c"Phi::Transition", base-type, tail-type);
+         base-type = t2(c"Phi::Transition", base-type, tail-type);
       }
    };
    (base-type, tokens)
@@ -325,7 +325,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
       lsts-parse-expect(c"_", tokens); tokens = tail(tokens);
       ta
    } else if lsts-parse-head(tokens).has-prefix(c"'") && not(lsts-parse-head(tokens).has-suffix(c"'")) {
-      let new-tt = t2(c"Linear",t1(c"Phi::Live"));
+      let new-tt = t1(c"Linear",t0(c"Phi::Live"));
       tokens = tail(tokens);
       new-tt
    } else if lsts-is-ident-head(lsts-parse-head(tokens)) && not(lsts-is-type-tag(lsts-parse-head(tokens))) {
@@ -371,10 +371,10 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
             tindex-rest.first;
          } else { ta };
          lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
-         tt = t3(c"Array", tt, index);
+         tt = t2(c"Array", tt, index);
       } else {
          lsts-parse-expect(c"?", tokens); tokens = tail(tokens);
-         tt = t2(c"Maybe", tt);
+         tt = t1(c"Maybe", tt);
       }
    };
    if lsts-parse-head(tokens)==c"+" {
@@ -786,14 +786,14 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
       lsts-parse-expect(c"opaque", tokens); tokens = tail(tokens);
       lsts-parse-expect(c"alias", tokens); tokens = tail(tokens);
       mode = c"opaque";
-      misc-type = misc-type && t1(c"OpaqueAlias");
+      misc-type = misc-type && t0(c"OpaqueAlias");
    } else if lsts-parse-head(tokens)==c"alias" {
       lsts-parse-expect(c"alias", tokens); tokens = tail(tokens);
       mode = c"alias";
-      misc-type = misc-type && t1(c"Alias");
+      misc-type = misc-type && t0(c"Alias");
    } else if lsts-parse-head(tokens)==c"phi" {
       lsts-parse-expect(c"phi", tokens); tokens = tail(tokens);
-      misc-type = misc-type && t1(c"Phi");
+      misc-type = misc-type && t0(c"Phi");
    };
    lsts-parse-expect(c"[Typename]", lsts-is-enum-head(lsts-parse-head(tokens)) || lsts-parse-head(tokens).has-suffix(c"_ss"), tokens);
    let typename = lsts-parse-head(tokens); tokens = tail(tokens);
@@ -835,7 +835,7 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
       };
       lsts-parse-expect(c">", tokens); tokens = tail(tokens);
       ts(typename, pars);
-   } else t1(typename);
+   } else t0(typename);
    let infers = mk-vector(type(Type));
    let impls = mk-vector(type(Type));
    let size = ta;
@@ -860,7 +860,7 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
          lsts-parse-expect(c"suffix", tokens); tokens = tail(tokens);
          lsts-parse-expect(c"[Suffix]", lsts-parse-head(tokens).has-prefix(c"_"), tokens);
          let sfx = lsts-parse-head(tokens); tokens = tail(tokens);
-         parse-suffixes = cons( (sfx, lhs-type && t1(c"Constant") && t1(c"Literal")), parse-suffixes );
+         parse-suffixes = cons( (sfx, lhs-type && t0(c"Constant") && t0(c"Literal")), parse-suffixes );
       };
       if lsts-parse-head(tokens)==c"zero" {
          lsts-parse-expect(c"zero", tokens); tokens = tail(tokens);
@@ -884,8 +884,8 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
          lsts-parse-expect(c"[Size]", lsts-parse-head(tokens).has-suffix(c"_B")
                                    || lsts-parse-head(tokens).has-suffix(c"_b"), tokens);
          let sz = lsts-parse-head(tokens); tokens = tail(tokens);
-         if sz.has-suffix(c"_B") then size = t2(c"Bytes", t1(sz.remove-suffix(c"_B")))
-                                 else size = t2(c"Bits", t1(sz.remove-suffix(c"_b")));
+         if sz.has-suffix(c"_B") then size = t1(c"Bytes", t0(sz.remove-suffix(c"_B")))
+                                 else size = t1(c"Bits", t0(sz.remove-suffix(c"_b")));
       };
       if lsts-parse-head(tokens)==c"implements" {
          lsts-parse-expect(c"implements", tokens); tokens = tail(tokens);
@@ -911,7 +911,7 @@ let lsts-parse-typedef2(tokens: List<Token>): (AST, List<Token>) = (
    for i in infers {
       if i.is-t(c"MustRelease",0) && not(implied-phi.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1))
       then {
-         let mt = t2(c"MustRelease::ToRelease",t2(c"Linear",t1(c"Phi::Live")));
+         let mt = t1(c"MustRelease::ToRelease",t1(c"Linear",t0(c"Phi::Live")));
          implied-phi = implied-phi && mt;
          implied-phi-index = implied-phi-index.bind(lhs-type.ground-tag-and-arity, mt);
       };
@@ -984,7 +984,7 @@ let lsts-parse-function-signature(fname: CString, tokens: List<Token>, loc: Sour
    let out = LstsFnSignature ( mk-nil(), ta, ta );
 
    lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-   out.args-type = t1(c"Nil");
+   out.args-type = t0(c"Nil");
    while non-zero(tokens) && lsts-parse-head(tokens)!=c")" {
       lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
       let arg-name = head(tokens); tokens = tail(tokens);
@@ -1006,7 +1006,7 @@ let lsts-parse-function-signature(fname: CString, tokens: List<Token>, loc: Sour
          out.args-type = arg-type;
       } else {
          out.args-list = mk-cons(out.args-list, arg-binding);
-         out.args-type = t3(c"Cons", out.args-type, arg-type);
+         out.args-type = t2(c"Cons", out.args-type, arg-type);
       };
    };
    lsts-parse-expect(c")", tokens); tokens = tail(tokens);
@@ -1018,7 +1018,7 @@ let lsts-parse-function-signature(fname: CString, tokens: List<Token>, loc: Sour
        if fname!=c"phi" then out.return-type = out.return-type.expand-implied-phi.phi-as-initialize;
        tokens = rtype-rest.second;
    } else if non-zero(out.args-type) {
-       out.return-type = t1(c"Nil");
+       out.return-type = t0(c"Nil");
    };
 
    Tuple ( out, tokens )
@@ -1063,7 +1063,7 @@ let lsts-parse-let(tokens: List<Token>): (AST, List<Token>) = (
    };
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    let rvalue = if non-zero(args-list) {
-      let attach-tt = if prop { t1(c"Prop") } else { ta };
+      let attach-tt = if prop { t0(c"Prop") } else { ta };
       if name==c"quick-prop" {
          match args-list {
             App{ left:Lit{key:c":"}, right:App{right:AType{ pre=tt }} } => (
@@ -1432,7 +1432,7 @@ let lsts-parse-match2(tokens: List<Token>): Tuple<AST,List<Token>> = (
    (let expr, tokens) = lsts-parse-small-expression(tokens);
    if raw then expr = mk-app(mk-var(c"macro::bind-raw"), expr);
    let case-root = mk-app(mk-var(c"fail"),mk-cons(
-      mk-lit(c"Pattern Match Failure").ascript(t1(c"String") && t1(c"Literal")),
+      mk-lit(c"Pattern Match Failure").ascript(t0(c"String") && t0(c"Literal")),
       mk-app(mk-var(c"macro::location"),mk-var(c"here").with-location(loc))
    ));
    lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
@@ -1571,7 +1571,7 @@ let lsts-make-lit(t: Token): AST = (
       while non-zero(s) && s != c"_ss" {
          if s.has-prefix(c"\\{") {
             if non-zero(buffer) {
-               let be = mk-lit(with-location(mk-token(clone-rope(buffer)),loc)).ascript(t1(c"String") && t1(c"Literal"));
+               let be = mk-lit(with-location(mk-token(clone-rope(buffer)),loc)).ascript(t0(c"String") && t0(c"Literal"));
                if non-zero(base) {
                   base = mk-app(
                      Var( c"+", with-location(mk-token("+"),loc) ),
@@ -1596,7 +1596,7 @@ let lsts-make-lit(t: Token): AST = (
                Var( c".into", with-location(mk-token(".into"),loc) ),
                mk-cons(
                   se-rest.first,
-                  mk-atype(t2(c"Type",t1(c"String")))
+                  mk-atype(t1(c"Type",t0(c"String")))
                )
             );
             if non-zero(base) {
@@ -1616,7 +1616,7 @@ let lsts-make-lit(t: Token): AST = (
          }
       };
       if non-zero(buffer) {
-         let be = mk-lit(with-location(mk-token(clone-rope(buffer)),loc)).ascript(t1(c"String") && t1(c"Literal"));
+         let be = mk-lit(with-location(mk-token(clone-rope(buffer)),loc)).ascript(t0(c"String") && t0(c"Literal"));
          if non-zero(base) {
             base = mk-app(
                Var( c"+", with-location(mk-token("+"),loc) ),
@@ -1627,7 +1627,7 @@ let lsts-make-lit(t: Token): AST = (
          };
       };
    } else if t.key.has-suffix(c"_ss") {
-      base = with-location(mk-lit(t.key.remove-suffix(c"_ss")),loc).ascript(t1(c"String") && t1(c"Literal"));
+      base = with-location(mk-lit(t.key.remove-suffix(c"_ss")),loc).ascript(t0(c"String") && t0(c"Literal"));
    };
    base
 );
@@ -1771,7 +1771,7 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       let term-rest = lsts-parse-type(tokens);
       tokens = term-rest.second;
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-      term = AType( t2(c"Type", phi-as-state(term-rest.first)) );
+      term = AType( t1(c"Type", phi-as-state(term-rest.first)) );
    } else if lsts-parse-head(tokens)==c"raw-type" {
       tokens = tail(tokens);
       lsts-parse-expect(c"(", tokens); tokens = tail(tokens);

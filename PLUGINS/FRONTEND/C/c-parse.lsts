@@ -1387,13 +1387,13 @@ let std-c-parse-selection-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
       tokens = std-c-take-expect(tokens, "(");
       let expr = std-c-parse-expression(tokens); tokens = expr.second;
       tokens = std-c-take-expect(tokens, ")");
-      let stmt1 = std-c-parse-statement(tokens); tokens = stmt1.second;
-      let stmt2 = if std-c-can-take(tokens, "else") {
+      let stmt0 = std-c-parse-statement(tokens); tokens = stmt0.second;
+      let stmt1 = if std-c-can-take(tokens, "else") {
          tokens = std-c-take-expect(tokens, "else");
          std-c-parse-statement(tokens);
-      } else Tuple( Some(CZOp(";")), tokens ); tokens = stmt2.second;
-      if expr.first.is-some && stmt1.first.is-some && stmt2.first.is-some
-      then Tuple( Some(CTernaryOp(op,close(expr.first.get-or-panic),close(stmt1.first.get-or-panic),close(stmt2.first.get-or-panic))), tokens )
+      } else Tuple( Some(CZOp(";")), tokens ); tokens = stmt1.second;
+      if expr.first.is-some && stmt0.first.is-some && stmt1.first.is-some
+      then Tuple( Some(CTernaryOp(op,close(expr.first.get-or-panic),close(stmt0.first.get-or-panic),close(stmt1.first.get-or-panic))), tokens )
       else Tuple( no, tokens );
    } else if std-c-can-take(tokens, "switch") {
       let op = "c::switch"; tokens = tail(tokens);

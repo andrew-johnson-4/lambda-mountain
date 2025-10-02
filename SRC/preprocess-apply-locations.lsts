@@ -9,7 +9,7 @@ let preprocess-apply-locations(program: AST): AST = (
       );
       Lit{l=key,ltk=token} => mk-lit(l, unique(ltk));
       Var{l=key,ltk=token} => mk-var(l, unique(ltk));
-      App{is-cons=is-cons,t1=left,t2=right} => mk-cons-or-app(is-cons, preprocess-apply-locations(t1), preprocess-apply-locations(t2));
+      App{is-cons=is-cons,t0=left,t1=right} => mk-cons-or-app(is-cons, preprocess-apply-locations(t0), preprocess-apply-locations(t1));
       Seq{seq=seq} => (
          program = mk-eof();
          for p in seq { program = program + preprocess-apply-locations(p) };

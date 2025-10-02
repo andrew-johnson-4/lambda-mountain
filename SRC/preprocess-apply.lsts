@@ -93,14 +93,14 @@ let preprocess-apply(program: AST, is-lhs: U64): AST = (
             mk-cons-or-app(is-cons, preprocess-apply(mk-var(vn,unique(vntk))), preprocess-apply(vt))
          }
       );
-      App{ is-cons-1=is-cons, left:App{ is-cons-2=is-cons, left:Var{vn=key,vntk=token}, vt1=right }, vt2=right } => (
+      App{ is-cons-1=is-cons, left:App{ is-cons-2=is-cons, left:Var{vn=key,vntk=token}, vt0=right }, vt1=right } => (
          if is-macro-head(vn,2) {
             preprocess-apply-hard(vn,2,program)
          } else {
             mk-cons-or-app(is-cons-1,
                preprocess-apply(mk-cons-or-app(is-cons-2,
-                  mk-var(vn,unique(vntk)), vt1
-               ),is-lhs), preprocess-apply(vt2,is-lhs)
+                  mk-var(vn,unique(vntk)), vt0
+               ),is-lhs), preprocess-apply(vt1,is-lhs)
             )
          }
       );

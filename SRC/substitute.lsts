@@ -10,8 +10,8 @@ let substitute(ctx: AContext, v: Token): Token = (
 let substitute(ctx: AContext, tt: Type): Type = (
    match tt {
       TVar{v=name} => match ctx.lookup(v, mk-eof()) {
-         Lit{tv=key} => t1(tv);
-         Var{tv=key} => t1(tv);
+         Lit{tv=key} => t0(tv);
+         Var{tv=key} => t0(tv);
          AType{tv=tt} => tv;
          _ => tt;
       };

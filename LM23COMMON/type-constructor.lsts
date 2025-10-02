@@ -3,7 +3,7 @@ let ta = TAny;
 
 let t0(tag: CString): Type = TGround(tag, close([] : List<Type>));
 let t1(tag: CString, p1: Type): Type = TGround(tag, close([p1]));
-let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, close([p1, p2]));
+let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, close([p2, p1]));
 
 let tv(name: CString): Type = TVar(name);
 

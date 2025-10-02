@@ -24,10 +24,10 @@ let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor
       let function-id = if typeof-term(fterm).is-t(c"FFI",0) || typeof-term(fterm).is-t(c"C-FFI",0)
                         then fname else mangle-identifier-function(fname, typeof-term(fterm));
       let ictx = mk-fragment().set(c"function-id", SAtom(function-id));
-      let inner-ctx = mk-fctx().bind(c"ictx", t1(c"ImplicitContext"), ictx)
+      let inner-ctx = mk-fctx().bind(c"ictx", t0(c"ImplicitContext"), ictx)
                                .bind(c"args", typeof-term(args), push-args);
       let r = mk-fragment();
-      match find-global-callable(c"primitive::call", t3(c"Cons",t1(c"ImplicitContext"),typeof-term(args)), args) {
+      match find-global-callable(c"primitive::call", t2(c"Cons",t0(c"ImplicitContext"),typeof-term(args)), args) {
          Glb{val:Abs{lhs=lhs, rhs=rhs}} => (
             r = blob-render(inner-ctx, rhs, r);
             r.context = close(ctx);

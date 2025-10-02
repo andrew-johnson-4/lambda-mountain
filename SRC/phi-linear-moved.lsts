@@ -8,7 +8,7 @@ let phi-linear-moved(tt: Type): Type = (
          };
          TAnd(new-conjugate)
       );
-      TGround{tag:c"Linear", parameters:[_..]} => t2(c"Linear",t1(c"Phi::Moved"));
+      TGround{tag:c"Linear", parameters:[_..]} => t1(c"Linear",t0(c"Phi::Moved"));
       TGround{tag=tag, parameters=parameters} => (
          let new-parameters = [] : List<Type>;
          for p in parameters.reverse {

@@ -13,9 +13,9 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ctx = ctx.bind( c"primitive::field-get-indirect", ta, ta, mk-var(c"."+field-name) );
    ctx = ctx.bind( c"primitive::field-set-indirect", ta, ta, mk-var(c"set."+field-name) );
    let field-get = substitute(ctx, find-global-callable(c"primitive::field-get", base-type, blame));
-   let field-set = substitute(ctx, find-global-callable(c"primitive::field-set", t3(c"Cons", base-type, field-type), blame));
-   let field-get-indirect = substitute(ctx, find-global-callable(c"primitive::field-get-indirect", t3(c"Array",base-type,ta), blame));
-   let field-set-indirect = substitute(ctx, find-global-callable(c"primitive::field-set-indirect", t3(c"Cons", t3(c"Array",base-type,ta), field-type), blame));
+   let field-set = substitute(ctx, find-global-callable(c"primitive::field-set", t2(c"Cons", base-type, field-type), blame));
+   let field-get-indirect = substitute(ctx, find-global-callable(c"primitive::field-get-indirect", t2(c"Array",base-type,ta), blame));
+   let field-set-indirect = substitute(ctx, find-global-callable(c"primitive::field-set-indirect", t2(c"Cons", t2(c"Array",base-type,ta), field-type), blame));
 
    ctx = (None : Maybe<TypeContext>)();
    ctx = ctx.bind( c"base-type", base-type, denormalize(base-type), mk-eof() );
@@ -94,8 +94,8 @@ let infer-type-definition(term: AST): Nil = (
          type-base-type-index = type-base-type-index.bind( lhs-type.ground-tag-and-arity, 1 );
          let field-ordinal = 0_u64;
          for Tuple{ field-name=first, field-type=second } in case-fields {
-            let guard = lhs-type && (if non-zero(case-tag) then t1(c"Tag::"+case-tag) else ta);
-            let field-wrapped-type = t2(c"Field::"+field-name, field-type);
+            let guard = lhs-type && (if non-zero(case-tag) then t0(c"Tag::"+case-tag) else ta);
+            let field-wrapped-type = t1(c"Field::"+field-name, field-type);
             add-quick-prop(lhs-type, guard, field-wrapped-type);
             add-weaken-quick-prop(lhs-type, guard, field-wrapped-type);
             visit-field-template(field-name, guard, field-type, term, case-fields.length - field-ordinal, case-number);
@@ -116,11 +116,11 @@ let infer-type-definition(term: AST): Nil = (
       };
       if not(has-tag-case) && has-any-case then infer-type-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, [] : List<(CString,Type)>, term, has-tag-case);
       if has-any-case {
-         add-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
-         add-weaken-quick-prop(lhs-type, lhs-type, t1(c"LM2Struct"));
+         add-quick-prop(lhs-type, lhs-type, t0(c"LM2Struct"));
+         add-weaken-quick-prop(lhs-type, lhs-type, t0(c"LM2Struct"));
       };
       if not(has-tag-case) && has-any-case then {
-         let tag-case-number = t2(c"CaseNumber", t1(c"0"));
+         let tag-case-number = t1(c"CaseNumber", t0(c"0"));
          add-quick-prop(lhs-type, lhs-type, tag-case-number);
          add-weaken-quick-prop(lhs-type, lhs-type, tag-case-number);
       };
@@ -131,8 +131,8 @@ let infer-type-definition(term: AST): Nil = (
             for Tuple{ field-name=first, field-type=second } in case-fields {
                o-case-fields = cons((field-name, field-type), o-case-fields);
             };
-            let tag-guard = lhs-type && t1(c"Tag::"+case-tag);
-            let tag-case-number = t2(c"CaseNumber", t1(to-string(case-index)));
+            let tag-guard = lhs-type && t0(c"Tag::"+case-tag);
+            let tag-case-number = t1(c"CaseNumber", t0(to-string(case-index)));
             add-quick-prop(tag-guard, tag-guard, tag-case-number);
             add-weaken-quick-prop(tag-guard, tag-guard, tag-case-number);
             infer-type-yield-constructor(lhs-type, case-tag, case-index, common-fields, o-case-fields, term, has-tag-case);
@@ -170,49 +170,49 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
 
    let return-id = uuid();
  
-   let body = mk-lit(c"({").ascript(t1(c"L"));
-   body = mk-cons(body, mk-app(mk-var(c"mangle-pre"),mk-atype(t2(c"Type",base-type))) );
-   body = mk-cons(body, mk-lit(c" ").ascript(t1(c"L")));
-   body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")));
-   body = mk-cons(body, mk-app(mk-var(c"mangle-post"),mk-atype(t2(c"Type",base-type))) );
-   body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
-   body = mk-cons(body, mk-lit(c"memset(&").ascript(t1(c"L")));
-   body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")));
-   body = mk-cons(body, mk-lit(c",0,sizeof ").ascript(t1(c"L")));
-   body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")));
-   body = mk-cons(body, mk-lit(c");").ascript(t1(c"L")));
+   let body = mk-lit(c"({").ascript(t0(c"L"));
+   body = mk-cons(body, mk-app(mk-var(c"mangle-pre"),mk-atype(t1(c"Type",base-type))) );
+   body = mk-cons(body, mk-lit(c" ").ascript(t0(c"L")));
+   body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L")));
+   body = mk-cons(body, mk-app(mk-var(c"mangle-post"),mk-atype(t1(c"Type",base-type))) );
+   body = mk-cons(body, mk-lit(c";").ascript(t0(c"L")));
+   body = mk-cons(body, mk-lit(c"memset(&").ascript(t0(c"L")));
+   body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L")));
+   body = mk-cons(body, mk-lit(c",0,sizeof ").ascript(t0(c"L")));
+   body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L")));
+   body = mk-cons(body, mk-lit(c");").ascript(t0(c"L")));
 
    if has-tag-case {
-      body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")) );
-      body = mk-cons(body, mk-lit(c".discriminator_case_tag=").ascript(t1(c"L")));
-      body = mk-cons(body, mk-lit(to-string(case-number)).ascript(t1(c"L")) );
-      body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
+      body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L")) );
+      body = mk-cons(body, mk-lit(c".discriminator_case_tag=").ascript(t0(c"L")));
+      body = mk-cons(body, mk-lit(to-string(case-number)).ascript(t0(c"L")) );
+      body = mk-cons(body, mk-lit(c";").ascript(t0(c"L")));
    };
 
    for Tuple{field-name=first, field-type=second} in common-fields.reverse {
       let mangled-field-name = c"0_" + field-name;
-      body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")) );
-      body = mk-cons(body, mk-lit(c".").ascript(t1(c"L")));
-      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name).ascript(t1(c"L"))) );
-      body = mk-cons(body, mk-lit(c"=").ascript(t1(c"L")));
+      body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L")) );
+      body = mk-cons(body, mk-lit(c".").ascript(t0(c"L")));
+      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name).ascript(t0(c"L"))) );
+      body = mk-cons(body, mk-lit(c"=").ascript(t0(c"L")));
       body = mk-cons(body, mk-var(mangled-field-name) );
-      body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
+      body = mk-cons(body, mk-lit(c";").ascript(t0(c"L")));
    };
 
    for Tuple{field-name=first, field-type=second} in case-fields.reverse {
       let mangled-field-name = to-string(case-number) + c"_" + field-name;
-      body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")) );
-      body = mk-cons(body, mk-lit(c".").ascript(t1(c"L")));
-      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name).ascript(t1(c"L"))) );
-      body = mk-cons(body, mk-lit(c"=").ascript(t1(c"L")));
+      body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L")) );
+      body = mk-cons(body, mk-lit(c".").ascript(t0(c"L")));
+      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name).ascript(t0(c"L"))) );
+      body = mk-cons(body, mk-lit(c"=").ascript(t0(c"L")));
       body = mk-cons(body, mk-var(mangled-field-name) );
-      body = mk-cons(body, mk-lit(c";").ascript(t1(c"L")));
+      body = mk-cons(body, mk-lit(c";").ascript(t0(c"L")));
    };
 
-   body = mk-cons(body, mk-lit(return-id).ascript(t1(c"L")));
-   body = mk-cons(body, mk-lit(c";})").ascript(t1(c"L")));
+   body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L")));
+   body = mk-cons(body, mk-lit(c";})").ascript(t0(c"L")));
 
-   let constructor = mk-glb( mk-token(case-tag).with-location(blame.location), mk-abs(args, body.ascript(base-type.expand-implied-phi.phi-as-initialize), t1(c"Blob") ) );
+   let constructor = mk-glb( mk-token(case-tag).with-location(blame.location), mk-abs(args, body.ascript(base-type.expand-implied-phi.phi-as-initialize), t0(c"Blob") ) );
 
    type-ast-inserts = type-ast-inserts.push(constructor); ()
 );

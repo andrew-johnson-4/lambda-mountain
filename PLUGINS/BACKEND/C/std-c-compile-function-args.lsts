@@ -5,9 +5,9 @@ let std-c-compile-function-args(ctx: FContext, lhs: AST): S = (
          let decl = std-c-mangle-declaration(kt, lhs);
          let text = std-c-compile-function-args(ctx, rest);
          text = text + SAtom(c",");
-         if can-unify( t2(c"C",t1(c"...")), kt ) {
+         if can-unify( t1(c"C",t0(c"...")), kt ) {
             text = text + SAtom(c"...");
-         } else if can-unify( t2(c"C",t1(c"void")), kt ) {
+         } else if can-unify( t1(c"C",t0(c"void")), kt ) {
             text = text + SAtom(c"void");
          } else {
             text = text + decl.first;
@@ -21,9 +21,9 @@ let std-c-compile-function-args(ctx: FContext, lhs: AST): S = (
       App{ left:Lit{key:c":"}, right:App{ v-t=left:Var{k=key}, right:AType{kt=tt} } } => (
          let decl = std-c-mangle-declaration(kt, lhs);
          let text = SNil();
-         if can-unify( t2(c"C",t1(c"...")), kt ) {
+         if can-unify( t1(c"C",t0(c"...")), kt ) {
             text = text + SAtom(c"...");
-         } else if can-unify( t2(c"C",t1(c"void")), kt ) {
+         } else if can-unify( t1(c"C",t0(c"void")), kt ) {
             text = text + SAtom(c"void");
          } else {
             text = text + decl.first;

@@ -15,7 +15,7 @@ let .without-tag(tt: Type): Type = (
          else if result.length==1 then result[0]
          else tand(result)
       );
-      TGround { tag:c"Arrow", parameters:[rng..dom..] } => t3(c"Arrow",dom.without-tag,rng.without-tag);
+      TGround { tag:c"Arrow", parameters:[rng..dom..] } => t2(c"Arrow",dom.without-tag,rng.without-tag);
       TGround { tag:c"Constructor" } => ta;
       TGround { tag:c"CaseNumber" } => ta;
       TGround { tag:c"C-FFI", parameters:[] } => ta;
