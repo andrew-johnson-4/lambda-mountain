@@ -57,5 +57,5 @@ let mk-lsts-token(s: String): Token = (
              .replace(c"\\\"", c"\"")
              + c"_rl";
    };
-   Token(s, us, iuid(), s.location)
+   Token(us, iuid(), s.location)
 );

@@ -1,6 +1,7 @@
 
 type SourceLocation = { filename: CString, line: U64, column: U64 };
-type Token = { skey: String, key: CString, nonce: U64, location: SourceLocation };
+type Token = { key: CString, nonce: U64, location: SourceLocation };
+let .skey(t: Token): String = intern(t.key);
 
 type AST zero ASTEOF implements DefaultFormattable
          = Meta { val: AST[] }
