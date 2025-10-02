@@ -5,3 +5,8 @@ assert( (t0(c"A") && t0(c"B")).is-t(c"A",0) );
 assert( (t0(c"A") && t0(c"B")).is-t(c"B",0) );
 assert( not((t0(c"A") && t0(c"B")).is-t(c"C",0)) );
 assert( safe-alloc-block-count == 0 );
+
+assert( not((t0(c"A") && t0(c"B")).is-arrow) );
+assert( (t2(c"Arrow",t0(c"A"),t0(c"B")) && t0(c"B")).is-arrow );
+assert( (t2(c"Array",t2(c"Arrow",t0(c"A"),t0(c"B")),ta) && t0(c"B")).is-arrow );
+assert( safe-alloc-block-count == 0 );
