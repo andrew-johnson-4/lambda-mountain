@@ -19,7 +19,6 @@ import SRC/type-tag.lsts;
 import SRC/cons-tail-or-self.lsts;
 
 # Boolean Queries
-import SRC/type-cmp.lsts;
 import SRC/is-t.lsts;
 import SRC/is-var.lsts;
 import SRC/is-open.lsts;
