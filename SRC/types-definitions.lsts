@@ -1,7 +1,3 @@
 
 # TGround needs to be the first type (tag 0) or else sorted unification will not work right
-type Type implements DefaultPrintable, DefaultFormattable zero TAny
-           = TGround { tag: CString, parameters: List<Type>[] }
-           | TVar { name: CString }
-           | TAny
-           | TAnd { conjugate:Vector<Type> };
+type Type implements DefaultPrintable, DefaultFormattable;
