@@ -1,10 +1,5 @@
 
-# TGround needs to be the first type (tag 0) or else sorted unification will not work right
-type Type implies MustRetain, MustRelease zero TAny
-        = TGround { tag:String, parameters:Vector<Type> }
-        | TAny	
-        | TVar { name:String }
-        | TAnd { conjugate:Vector<Type> };
+type Type implies MustRetain, MustRelease;
 
 # TODO Remove: the problem is that OwnedData<Type> is somehow not reified
 # fixing this bug in the V2 compiler is lower priority though than migrating to V3
