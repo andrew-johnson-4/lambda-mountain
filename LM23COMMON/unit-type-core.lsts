@@ -5,4 +5,5 @@ let safe-alloc-block-count = 0;
 
 import LM23COMMON/type-definition.lsts;
 import LM23COMMON/type-constructor.lsts;
+import LM23COMMON/type-destructor.lsts;
 import LM23COMMON/type-compare.lsts;
