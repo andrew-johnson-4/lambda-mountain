@@ -18,8 +18,8 @@ let denormalize-strong-inner(tt: Type): Type = (
          else if result.length==1 then result[0]
          else tand(result)
       );
-      TGround{tag:c"Arrow", parameters:[rng..dom..]} => t3(c"Arrow",denormalize-strong(dom),denormalize-strong(rng));
-      TGround{tag:c"Cons", parameters:[p2..p1..]} => t3(c"Cons",denormalize-strong(p1),denormalize-strong(p2));
+      TGround{tag:c"Arrow", parameters:[rng..dom..]} => t2(c"Arrow",denormalize-strong(dom),denormalize-strong(rng));
+      TGround{tag:c"Cons", parameters:[p2..p1..]} => t2(c"Cons",denormalize-strong(p1),denormalize-strong(p2));
       _ => tt;
    }
 );

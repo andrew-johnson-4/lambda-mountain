@@ -19,7 +19,7 @@ let plugins-backend-c-compile(): Nil = (
                   global-ctx = global-ctx.bind(key.key, kt, fragment);
                   std-c-fragment-context = std-c-fragment-context.bind(def-to-sym(program-term), fragment);
                } else {
-                  let repr-tt = clean-tt && t1(c"GlobalVariable");
+                  let repr-tt = clean-tt && t0(c"GlobalVariable");
                   global-ctx = global-ctx.bind(key.key, repr-tt, fragment);
                   std-c-fragment-context = std-c-fragment-context.bind(def-to-sym(program-term), fragment);
                }

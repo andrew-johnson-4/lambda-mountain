@@ -9,7 +9,7 @@ let .reify-type-variables(tt: Type): Type = (
          result
       );
       TGround{tag=tag, parameters=parameters} => TGround(tag, close(parameters.reify-type-variables));
-      TVar{name=name} => t1(c"ReifiedTypeVariable_" + name);
+      TVar{name=name} => t0(c"ReifiedTypeVariable_" + name);
    }
 );
 

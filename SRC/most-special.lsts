@@ -8,12 +8,12 @@
 #    f(x) is interpreted as "f informed by x"
 #    rather than as simply "f of x"
 
-let most-special(t1: Type, t2: Type): Type = (
-   if t1.is-arrow && t2.is-arrow {
-      if can-unify(t1.domain, t2.domain) then t2
-      else if can-unify(t2.domain, t1.domain) then t1
+let most-special(t0: Type, t1: Type): Type = (
+   if t0.is-arrow && t1.is-arrow {
+      if can-unify(t0.domain, t1.domain) then t1
+      else if can-unify(t1.domain, t0.domain) then t0
       else ta
-   } else if can-unify(t1, t2) then t2
-     else if can-unify(t2, t1) then t1
+   } else if can-unify(t0, t1) then t1
+     else if can-unify(t1, t0) then t0
      else ta
 );

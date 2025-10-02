@@ -2,14 +2,14 @@
 let with-size(tt: Type): Type = (
    match tt {
       TGround{tag:c"Cons", parameters:[p2..p1..]} => (
-         t3(c"Cons", with-size(p1), with-size(p2))
+         t2(c"Cons", with-size(p1), with-size(p2))
       );
       TAny{} => tt;
       TVar{} => tt;
       TGround{tag:c"Any"} => tt;
       _ => (
          if not(tt.is-t(c"Sized",0)) && non-zero(tt) && not(tt.is-t(c"Arrow",2))
-         then tt && t1(c"Sized")
+         then tt && t0(c"Sized")
          else tt
       );
    }

@@ -17,7 +17,7 @@ let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tct
 
 let phi-merge(tctx: TypeContext?, left-phi-state: Type, right-phi-state: Type, blame: AST): Type = (
    if can-unify(left-phi-state,right-phi-state) && can-unify(right-phi-state,left-phi-state) then left-phi-state
-   else apply-global-callable(tctx, c"phi", t3(c"Cons",left-phi-state,right-phi-state), blame).second;
+   else apply-global-callable(tctx, c"phi", t2(c"Cons",left-phi-state,right-phi-state), blame).second;
 );
 
 let phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>): List<PhiContextRow> = (

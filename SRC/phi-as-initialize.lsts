@@ -8,8 +8,8 @@ let .phi-as-initialize(tt: Type): Type = (
          };
          TAnd(new-conjugate);
       );
-      TGround{tag:"Phi::State",parameters:[st..]} => t2(c"Phi::Initialize",st);
-      TGround{} => if tt.is-phi-type then t2(c"Phi::Initialize",tt) else tt;
+      TGround{tag:"Phi::State",parameters:[st..]} => t1(c"Phi::Initialize",st);
+      TGround{} => if tt.is-phi-type then t1(c"Phi::Initialize",tt) else tt;
       _ => tt;
    }
 );

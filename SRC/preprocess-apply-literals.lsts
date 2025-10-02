@@ -1,7 +1,7 @@
 
 let preprocess-apply-literals(program: AST): AST = (
    match program {
-      App{is-cons=is-cons,t1=left,t2=right} => mk-cons-or-app(is-cons,preprocess-apply-literals(t1),preprocess-apply-literals(t2));
+      App{is-cons=is-cons,t0=left,t1=right} => mk-cons-or-app(is-cons,preprocess-apply-literals(t0),preprocess-apply-literals(t1));
       Seq{seqs=seq} => (
          program = mk-eof();
          for p in seqs { program = program + preprocess-apply-literals(p) };

@@ -21,7 +21,7 @@ let phi-state-internal(tctx: TypeContext?, tt: Type, top-level-tt: Type, blame: 
       TGround{tag:c"Phi::Id",parameters:[TGround{phi-id=tag,parameters:[]}..]} => (
          let phi-state = tctx.get-or(mk-tctx()).pctx.lookup(phi-id, ta);
          if not(non-zero(phi-state)) then exit-error("Unable to find Phi::Id<\{phi-id}> \{top-level-tt} \{blame}\n", blame);
-         tt && t2(c"Phi::State",phi-state);
+         tt && t1(c"Phi::State",phi-state);
       );
       TGround{tag:c"Phi::Initialize",parameters:[init-tt..]} => ta;
       TGround{tag:c"Phi::State",parameters:[init-tt..]} => ta;

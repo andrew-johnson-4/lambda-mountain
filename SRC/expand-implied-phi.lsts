@@ -8,19 +8,19 @@ let .expand-implied-phi(tt: Type): Type = (
          for c in conjugate {
             let ga = c.ground-tag-and-arity;
             let ip = implied-phi-index.lookup(ga,ta);
-            let ps = t2(c"Phi::State",ip);
+            let ps = t1(c"Phi::State",ip);
             if non-zero(ip) && not(can-unify(ps, tt)) {
                tt = tt && ps
             }
          }
       );
-      TGround{tag:c"Cons",parameters:[t2..t1..]} => (
-         tt = t3(c"Cons", t1.expand-implied-phi, t2.expand-implied-phi);
+      TGround{tag:c"Cons",parameters:[t1..t0..]} => (
+         tt = t2(c"Cons", t0.expand-implied-phi, t1.expand-implied-phi);
       );
       TGround{} => (
          let ga = tt.ground-tag-and-arity;
          let ip = implied-phi-index.lookup(ga,ta);
-         let ps = t2(c"Phi::State",ip);
+         let ps = t1(c"Phi::State",ip);
          if non-zero(ip) && not(can-unify(ps, tt)) {
             tt = tt && ps
          }

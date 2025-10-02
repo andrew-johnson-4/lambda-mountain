@@ -9,7 +9,7 @@ let phi-fresh(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Type) = 
          for c in conjugate { match c {
             TGround{tag:c"Phi::Id",parameters:[TGround{pid=tag}..]} => (
                phi-id = uuid();
-               new-conjugate = new-conjugate.push(t2(c"Phi::Id",t1(phi-id)));
+               new-conjugate = new-conjugate.push(t1(c"Phi::Id",t0(phi-id)));
             );
             TGround{tag:c"Phi::State",parameters:[pst..]} => (
                phi-state = pst;

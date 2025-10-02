@@ -36,8 +36,8 @@ let std-apply-macro-tag(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (
       Lit{key=key} => (
          if index-of-tag(key)==unknown-index-of-tag then (tctx, mk-eof()) else {
             let tag-name    = mk-lit(to-string(index-of-tag(key)));
-            let tag-ordinal = tag-name.ascript(t1(c"Constant") && t1(c"Literal") && t1(c"U64"));
-            let tag-type    = mk-atype(t1(c"Tag::" + key));
+            let tag-ordinal = tag-name.ascript(t0(c"Constant") && t0(c"Literal") && t0(c"U64"));
+            let tag-type    = mk-atype(t0(c"Tag::" + key));
             (tctx, mk-cons(mk-cons(tag-name, tag-ordinal), tag-type))
          }
       );
@@ -53,7 +53,7 @@ let std-apply-macro-constant(tctx: Maybe<TypeContext>, mname: CString, margs: AS
 );
 
 let std-apply-macro-location(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
-   (tctx, mk-lit(margs.location.into(type(String))).ascript(t1(c"String") && t1(c"Literal")))
+   (tctx, mk-lit(margs.location.into(type(String))).ascript(t0(c"String") && t0(c"Literal")))
 );
 
 let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed, strong: Bool): (TypeContext?, AST) = (
@@ -115,7 +115,7 @@ let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type): (T
                (let rt, let new-right) = std-infer-peeped-arguments(tctx, right, p2);
                if not(is(left,new-left)) || not(is(right,new-right))
                then t = mk-cons-or-app(is-cons,new-left,new-right);
-               (tctx, t3(c"Cons",lt,rt), t)
+               (tctx, t2(c"Cons",lt,rt), t)
             );
             _ => fail("std-infer-peeped-arguments expected cons term: \{t}\n");
          }

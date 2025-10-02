@@ -53,7 +53,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom(k);
          text = text + post-decl;
          text = text + SAtom(c";\n");
-         if can-unify(t2(c"C",t1(c"typedef")), tt) || can-unify(t3(c"Array",t2(c"C",t1(c"typedef")),ta), tt) {
+         if can-unify(t1(c"C",t0(c"typedef")), tt) || can-unify(t2(c"Array",t1(c"C",t0(c"typedef")),ta), tt) {
             assemble-header-typedef-section = assemble-header-typedef-section + text;
          } else {
             assemble-gdecl-section = assemble-gdecl-section + text;
@@ -84,7 +84,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             text = text + SAtom(c";\n");
 
             let inner-expr = std-c-compile-expr( ctx, t, false );
-            if can-unify(t2(c"C",t1(c"typedef")), tt) || can-unify(t3(c"Array",t2(c"C",t1(c"typedef")),ta), tt) {
+            if can-unify(t1(c"C",t0(c"typedef")), tt) || can-unify(t2(c"Array",t1(c"C",t0(c"typedef")),ta), tt) {
                assemble-header-typedef-section = assemble-header-typedef-section + text;
             } else {
                assemble-gdecl-section = assemble-gdecl-section + text;
@@ -103,7 +103,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{} } } => false;
             _ => true;
          };
-         if initialized || can-unify(t2(c"C",t1(c"typedef")), tt) {
+         if initialized || can-unify(t1(c"C",t0(c"typedef")), tt) {
             let text = SNil();
             if not(config-strip-debug) && loc.filename != c"Unknown" {
                text = text + SAtom(c"\n#line ");
@@ -119,7 +119,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             text = text + SAtom(c"(");
             text = text + std-c-compile-function-args(ctx, lhs);
             text = text + SAtom(c");\n");
-            if can-unify(t2(c"C",t1(c"typedef")), tt) {
+            if can-unify(t1(c"C",t0(c"typedef")), tt) {
                assemble-header-typedef-section = assemble-header-typedef-section + text;
             } else {
                assemble-gdecl-section = assemble-gdecl-section + text;

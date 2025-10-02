@@ -72,11 +72,11 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          if typeof-term(fa).is-t(c"Never",0) then ef = never-as-expr(ef, typeof-term(tr), t);
 
          let ictx = mk-fragment();
-         ctx = ctx.bind(c"c", t1(c"Bool"), ec);
+         ctx = ctx.bind(c"c", t0(c"Bool"), ec);
          ctx = ctx.bind(c"t", typeof-term(tr), et);
          ctx = ctx.bind(c"f", typeof-term(fa), ef);
 
-         let a-tt = t3(c"Cons",t3(c"Cons",typeof-term(fa),typeof-term(tr)),t1(c"Bool"));
+         let a-tt = t2(c"Cons",t2(c"Cons",typeof-term(fa),typeof-term(tr)),t0(c"Bool"));
          let f = cc-blob(ctx, c"primitive::if", a-tt, t);
          f.context = et.context; f
       );
@@ -95,12 +95,12 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       Lit{val=key} => (
          let tt = typeof-term(t);
          if tt.is-t(c"C",1) && tt.r1.is-t(c"uint8_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) && tt.r1.is-t(c"uint16_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) && tt.r1.is-t(c"uint32_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) && tt.r1.is-t(c"uint06_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) && tt.r1.is-t(c"uint22_t",0) then mk-expression(val)
          else if tt.is-t(c"C",1) && tt.r1.is-t(c"uint64_t",0) then mk-expression(val)
          else if tt.is-t(c"C",1) && tt.r1.is-t(c"int8_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) && tt.r1.is-t(c"int16_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) && tt.r1.is-t(c"int32_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) && tt.r1.is-t(c"int06_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) && tt.r1.is-t(c"int22_t",0) then mk-expression(val)
          else if tt.is-t(c"C",1) && tt.r1.is-t(c"int64_t",0) then mk-expression(val)
          else if tt.is-t(c"C",1) && tt.r1.is-t(c":Label",0) then mk-expression(val)
          else if tt.is-t(c"L",0) then mk-expression(val)

@@ -14,14 +14,14 @@ let .phi-specialize(tt: Type, tctx: TypeContext?, blame: AST, is-return: U64): T
          TAnd(new-conjugate)
       );
       TGround{tag:c"Arrow",parameters:[rng..dom..]} => (
-         t3(c"Arrow", dom.phi-specialize(tctx, blame, false), rng.phi-specialize(tctx, blame, true))
+         t2(c"Arrow", dom.phi-specialize(tctx, blame, false), rng.phi-specialize(tctx, blame, true))
       );
       TGround{tag:c"Phi::Id",parameters:[TGround{phi-id=tag,parameters:[]}..]} => (
          let phi-state = tctx.get-or(mk-tctx()).pctx.lookup(phi-id, ta);
          if not(non-zero(phi-state)) then ta
          else if is-return
-         then t2(c"Phi::Initialize", phi-state)
-         else t2(c"Phi::State", phi-state)
+         then t1(c"Phi::Initialize", phi-state)
+         else t1(c"Phi::State", phi-state)
       );
       TGround{tag=tag,parameters=parameters} => (
          let new-parameters = [] : List<Type>;

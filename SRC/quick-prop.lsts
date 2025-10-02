@@ -52,9 +52,9 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
 let weaken-quick-prop-index = {} : HashtableEq<(CString,U64),List<(Type,Type)>>;
 
 # core implicit weakening rules
-add-weaken-quick-prop( t2(c"Phi",ta), t2(c"Phi",ta), t2(c"Phi",ta) );
-add-weaken-quick-prop( t2(c"Constructor",ta), t2(c"Constructor",ta), t2(c"Constructor",ta) );
-add-weaken-quick-prop( t2(c"CaseNumber",ta), t2(c"CaseNumber",ta), t2(c"CaseNumber",ta) );
+add-weaken-quick-prop( t1(c"Phi",ta), t1(c"Phi",ta), t1(c"Phi",ta) );
+add-weaken-quick-prop( t1(c"Constructor",ta), t1(c"Constructor",ta), t1(c"Constructor",ta) );
+add-weaken-quick-prop( t1(c"CaseNumber",ta), t1(c"CaseNumber",ta), t1(c"CaseNumber",ta) );
 
 let add-weaken-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
    let key = pre.ground-tag-and-arity;
