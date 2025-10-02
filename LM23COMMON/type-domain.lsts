@@ -11,4 +11,3 @@ let .domain(tt: Type): Type = (
       _ => ta;
    }
 );
-
