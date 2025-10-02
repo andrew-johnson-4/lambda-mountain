@@ -16,6 +16,9 @@ declare-binop( $"*", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"*
 declare-binop( $"&&", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"&&"; y; l")"; ) );
 declare-binop( $"||", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"||"; y; l")"; ) );
 
+declare-binop( $"and", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"&&"; y; l")"; ) );
+declare-binop( $"or", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"||"; y; l")"; ) );
+
 declare-binop( $"<<", raw-type(U64), raw-type(U64+Constant), raw-type(U64), ( l"("; x; l"<<"; y; l")"; ) );
 declare-binop( $">>", raw-type(U64), raw-type(U64+Constant), raw-type(U64), ( l"("; x; l">>"; y; l")"; ) );
 

@@ -1,0 +1,44 @@
+
+let ta = TAny;
+
+let t0(tag: CString): Type = TGround(tag, close([] : List<Type>));
+let t1(tag: CString, p1: Type): Type = TGround(tag, close([p1]));
+let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, close([p1, p2]));
+
+let tv(name: CString): Type = TVar(name);
+
+let $"&&"(lt: Type, rt: Type): Type = (
+   match (lt, rt) {
+      Tuple{first:TAny{}} => rt;
+      Tuple{second:TAny{}} => lt;
+      Tuple{first:TAnd{lconjugate=conjugate},second:TAnd{rconjugate=conjugate}} => (
+         let result = mk-vector(type(Type), lconjugate.length+rconjugate.length);
+         for c in lconjugate { result = result.push(c) };
+         for c in rconjugate { result = result.push(c) };
+         result = result.sort;
+         TAnd(result)
+      );
+      Tuple{first=first,second:TAnd{rconjugate=conjugate}} => (
+         let result = mk-vector(type(Type), 1+rconjugate.length);
+         result = result.push(first);
+         for c in rconjugate { result = result.push(c) };
+         result = result.sort;
+         TAnd(result)
+      );
+      Tuple{first:TAnd{lconjugate=conjugate},second=second} => (
+         let result = mk-vector(type(Type), lconjugate.length+1);
+         for c in lconjugate { result = result.push(c) };
+         result = result.push(second);
+         result = result.sort;
+         TAnd(result)
+      );
+      Tuple{first=first,second=second} => (
+         let result = mk-vector(type(Type), 2);
+         result = result.push(first);
+         result = result.push(second);
+         result = result.sort;
+         TAnd(result)
+      );
+   };
+   lt
+);
