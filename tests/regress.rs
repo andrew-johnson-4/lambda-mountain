@@ -110,7 +110,7 @@ fn regression_tests() {
          let actual = run_bootstrap(&path, false, false);
          let actual = actual.trim().to_string();
          if expected != actual {
-            failures.push(( "--compile", path, expected, actual ));
+            failures.push(( "--compile".to_string(), path, expected, actual ));
          }
       }
    }
@@ -123,7 +123,7 @@ fn regression_tests() {
          let actual = run_bootstrap(&path, false, false);
          let actual = actual.trim().to_string();
          if expected != actual {
-            failures.push(( "--compile", path, expected, actual ));
+            failures.push(( "--compile".to_string(), path, expected, actual ));
          }
       }
    }
@@ -136,7 +136,7 @@ fn regression_tests() {
          let actual = run_bootstrap(&path, false, false);
          let actual = actual.trim().to_string();
          if expected != actual {
-            failures.push(( "--compile", path, expected, actual ));
+            failures.push(( "--compile".to_string(), path, expected, actual ));
          }
       }
    }
@@ -149,7 +149,7 @@ fn regression_tests() {
          let actual = run_bootstrap(&path, false, false);
          let actual = actual.trim().to_string();
          if expected != actual {
-            failures.push(( "--compile", path, expected, actual ));
+            failures.push(( "--compile".to_string(), path, expected, actual ));
          }
       }
    }
@@ -158,10 +158,11 @@ fn regression_tests() {
       if !std::path::Path::new(&(path.clone() + ".skip")).exists() {
          let expected = std::fs::read_to_string(path.clone() + ".out").unwrap_or("".to_string());
          let expected = expected.trim().to_string();
-         let actual = run_bootstrap(&path, false, true);
+         let isv3 = !path.contains("lm-");
+         let actual = run_bootstrap(&path, false, isv3);
          let actual = actual.trim().to_string();
          if expected != actual {
-            failures.push(( "--compile", path, expected, actual ));
+            failures.push(( format!("--compile {}", isv3), path, expected, actual ));
          }
       }
    }
