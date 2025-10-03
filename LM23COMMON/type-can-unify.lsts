@@ -1,26 +1,26 @@
 
 #let $"<:"(pt: Type, fpt: Type): U64 = can-unify(fpt,pt);
 
-#let can-unify(fpt: List<Type>, pt: List<Type>): U64 = (
-   #if fpt.length == pt.length {
-   #   let ok = true;
-   #   while ok && non-zero(fpt) {
-   #      if not(can-unify(head(fpt), head(pt))) then (ok = false);
-   #      fpt = tail(fpt); pt = tail(pt);
-   #   };
-   #   ok
-   #} else false
-#);
+let can-unify(fpt: List<Type>, pt: List<Type>): U64 = (
+   if fpt.length == pt.length {
+      let ok = true;
+      while ok && non-zero(fpt) {
+         if not(can-unify(head(fpt), head(pt))) then (ok = false);
+         fpt = tail(fpt); pt = tail(pt);
+      };
+      ok
+   } else false
+);
 
-#let can-unify(fpt: Type, pt: Type): U64 = (
-   #match Tuple(fpt, pt) {
-      #Tuple{ first:TAny{} } => true;
-      #Tuple{ first:TGround{tag:c"Any"} } => true;
-      #Tuple{ first:TGround{tag:c"MustNotRetain"} } => true;
-      #Tuple{ first:TGround{tag:c"MustNotMove"} } => true;
-      #Tuple{ first:TGround{tag:c"Phi::Initialize"} } => true;
-      #Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => false;
-      #Tuple{ first:TVar{} } => true;
+let can-unify(fpt: Type, pt: Type): U64 = (
+   match Tuple(fpt, pt) {
+      Tuple{ first:TAny{} } => true;
+      Tuple{ first:TGround{tag:c"Any"} } => true;
+      Tuple{ first:TGround{tag:c"MustNotRetain"} } => true;
+      Tuple{ first:TGround{tag:c"MustNotMove"} } => true;
+      Tuple{ first:TGround{tag:c"Phi::Initialize"} } => true;
+      Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => false;
+      Tuple{ first:TVar{} } => true;
       #Tuple{ first:TAnd{ lconjugate=conjugate }, second:TAnd{ rconjugate=conjugate } } => (
       #   let result = true as U64;
       #   let ri = 0_u64;
@@ -101,56 +101,56 @@
       #   result
       #);
 
-      ## Ignore C Access Modifiers For Now
-      #Tuple{ first:TGround{tag:c"C", parameters:[TGround{tag:c"const"}..]} } => true;
+      # Ignore C Access Modifiers For Now
+      Tuple{ first:TGround{tag:c"C", parameters:[TGround{tag:c"const"}..]} } => true;
 
-      ## Varargs
-      #Tuple{
-      #    first:TGround{tag:c"Cons", parameters:[
-      #       TGround{tag:c"...", parameters:[lp1..]}..
-      #       lpr..
-      #    ]},
-      #    second:TGround{tag:c"Cons", parameters:[rp1..rpr..]}
-      #} => (
-      #   if can-unify(lp1,rp1) then can-unify(fpt,rpr) else can-unify(lpr,pt)
-      #);
-      #Tuple{
-      #    first:TGround{tag:c"Cons", parameters:[
-      #       TGround{tag:c"...", parameters:[lp1..]}..
-      #       lpr..
-      #    ]},
-      #    second:rp1
-      #} => (
-      #   if can-unify(lp1,rp1) then can-unify(lpr,t0(c"Nil")) else can-unify(lpr,rp1)
-      #);
-      #Tuple{
-      #    first:TGround{tag:c"...", parameters:[lp1..]},
-      #    second:TGround{tag:c"Cons", parameters:[rp1..rpr..]}
-      #} => (
-      #   can-unify(lp1,rp1) && can-unify(fpt,rpr)
-      #);
-      #Tuple{
-      #    first:TGround{tag:c"...", parameters:[lp1..]},
-      #    second:TGround{tag:c"Nil", parameters:[]}
-      #} => true;
-      #Tuple{
-      #    first:TGround{tag:c"...", parameters:[lp1..]},
-      #    second:rp1
-      #} => can-unify(lp1,rp1);
+      # Varargs
+      Tuple{
+          first:TGround{tag:c"Cons", parameters:[
+             TGround{tag:c"...", parameters:[lp1..]}..
+             lpr..
+          ]},
+          second:TGround{tag:c"Cons", parameters:[rp1..rpr..]}
+      } => (
+         if can-unify(lp1,rp1) then can-unify(fpt,rpr) else can-unify(lpr,pt)
+      );
+      Tuple{
+          first:TGround{tag:c"Cons", parameters:[
+             TGround{tag:c"...", parameters:[lp1..]}..
+             lpr..
+          ]},
+          second:rp1
+      } => (
+         if can-unify(lp1,rp1) then can-unify(lpr,t0(c"Nil")) else can-unify(lpr,rp1)
+      );
+      Tuple{
+          first:TGround{tag:c"...", parameters:[lp1..]},
+          second:TGround{tag:c"Cons", parameters:[rp1..rpr..]}
+      } => (
+         can-unify(lp1,rp1) && can-unify(fpt,rpr)
+      );
+      Tuple{
+          first:TGround{tag:c"...", parameters:[lp1..]},
+          second:TGround{tag:c"Nil", parameters:[]}
+      } => true;
+      Tuple{
+          first:TGround{tag:c"...", parameters:[lp1..]},
+          second:rp1
+      } => can-unify(lp1,rp1);
 
-      #Tuple{
-      #    first:TGround{tag:c"Arrow", parameters:[lrng.. ldom..]},
-      #    second:TGround{tag:c"Arrow", parameters:[rrng.. rdom..]}
-      #} => (
-      #   if can-unify(rdom, ldom) {
-      #      can-unify(lrng, rrng)
-      #   } else false
-      #);
+      Tuple{
+          first:TGround{tag:c"Arrow", parameters:[lrng.. ldom..]},
+          second:TGround{tag:c"Arrow", parameters:[rrng.. rdom..]}
+      } => (
+         if can-unify(rdom, ldom) {
+            can-unify(lrng, rrng)
+         } else false
+      );
 
-      #Tuple{
-      #    first:TGround{ltn=tag, lps=parameters},
-      #    second:TGround{rtn=tag, rps=parameters}
-      #} => ltn==rtn && can-unify(lps,rps);
-      #_ => false;
-   #};
-#);
+      Tuple{
+          first:TGround{ltn=tag, lps=parameters},
+          second:TGround{rtn=tag, rps=parameters}
+      } => ltn==rtn && can-unify(lps,rps);
+      _ => false;
+   };
+);
