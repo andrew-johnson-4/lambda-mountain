@@ -2,7 +2,6 @@
 let concrete-type-instances-index = {} : HashtableEq<(CString,U64),List<Type>>;
 
 let add-concrete-type-instance(tt: Type, blame: AST): Nil = (
-   validate-type(tt, blame);
    if not(tt.is-phi-type) then {
       tt = normalize-strong(tt).sanitize-phi;
       let lt = tt.slot(c"Array",2);
