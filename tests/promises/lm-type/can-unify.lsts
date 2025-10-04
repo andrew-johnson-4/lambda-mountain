@@ -24,3 +24,20 @@ assert( safe-alloc-block-count == 0 );
 assert( t1(c"A",t0(c"A") && t0(c"B")) <: t1(c"A",t0(c"A")) );
 assert( not(t1(c"A",t0(c"B")) <: t1(c"A",t0(c"A") && t0(c"B"))) );
 assert( safe-alloc-block-count == 0 );
+
+assert( t0(c"Nil") <: t1(c"...",t0(c"A")) );
+assert( t0(c"A") <: t1(c"...",t0(c"A")) );
+assert( not(t0(c"B") <: t1(c"...",t0(c"A"))) );
+assert( t2(c"Cons",t0(c"A"),t0(c"A")) <: t1(c"...",t0(c"A")) );
+assert( not(t2(c"Cons",t0(c"B"),t0(c"A")) <: t1(c"...",t0(c"A"))) );
+assert( not(t2(c"Cons",t0(c"A"),t0(c"C")) <: t1(c"...",t0(c"A"))) );
+assert( safe-alloc-block-count == 0 );
+
+assert( t2(c"Cons",t0(c"B"),t0(c"A")) <: t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A"))) );
+assert( not(t2(c"Cons",t0(c"A"),t0(c"A")) <: t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A")))) );
+assert( not(t2(c"Cons",t0(c"B"),t0(c"B")) <: t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A")))) );
+assert( t0(c"B") <: t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A"))) );
+assert( not(t0(c"A") <: t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A")))) );
+assert( t0(c"B") <: t2(c"Cons",t1(c"...",t0(c"B")),t1(c"...",t0(c"A"))) );
+assert( t0(c"A") <: t2(c"Cons",t1(c"...",t0(c"B")),t1(c"...",t0(c"A"))) );
+assert( safe-alloc-block-count == 0 );
