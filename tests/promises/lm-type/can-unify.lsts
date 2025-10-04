@@ -21,3 +21,6 @@ assert( t2(c"Arrow",t0(c"A"),t0(c"A") && t0(c"B")) <: t2(c"Arrow",t0(c"A"),t0(c"
 assert( not(t2(c"Arrow",t0(c"A"),t0(c"A")) <: t2(c"Arrow",t0(c"A"),t0(c"A") && t0(c"B"))) );
 assert( safe-alloc-block-count == 0 );
 
+assert( t1(c"A",t0(c"A") && t0(c"B")) <: t1(c"A",t0(c"A")) );
+assert( not(t1(c"A",t0(c"B")) <: t1(c"A",t0(c"A") && t0(c"B"))) );
+assert( safe-alloc-block-count == 0 );
