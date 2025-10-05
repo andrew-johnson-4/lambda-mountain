@@ -47,6 +47,25 @@ let .dt(tr: TypeContextRow): Type = (
       _ => ta;
    }
 );
+let .phi-id(tr: PhiContextRow): CString = (
+   match tr {
+      PhiContextRow{ phi-id=phi-id } => phi-id;
+      _ => ta;
+   }
+);
+let .phi-tt(tr: PhiContextRow): Type = (
+   match tr {
+      PhiContextRow{ phi-tt=phi-tt } => phi-tt;
+      _ => ta;
+   }
+);
+let .blame(tr: PhiContextRow): AST = (
+   match tr {
+      PhiContextRow{ blame=blame } => blame;
+      _ => ta;
+   }
+);
+
 let .denormalized-and-phi-type(tr: TypeContextRow, tctx: TypeContext?): Type = phi-state(tctx,tr.denormalized-type,tr.def);
 let .into(tr: TypeContextRow, tt: Type<String>): String = "TypeContextRow{ key: \"\{tr.key}\", dt: \"\{tr.dt}\" }";
 

@@ -1,7 +1,7 @@
 
-let .lookup(tctx: TypeContext?, key: CString): TypeContextRow = (
+let .lookup(tctx: TypeContext?, key: CString): TypeContextRow = tctx.get-or(mk-tctx()).tctx.lookup(key);
+let .lookup(trs: List<TypeContextRow>, key: CString): TypeContextRow = (
    let default = NullTypeContextRow;
-   let trs = tctx.get-or(mk-tctx()).tctx;
    let continue = true;
    for tr in trs { if continue {
       if tr.key == key {
@@ -12,9 +12,9 @@ let .lookup(tctx: TypeContext?, key: CString): TypeContextRow = (
    default
 );
 
-let .lookup-phi(tctx: TypeContext?, key: CString): PhiContextRow = (
+let .lookup-phi(tctx: TypeContext?, key: CString): PhiContextRow = tctx.get-or(mk-tctx()).pctx.lookup(key);
+let .lookup(trs: List<PhiContextRow>, key: CString): PhiContextRow = (
    let default = NullPhiContextRow;
-   let trs = tctx.get-or(mk-tctx()).pctx;
    let continue = true;
    for tr in trs { if continue {
       if tr.phi-id == key {
