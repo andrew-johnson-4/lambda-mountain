@@ -17,7 +17,7 @@ let .phi-specialize(tt: Type, tctx: TypeContext?, blame: AST, is-return: U64): T
          t2(c"Arrow", dom.phi-specialize(tctx, blame, false), rng.phi-specialize(tctx, blame, true))
       );
       TGround{tag:c"Phi::Id",parameters:[TGround{phi-id=tag,parameters:[]}..]} => (
-         let phi-state = tctx.get-or(mk-tctx()).pctx.lookup(phi-id, ta);
+         let phi-state = tctx.lookup-phi(phi-id).phi-tt;
          if not(non-zero(phi-state)) then ta
          else if is-return
          then t1(c"Phi::Initialize", phi-state)

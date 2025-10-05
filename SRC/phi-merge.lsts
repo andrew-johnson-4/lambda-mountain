@@ -3,7 +3,7 @@ let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tct
    let seen = mk-vector(type(CString));
    for Tuple{ sid=phi-id, st=phi-tt, pblame=blame } in tctx-secondary {
       if not(seen.contains(sid)) {
-         let pt = tctx-primary.lookup(sid,ta);
+         let pt = tctx-primary.lookup(sid).phi-tt;
          if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,pblame), tctx-primary )
          else (
             let rt = phi-merge(tctx-globals, pt, st, blame);
@@ -24,7 +24,7 @@ let phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContex
    let seen = mk-vector(type(CString));
    for Tuple{ sid=phi-id, st=phi-tt, pblame=blame } in tctx-secondary {
       if not(seen.contains(sid)) {
-         let pt = tctx-primary.lookup(sid,ta);
+         let pt = tctx-primary.lookup(sid).phi-tt;
          if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,pblame), tctx-primary );
          seen = seen.push(sid);
       };

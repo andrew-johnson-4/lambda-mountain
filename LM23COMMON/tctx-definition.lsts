@@ -1,0 +1,49 @@
+
+type TypeContextRow = NullTypeContextRow | TypeContextRow { key: CString, nt: Type, dt: Type, blame: AST };
+type PhiContextRow = NullPhiContextRow | PhiContextRow { phi-id: CString, phi-tt: Type, blame: AST };
+type TypeContext = { tctx:List<TypeContextRow>, pctx: List<PhiContextRow>, is-unsafe: U64, is-blob: U64, function-name:CString };
+let mk-tctx(): TypeContext = TypeContext( [] : List<TypeContextRow>, [] : List<PhiContextRow>, false, false, c"" );
+
+let .key(tr: TypeContextRow): CString = (
+   match tr {
+      TypeContextRow{ key=key } => key;
+      _ => c"";
+   }
+);
+let .nt(tr: TypeContextRow): Type = (
+   match tr {
+      TypeContextRow{ nt=nt } => nt;
+      _ => ta;
+   }
+);
+let .dt(tr: TypeContextRow): Type = (
+   match tr {
+      TypeContextRow{ dt=dt } => dt;
+      _ => ta;
+   }
+);
+let .blame(tr: TypeContextRow): AST = (
+   match tr {
+      TypeContextRow{ blame=blame } => blame;
+      _ => ASTEOF;
+   }
+);
+
+let .phi-id(tr: PhiContextRow): CString = (
+   match tr {
+      PhiContextRow{ phi-id=phi-id } => phi-id;
+      _ => c"";
+   }
+);
+let .phi-tt(tr: PhiContextRow): Type = (
+   match tr {
+      PhiContextRow{ phi-tt=phi-tt } => phi-tt;
+      _ => ta;
+   }
+);
+let .blame(tr: PhiContextRow): AST = (
+   match tr {
+      PhiContextRow{ blame=blame } => blame;
+      _ => ASTEOF;
+   }
+);
