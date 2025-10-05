@@ -50,7 +50,7 @@ let .dt(tr: TypeContextRow): Type = (
 let .phi-id(tr: PhiContextRow): CString = (
    match tr {
       PhiContextRow{ phi-id=phi-id } => phi-id;
-      _ => ta;
+      _ => c"";
    }
 );
 let .phi-tt(tr: PhiContextRow): Type = (
@@ -62,7 +62,7 @@ let .phi-tt(tr: PhiContextRow): Type = (
 let .blame(tr: PhiContextRow): AST = (
    match tr {
       PhiContextRow{ blame=blame } => blame;
-      _ => ta;
+      _ => ASTEOF;
    }
 );
 
