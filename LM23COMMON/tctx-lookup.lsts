@@ -1,0 +1,26 @@
+
+let .lookup(tctx: TypeContext?, key: CString): TypeContextRow = (
+   let default = NullTypeContextRow;
+   let trs = tctx.get-or(mk-tctx()).tctx;
+   let continue = true;
+   for tr in trs { if continue {
+      if tr.key == key {
+         default = tr;
+         continue = false;
+      }
+   }};
+   default
+);
+
+let .lookup-phi(tctx: TypeContext?, key: CString): PhiContextRow = (
+   let default = NullPhiContextRow;
+   let trs = tctx.get-or(mk-tctx()).pctx;
+   let continue = true;
+   for tr in trs { if continue {
+      if tr.phi-id == key {
+         default = tr;
+         continue = false;
+      }
+   }};
+   default
+);

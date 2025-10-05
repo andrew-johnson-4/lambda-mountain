@@ -5,30 +5,49 @@ type AST implements DefaultFormattable;
 # constructor with a default argument
 let $"App"(left: AST[], right: AST[]): AST = App ( false, left, right );
 
-let .direct-type(tr: TypeContextRow): Type = if non-zero(tr.nt) then tr.nt else tr.dt;
-let .normalized-type(tr: TypeContextRow): Type = if non-zero(tr.nt) then tr.nt else normalize(tr.dt);
-let .denormalized-type(tr: TypeContextRow): Type = if non-zero(tr.dt) then tr.dt else denormalize(tr.nt);
+let .direct-type(tr: TypeContextRow): Type = (
+   match tr {
+      TypeContextRow{ nt=nt, dt=dt } => if non-zero(nt) then nt else dt;
+      _ => ta;
+   }
+);
+let .normalized-type(tr: TypeContextRow): Type = (
+   match tr {
+      TypeContextRow{ nt=nt, dt=dt } => if non-zero(nt) then nt else normalize(dt);
+      _ => ta;
+   }
+);
+let .denormalized-type(tr: TypeContextRow): Type = (
+   match tr {
+      TypeContextRow{ nt=nt, dt=dt } => if non-zero(dt) then dt else denormalize(nt);
+      _ => ta;
+   }
+);
+let .def(tr: TypeContextRow): AST = (
+   match tr {
+      TypeContextRow{ blame=blame } => blame;
+      _ => ASTEOF;
+   }
+);
+let .key(tr: TypeContextRow): CString = (
+   match tr {
+      TypeContextRow{ key=key } => key;
+      _ => c"";
+   }
+);
+let .nt(tr: TypeContextRow): Type = (
+   match tr {
+      TypeContextRow{ nt=nt } => nt;
+      _ => ta;
+   }
+);
+let .dt(tr: TypeContextRow): Type = (
+   match tr {
+      TypeContextRow{ dt=dt } => dt;
+      _ => ta;
+   }
+);
 let .denormalized-and-phi-type(tr: TypeContextRow, tctx: TypeContext?): Type = phi-state(tctx,tr.denormalized-type,tr.def);
-let .lookup(trs: List<TypeContextRow>, key: CString, default: TypeContextRow): TypeContextRow = (
-   let continue = true;
-   for tr in trs { if continue {
-      if tr.key == key {
-         default = tr;
-         continue = false;
-      }
-   }};
-   default
-);
-let .lookup(trs: List<PhiContextRow>, key: CString, default: Type): Type = (
-   let continue = true;
-   for tr in trs { if continue {
-      if tr.phi-id == key {
-         default = tr.phi-tt;
-         continue = false;
-      }
-   }};
-   default
-);
 let .into(tr: TypeContextRow, tt: Type<String>): String = "TypeContextRow{ key: \"\{tr.key}\", dt: \"\{tr.dt}\" }";
 
 type alias AContext = List<(CString,AST)>;
