@@ -1,3 +1,6 @@
 
 import LM23COMMON/unit-type-core.lsts;
 import LM23COMMON/ast-definition.lsts;
+import LM23COMMON/ast-location.lsts;
+import LM23COMMON/mk-location.lsts;
+import LM23COMMON/loc-into-string.lsts;

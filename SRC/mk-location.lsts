@@ -1,4 +1,0 @@
-
-let mk-location(): SourceLocation = (
-   SourceLocation ( c"Unknown", 0, 0 )
-);
