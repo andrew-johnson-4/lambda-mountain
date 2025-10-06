@@ -1,23 +1,7 @@
 
 let typeof-var-raw(sloc: AST, tctx: TypeContext?, vname: CString): Type = (
-   let found = ta;
-   let continue = true;
-   for TypeContextRow{k=key, vt=denormalized-type} in tctx.get-or(mk-tctx()).tctx {
-      if continue && k==vname {
-         if non-zero(found) {
-            if vt.is-arrow
-            then found = found && vt
-            else found = vt;
-         } else found = vt;
-         if not(vt.is-arrow) then continue = false;
-      }
-   };
-   for Tuple{kt=first,t=third} in global-type-context-denormal.lookup(vname, [] : List<(Type,Type,AST)>) {
-      if non-zero(found) {
-         if found.is-arrow then found = found && kt;
-      } else found = kt;
-   };
-   found
+   let row = tctx.lookups(vname);
+   if non-zero(row) then head(row).denormalized-type else ta
 );
 
 let defof-var(sloc: AST, tctx: TypeContext?, vname: CString): AST = (
