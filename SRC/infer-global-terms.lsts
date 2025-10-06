@@ -1,4 +1,7 @@
 
+let infer-bind-global(tctx: TypeContext?, key: CString, nt: Type, dt: Type): Nil = (
+);
+
 let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
    match term {
       Seq{seq=seq} => (
