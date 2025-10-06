@@ -1,6 +1,6 @@
 
 let typeof-var(sloc: AST, tctx: Maybe<TypeContext>, vname: CString): Type = (
-   let found = tctx.lookup(vname);
+   let found = typeof-var-raw(sloc, tctx, vname);
    if not(non-zero(found)) {
       exit-error(untern("Unknown Referenced Variable: \{vname}"), sloc);
    }; found
