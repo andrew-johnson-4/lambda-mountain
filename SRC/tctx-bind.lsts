@@ -6,16 +6,6 @@ let .bind(tctx: HashtableEq<CString,List<Tuple<Type,Type,AST>>>, k: CString, kt:
    tctx.bind(k, row);
 );
 
-let .bind(tctx: TypeContext?, k: CString, kt-normal: Type, kt-denormal: Type, kv: AST): TypeContext? = (
-   Some(TypeContext(
-      cons( TypeContextRow(k, kt-normal, kt-denormal, kv), tctx.get-or(mk-tctx()).tctx ),
-      tctx.get-or(mk-tctx()).pctx,
-      tctx.get-or(mk-tctx()).is-unsafe,
-      tctx.get-or(mk-tctx()).is-blob,
-      tctx.get-or(mk-tctx()).function-name
-   ));
-);
-
 let .with-pctx(tctx: TypeContext?, pctx: List<PhiContextRow>): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
