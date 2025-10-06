@@ -30,3 +30,8 @@ assert( pctx2.lookup-phi(c"b").phi-id == c"b" );
 assert( pctx2.lookup-phi(c"b").phi-tt == t0(c"B") );
 assert( pctx3.lookup-phi(c"a").phi-id == c"a" );
 assert( pctx3.lookup-phi(c"a").phi-tt == t0(c"AB") );
+
+tctx0 = tctx0.bind-global(c"c", t0(c"C"), ASTEOF);
+assert( tctx0.lookup(c"c").key == c"c" );
+assert( tctx0.lookup(c"c").nt == t0(c"C") );
+assert( tctx0.lookup(c"c").dt == t0(c"C") );
