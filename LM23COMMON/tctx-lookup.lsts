@@ -9,6 +9,19 @@ let .lookup(trs: List<TypeContextRow>, key: CString): TypeContextRow = (
          continue = false;
       }
    }};
+   if not(non-zero(default)) {
+      for tr in global-tctx.lookup(key, [] : List<TypeContextRow>) {
+         if tr.key == key {
+            if non-zero(default) {
+               eprint("Duplicate Global Symbol \{key}\n");
+               eprint("At \{default.blame.location}\n");
+               eprint("And \{tr.blame.location}\n");
+               exit(1);
+            };
+            default = tr;
+         }
+      };
+   };
    default
 );
 

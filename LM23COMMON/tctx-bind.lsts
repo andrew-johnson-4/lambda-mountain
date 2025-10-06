@@ -9,6 +9,13 @@ let .bind(tctx: TypeContext?, k: CString, kt: Type, blame: AST): TypeContext? = 
    ));
 );
 
+let .bind-global(tctx: TypeContext?, k: CString, kt: Type, blame: AST): TypeContext? = (
+   let found = global-tctx.lookup(k, [] : List<TypeContextRow>);
+   found = cons( TypeContextRow(k,kt,kt,blame), found );
+   global-tctx = global-tctx.bind(k, found);
+   tctx
+);
+
 let .bind-phi(tctx: TypeContext?, k: CString, kt: Type, blame: AST): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
