@@ -24,6 +24,25 @@ let .lookup(trs: List<TypeContextRow>, key: CString): TypeContextRow = (
    };
    default
 );
+let .lookups(tctx: TypeContext?, key: CString): List<TypeContextRow> = tctx.get-or(mk-tctx()).tctx.lookups(key);
+let .lookups(trs: List<TypeContextRow>, key: CString): List<TypeContextRow> = (
+   let default = [] : List<TypeContextRow>;
+   let continue = true;
+   for tr in trs { if continue {
+      if tr.key == key {
+         default = cons(tr, default);
+         continue = false;
+      }
+   }};
+   if continue {
+      for tr in global-tctx.lookup(key, [] : List<TypeContextRow>) {
+         if tr.key == key {
+            default = cons(tr, default);
+         }
+      };
+   };
+   default
+);
 
 let .lookup-phi(tctx: TypeContext?, key: CString): PhiContextRow = tctx.get-or(mk-tctx()).pctx.lookup(key);
 let .lookup(trs: List<PhiContextRow>, key: CString): PhiContextRow = (
