@@ -4,12 +4,6 @@ type AST implements DefaultFormattable;
 
 # constructor with a default argument
 
-let .direct-type(tr: TypeContextRow): Type = (
-   match tr {
-      TypeContextRow{ nt=nt, dt=dt } => if non-zero(nt) then nt else dt;
-      _ => ta;
-   }
-);
 let .normalized-type(tr: TypeContextRow): Type = (
    match tr {
       TypeContextRow{ nt=nt, dt=dt } => if non-zero(nt) then nt else normalize(dt);
