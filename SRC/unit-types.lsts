@@ -7,6 +7,8 @@ import SRC/type-print.lsts;
 import SRC/deep-hash.lsts;
 import SRC/type-into-string.lsts;
 
+import SRC/tctx-substitute.lsts;
+
 # Constructors / Destructors
 import SRC/arity.lsts;
 import SRC/type-tag.lsts;
