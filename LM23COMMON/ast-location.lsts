@@ -15,3 +15,24 @@ let .location(term: AST): SourceLocation = (
       _ => mk-location();
    }
 );
+
+let smart-token-path-index = {} : HashtableEq<U64,String>;
+
+let .location(t: String): SourceLocation = (
+   let file-path = smart-token-path-index.lookup( t.data as U64, "[Unknown File]" );
+   let line = 1_u64;
+   let column = 1_u64;
+   let data = t.data;
+   while data < t.start {
+      if data[0] == 10_u8 then {
+         line = line + 1;
+         column = 1;
+      } else {
+         column = column + 1;
+      };
+      data = data + 1_u64;
+   };
+   if file-path == "[Unknown File]"
+   then SourceLocation ( untern(file-path), 0, 0 )
+   else SourceLocation ( untern(file-path), line, column )
+);

@@ -3,7 +3,6 @@ let .skey(t: Token): String = intern(t.key);
 type AST implements DefaultFormattable;
 
 # constructor with a default argument
-let $"App"(left: AST[], right: AST[]): AST = App ( false, left, right );
 
 let .direct-type(tr: TypeContextRow): Type = (
    match tr {

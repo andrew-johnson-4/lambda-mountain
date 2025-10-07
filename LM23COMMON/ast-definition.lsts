@@ -16,3 +16,5 @@ type AST zero ASTEOF
          | Typedef2 { location: SourceLocation, lhs-type: Type, implies: Vector<Type>, implements: Vector<Type>,
                       size: Type, alias: Type, opaque-alias: Type, cases: Vector<(CString,Vector<(CString,Type)>)>,
                       misc-type: Type, implied-phi: Type };
+
+let $"App"(left: AST[], right: AST[]): AST = App ( false, left, right );
