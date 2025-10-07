@@ -4,8 +4,6 @@ import SRC/unit-types.lsts;
 
 # type definitions
 import SRC/ast-definitions.lsts;
-import SRC/mk-token.lsts;
-import SRC/uuid.lsts;
 import SRC/smart-token-location.lsts;
 import SRC/plus.lsts;
 import SRC/unique.lsts;
