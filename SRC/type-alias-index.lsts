@@ -9,7 +9,7 @@ let .rewrite-type-alias(lt: Type): Type = (
       TGround{ tag=tag, parameters=parameters } => (
          let lt-rt = type-alias-index.lookup( lt.ground-tag-and-arity, Tuple( ta, ta ) );
          if non-zero(lt-rt.first) {
-            let tctx = unify(lt-rt.first, lt, ASTEOF).normalize;
+            let tctx = unify(lt-rt.first, lt, ASTEOF);
             if non-zero(tctx) { lt = substitute(tctx, lt-rt.second); };
          } else {
             lt = TGround( tag, close(parameters.rewrite-type-alias) );
@@ -49,7 +49,7 @@ let .rewrite-opaque-type-alias(lt: Type): Type = (
       TGround{ tag=tag, parameters=parameters } => (
          let lt-rt = opaque-type-alias-index.lookup( lt.ground-tag-and-arity, Tuple( ta, ta ) );
          if non-zero(lt-rt.first) {
-            let tctx = unify(lt-rt.first, lt, ASTEOF).normalize;
+            let tctx = unify(lt-rt.first, lt, ASTEOF);
             if non-zero(tctx) { lt = substitute(tctx, lt-rt.second); };
          } else {
             lt = TGround( tag, close(parameters.rewrite-opaque-type-alias) );
