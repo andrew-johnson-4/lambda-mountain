@@ -15,6 +15,7 @@ let std-c-finish-forced-imports(): S = (
 let compile-global-c-main-term = mk-eof();
 
 let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
+   print("Global \{k} = \{term} : \{typeof-term(term)}\n");
    std-c-force-import-clib(c"string.h");
    if k==c"" then ()
    else if k==c"div_t" then std-c-force-import-clib(c"stdlib.h")
