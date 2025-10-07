@@ -1,6 +1,4 @@
 
-import SRC/quick-prop.lsts;
-
 import SRC/substitute.lsts;
 import SRC/cons-root.lsts;
 import SRC/is-special.lsts;
