@@ -15,3 +15,13 @@ let .with-pctx(tctx: TypeContext?, pctx: List<PhiContextRow>): TypeContext? = (
       tctx.get-or(mk-tctx()).function-name
    ));   
 );
+
+let .with-tctx(tctx: TypeContext?, trs: List<TypeContextRow>): TypeContext? = (
+   Some(TypeContext(
+      trs,
+      tctx.get-or(mk-tctx()).pctx,
+      tctx.get-or(mk-tctx()).is-unsafe,
+      tctx.get-or(mk-tctx()).is-blob,
+      tctx.get-or(mk-tctx()).function-name
+   ));   
+);

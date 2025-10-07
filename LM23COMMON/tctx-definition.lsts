@@ -24,6 +24,12 @@ let .dt(tr: TypeContextRow): Type = (
       _ => ta;
    }
 );
+let .direct-type(tr: TypeContextRow): Type = (
+   match tr {
+      TypeContextRow{ nt=nt, dt=dt } => if non-zero(nt) then nt else dt;
+      _ => ta;
+   }
+);
 let .blame(tr: TypeContextRow): AST = (
    match tr {
       TypeContextRow{ blame=blame } => blame;
@@ -49,3 +55,4 @@ let .blame(tr: PhiContextRow): AST = (
       _ => ASTEOF;
    }
 );
+

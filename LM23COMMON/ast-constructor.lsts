@@ -1,0 +1,188 @@
+
+let mk-app(f: AST, a: AST): AST = (
+   App( close(f), close(a) )
+);
+
+let mk-cons-or-app(is-cons: U64, f: AST, a: AST): AST = (
+   App( is-cons, close(f), close(a) )
+);
+
+let mk-cons(f: AST, a: AST): AST = (
+   App( true, close(f), close(a) )
+);
+
+let mk-glb(k: Token, v: AST): AST = (
+   Glb( k, close(v) )
+);
+
+let mk-seq(): AST = (
+   Seq( mk-vector(type(AST)) )
+);
+
+let mk-typedef2(loc: SourceLocation, lhs-type: Type): AST = (
+   Typedef2( loc, lhs-type, mk-vector(type(Type)), mk-vector(type(Type)),
+             ta, ta, ta, mk-vector(type((CString,Vector<(CString,Type)>))), ta, ta )
+);
+
+let .is-cons(t: AST): U64 = (
+   match t {
+      App{is-cons=is-cons} => is-cons;
+      _ => false;
+   }
+);
+
+let .with-implies(term: AST, implies: Vector<Type>): AST = (
+   match term {
+      Typedef2{} => (
+         let location = (term as Tag::Typedef2).location;
+         let lhs-type = (term as Tag::Typedef2).lhs-type;
+         let implements = (term as Tag::Typedef2).implements;
+         let size = (term as Tag::Typedef2).size;
+         let alias = (term as Tag::Typedef2).alias;
+         let opaque-alias = (term as Tag::Typedef2).opaque-alias;
+         let cases = (term as Tag::Typedef2).cases;
+         let misc-type = (term as Tag::Typedef2).misc-type;
+         let implied-phi = (term as Tag::Typedef2).implied-phi;
+         Typedef2( location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi );
+      );
+      _ => term;
+   }
+);
+let .with-implements(term: AST, implements: Vector<Type>): AST = (
+   match term {
+      Typedef2{} => (
+         let location = (term as Tag::Typedef2).location;
+         let lhs-type = (term as Tag::Typedef2).lhs-type;
+         let implies = (term as Tag::Typedef2).implies;
+         let size = (term as Tag::Typedef2).size;
+         let alias = (term as Tag::Typedef2).alias;
+         let opaque-alias = (term as Tag::Typedef2).opaque-alias;
+         let cases = (term as Tag::Typedef2).cases;
+         let misc-type = (term as Tag::Typedef2).misc-type;
+         let implied-phi = (term as Tag::Typedef2).implied-phi;
+         Typedef2( location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi );
+      );
+      _ => term;
+   }
+);
+let .with-size(term: AST, size: Type): AST = (
+   match term {
+      Typedef2{} => (
+         let location = (term as Tag::Typedef2).location;
+         let lhs-type = (term as Tag::Typedef2).lhs-type;
+         let implies = (term as Tag::Typedef2).implies;
+         let implements = (term as Tag::Typedef2).implements;
+         let alias = (term as Tag::Typedef2).alias;
+         let opaque-alias = (term as Tag::Typedef2).opaque-alias;
+         let cases = (term as Tag::Typedef2).cases;
+         let misc-type = (term as Tag::Typedef2).misc-type;
+         let implied-phi = (term as Tag::Typedef2).implied-phi;
+         Typedef2( location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi );
+      );
+      _ => term;
+   }
+);
+let .with-alias(term: AST, alias: Type): AST = (
+   match term {
+      Typedef2{} => (
+         let location = (term as Tag::Typedef2).location;
+         let lhs-type = (term as Tag::Typedef2).lhs-type;
+         let implies = (term as Tag::Typedef2).implies;
+         let implements = (term as Tag::Typedef2).implements;
+         let size = (term as Tag::Typedef2).size;
+         let opaque-alias = (term as Tag::Typedef2).opaque-alias;
+         let cases = (term as Tag::Typedef2).cases;
+         let misc-type = (term as Tag::Typedef2).misc-type;
+         let implied-phi = (term as Tag::Typedef2).implied-phi;
+         Typedef2( location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi );
+      );
+      _ => term;
+   }
+);
+let .with-opaque-alias(term: AST, opaque-alias: Type): AST = (
+   match term {
+      Typedef2{} => (
+         let location = (term as Tag::Typedef2).location;
+         let lhs-type = (term as Tag::Typedef2).lhs-type;
+         let implies = (term as Tag::Typedef2).implies;
+         let implements = (term as Tag::Typedef2).implements;
+         let size = (term as Tag::Typedef2).size;
+         let alias = (term as Tag::Typedef2).alias;
+         let cases = (term as Tag::Typedef2).cases;
+         let misc-type = (term as Tag::Typedef2).misc-type;
+         let implied-phi = (term as Tag::Typedef2).implied-phi;
+         Typedef2( location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi );
+      );
+      _ => term;
+   }
+);
+let .with-cases(term: AST, cases: Vector<(CString,Vector<(CString,Type)>)>): AST = (
+   match term {
+      Typedef2{} => (
+         let location = (term as Tag::Typedef2).location;
+         let lhs-type = (term as Tag::Typedef2).lhs-type;
+         let implies = (term as Tag::Typedef2).implies;
+         let implements = (term as Tag::Typedef2).implements;
+         let size = (term as Tag::Typedef2).size;
+         let alias = (term as Tag::Typedef2).alias;
+         let opaque-alias = (term as Tag::Typedef2).opaque-alias;
+         let misc-type = (term as Tag::Typedef2).misc-type;
+         let implied-phi = (term as Tag::Typedef2).implied-phi;
+         Typedef2( location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi );
+      );
+      _ => term;
+   }
+);
+let .with-misc(term: AST, misc-type: Type): AST = (
+   match term {
+      Typedef2{} => (
+         let location = (term as Tag::Typedef2).location;
+         let lhs-type = (term as Tag::Typedef2).lhs-type;
+         let implies = (term as Tag::Typedef2).implies;
+         let implements = (term as Tag::Typedef2).implements;
+         let size = (term as Tag::Typedef2).size;
+         let alias = (term as Tag::Typedef2).alias;
+         let opaque-alias = (term as Tag::Typedef2).opaque-alias;
+         let cases = (term as Tag::Typedef2).cases;
+         let implied-phi = (term as Tag::Typedef2).implied-phi;
+         Typedef2( location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi );
+      );
+      _ => term;
+   }
+);
+let .with-implied-phi(term: AST, implied-phi: Type): AST = (
+   match term {
+      Typedef2{} => (
+         let location = (term as Tag::Typedef2).location;
+         let lhs-type = (term as Tag::Typedef2).lhs-type;
+         let implies = (term as Tag::Typedef2).implies;
+         let implements = (term as Tag::Typedef2).implements;
+         let size = (term as Tag::Typedef2).size;
+         let alias = (term as Tag::Typedef2).alias;
+         let opaque-alias = (term as Tag::Typedef2).opaque-alias;
+         let cases = (term as Tag::Typedef2).cases;
+         let misc-type = (term as Tag::Typedef2).misc-type;
+         Typedef2( location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi );
+      );
+      _ => term;
+   }
+);
+
+let mk-abs(l: AST, r: AST, t: Type): AST = (
+   Abs( close(l), close(r), t )
+);
+
+let mk-meta(l: AST): AST = (
+   Meta( close(l) )
+);
+
+let mk-nil(): AST = ASTNil();
+let mk-eof(): AST = ASTEOF();
+
+let .is-lit(t: AST): U64 = match t { Lit{} => true; _ => false; };
+let .is-ascript(t: AST): U64 = (
+   match t {
+      App{ left:Lit{key:c":"}, right:App{ left:Lit{key=key}, right:AType{} } } => true;
+      _ => false;
+   }
+);

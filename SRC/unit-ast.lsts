@@ -4,9 +4,6 @@ import SRC/unit-types.lsts;
 
 # type definitions
 import SRC/ast-definitions.lsts;
-import SRC/mk-token.lsts;
-import SRC/uuid.lsts;
-import SRC/smart-token-location.lsts;
 import SRC/plus.lsts;
 import SRC/unique.lsts;
 import SRC/without-location.lsts;
@@ -16,6 +13,5 @@ import SRC/var-name-if-var.lsts;
 import SRC/mk-lit.lsts;
 import SRC/mk-var.lsts;
 import SRC/mk-ascript.lsts;
-import SRC/mk-app.lsts;
 import SRC/mk-atype.lsts;
 import SRC/ast-into-string.lsts;

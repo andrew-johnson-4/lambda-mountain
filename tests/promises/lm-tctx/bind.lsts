@@ -2,10 +2,10 @@
 import LM23COMMON/unit-tctx-core.lsts;
 
 let tctx0 = Some(mk-tctx());
-let tctx1 = tctx0.bind(c"a", t0(c"A"), ASTEOF);
-let tctx2 = tctx1.bind(c"b", t0(c"B"), ASTEOF);
-let tctx3 = tctx2.bind(c"a", t0(c"AB"), ASTEOF);
-let tctx4 = tctx3.bind(c"x", t0(c"XN"), t0(c"XD"), ASTEOF);
+let tctx1 = tctx0.bind(c"a", t0(c"A"), mk-eof());
+let tctx2 = tctx1.bind(c"b", t0(c"B"), mk-eof());
+let tctx3 = tctx2.bind(c"a", t0(c"AB"), mk-eof());
+let tctx4 = tctx3.bind(c"x", t0(c"XN"), t0(c"XD"), mk-eof());
 
 assert( tctx0.lookup(c"a").nt == ta );
 assert( tctx0.lookup(c"a").dt == ta );
@@ -23,9 +23,9 @@ assert( tctx4.lookup(c"x").nt == t0(c"XN") );
 assert( tctx4.lookup(c"x").dt == t0(c"XD") );
 
 let pctx0 = Some(mk-tctx());
-let pctx1 = pctx0.bind-phi(c"a", t0(c"A"), ASTEOF);
-let pctx2 = pctx1.bind-phi(c"b", t0(c"B"), ASTEOF);
-let pctx3 = pctx2.bind-phi(c"a", t0(c"AB"), ASTEOF);
+let pctx1 = pctx0.bind-phi(c"a", t0(c"A"), mk-eof());
+let pctx2 = pctx1.bind-phi(c"b", t0(c"B"), mk-eof());
+let pctx3 = pctx2.bind-phi(c"a", t0(c"AB"), mk-eof());
 
 assert( pctx0.lookup-phi(c"a").phi-tt == ta );
 assert( pctx1.lookup-phi(c"a").phi-id == c"a" );
@@ -35,10 +35,10 @@ assert( pctx2.lookup-phi(c"b").phi-tt == t0(c"B") );
 assert( pctx3.lookup-phi(c"a").phi-id == c"a" );
 assert( pctx3.lookup-phi(c"a").phi-tt == t0(c"AB") );
 
-tctx0 = tctx0.bind-global(c"c", t0(c"C"), ASTEOF);
-tctx0 = tctx0.bind-global(c"d", t0(c"D"), ASTEOF);
-tctx0 = tctx0.bind-global(c"d", t0(c"D"), ASTEOF);
-tctx0 = tctx0.bind-global(c"y", t0(c"YN"), t0(c"YD"), ASTEOF);
+tctx0 = tctx0.bind-global(c"c", t0(c"C"), mk-eof());
+tctx0 = tctx0.bind-global(c"d", t0(c"D"), mk-eof());
+tctx0 = tctx0.bind-global(c"d", t0(c"D"), mk-eof());
+tctx0 = tctx0.bind-global(c"y", t0(c"YN"), t0(c"YD"), mk-eof());
 assert( tctx0.lookup(c"c").key == c"c" );
 assert( tctx0.lookup(c"c").nt == t0(c"C") );
 assert( tctx0.lookup(c"c").dt == t0(c"C") );

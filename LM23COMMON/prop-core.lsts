@@ -1,0 +1,86 @@
+
+let quick-prop = {} : HashtableEq<(CString,U64),List<(Type,Type)>>;
+
+let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
+   let key = pre.ground-tag-and-arity;
+   let val = quick-prop.lookup(key, ([] : List<(Type,Type)>));
+   val = cons( (pat,post), val );
+   quick-prop = quick-prop.bind( key, val );
+);
+
+let enrich-quick-prop(base: Type): Type = (
+   # call twice to infer second-degree props without risk of diverging
+   base = enrich-quick-prop(base, base);
+   base = enrich-quick-prop(base, base);
+   base
+);
+
+let enrich-quick-prop(base: Type, pre: Type): Type = (
+   let original-pre = pre;
+   match pre {
+      TGround {} => (
+         for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+            if can-unify(lt, base) then (
+               let post = if rt.is-open then (
+                  let tctx = unify(lt, base, ASTEOF);
+                  substitute(tctx, rt);
+               ) else rt;
+               if not(can-unify(post,pre)) && not(can-unify(post, base)) {
+                  pre = pre && post;
+               };
+            );
+         };
+      );
+      TAnd { conjugate=conjugate } => (
+         let result = mk-vector(type(Type), 0_u64);
+         for c in conjugate {
+            match enrich-quick-prop(base, c) {
+               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
+               TAny{} => ();
+               rc => ( result = result.push(rc); () );
+            }
+         };
+         if result.length==0 then (pre = ta)
+         else if result.length==1 then (pre = result[0])
+         else (pre = tand(result));
+      );
+      _ => ();
+   };
+   pre
+);
+
+let weaken-quick-prop-index = {} : HashtableEq<(CString,U64),List<(Type,Type)>>;
+
+# core implicit weakening rules
+add-weaken-quick-prop( t1(c"Phi",ta), t1(c"Phi",ta), t1(c"Phi",ta) );
+add-weaken-quick-prop( t1(c"Constructor",ta), t1(c"Constructor",ta), t1(c"Constructor",ta) );
+add-weaken-quick-prop( t1(c"CaseNumber",ta), t1(c"CaseNumber",ta), t1(c"CaseNumber",ta) );
+
+let add-weaken-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
+   let key = pre.ground-tag-and-arity;
+   let val = weaken-quick-prop-index.lookup(key, ([] : List<(Type,Type)>));
+   val = cons( (pat,post), val );
+   weaken-quick-prop-index = weaken-quick-prop-index.bind( key, val );
+);
+
+let weaken-quick-prop(base: Type): Type = (
+   let r = weaken-quick-prop(base, base, base);
+   r
+);
+
+let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
+   match pre {
+      TGround {} => (
+         for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+            if can-unify(lt, original-base) then (
+               base = remove-info(base, rt);
+            );
+         };
+      );
+      TAnd { conjugate=conjugate } => (
+         for c in conjugate { base = weaken-quick-prop(original-base, base, c) };
+      );
+      _ => ();
+   };
+   base
+);
