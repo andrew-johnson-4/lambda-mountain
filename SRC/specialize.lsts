@@ -2,6 +2,7 @@
 let specialize(key: CString, ft: Type, unify-ctx: TypeContext?, result-type: Type): Nil = (
    let result-type-without-phi = result-type.without-any-phi;
    if not(is-special(key, result-type-without-phi)) {
+      if key==c"open" then print("Specialize open : \{result-type-without-phi}\n");
       let term = mk-eof();
       for Tuple{kt=first, t=third} in global-type-context-normal.lookup(key, [] : List<(Type,Type,AST)>) {
          if ft == kt { match t {
