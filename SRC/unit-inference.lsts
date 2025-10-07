@@ -18,8 +18,6 @@ import SRC/reduce-plural.lsts;
 import SRC/most-special.lsts;
 
 # corollaries
-import SRC/quick-prop.lsts;
-import SRC/remove-info.lsts;
 import SRC/normalize.lsts;
 import SRC/denormalize.lsts;
 import SRC/denormalize-strong.lsts; # TODO, make this the normal denormalize
