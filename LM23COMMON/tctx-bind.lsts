@@ -8,10 +8,25 @@ let .bind(tctx: TypeContext?, k: CString, kt: Type, blame: AST): TypeContext? = 
       tctx.get-or(mk-tctx()).function-name
    ));
 );
+let .bind(tctx: TypeContext?, k: CString, nt: Type, dt: Type, blame: AST): TypeContext? = (
+   Some(TypeContext(
+      cons( TypeContextRow(k, nt, dt, blame), tctx.get-or(mk-tctx()).tctx ),
+      tctx.get-or(mk-tctx()).pctx,
+      tctx.get-or(mk-tctx()).is-unsafe,
+      tctx.get-or(mk-tctx()).is-blob,
+      tctx.get-or(mk-tctx()).function-name
+   ));
+);
 
 let .bind-global(tctx: TypeContext?, k: CString, kt: Type, blame: AST): TypeContext? = (
    let found = global-tctx.lookup(k, [] : List<TypeContextRow>);
    found = cons( TypeContextRow(k,kt,kt,blame), found );
+   global-tctx = global-tctx.bind(k, found);
+   tctx
+);
+let .bind-global(tctx: TypeContext?, k: CString, nt: Type, dt: Type, blame: AST): TypeContext? = (
+   let found = global-tctx.lookup(k, [] : List<TypeContextRow>);
+   found = cons( TypeContextRow(k,nt,dt,blame), found );
    global-tctx = global-tctx.bind(k, found);
    tctx
 );

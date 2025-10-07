@@ -1,4 +1,8 @@
 
+let infer-bind-global(tctx: TypeContext?, key: CString, nt: Type, dt: Type, blame: AST): TypeContext? = (
+   tctx.bind-global(key, nt, dt, blame)
+);
+
 let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
    match term {
       Seq{seq=seq} => (
@@ -41,6 +45,7 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
          let ktd = kto && t0(c"GlobalVariable");
          global-type-context-normal = global-type-context-normal.bind(k.key, ktn, term);
          global-type-context-denormal = global-type-context-denormal.bind(k.key, ktd, term);
+         tctx = tctx.bind-global(k.key, ktn, ktd, term);
          mark-global-as-seen(k.key, ktd, ta);
          ascript(term, ktd);
          (tctx, _) = maybe-apply-global-callable(tctx,c"mov", t2(c"Cons",ktd,ktd), term);
@@ -63,6 +68,7 @@ let infer-global-context-prim(term: AST): Nil = (
             ascript(frhs, ft);
             global-type-context-normal = global-type-context-normal.bind(k.key, ft, term);
             global-type-context-denormal = global-type-context-denormal.bind(k.key, ft, term);
+            Some(mk-tctx()).bind-global(k.key, ft, ft, term);
          };
       );
       _ => ();
@@ -95,6 +101,7 @@ let infer-global-context(term: AST): Nil = (
             ascript(frhs, ft);
             global-type-context-normal = global-type-context-normal.bind(k.key, ft, term);
             global-type-context-denormal = global-type-context-denormal.bind(k.key, ft, term);
+            Some(mk-tctx()).bind-global(k.key, ft, ft, term);
          };
       );
       _ => ();

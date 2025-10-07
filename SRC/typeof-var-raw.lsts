@@ -1,60 +1,19 @@
 
 let typeof-var-raw(sloc: AST, tctx: TypeContext?, vname: CString): Type = (
-   let found = ta;
-   let continue = true;
-   for TypeContextRow{k=key, vt=denormalized-type} in tctx.get-or(mk-tctx()).tctx {
-      if continue && k==vname {
-         if non-zero(found) {
-            if vt.is-arrow
-            then found = found && vt
-            else found = vt;
-         } else found = vt;
-         if not(vt.is-arrow) then continue = false;
-      }
-   };
-   for Tuple{kt=first,t=third} in global-type-context-denormal.lookup(vname, [] : List<(Type,Type,AST)>) {
-      if non-zero(found) {
-         if found.is-arrow then found = found && kt;
-      } else found = kt;
-   };
-   found
+   let row = tctx.lookups(vname);
+   if non-zero(row) then head(row).denormalized-type else ta
 );
 
 let defof-var(sloc: AST, tctx: TypeContext?, vname: CString): AST = (
-   let found = mk-eof();
-   let continue = true;
-   for TypeContextRow{k=key, vtd=denormalized-type, def=def} in tctx.get-or(mk-tctx()).tctx {
-      if continue && k==vname {
-         if not(non-zero(found)) then found = def;
-         if not(vtd.is-arrow) then continue = false;
-      }
-   };
-   for Tuple{kt=first,t=third} in global-type-context-denormal.lookup(vname, [] : List<(Type,Type,AST)>) {
-      if non-zero(found) then found = t;
-   };
-   found
+   let row = tctx.lookups(vname);
+   if non-zero(row) then head(row).blame else ASTEOF
 );
 
 let defof-var(sloc: AST, tctx: TypeContext?, vname: CString, tt: Type): AST = (
-   let found = mk-eof();
-   let found-type = ta;
-   let continue = true;
-   for TypeContextRow{k=key, def=def} in tctx.get-or(mk-tctx()).tctx {
-      if continue && k==vname {
-         found = def;
-         continue = false;
-      }
-   };
-   for Tuple{kt=first,t=third} in global-type-context-denormal.lookup(vname, [] : List<(Type,Type,AST)>) {
-      if not(non-zero(found)) {
-         if kt.is-arrow {
-            if non-zero(tt)
-            then found = find-global-callable(vname, tt, sloc)
-            else found = t;
-         } else found = t;
-      }
-   };
-   if not(non-zero(found)) && non-zero(tt) then fail("Unknown Referenced Variable: \{vname} : \{tt} at \{sloc.location}");
-   found
+   let row = tctx.lookups(vname);
+   if non-zero(row)
+   then head(row).blame
+   else if not(non-zero(tt)) then ASTEOF
+   else fail("Unknown Referenced Variable: \{vname} : \{tt} at \{sloc.location}");
 );
 
