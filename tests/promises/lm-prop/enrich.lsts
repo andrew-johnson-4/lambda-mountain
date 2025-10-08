@@ -22,3 +22,11 @@ add-weaken-quick-prop( t1(c"C.1",t0(c"C.2")), ta, t0(c"C.3") );
 assert( enrich-quick-prop(t1(c"C.1",t0(c"C.2"))) == (t1(c"C.1",t0(c"C.2")) && t0(c"C.3")) );
 assert( weaken-quick-prop(t1(c"C.1",t0(c"C.2")) && t0(c"C.3")) == t1(c"C.1",t0(c"C.2")) );
 assert( safe-alloc-block-count == 0 );
+
+add-quick-prop( t1(c"D.1",t0(c"D.2")), t0(c"D.3"), t0(c"D.4") );
+add-weaken-quick-prop( t1(c"D.1",t0(c"D.2")), t0(c"D.3"), t0(c"D.4") );
+
+assert( enrich-quick-prop(t1(c"D.1",t0(c"D.2"))) == t1(c"D.1",t0(c"D.2")) );
+assert( enrich-quick-prop(t1(c"D.1",t0(c"D.2")) && t0(c"D.3")) == (t1(c"D.1",t0(c"D.2")) && t0(c"D.3") && t0(c"D.4")) );
+assert( weaken-quick-prop(t1(c"D.1",t0(c"D.2")) && t0(c"D.3") && t0(c"D.4")) == (t1(c"D.1",t0(c"D.2")) && t0(c"D.3")) );
+assert( safe-alloc-block-count == 0 );
