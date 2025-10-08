@@ -7,3 +7,11 @@ add-weaken-quick-prop( t0(c"A.1"), ta, t0(c"A.2") );
 assert( enrich-quick-prop(t0(c"A.1")) == (t0(c"A.1") && t0(c"A.2")) );
 assert( weaken-quick-prop(t0(c"A.1") && t0(c"A.2")) == t0(c"A.1") );
 assert( safe-alloc-block-count == 0 );
+
+add-quick-prop( t0(c"B.1"), t0(c"B.2"), t0(c"B.3") );
+add-weaken-quick-prop( t0(c"B.1"), t0(c"B.2"), t0(c"B.3") );
+
+assert( enrich-quick-prop(t0(c"B.1")) == t0(c"B.1") );
+assert( enrich-quick-prop(t0(c"B.1") && t0(c"B.2")) == (t0(c"B.1") && t0(c"B.2") && t0(c"B.3")) );
+assert( weaken-quick-prop(t0(c"B.1") && t0(c"B.2") && t0(c"B.3")) == (t0(c"B.1") && t0(c"B.2")) );
+assert( safe-alloc-block-count == 0 );
