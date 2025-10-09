@@ -40,4 +40,5 @@ assert( t0(c"B") <: t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A"))) );
 assert( not(t0(c"A") <: t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A")))) );
 assert( t0(c"B") <: t2(c"Cons",t1(c"...",t0(c"B")),t1(c"...",t0(c"A"))) );
 assert( t0(c"A") <: t2(c"Cons",t1(c"...",t0(c"B")),t1(c"...",t0(c"A"))) );
+assert( t0(c"Nil") <: t2(c"Cons",t1(c"...",t0(c"B")),t1(c"...",t0(c"A"))) );
 assert( safe-alloc-block-count == 0 );

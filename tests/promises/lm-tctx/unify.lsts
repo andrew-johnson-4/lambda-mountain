@@ -34,11 +34,12 @@ assert( unify( t1(c"...",t0(c"A")), t2(c"Cons",t0(c"B"),t0(c"A")), mk-eof() ) ==
 assert( unify( t1(c"...",t0(c"A")), t2(c"Cons",t0(c"A"),t0(c"C")), mk-eof() ) == (None : TypeContext?) );
 assert( safe-alloc-block-count == 0 );
 
-#assert( t2(c"Cons",t0(c"B"),t0(c"A")) <: t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A"))) );
-#assert( not(t2(c"Cons",t0(c"A"),t0(c"A")) <: t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A")))) );
-#assert( not(t2(c"Cons",t0(c"B"),t0(c"B")) <: t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A")))) );
-#assert( t0(c"B") <: t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A"))) );
-#assert( not(t0(c"A") <: t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A")))) );
-#assert( t0(c"B") <: t2(c"Cons",t1(c"...",t0(c"B")),t1(c"...",t0(c"A"))) );
-#assert( t0(c"A") <: t2(c"Cons",t1(c"...",t0(c"B")),t1(c"...",t0(c"A"))) );
+assert( unify( t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A"))), t2(c"Cons",t0(c"B"),t0(c"A")), mk-eof() ) == Some(mk-tctx()) );
+assert( unify( t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A"))), t2(c"Cons",t0(c"A"),t0(c"A")), mk-eof() ) == (None : TypeContext?) );
+assert( unify( t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A"))), t2(c"Cons",t0(c"B"),t0(c"B")), mk-eof() ) == (None : TypeContext?) );
+assert( unify( t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A"))), t0(c"B"), mk-eof() ) == Some(mk-tctx()) );
+assert( unify( t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A"))), t0(c"A"), mk-eof() ) == (None : TypeContext?) );
+assert( unify( t2(c"Cons",t1(c"...",t0(c"B")),t1(c"...",t0(c"A"))), t0(c"B"), mk-eof() ) == Some(mk-tctx()) );
+assert( unify( t2(c"Cons",t1(c"...",t0(c"B")),t1(c"...",t0(c"A"))), t0(c"B"), mk-eof() ) == Some(mk-tctx()) );
+assert( unify( t2(c"Cons",t1(c"...",t0(c"B")),t1(c"...",t0(c"A"))), t0(c"Nil"), mk-eof() ) == Some(mk-tctx()) );
 assert( safe-alloc-block-count == 0 );
