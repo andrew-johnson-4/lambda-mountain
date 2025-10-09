@@ -1,23 +1,21 @@
 
-let cmp(lctx: TypeContext?, rctx: TypeContext?): U64 = (
+let cmp(lctx: TypeContext?, rctx: TypeContext?): Ord = (
    let lctx-inner = lctx.get-or(mk-tctx());
    let rctx-inner = rctx.get-or(mk-tctx());
-   lctx-inner.is-unsafe == rctx-inner.is-unsafe &&
-   lctx-inner.is-blob == rctx-inner.is-blob &&
-   lctx-inner.function-name == rctx-inner.function-name &&
-   lctx-inner.tctx == rctx-inner.tctx &&
-   lctx-inner.pctx == rctx-inner.pctx
+   cmp(lctx-inner.is-blob, rctx-inner.is-blob) &&
+   cmp(lctx-inner.is-unsafe, rctx-inner.is-unsafe) &&
+   cmp(lctx-inner.function-name, rctx-inner.function-name) &&
+   cmp(lctx-inner.tctx, rctx-inner.tctx) &&
+   cmp(lctx-inner.pctx, rctx-inner.pctx)
 );
 
-let cmp(ltr: TypeContextRow, rtr: TypeContextRow): U64 = (
-   ltr.key == rtr.key &&
-   ltr.nt == rtr.nt &&
-   ltr.dt == rtr.dt &&
-   is(ltr.blame, rtr.blame)
+let cmp(ltr: TypeContextRow, rtr: TypeContextRow): Ord = (
+   cmp(ltr.key, rtr.key) &&
+   cmp(ltr.nt, rtr.nt) &&
+   cmp(ltr.dt, rtr.dt)
 );
 
-let cmp(ltr: PhiContextRow, rtr: PhiContextRow): U64 = (
-   ltr.phi-id == rtr.phi-id &&
-   ltr.phi-tt == rtr.phi-tt &&
-   is(ltr.blame, rtr.blame)
+let cmp(ltr: PhiContextRow, rtr: PhiContextRow): Ord = (
+   cmp(ltr.phi-id, rtr.phi-id) &&
+   cmp(ltr.phi-tt, rtr.phi-tt)
 );
