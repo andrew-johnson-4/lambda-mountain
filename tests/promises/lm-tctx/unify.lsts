@@ -14,11 +14,12 @@ assert( unify( ta, t0(c"Any"), mk-eof() ) == Some(mk-tctx()) );
 assert( unify( t0(c"Any"), ta, mk-eof() ) == Some(mk-tctx()) );
 assert( safe-alloc-block-count == 0 );
 
-#assert( t2(c"Arrow",t0(c"A"),t0(c"A")) <: t2(c"Arrow",t0(c"A"),t0(c"A")) );
-#assert( not(t2(c"Arrow",t0(c"A") && t0(c"B"),t0(c"A")) <: t2(c"Arrow",t0(c"A"),t0(c"A"))) );
-#assert( t2(c"Arrow",t0(c"A"),t0(c"A")) <: t2(c"Arrow",t0(c"A") && t0(c"B"),t0(c"A")) );
-#assert( t2(c"Arrow",t0(c"A"),t0(c"A") && t0(c"B")) <: t2(c"Arrow",t0(c"A"),t0(c"A")) );
-#assert( not(t2(c"Arrow",t0(c"A"),t0(c"A")) <: t2(c"Arrow",t0(c"A"),t0(c"A") && t0(c"B"))) );
+assert( unify( ta, ta, mk-eof() ) == Some(mk-tctx()) );
+assert( unify( t2(c"Arrow",t0(c"A"),t0(c"A")), t2(c"Arrow",t0(c"A"),t0(c"A")), mk-eof() ) == Some(mk-tctx()) );
+assert( unify( t2(c"Arrow",t0(c"A"),t0(c"A")), t2(c"Arrow",t0(c"A") && t0(c"B"),t0(c"A")), mk-eof() ) == (None : TypeContext?) );
+assert( unify( t2(c"Arrow",t0(c"A") && t0(c"B"),t0(c"A")), t2(c"Arrow",t0(c"A"),t0(c"A")), mk-eof() ) == Some(mk-tctx()) );
+assert( unify( t2(c"Arrow",t0(c"A"),t0(c"A")), t2(c"Arrow",t0(c"A"),t0(c"A") && t0(c"B")), mk-eof() ) == Some(mk-tctx()) );
+assert( unify( t2(c"Arrow",t0(c"A"),t0(c"A") && t0(c"B")), t2(c"Arrow",t0(c"A"),t0(c"A")), mk-eof() ) == (None : TypeContext?) );
 assert( safe-alloc-block-count == 0 );
 
 #assert( t1(c"A",t0(c"A") && t0(c"B")) <: t1(c"A",t0(c"A")) );
