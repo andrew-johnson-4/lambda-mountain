@@ -2,8 +2,8 @@
 import LM23COMMON/unit-tctx-core.lsts;
 
 assert( unify( t0(c"A"), (t0(c"A") && t0(c"B")), mk-eof() ) == Some(mk-tctx()) );
-#assert( (t0(c"A") && t0(c"B")) <: t0(c"B") );
-#assert( not((t0(c"A") && t0(c"B")) <: t0(c"C")) );
+assert( unify( t0(c"B"), (t0(c"A") && t0(c"B")), mk-eof() ) == Some(mk-tctx()) );
+assert( unify( t0(c"C"), (t0(c"A") && t0(c"B")), mk-eof() ) == (None : TypeContext?) );
 assert( safe-alloc-block-count == 0 );
 
 #assert( t0(c"A") <: (t0(c"A") && t0(c"A")) );
