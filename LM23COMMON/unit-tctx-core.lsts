@@ -8,3 +8,4 @@ import LM23COMMON/tctx-and.lsts;
 import LM23COMMON/tctx-or.lsts;
 import LM23COMMON/tctx-union.lsts;
 import LM23COMMON/tctx-substitute.lsts;
+import LM23COMMON/tctx-cmp.lsts;
