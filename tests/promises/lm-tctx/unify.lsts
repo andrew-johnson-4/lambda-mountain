@@ -6,12 +6,12 @@ assert( unify( t0(c"B"), (t0(c"A") && t0(c"B")), mk-eof() ) == Some(mk-tctx()) )
 assert( unify( t0(c"C"), (t0(c"A") && t0(c"B")), mk-eof() ) == (None : TypeContext?) );
 assert( safe-alloc-block-count == 0 );
 
-#assert( t0(c"A") <: (t0(c"A") && t0(c"A")) );
-#assert( not(t0(c"A") <: (t0(c"A") && t0(c"B"))) );
+assert( unify( t0(c"A") && t0(c"A"), t0(c"A"), mk-eof() ) == Some(mk-tctx()) );
+assert( unify( t0(c"A") && t0(c"B"), t0(c"A"), mk-eof() ) == (None : TypeContext?) );
 assert( safe-alloc-block-count == 0 );
 
-#assert( t0(c"Any") <: ta );
-#assert( ta <: t0(c"Any") );
+assert( unify( ta, t0(c"Any"), mk-eof() ) == Some(mk-tctx()) );
+assert( unify( t0(c"Any"), ta, mk-eof() ) == Some(mk-tctx()) );
 assert( safe-alloc-block-count == 0 );
 
 #assert( t2(c"Arrow",t0(c"A"),t0(c"A")) <: t2(c"Arrow",t0(c"A"),t0(c"A")) );
