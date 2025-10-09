@@ -44,6 +44,6 @@ assert( unify( t2(c"Cons",t1(c"...",t0(c"B")),t1(c"...",t0(c"A"))), t0(c"B"), mk
 assert( unify( t2(c"Cons",t1(c"...",t0(c"B")),t1(c"...",t0(c"A"))), t0(c"Nil"), mk-eof() ) == Some(mk-tctx()) );
 assert( safe-alloc-block-count == 0 );
 
-assert( unify( tv(c"a"), t0(c"B"), mk-eof() ) == Some(mk-tctx()).bind(c"a", t0(c"B"), mk-eof()) );
-assert( unify( t1(c"A",tv(c"a")), t1(c"A",t0(c"B")), mk-eof() ) == Some(mk-tctx()).bind(c"a", t0(c"B"), mk-eof()) );
+assert( unify( tv(c"a"), t0(c"B"), mk-eof() ) == Some(mk-tctx()).bind(c"a", ta, t0(c"B"), mk-eof()) );
+assert( unify( t1(c"A",tv(c"a")), t1(c"A",t0(c"B")), mk-eof() ) == Some(mk-tctx()).bind(c"a", ta, t0(c"B"), mk-eof()) );
 assert( safe-alloc-block-count == 0 );
