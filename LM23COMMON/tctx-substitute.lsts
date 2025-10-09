@@ -21,9 +21,6 @@ let substitute(tctx: TypeContext?, tt: Type): Type = (
          else if result.length==1 then result[0]
          else tand(result)
       );
-      TGround{tag:c"Linear",parameters:[TGround{tag:c"Phi::Live"}..]} => tt;
-      TGround{tag:c"Cons",parameters=parameters} => TGround(c"Cons",close(substitute(tctx,parameters)));
-      TGround{tag:c"Arrow",parameters=parameters} => TGround(c"Arrow",close(substitute(tctx,parameters)));
       TGround{tag=tag,parameters=parameters} => TGround(tag,close(substitute(tctx,parameters)));
       TVar{name=name} => (
          let tn = tctx.lookup(name).direct-type;
