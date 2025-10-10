@@ -3,4 +3,7 @@ import LM23COMMON/unit-ast-core.lsts;
 
 assert( mk-eof() == mk-eof() );
 assert( mk-nil() == mk-nil() );
-assert( 
+assert( mk-eof() != mk-nil() );
+assert( mk-var(c"a") == mk-var(c"a") );
+assert( mk-lit(c"a") == mk-lit(c"a") );
+assert( mk-var(c"a") != mk-lit(c"a") );

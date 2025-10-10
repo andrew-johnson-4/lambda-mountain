@@ -1,0 +1,20 @@
+
+let cmp(lt: AST, rt: AST): Ord = (
+   match Tuple(lt, rt) {
+      Tuple{ left:ASTEOF, right:ASTEOF } => Equal;
+      Tuple{ left:ASTNil, right:ASTNil } => Equal;
+      Tuple{ left:Meta{lval=val}, right:Meta{rval=val} } => cmp(lval, rval);
+      Tuple{ left:Var{lkey=key,ltoken=token}, right:Var{rkey=key,rtoken=token} } => cmp(lkey,rkey) && cmp(ltoken,rtoken);
+      Tuple{ left:Lit{lkey=key,ltoken=token}, right:Lit{rkey=key,rtoken=token} } => cmp(lkey,rkey) && cmp(ltoken,rtoken);
+      Tuple{ left:AType{ltt=tt}, right:AType{rtt=tt} } => cmp(ltt,rtt);
+      Tuple{ left:Seq{lseq=seq}, right:AType{rseq=seq} } => cmp(lseq,rseq);
+      Tuple{ left:App{lis-cons=is-cons,lleft=left,lright=right}, right:App{ris-cons=is-cons,rleft=left,rright=right} } =>
+      cmp(lis-cons,ris-cons) && cmp(lleft,rleft) && cmp(lright,rright);
+      Tuple{ left:Abs{llhs=lhs,lrhs=rhs,ltt=tt}, right:Abs{rlhs=lhs,rrhs=rhs,rtt=tt} } =>
+      cmp(llhs,rlhs) && cmp(lrhs,rrhs) && cmp(ltt,rtt);
+      Tuple{ left:Glb{lkey=key,lval=val}, right:Glb{rkey=key,rval=val} } => cmp(lkey,rkey) && cmp(lval,rval);
+      Tuple{ left:Typedef{}, right:Typedef{} } => LessThan;
+      _ => cmp(lt.discriminator-case-tag, tr.discriminator-case-tag)
+   }
+);
+

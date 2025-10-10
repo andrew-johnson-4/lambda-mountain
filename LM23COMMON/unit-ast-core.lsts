@@ -6,4 +6,5 @@ import LM23COMMON/ast-constructor.lsts;
 import LM23COMMON/ast-location.lsts;
 import LM23COMMON/ast-mk-location.lsts;
 import LM23COMMON/ast-mk-token.lsts;
+import LM23COMMON/ast-compare.lsts;
 import LM23COMMON/loc-into-string.lsts;
