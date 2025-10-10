@@ -23,7 +23,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
             if can-unify(lt, base) then (
                let post = if rt.is-open then (
                   let tctx = unify(lt, base, ASTEOF);
-                  substitute(tctx, rt);
+                  tctx.substitute(rt);
                ) else rt;
                if not(can-unify(post,pre)) && not(can-unify(post, base)) {
                   pre = pre && post;
