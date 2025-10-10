@@ -147,7 +147,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
           let tctx = unify-inner(rdom, ldom, blame);
           if tctx.is-some {
             if rdom.is-open {
-               ctx = tctx && unify-inner(lrng, substitute(tctx,rrng), blame);
+               ctx = tctx && unify-inner(lrng, tctx.substitute(rrng), blame);
             } else {
                ctx = tctx && unify-inner(lrng, rrng, blame)
             }
