@@ -48,15 +48,15 @@ let .is-phi-type(tt: Type): U64 = (
 );
 
 let infer-type-definition(term: AST): Nil = (
-   match term { Typedef2{} => (); };
-   let lhs-type = (term as Tag::Typedef2).lhs-type;
-   let implies = (term as Tag::Typedef2).implies;
-   let implements = (term as Tag::Typedef2).implements;
-   let size = (term as Tag::Typedef2).size;
-   let alias = (term as Tag::Typedef2).alias;
-   let opaque-alias = (term as Tag::Typedef2).opaque-alias;
-   let cases = (term as Tag::Typedef2).cases;
-   let misc-type = (term as Tag::Typedef2).misc-type;
+   match term { Typedef{} => (); };
+   let lhs-type = (term as Tag::Typedef).lhs-type;
+   let implies = (term as Tag::Typedef).implies;
+   let implements = (term as Tag::Typedef).implements;
+   let size = (term as Tag::Typedef).size;
+   let alias = (term as Tag::Typedef).alias;
+   let opaque-alias = (term as Tag::Typedef).opaque-alias;
+   let cases = (term as Tag::Typedef).cases;
+   let misc-type = (term as Tag::Typedef).misc-type;
    for rhs-type in implies {
       add-quick-prop(lhs-type, lhs-type, rhs-type);
       add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);

@@ -211,7 +211,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          mk-fragment().set(c"expression",SAtom(c"({})"));
       );
       ASTEOF{} => mk-fragment();
-      Typedef2{} => mk-fragment();
+      Typedef{} => mk-fragment();
       _ => (
          fail("TODO: std-c-compile-expr \{t}\n");
          mk-fragment();

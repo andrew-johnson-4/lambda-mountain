@@ -142,7 +142,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       ASTEOF{} => ascript(term, t0(c"Nil"));
       ASTNil{} => ascript(term, t0(c"Nil"));
       Meta{} => ascript(term, t0(c"Nil"));
-      Typedef2{} => ();
+      Typedef{} => ();
       AType{tt:TGround{tag:c"Type",parameters:[p1..]}} => ascript(term, t1(c"Type",p1.sanitize-phi));
       AType{tt=tt} => ascript(term, tt.sanitize-phi);
       Seq{seq=seq} => (

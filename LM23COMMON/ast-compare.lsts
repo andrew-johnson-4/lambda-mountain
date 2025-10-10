@@ -6,14 +6,14 @@ let cmp(lt: AST, rt: AST): Ord = (
       Tuple{ first:Meta{lval=val}, second:Meta{rval=val} } => cmp(lval, rval);
       Tuple{ first:Var{lkey=key,ltoken=token}, second:Var{rkey=key,rtoken=token} } => cmp(lkey,rkey) && cmp(ltoken,rtoken);
       Tuple{ first:Lit{lkey=key,ltoken=token}, second:Lit{rkey=key,rtoken=token} } => cmp(lkey,rkey) && cmp(ltoken,rtoken);
-      #Tuple{ first:AType{ltt=tt}, second:AType{rtt=tt} } => cmp(ltt,rtt);
-      #Tuple{ first:Seq{lseq=seq}, second:AType{rseq=seq} } => cmp(lseq,rseq);
-      #Tuple{ first:App{lis-cons=is-cons,lleft=left,lright=right}, second:App{ris-cons=is-cons,rleft=left,rright=right} } =>
-      #cmp(lis-cons,ris-cons) && cmp(lleft,rleft) && cmp(lright,rright);
-      #Tuple{ first:Abs{llhs=lhs,lrhs=rhs,ltt=tt}, second:Abs{rlhs=lhs,rrhs=rhs,rtt=tt} } =>
-      #cmp(llhs,rlhs) && cmp(lrhs,rrhs) && cmp(ltt,rtt);
-      #Tuple{ first:Glb{lkey=key,lval=val}, second:Glb{rkey=key,rval=val} } => cmp(lkey,rkey) && cmp(lval,rval);
-      #Tuple{ first:Typedef{}, second:Typedef{} } => LessThan;
+      Tuple{ first:AType{ltt=tt}, second:AType{rtt=tt} } => cmp(ltt,rtt);
+      Tuple{ first:App{lis-cons=is-cons,lleft=left,lright=right}, second:App{ris-cons=is-cons,rleft=left,rright=right} } =>
+      cmp(lis-cons,ris-cons) && cmp(lleft,rleft) && cmp(lright,rright);
+      Tuple{ first:Abs{llhs=lhs,lrhs=rhs,ltt=tt}, second:Abs{rlhs=lhs,rrhs=rhs,rtt=tt} } =>
+      cmp(llhs,rlhs) && cmp(lrhs,rrhs) && cmp(ltt,rtt);
+      Tuple{ first:Glb{lkey=key,lval=val}, second:Glb{rkey=key,rval=val} } => cmp(lkey,rkey) && cmp(lval,rval);
+      Tuple{ first:Typedef{}, second:Typedef{} } => LessThan;
+      Tuple{ first:Seq{}, second:Seq{} } => LessThan;
       _ => cmp(lt.discriminator-case-tag, rt.discriminator-case-tag);
    }
 );
