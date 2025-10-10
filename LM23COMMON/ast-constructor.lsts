@@ -19,7 +19,7 @@ let mk-seq(): AST = (
    Seq( mk-vector(type(AST)) )
 );
 
-let mk-typedef2(loc: SourceLocation, lhs-type: Type): AST = (
+let mk-typedef(loc: SourceLocation, lhs-type: Type): AST = (
    Typedef( loc, lhs-type, mk-vector(type(Type)), mk-vector(type(Type)),
              ta, ta, ta, mk-vector(type((CString,Vector<(CString,Type)>))), ta, ta )
 );
