@@ -186,3 +186,42 @@ let .is-ascript(t: AST): U64 = (
       _ => false;
    }
 );
+
+let mk-var(val: CString): AST = (
+   Var( val, mk-token(val) )
+);
+
+let mk-var(val: String): AST = (
+   Var( untern(val), mk-token(val) )
+);
+
+let mk-var(val: Token): AST = (
+   Var( val.key, val )
+);
+
+let mk-var(v: CString, vtk: Token): AST = Var(v,vtk);
+
+let mk-lit(val: CString): AST = (
+   Lit( val, mk-token(val) )
+);
+
+let mk-lit(val: String): AST = (
+   Lit( untern(val), mk-token(val) )
+);
+
+let mk-lit(val: Token): AST = (
+   Lit( val.key, val )
+);
+
+let mk-lit(v: CString, vtk: Token): AST = Lit(v,vtk);
+
+let mk-atype(tt: Type): AST = (
+   AType(tt)
+);
+
+let .ascript(t: AST, tt: Type): AST = (
+   mk-app(
+      mk-lit(c":"),
+      mk-cons( t, mk-atype(tt) )
+   )
+);

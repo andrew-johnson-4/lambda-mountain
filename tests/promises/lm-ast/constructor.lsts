@@ -1,0 +1,6 @@
+
+import LM23COMMON/unit-ast-core.lsts;
+
+assert( mk-eof() == mk-eof() );
+assert( mk-nil() == mk-nil() );
+assert( 
