@@ -7,3 +7,15 @@ assert( mk-eof() != mk-nil() );
 assert( mk-var(c"a") == mk-var(c"a") );
 assert( mk-lit(c"a") == mk-lit(c"a") );
 assert( mk-var(c"a") != mk-lit(c"a") );
+assert( safe-alloc-block-count == 0 );
+
+assert( mk-app(mk-var(c"a"),mk-var(c"b")) == mk-app(mk-var(c"a"),mk-var(c"b")) );
+assert( mk-cons(mk-var(c"a"),mk-var(c"b")) == mk-cons(mk-var(c"a"),mk-var(c"b")) );
+assert( mk-app(mk-var(c"a"),mk-var(c"b")) != mk-cons(mk-var(c"a"),mk-var(c"b")) );
+assert( mk-cons(mk-var(c"a"),mk-var(c"b")).is-cons );
+assert( not(mk-app(mk-var(c"a"),mk-var(c"b")).is-cons) );
+assert( safe-alloc-block-count == 0 );
+
+assert( mk-atype(t0(c"A")) == mk-atype(t0(c"A")) );
+assert( mk-var(c"a").ascript(t0(c"A")) == mk-app(mk-lit(c":"), mk-cons( mk-var(c"a"), mk-atype(t0(c"A")) )) );
+assert( safe-alloc-block-count == 0 );
