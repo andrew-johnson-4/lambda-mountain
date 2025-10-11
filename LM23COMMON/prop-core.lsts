@@ -21,7 +21,6 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
    match pre {
       TGround {} => (
          for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
-            print("Try enrich \{pre} => \{lt}, \{rt}\n");
             if base <: lt then (
                let post = if rt.is-open then (
                   let tctx = unify(lt, base, ASTEOF);
