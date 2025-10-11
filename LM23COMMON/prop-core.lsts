@@ -78,7 +78,7 @@ let add-weaken-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
 
 let weaken-quick-prop(base: Type): Type = (
    let rt = weaken-quick-prop(base, base);
-   print("Weaken \{base} => \{rt}\n");
+   #print("Weaken \{base} => \{rt}\n");
    rt
 );
 
