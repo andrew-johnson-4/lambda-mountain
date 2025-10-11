@@ -51,8 +51,8 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
 let weaken-quick-prop-index = {} : HashtableEq<(CString,U64),List<(Type,Type)>>;
 
 # core implicit weakening rules
-add-weaken-quick-prop( t1(c"Constructor",ta), ta, t1(c"Constructor",ta) );
-add-weaken-quick-prop( t1(c"CaseNumber",ta), ta, t1(c"CaseNumber",ta) );
+add-weaken-quick-prop( t1(c"Constructor",ta), t1(c"Constructor",ta), t1(c"Constructor",ta) );
+add-weaken-quick-prop( t1(c"CaseNumber",ta), t1(c"CaseNumber",ta), t1(c"CaseNumber",ta) );
 #add-weaken-quick-prop( t0(c"Constructor"), ta, t0(c"Constructor") );
 #add-weaken-quick-prop( t0(c"C-FFI"), ta, t0(c"C-FFI") );
 #add-weaken-quick-prop( t0(c"Raw"), ta, t0(c"Raw") );
@@ -76,28 +76,21 @@ let add-weaken-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
 );
 
 let weaken-quick-prop-weak(base: Type): Type = (
-   let rt = weaken-quick-prop-weak(base, base);
+   let rt = weaken-quick-prop-weak(base, base, base);
    rt
 );
 
-let weaken-quick-prop-weak(original-base: Type, base: Type): Type = (
-   match base {
-      TGround { tag=tag, parameters=parameters } => (
-         for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( base.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+let weaken-quick-prop-weak(original-base: Type, base: Type, pre: Type): Type = (
+   match pre {
+      TGround {} => (
+         for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
             if can-unify(lt, original-base) then (
                base = remove-info(base, rt);
             );
          };
       );
       TAnd { conjugate=conjugate } => (
-         let new-conjugate = mk-vector(type(Type));
-         for c in conjugate {
-            c = weaken-quick-prop-weak(original-base, c);
-            if non-zero(c) then new-conjugate = new-conjugate.push(c);
-         };
-         base = if new-conjugate.length==0 then ta
-         else   if new-conjugate.length==1 then new-conjugate[0]
-         else   tand(new-conjugate);
+         for c in conjugate { base = weaken-quick-prop-weak(original-base, base, c) };
       );
       _ => ();
    };
