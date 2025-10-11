@@ -76,11 +76,14 @@ let add-weaken-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
 );
 
 let weaken-quick-prop-weak(base: Type): Type = (
-   let rt = weaken-quick-prop-weak(base, base, base);
-   rt
+   print("Weaken \{base}\n");
+   let rt1 = weaken-quick-prop-weak1(base, base, base);
+   let rt2 = weaken-quick-prop-weak2(base, base, base);
+   if rt1 != rt2 then fail("Weaken \{base}\nResult \{rt1} != \{rt2}\n");
+   rt1
 );
 
-let weaken-quick-prop-weak(original-base: Type, base: Type, pre: Type): Type = (
+let weaken-quick-prop-weak1(original-base: Type, base: Type, pre: Type): Type = (
    match pre {
       TGround {} => (
          for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
@@ -90,9 +93,27 @@ let weaken-quick-prop-weak(original-base: Type, base: Type, pre: Type): Type = (
          };
       );
       TAnd { conjugate=conjugate } => (
+         for c in conjugate { base = weaken-quick-prop-weak1(original-base, base, c) };
+      );
+      _ => ();
+   };
+   base
+);
+let weaken-quick-prop-weak2(original-base: Type, base: Type, pre: Type): Type = (
+   match pre {
+      TGround {} => (
+         for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+            if can-unify(lt, original-base) then (
+               print("Remove Info \{base} x \{rt}\n");
+               base = remove-info(base, rt);
+               print("Removed Info \{base}\n");
+            );
+         };
+      );
+      TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type));
          for c in conjugate {
-            match weaken-quick-prop-weak(original-base,c,c) {
+            match weaken-quick-prop-weak2(original-base,c,c) {
                TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
                TAny{} => ();
                rc => ( result = result.push(rc); () );
