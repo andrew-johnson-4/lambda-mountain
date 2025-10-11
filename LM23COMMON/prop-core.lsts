@@ -52,8 +52,19 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
 let weaken-quick-prop-index = {} : HashtableEq<(CString,U64),List<(Type,Type)>>;
 
 # core implicit weakening rules
-add-weaken-quick-prop( t1(c"Constructor",ta), t1(c"Constructor",ta), t1(c"Constructor",ta) );
-add-weaken-quick-prop( t1(c"CaseNumber",ta), t1(c"CaseNumber",ta), t1(c"CaseNumber",ta) );
+add-weaken-quick-prop( t1(c"Constructor",ta), ta, t1(c"Constructor",ta) );
+add-weaken-quick-prop( t1(c"CaseNumber",ta), ta, t1(c"CaseNumber",ta) );
+add-weaken-quick-prop( t0(c"Constructor"), ta, t0(c"Constructor") );
+add-weaken-quick-prop( t0(c"C-FFI"), ta, t0(c"C-FFI") );
+add-weaken-quick-prop( t0(c"Raw"), ta, t0(c"Raw") );
+add-weaken-quick-prop( t0(c"LMStruct"), ta, t0(c"LMStruct") );
+add-weaken-quick-prop( t0(c"Constant"), ta, t0(c"Constant") );
+add-weaken-quick-prop( t0(c"Literal"), ta, t0(c"Literal") );
+add-weaken-quick-prop( t0(c"LocalVariable"), ta, t0(c"LocalVariable") );
+add-weaken-quick-prop( t0(c"GlobalVariable"), ta, t0(c"GlobalVariable") );
+add-weaken-quick-prop( t0(c"FlexibleArrayMember"), ta, t0(c"FlexibleArrayMember") );
+add-weaken-quick-prop( t0(c"MustNotRetain"), ta, t0(c"MustNotRetain") );
+add-weaken-quick-prop( t0(c"MustNotMove"), ta, t0(c"MustNotMove") );
 add-weaken-quick-prop( t1(c"Phi::Transition",ta), ta, t1(c"Phi::Transition",ta) );
 add-weaken-quick-prop( t1(c"Phi::Initialize",ta), ta, t1(c"Phi::Initialize",ta) );
 add-weaken-quick-prop( t1(c"Phi::State",ta), ta, t1(c"Phi::State",ta) );
