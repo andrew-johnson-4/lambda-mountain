@@ -75,11 +75,8 @@ let add-weaken-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
    weaken-quick-prop-index = weaken-quick-prop-index.bind( key, val );
 );
 
-let weaken-quick-prop-weak(base: Type): Type = (
-   let rt1 = weaken-quick-prop1(base, base, base);
-   let rt2 = weaken-quick-prop2(base, base, base);
-   if rt1!=rt2 then fail("weaken \{base} => \{rt1} != \{rt2}\n");
-   rt1
+let weaken-quick-prop(base: Type): Type = (
+   weaken-quick-prop(base, base, base);
 );
 
 let weaken-quick-prop1(original-base: Type, base: Type, pre: Type): Type = (
@@ -92,7 +89,7 @@ let weaken-quick-prop1(original-base: Type, base: Type, pre: Type): Type = (
          };
       );
       TAnd { conjugate=conjugate } => (
-         for c in conjugate { base = weaken-quick-prop1(original-base, base, c) };
+         for c in conjugate { base = weaken-quick-prop(original-base, base, c) };
       );
       _ => ();
    };
@@ -100,7 +97,7 @@ let weaken-quick-prop1(original-base: Type, base: Type, pre: Type): Type = (
       TGround { tag=tag, parameters=parameters } => (
          let new-parameters = [] : List<Type>;
          for p in parameters.reverse {
-            new-parameters = cons( weaken-quick-prop-weak(p) , new-parameters );
+            new-parameters = cons( weaken-quick-prop(p) , new-parameters );
          };
          base = ts(tag,new-parameters);
       );
@@ -111,7 +108,7 @@ let weaken-quick-prop1(original-base: Type, base: Type, pre: Type): Type = (
                TGround { tag=tag, parameters=parameters } => (
                   let new-parameters = [] : List<Type>;
                   for p in parameters.reverse {
-                     new-parameters = cons( weaken-quick-prop-weak(p) , new-parameters );
+                     new-parameters = cons( weaken-quick-prop(p) , new-parameters );
                   };
                   result = result.push(ts(tag,new-parameters));
                );
@@ -121,60 +118,6 @@ let weaken-quick-prop1(original-base: Type, base: Type, pre: Type): Type = (
          base = if result.length==0 then ta
          else   if result.length==1 then result[0]
          else   tand(result);
-      );
-      _ => ();
-   };
-   base
-);
-
-let weaken-quick-prop2(original-base: Type, base: Type, pre: Type): Type = (
-   match pre {
-      TGround {} => (
-         for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
-            if can-unify(lt, original-base) then (
-               base = remove-info(base, rt);
-            );
-         };
-      );
-      TAnd { conjugate=conjugate } => (
-         for c in conjugate { base = weaken-quick-prop2(original-base, base, c) };
-      );
-      _ => ();
-   };
-   base
-);
-
-let weaken-quick-prop(base: Type): Type = (
-   let rt = weaken-quick-prop(base, base);
-   rt
-);
-
-let weaken-quick-prop(original-base: Type, base: Type): Type = (
-   match base {
-      TGround { tag=tag, parameters=parameters } => (
-         for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( base.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
-            if can-unify(lt, original-base) then (
-               base = remove-info(base, rt);
-            );
-         };
-         if non-zero(base)
-         then {
-            let new-parameters = [] : List<Type>;
-            for p in parameters.reverse {
-               new-parameters = cons( weaken-quick-prop(p) , new-parameters );
-            };
-            base = ts(tag,new-parameters);
-         }
-      );
-      TAnd { conjugate=conjugate } => (
-         let new-conjugate = mk-vector(type(Type));
-         for c in conjugate {
-            c = weaken-quick-prop(original-base, c);
-            if non-zero(c) then new-conjugate = new-conjugate.push(c);
-         };
-         base = if new-conjugate.length==0 then ta
-         else   if new-conjugate.length==1 then new-conjugate[0]
-         else   tand(new-conjugate);
       );
       _ => ();
    };
