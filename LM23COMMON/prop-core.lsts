@@ -16,23 +16,22 @@ let enrich-quick-prop(base: Type): Type = (
 );
 
 let enrich-quick-prop(base: Type, pre: Type): Type = (
-   let original-pre = pre;
    match pre {
       TGround {} => (
          for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
-            if can-unify(lt, base) then (
+            if base <: lt then (
                let post = if rt.is-open then (
                   let tctx = unify(lt, base, ASTEOF);
                   tctx.substitute(rt);
                ) else rt;
-               if not(can-unify(post,pre)) && not(can-unify(post, base)) {
+               if not(pre <: post) && not(base <: post) {
                   pre = pre && post;
                };
             );
          };
       );
       TAnd { conjugate=conjugate } => (
-         let result = mk-vector(type(Type), 0_u64);
+         let result = mk-vector(type(Type));
          for c in conjugate {
             match enrich-quick-prop(base, c) {
                TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
@@ -52,9 +51,22 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
 let weaken-quick-prop-index = {} : HashtableEq<(CString,U64),List<(Type,Type)>>;
 
 # core implicit weakening rules
-add-weaken-quick-prop( t1(c"Phi",ta), t1(c"Phi",ta), t1(c"Phi",ta) );
 add-weaken-quick-prop( t1(c"Constructor",ta), t1(c"Constructor",ta), t1(c"Constructor",ta) );
 add-weaken-quick-prop( t1(c"CaseNumber",ta), t1(c"CaseNumber",ta), t1(c"CaseNumber",ta) );
+add-weaken-quick-prop( t0(c"Constructor"), ta, t0(c"Constructor") );
+add-weaken-quick-prop( t0(c"C-FFI"), ta, t0(c"C-FFI") );
+add-weaken-quick-prop( t0(c"Raw"), ta, t0(c"Raw") );
+add-weaken-quick-prop( t0(c"LMStruct"), ta, t0(c"LMStruct") );
+add-weaken-quick-prop( t0(c"Constant"), ta, t0(c"Constant") );
+add-weaken-quick-prop( t0(c"Literal"), ta, t0(c"Literal") );
+add-weaken-quick-prop( t0(c"LocalVariable"), ta, t0(c"LocalVariable") );
+add-weaken-quick-prop( t0(c"GlobalVariable"), ta, t0(c"GlobalVariable") );
+add-weaken-quick-prop( t0(c"FlexibleArrayMember"), ta, t0(c"FlexibleArrayMember") );
+add-weaken-quick-prop( t0(c"MustNotRetain"), ta, t0(c"MustNotRetain") );
+add-weaken-quick-prop( t0(c"MustNotMove"), ta, t0(c"MustNotMove") );
+add-weaken-quick-prop( t1(c"Phi::Transition",ta), ta, t1(c"Phi::Transition",ta) );
+add-weaken-quick-prop( t1(c"Phi::Initialize",ta), ta, t1(c"Phi::Initialize",ta) );
+add-weaken-quick-prop( t1(c"Phi::State",ta), ta, t1(c"Phi::State",ta) );
 
 let add-weaken-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
    let key = pre.ground-tag-and-arity;
@@ -64,8 +76,7 @@ let add-weaken-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
 );
 
 let weaken-quick-prop(base: Type): Type = (
-   let r = weaken-quick-prop(base, base, base);
-   r
+   weaken-quick-prop(base, base, base);
 );
 
 let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
@@ -79,6 +90,34 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
       );
       TAnd { conjugate=conjugate } => (
          for c in conjugate { base = weaken-quick-prop(original-base, base, c) };
+      );
+      _ => ();
+   };
+   match base {
+      TGround { tag=tag, parameters=parameters } => (
+         let new-parameters = [] : List<Type>;
+         for p in parameters.reverse {
+            new-parameters = cons( weaken-quick-prop(p) , new-parameters );
+         };
+         base = ts(tag,new-parameters);
+      );
+      TAnd { conjugate=conjugate } => (
+         let result = mk-vector(type(Type));
+         for c in conjugate {
+            match c {
+               TGround { tag=tag, parameters=parameters } => (
+                  let new-parameters = [] : List<Type>;
+                  for p in parameters.reverse {
+                     new-parameters = cons( weaken-quick-prop(p) , new-parameters );
+                  };
+                  result = result.push(ts(tag,new-parameters));
+               );
+               _ => result = result.push(c);
+            }
+         };
+         base = if result.length==0 then ta
+         else   if result.length==1 then result[0]
+         else   tand(result);
       );
       _ => ();
    };
