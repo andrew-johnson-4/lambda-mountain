@@ -13,7 +13,6 @@ let enrich-quick-prop(base: Type): Type = (
    let original-base = base;
    base = enrich-quick-prop(base, base);
    base = enrich-quick-prop(base, base);
-   if original-base != base then print("Enriched \{original-base} => \{base}\n");
    base
 );
 
