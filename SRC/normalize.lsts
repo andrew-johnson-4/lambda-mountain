@@ -7,7 +7,7 @@ let normalize(tt: Type): Type = (
       ct = tt.rewrite-type-alias;
       ct = ct.without-tag;
       ct = without-size-unless-class(ct);
-      ct = weaken-quick-prop-weak(ct);
+      ct = weaken-quick-prop(ct);
       normalize-cache = normalize-cache.bind(tt, ct);
       ct
    );

@@ -79,7 +79,7 @@ let weaken-quick-prop(base: Type): Type = (
    weaken-quick-prop(base, base, base);
 );
 
-let weaken-quick-prop1(original-base: Type, base: Type, pre: Type): Type = (
+let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
    match pre {
       TGround {} => (
          for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
