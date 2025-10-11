@@ -77,7 +77,9 @@ let add-weaken-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
 );
 
 let weaken-quick-prop(base: Type): Type = (
-   weaken-quick-prop(base, base);
+   let rt = weaken-quick-prop(base, base);
+   print("Weaken \{base} => \{rt}\n");
+   rt
 );
 
 let weaken-quick-prop(original-base: Type, base: Type): Type = (
@@ -94,9 +96,7 @@ let weaken-quick-prop(original-base: Type, base: Type): Type = (
             for p in parameters.reverse {
                new-parameters = cons( weaken-quick-prop(p) , new-parameters );
             };
-            let new-base = ts(tag,new-parameters);
-            if base != new-base then print("weaken lower \{base} => \{new-base}\n");
-            base = new-base;
+            base = ts(tag,new-parameters);
          }
       );
       TAnd { conjugate=conjugate } => (
