@@ -14,6 +14,7 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
    let closed-type = inner-tctx.substitute(ft);
    if not(ft.is-t(c"Blob",0) || ft.is-t(c"FFI",0)) then closed-type = closed-type.phi-specialize(tctx, blame);
    if closed-type.is-open then {
+      print("Inner tctx : \{unify(ft-denormal.domain, at, blame)}\n");
       print("Inner tctx : \{inner-tctx}\n");
       exit-error("Unification Did Not Close Before Specialization\nfunction: \{fname} \{ft} = \{closed-type}\nargs: \{at}", blame);
    };

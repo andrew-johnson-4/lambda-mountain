@@ -94,7 +94,9 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             for p in parameters.reverse {
                new-parameters = cons( weaken-quick-prop(p,p,p) , new-parameters );
             };
-            base = ts(tag,new-parameters);
+            let new-base = ts(tag,new-parameters);
+            if base != new-base then print("weaken lower \{base} => \{new-base}\n");
+            base = new-base;
          }
       );
       TAnd { conjugate=conjugate } => (
