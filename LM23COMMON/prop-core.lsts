@@ -10,29 +10,31 @@ let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
 
 let enrich-quick-prop(base: Type): Type = (
    # call twice to infer second-degree props without risk of diverging
+   let original-base = base;
    base = enrich-quick-prop(base, base);
    base = enrich-quick-prop(base, base);
+   if original-base != base then print("Enriched \{original-base} => \{base}\n");
    base
 );
 
 let enrich-quick-prop(base: Type, pre: Type): Type = (
-   let original-pre = pre;
    match pre {
       TGround {} => (
          for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
-            if can-unify(lt, base) then (
+            print("Try enrich \{pre} => \{lt}, \{rt}\n");
+            if base <: lt then (
                let post = if rt.is-open then (
                   let tctx = unify(lt, base, ASTEOF);
                   tctx.substitute(rt);
                ) else rt;
-               if not(can-unify(post,pre)) && not(can-unify(post, base)) {
+               if not(base <: post) {
                   pre = pre && post;
                };
             );
          };
       );
       TAnd { conjugate=conjugate } => (
-         let result = mk-vector(type(Type), 0_u64);
+         let result = mk-vector(type(Type));
          for c in conjugate {
             match enrich-quick-prop(base, c) {
                TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
@@ -107,7 +109,7 @@ let weaken-quick-prop(original-base: Type, base: Type): Type = (
          };
          base = if new-conjugate.length==0 then ta
          else   if new-conjugate.length==1 then new-conjugate[0]
-         else   TAnd(new-conjugate.sort);
+         else   tand(new-conjugate);
       );
       _ => ();
    };
