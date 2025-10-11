@@ -77,8 +77,7 @@ let add-weaken-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
 );
 
 let weaken-quick-prop(base: Type): Type = (
-   let r = weaken-quick-prop(base, base, base);
-   r
+   weaken-quick-prop(base, base, base);
 );
 
 let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
@@ -89,14 +88,14 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
                base = remove-info(base, rt);
             );
          };
-         #if non-zero(base)
-         #then {
-         #   let new-parameters = [] : List<Type>;
-         #   for p in parameters.reverse {
-         #      new-parameters = cons( weaken-quick-prop(p,p,p) , new-parameters );
-         #   };
-         #   base = ts(tag,new-parameters);
-         #}
+         if non-zero(base)
+         then {
+            let new-parameters = [] : List<Type>;
+            for p in parameters.reverse {
+               new-parameters = cons( weaken-quick-prop(p,p,p) , new-parameters );
+            };
+            base = ts(tag,new-parameters);
+         }
       );
       TAnd { conjugate=conjugate } => (
          for c in conjugate { base = weaken-quick-prop(original-base, base, c) };
