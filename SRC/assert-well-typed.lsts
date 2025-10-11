@@ -2,7 +2,7 @@
 let assert-well-typed(term: AST): Nil = (
    match term {
       Meta{} => ();
-      Typedef2{} => ();
+      Typedef{} => ();
       ASTEOF{} => ();
       AType{} => ();
       ASTNil{} => assert-one-typed(term);

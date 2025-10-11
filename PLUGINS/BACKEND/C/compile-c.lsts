@@ -29,7 +29,7 @@ let plugins-backend-c-compile(): Nil = (
       _ => ();
    }};
    for program-term in ast-parsed-program.unroll-seq { match program-term {
-      Typedef2{} => std-c-compile-type-typedef(program-term);
+      Typedef{} => std-c-compile-type-typedef(program-term);
       _ => ();
    }};
    try-continue-compile-c-typedefs();

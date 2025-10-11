@@ -26,7 +26,7 @@ let .into(t: AST, tgt: Type<String>): String = (
          for s in seq { if non-zero(ret) then ret = ret + "\n"; ret = ret + s.into(type(String)) };
          ret
       );
-      Typedef2{lhs-type=lhs-type} => (
+      Typedef{lhs-type=lhs-type} => (
          let r = "type";
          if non-zero(lhs-type) then r = r + " " + lhs-type.into(type(String));
          r = r + ";"; r

@@ -1,14 +1,14 @@
 
 let std-c-compile-type-typedef(td: AST): Nil = (
-   match td { Typedef2{} => (); };
-   let location = (td as Tag::Typedef2).location;
-   let lhs-type = (td as Tag::Typedef2).lhs-type;
-   let implements = (td as Tag::Typedef2).implements;
-   let implies = (td as Tag::Typedef2).implies;
-   let size = (td as Tag::Typedef2).size;
-   let alias = (td as Tag::Typedef2).alias;
-   let opaque-alias = (td as Tag::Typedef2).opaque-alias;
-   let cases = (td as Tag::Typedef2).cases;
+   match td { Typedef{} => (); };
+   let location = (td as Tag::Typedef).location;
+   let lhs-type = (td as Tag::Typedef).lhs-type;
+   let implements = (td as Tag::Typedef).implements;
+   let implies = (td as Tag::Typedef).implies;
+   let size = (td as Tag::Typedef).size;
+   let alias = (td as Tag::Typedef).alias;
+   let opaque-alias = (td as Tag::Typedef).opaque-alias;
+   let cases = (td as Tag::Typedef).cases;
 
    if cases.length > 0 {
    for concrete-type in concrete-type-instances-index.lookup(lhs-type.ground-tag-and-arity, [] : List<Type>) {
@@ -20,14 +20,14 @@ let std-c-compile-type-typedef(td: AST): Nil = (
 );
 
 let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type: Type, td: AST): Nil = (
-   match td { Typedef2{} => (); _ => (fail("Invalid compile type \{concrete-type} \{td}\n"); ()); };
-   let location = (td as Tag::Typedef2).location;
-   let implements = (td as Tag::Typedef2).implements;
-   let implies = (td as Tag::Typedef2).implies;
-   let size = (td as Tag::Typedef2).size;
-   let alias = (td as Tag::Typedef2).alias;
-   let opaque-alias = (td as Tag::Typedef2).opaque-alias;
-   let cases = (td as Tag::Typedef2).cases;
+   match td { Typedef{} => (); _ => (fail("Invalid compile type \{concrete-type} \{td}\n"); ()); };
+   let location = (td as Tag::Typedef).location;
+   let implements = (td as Tag::Typedef).implements;
+   let implies = (td as Tag::Typedef).implies;
+   let size = (td as Tag::Typedef).size;
+   let alias = (td as Tag::Typedef).alias;
+   let opaque-alias = (td as Tag::Typedef).opaque-alias;
+   let cases = (td as Tag::Typedef).cases;
 
    let is-incomplete = false;
    for Tuple{case-tag=first, case-fields=second} in cases {

@@ -10,8 +10,4 @@ import SRC/without-location.lsts;
 import SRC/with-location.lsts;
 import SRC/with-key.lsts;
 import SRC/var-name-if-var.lsts;
-import SRC/mk-lit.lsts;
-import SRC/mk-var.lsts;
-import SRC/mk-ascript.lsts;
-import SRC/mk-atype.lsts;
 import SRC/ast-into-string.lsts;
