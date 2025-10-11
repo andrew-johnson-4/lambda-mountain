@@ -5,9 +5,9 @@ let normalize(tt: Type): Type = (
    let ct = normalize-cache.lookup(tt, ta);
    if non-zero(ct) then ct else ( 
       ct = tt.rewrite-type-alias;
-      ct = weaken-quick-prop-weak(ct);
       ct = ct.without-tag;
       ct = without-size-unless-class(ct);
+      ct = weaken-quick-prop-weak(ct);
       normalize-cache = normalize-cache.bind(tt, ct);
       ct
    );

@@ -10,7 +10,6 @@ let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
 
 let enrich-quick-prop(base: Type): Type = (
    # call twice to infer second-degree props without risk of diverging
-   let original-base = base;
    base = enrich-quick-prop(base, base);
    base = enrich-quick-prop(base, base);
    base
@@ -25,7 +24,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
                   let tctx = unify(lt, base, ASTEOF);
                   tctx.substitute(rt);
                ) else rt;
-               if not(base <: post) {
+               if not(pre <: post) && not(base <: post) {
                   pre = pre && post;
                };
             );

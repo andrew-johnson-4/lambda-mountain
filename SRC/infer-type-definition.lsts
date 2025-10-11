@@ -96,7 +96,6 @@ let infer-type-definition(term: AST): Nil = (
          for Tuple{ field-name=first, field-type=second } in case-fields {
             let guard = lhs-type && (if non-zero(case-tag) then t0(c"Tag::"+case-tag) else ta);
             let field-wrapped-type = t1(c"Field::"+field-name, field-type);
-            print("Prop \{lhs-type} => \{guard}, \{field-wrapped-type}\n");
             add-quick-prop(lhs-type, guard, field-wrapped-type);
             add-weaken-quick-prop(lhs-type, guard, field-wrapped-type);
             visit-field-template(field-name, guard, field-type, term, case-fields.length - field-ordinal, case-number);
