@@ -90,7 +90,17 @@ let weaken-quick-prop-weak(original-base: Type, base: Type, pre: Type): Type = (
          };
       );
       TAnd { conjugate=conjugate } => (
-         for c in conjugate { base = weaken-quick-prop-weak(original-base, base, c) };
+         let result = mk-vector(type(Type));
+         for c in conjugate {
+            match weaken-quick-prop-weak(original-base,c,c) {
+               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
+               TAny{} => ();
+               rc => ( result = result.push(rc); () );
+            }
+         };
+         if result.length==0        then base=ta
+         else   if result.length==1 then base=result[0]
+         else                            base=tand(result);
       );
       _ => ();
    };
