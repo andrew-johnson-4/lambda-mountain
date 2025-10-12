@@ -20,9 +20,11 @@ let .into(tt: Type, tgt: Type<String>): String = (
       );
       TAnd{conjugate=conjugate} => (
          let result = "";
+         let ci = 0_u64;
          for c in conjugate {
-            if non-zero(result) then (result = result + " + " + c.into(type(String)))
-            else (result = c.into(type(String)));
+            result = result + c.into(type(String));
+            ci = ci + 1;
+            if ci != conjugate.length then result = result + " + ";
          };
          result
       );
