@@ -2,37 +2,8 @@
 let normalize-cache = mk-hashtable-is(type(Type), type(Type));
 
 let normalize(tt: Type): Type = (
-   let ct = normalize-cache.lookup(tt, ta);
-   if non-zero(ct) then ct else ( 
-      ct = tt.rewrite-type-alias;
-      ct = weaken-quick-prop(ct);
-      ct = ct.without-tag;
-      ct = without-size-unless-class(ct);
-      normalize-cache = normalize-cache.bind(tt, ct);
-      ct
-   );
-);
-
-let normalize-strong(tt: Type): Type = (
-   match tt {
-      TAnd { conjugate=conjugate } => (
-         let result = mk-vector(type(Type), 0_u64);
-         for c in conjugate {
-            c = normalize-strong(c);
-            if non-zero(c) then result = result.push(c);
-         };
-         if result.length==0 then tt = ta
-         else if result.length==1 then tt = result[0]
-         else tt = tand(result)
-      );
-      TGround { tag=tag, parameters=parameters } => (
-         let new-parameters = [] : List<Type>;
-         for p in parameters.reverse {
-            new-parameters = cons(normalize-strong(p), new-parameters);
-         };
-         tt = ts(tag, new-parameters);
-      );
-      _ => ();
-   };
-   normalize(tt);
+   tt = tt.rewrite-type-alias;
+   tt = weaken-quick-prop(tt);
+   tt = tt.without-tag;
+   tt
 );

@@ -46,3 +46,7 @@ assert( safe-alloc-block-count == 0 );
 assert( t0(c"B") <: tv(c"a") );
 assert( t1(c"A",t0(c"B")) <: t1(c"A",tv(c"a")) );
 assert( safe-alloc-block-count == 0 );
+
+assert( t2(c"Array",t0(c"A"),ta) <: t2(c"Array",ta,ta) );
+assert( t2(c"Array",t0(c"A"),ta) <: t2(c"Array",t0(c"Any"),ta) );
+assert( safe-alloc-block-count == 0 );

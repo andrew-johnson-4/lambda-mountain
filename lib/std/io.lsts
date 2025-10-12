@@ -1,4 +1,8 @@
 
+type opaque alias "IO::File" = C<"FILE">[];
+type opaque alias Never = C<"void">;
+type opaque alias Nil = C<"void">;
+
 let .file-extension(path: CString): CString = (
    while head-string(path) != 0_u8 && head-string(path) != 46_u8 {
       path = tail-string(path);
