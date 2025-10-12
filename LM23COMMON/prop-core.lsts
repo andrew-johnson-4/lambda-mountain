@@ -17,7 +17,7 @@ let enrich-quick-prop(base: Type): Type = (
 
 let enrich-quick-prop(base: Type, pre: Type): Type = (
    match pre {
-      TGround {} => (
+      TGround { tag=tag, parameters=parameters } => (
          for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
             if base <: lt then (
                let post = if rt.is-open then (
@@ -28,6 +28,19 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
                   pre = pre && post;
                };
             );
+         };
+         if tag==c"Array" == parameters.length==2 {
+            for Tuple { lt=first, rt=second } in quick-prop.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
+               if base <: lt then (
+                  let post = if rt.is-open then (
+                     let tctx = unify(lt, base, ASTEOF);
+                     tctx.substitute(rt);
+                  ) else rt;
+                  if not(pre <: post) && not(base <: post) {
+                     pre = pre && post;
+                  };
+               );
+            };
          };
       );
       TAnd { conjugate=conjugate } => (
@@ -85,11 +98,18 @@ let weaken-quick-prop(base: Type): Type = (
 let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
    let early-base = base;
    match pre {
-      TGround {} => (
+      TGround { tag=tag, parameters=parameters } => (
          for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
             if can-unify(lt, original-base) then (
                base = remove-info(base, rt);
             );
+         };
+         if tag==c"Array" && parameters.length==2 {
+            for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
+               if can-unify(lt, original-base) then (
+                  base = remove-info(base, rt);
+               );
+            }
          };
       );
       TAnd { conjugate=conjugate } => (
