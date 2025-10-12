@@ -3,7 +3,6 @@ let std-c-mangle-type(tt: Type, blame: AST): S = (
    tt = normalize(normalize(tt).rewrite-opaque-type-alias);
    let r = std-c-mangle-type-internal(tt, blame);
    if not(non-zero(r)) then fail("Unable To Mangle \{tt}\nAt \{blame.location}\n\{blame}\n");
-   if clone-rope(r)==c"LM_Sized" then print("mangle \{tt} = \{clone-rope(r)}\n");
    r
 );
 
