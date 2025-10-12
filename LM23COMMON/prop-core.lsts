@@ -114,12 +114,12 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             let tag-base = head(tag-parts) + c"::";
             tag-parts = tail(tag-parts);
             for tag-part in tag-parts {
-               tag-base = head(tag-parts) + c"::";
                for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( (tag-base, parameters.length), ([] : List<(Type,Type)>) ) {
                   if can-unify(lt, original-base) then (
                      base = remove-info(base, rt);
                   );
                };
+               tag-base = tag-base + tag-part + c"::";
             };
          };
       );
