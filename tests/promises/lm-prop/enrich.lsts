@@ -30,3 +30,9 @@ assert( enrich-quick-prop(t1(c"D.1",t0(c"D.2"))) == t1(c"D.1",t0(c"D.2")) );
 assert( enrich-quick-prop(t1(c"D.1",t0(c"D.2")) && t0(c"D.3")) == (t1(c"D.1",t0(c"D.2")) && t0(c"D.3") && t0(c"D.4")) );
 assert( weaken-quick-prop(t1(c"D.1",t0(c"D.2")) && t0(c"D.3") && t0(c"D.4")) == (t1(c"D.1",t0(c"D.2")) && t0(c"D.3")) );
 assert( weaken-quick-prop(t1(c"X",t1(c"D.1",t0(c"D.2")) && t0(c"D.3") && t0(c"D.4"))) == t1(c"X",t1(c"D.1",t0(c"D.2")) && t0(c"D.3")) );
+
+add-weaken-quick-prop( t2(c"Arr",ta,ta), t0(c"Sized"), t0(c"Sized") );
+
+print("weaken: " + weaken-quick-prop(t2(c"Arr",t0(c"A"),ta) && t0(c"Sized")).into(type(String)) + "\n");
+
+assert( weaken-quick-prop(t2(c"Arr",t0(c"A"),ta) && t0(c"Sized")) == t2(c"Arr",t0(c"A"),ta) );
