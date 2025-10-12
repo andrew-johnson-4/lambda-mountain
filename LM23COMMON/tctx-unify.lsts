@@ -157,7 +157,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       Tuple{
           first:TGround{ltn=tag, lps=parameters},
           second:TGround{rtn=tag, rps=parameters}
-      } => if ltn==rtn then { ctx = unify(lps,rps,blame) };
+      } => if (ltn==rtn || (ltn.has-suffix(c"::") && rtn.has-prefix(ltn))) then { ctx = unify(lps,rps,blame) };
       _ => ();
    };
    ctx
