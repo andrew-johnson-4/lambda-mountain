@@ -200,7 +200,7 @@ let .contains(base: CString, pat: CString): U64 = (
    r
 );
 
-let $"+"(l: CString, r: CString): CString = clone-rope(SAtom(l) + SAtom(r));
+let $"+"(l: CString, r: CString): CString = strcat(l as C<"char">[], r as C<"char">[]) as CString;
 
 let print(x: CString): Nil = (
    while head-string(x) {
