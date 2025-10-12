@@ -1,0 +1,80 @@
+
+let type-alias-index = {} : HashtableEq<Tuple<CString,U64>,Tuple<Type,Type>>;
+
+let add-type-alias(lt: Type, rt: Type): Nil = (
+   type-alias-index = type-alias-index.bind( lt.ground-tag-and-arity, Tuple( lt, rt ) );
+);
+let .rewrite-type-alias(lt: Type): Type = (
+   match lt {
+      TGround{ tag=tag, parameters=parameters } => (
+         let lt-rt = type-alias-index.lookup( lt.ground-tag-and-arity, Tuple( ta, ta ) );
+         if non-zero(lt-rt.first) {
+            let tctx = unify(lt-rt.first, lt, mk-eof());
+            if non-zero(tctx) { lt = tctx.substitute(lt-rt.second); };
+         } else {
+            lt = ts(tag, parameters.rewrite-type-alias);
+         };
+         lt
+      );
+      TAnd{ conjugate=conjugate } => (
+         let result = mk-vector(type(Type), 0_u64);
+         for c in conjugate {
+            match c.rewrite-type-alias {
+               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
+               TAny{} => ();
+               rc => ( result = result.push(rc); () );
+            }
+         };
+         if result.length==0 then ta
+         else if result.length==1 then result[0]
+         else tand(result)
+      );
+      _ => lt;
+   }
+);
+let .rewrite-type-alias(lt: List<Type>): List<Type> = (
+   match lt {
+      LCons{ head=head, tail=tail } => cons( head.rewrite-type-alias, tail.rewrite-type-alias );
+      _ => lt;
+   }
+);
+
+let opaque-type-alias-index = {} : HashtableEq<Tuple<CString,U64>,Tuple<Type,Type>>;
+
+let add-opaque-type-alias(lt: Type, rt: Type): Nil = (
+   opaque-type-alias-index = opaque-type-alias-index.bind( lt.ground-tag-and-arity, Tuple( lt, rt ) );
+);
+let .rewrite-opaque-type-alias(lt: Type): Type = (
+   match lt {
+      TGround{ tag=tag, parameters=parameters } => (
+         let lt-rt = opaque-type-alias-index.lookup( lt.ground-tag-and-arity, Tuple( ta, ta ) );
+         if non-zero(lt-rt.first) {
+            let tctx = unify(lt-rt.first, lt, mk-eof());
+            if non-zero(tctx) { lt = tctx.substitute(lt-rt.second); };
+         } else {
+            lt = ts(tag, parameters.rewrite-opaque-type-alias);
+         };
+         lt
+      );
+      TAnd{ conjugate=conjugate } => (
+         let result = mk-vector(type(Type), 0_u64);
+         for c in conjugate {
+            match c.rewrite-opaque-type-alias {
+               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
+               TAny{} => ();
+               rc => ( result = result.push(rc); () );
+            }
+         };
+         if result.length==0 then ta
+         else if result.length==1 then result[0]
+         else tand(result)
+      );
+      _ => lt;
+   }
+);
+let .rewrite-opaque-type-alias(lt: List<Type>): List<Type> = (
+   match lt {
+      LCons{ head=head, tail=tail } => cons( head.rewrite-opaque-type-alias, tail.rewrite-opaque-type-alias );
+      _ => lt;
+   }
+);

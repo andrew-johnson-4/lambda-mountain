@@ -1,0 +1,16 @@
+
+import LM23COMMON/unit-prop-core.lsts;
+
+add-type-alias(t0(c"A.1"), t0(c"A.2"));
+add-type-alias(t2(c"B.1",tv(c"x"),tv(c"y")), t2(c"B.2",tv(c"y"),tv(c"x")));
+
+assert( t0(c"A.1").rewrite-type-alias == t0(c"A.2") );
+assert( t2(c"B.1",t0(c"X"),t0(c"Y")).rewrite-type-alias == t2(c"B.2",t0(c"Y"),t0(c"X")) );
+assert( (t0(c"A.1") && t0(c"A.3")).rewrite-type-alias == (t0(c"A.2") && t0(c"A.3")) );
+
+add-opaque-type-alias(t0(c"C.1"), t0(c"C.2"));
+add-opaque-type-alias(t2(c"D.1",tv(c"x"),tv(c"y")), t2(c"D.2",tv(c"y"),tv(c"x")));
+
+assert( t0(c"C.1").rewrite-opaque-type-alias == t0(c"C.2") );
+assert( t2(c"D.1",t0(c"X"),t0(c"Y")).rewrite-opaque-type-alias == t2(c"D.2",t0(c"Y"),t0(c"X")) );
+assert( (t0(c"C.1") && t0(c"C.3")).rewrite-opaque-type-alias == (t0(c"C.2") && t0(c"C.3")) );
