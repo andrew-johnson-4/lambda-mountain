@@ -80,8 +80,6 @@ add-weaken-quick-prop( t0(c"MustNotMove"), ta, t0(c"MustNotMove") );
 add-weaken-quick-prop( t1(c"Phi::Transition",ta), ta, t1(c"Phi::Transition",ta) );
 add-weaken-quick-prop( t1(c"Phi::Initialize",ta), ta, t1(c"Phi::Initialize",ta) );
 add-weaken-quick-prop( t1(c"Phi::State",ta), ta, t1(c"Phi::State",ta) );
-add-weaken-quick-prop( t0(c"Nil"), t0(c"Sized"), t0(c"Sized") );
-add-weaken-quick-prop( t0(c"Never"), t0(c"Sized"), t0(c"Sized") );
 add-weaken-quick-prop( t2(c"Array",ta,ta), t0(c"Sized"), t0(c"Sized") );
 
 let add-weaken-quick-prop(pre: Type, pat: Type, post: Type): Nil = (

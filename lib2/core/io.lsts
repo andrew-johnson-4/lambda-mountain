@@ -1,1 +1,4 @@
 
+type opaque alias "IO::File" = C<"FILE">;
+type opaque alias Never = C<"void">;
+type opaque alias Nil = C<"void">;
