@@ -34,3 +34,4 @@ assert( weaken-quick-prop(t1(c"X",t1(c"D.1",t0(c"D.2")) && t0(c"D.3") && t0(c"D.
 add-weaken-quick-prop( t2(c"Arr",ta,ta), t0(c"Sized"), t0(c"Sized") );
 
 assert( weaken-quick-prop(t2(c"Arr",t0(c"A"),ta) && t0(c"Sized")) == t2(c"Arr",t0(c"A"),ta) );
+assert( weaken-quick-prop(t1(c"X",t2(c"Arr",t0(c"A"),ta) && t0(c"Sized"))) == t1(c"X",t2(c"Arr",t0(c"A"),ta)) );
