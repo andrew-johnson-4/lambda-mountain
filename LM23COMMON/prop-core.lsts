@@ -8,7 +8,7 @@ let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
    quick-prop = quick-prop.bind( key, val );
 );
 
-let enrich-quick-prop(base: Type): Type = (
+let .enrich(base: Type): Type = (
    # call twice to infer second-degree props without risk of diverging
    base = enrich-quick-prop(base, base);
    base = enrich-quick-prop(base, base);
@@ -89,9 +89,8 @@ let add-weaken-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
    weaken-quick-prop-index = weaken-quick-prop-index.bind( key, val );
 );
 
-let weaken-quick-prop(base: Type): Type = (
-   let rt = weaken-quick-prop(base, base, base);
-   rt
+let .weaken(base: Type): Type = (
+   weaken-quick-prop(base, base, base)
 );
 
 let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
@@ -120,7 +119,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
       TGround { tag=tag, parameters=parameters } => (
          let new-parameters = [] : List<Type>;
          for p in parameters.reverse {
-            new-parameters = cons( weaken-quick-prop(p) , new-parameters );
+            new-parameters = cons( p.weaken , new-parameters );
          };
          base = ts(tag,new-parameters);
       );
@@ -131,7 +130,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
                TGround { tag=tag, parameters=parameters } => (
                   let new-parameters = [] : List<Type>;
                   for p in parameters.reverse {
-                     new-parameters = cons( weaken-quick-prop(p) , new-parameters );
+                     new-parameters = cons( p.weaken , new-parameters );
                   };
                   result = result.push(ts(tag,new-parameters));
                );
