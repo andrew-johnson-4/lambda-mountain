@@ -20,6 +20,5 @@ import SRC/is-var.lsts;
 import SRC/is-arrow.lsts;
 import SRC/has-class.lsts;
 
-# set operations
-import SRC/without-tag.lsts;
+# Set Operations
 import SRC/without-modifiers.lsts;
