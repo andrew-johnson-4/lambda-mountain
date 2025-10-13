@@ -39,7 +39,7 @@ let phi-parameters-index = {} : HashtableEq<(CString,U64),Type>;
 let phi-parameters(tag: CString, ps: U64): Type = phi-parameters-index.lookup((tag,ps),ta);
 
 let .is-type(tt: Type): U64 = (
-   let gta = normalize(tt).ground-tag-and-arity;
+   let gta = tt.normalize.ground-tag-and-arity;
    type-base-type-index.has(gta)
 );
 

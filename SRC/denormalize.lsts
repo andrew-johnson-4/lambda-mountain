@@ -1,6 +1,4 @@
 
-let denormalize-cache = mk-hashtable-is(type(Type), type(Type));
-
 let denormalize(tt: Type): Type = (
    tt = tt.rewrite-type-alias;
    tt = with-size(tt);

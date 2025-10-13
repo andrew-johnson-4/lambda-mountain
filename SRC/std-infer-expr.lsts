@@ -83,7 +83,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          add-concrete-type-instance(tt, term);
          (tctx, let new-t) = std-infer-expr(tctx, t, false, used, tt && hint);
          if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
-         let inner-tt = normalize(typeof-term(t));
+         let inner-tt = typeof-term(t).normalize;
          if tt.tag.has-prefix(c"Tag::") then tt = tt && inner-tt
          else tt = tt && inner-tt.with-only-class;
          ascript(term, tt);
@@ -258,7 +258,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             if var-name-if-var(l)==c"list::cons" { match r {
                App{k=left, m=right} => (
                   (_, let new-k) = std-infer-expr(tctx, k, false, Call(c"list::cons"), ta);
-                  (_, let new-m) = std-infer-expr(tctx, m, false, Used(), t1(c"List",normalize(typeof-term(k))));
+                  (_, let new-m) = std-infer-expr(tctx, m, false, Used(), t1(c"List",typeof-term(k).normalize));
                   if not(is(k,new-k)) || not(is(m,new-m)) then { r = mk-cons(new-k, new-m) };
                );
                _ => ();
@@ -266,7 +266,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             if var-name-if-var(l)==c"map::cons" { match r {
                App{kv=left, m=right} => (
                   (_, let new-kv) = std-infer-expr(tctx, kv, false, Call(c"map::cons"), ta);
-                  (_, let new-m) = std-infer-expr(tctx, m, false, Used(), t2(c"HashtableEq",normalize(typeof-term(kv)).r2,normalize(typeof-term(kv)).r1));
+                  (_, let new-m) = std-infer-expr(tctx, m, false, Used(), t2(c"HashtableEq",typeof-term(kv).normalize.r2,typeof-term(kv).normalize.r1));
                   if not(is(kv,new-kv)) || not(is(m,new-m)) then { r = mk-cons(new-kv, new-m) };
                );
                _ => ();

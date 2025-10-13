@@ -41,7 +41,7 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
                kto = new-kto;
             );
          };
-         let ktn = normalize(kto);
+         let ktn = kto.normalize;
          let ktd = kto && t0(c"GlobalVariable");
          global-type-context-normal = global-type-context-normal.bind(k.key, ktn, term);
          global-type-context-denormal = global-type-context-denormal.bind(k.key, ktd, term);
