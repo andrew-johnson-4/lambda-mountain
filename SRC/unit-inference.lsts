@@ -14,8 +14,6 @@ import SRC/reduce-plural.lsts;
 import SRC/most-special.lsts;
 
 # corollaries
-import SRC/denormalize.lsts;
-import SRC/denormalize-strong.lsts; # TODO, make this the normal denormalize
 import SRC/class-info-index.lsts;
 import SRC/with-only-class.lsts;
 import SRC/accept-interface.lsts;

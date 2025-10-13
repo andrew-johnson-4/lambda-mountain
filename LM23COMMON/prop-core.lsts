@@ -16,10 +16,30 @@ let .enrich(base: Type): Type = (
 );
 
 let .enrich-strong(base: Type): Type = (
-   # call twice to infer second-degree props without risk of diverging
-   base = enrich-quick-prop-strong(base, base);
-   base = enrich-quick-prop-strong(base, base);
-   base
+   match base {
+      TGround { tag=tag, parameters=parameters } => (
+         let new-parameters = [] : List<Type>;
+         for p in parameters.reverse {
+            new-parameters = cons( p.enrich-strong, new-parameters );
+         };
+         base = ts(tag,new-parameters);
+      );
+      TAnd { conjugate=conjugate } => (
+         let result = mk-vector(type(Type));
+         for c in conjugate {
+            match c.enrich-strong {
+               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
+               TAny{} => ();
+               rc => ( result = result.push(rc); () );
+            }
+         };
+         if result.length==0 then (base = ta)
+         else if result.length==1 then (base = result[0])
+         else (base = tand(result));
+      );
+      _ => ();
+   };
+   base.enrich
 );
 
 let enrich-quick-prop(base: Type, pre: Type): Type = (
@@ -62,81 +82,6 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
          if result.length==0 then (pre = ta)
          else if result.length==1 then (pre = result[0])
          else (pre = tand(result));
-      );
-      _ => ();
-   };
-   pre
-);
-
-# This is failing running out of stack space when trying to use it generally
-let enrich-quick-prop-strong(base: Type, pre: Type): Type = (
-   match pre {
-      TGround { tag=tag, parameters=parameters } => (
-         for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
-            if base <: lt then (
-               let post = if rt.is-open then (
-                  let tctx = unify(lt, base, ASTEOF);
-                  tctx.substitute(rt);
-               ) else rt;
-               if not(pre <: post) && not(base <: post) {
-                  pre = pre && post;
-               };
-            );
-         };
-         if tag==c"Array" == parameters.length==2 {
-            for Tuple { lt=first, rt=second } in quick-prop.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
-               if base <: lt then (
-                  let post = if rt.is-open then (
-                     let tctx = unify(lt, base, ASTEOF);
-                     tctx.substitute(rt);
-                  ) else rt;
-                  if not(pre <: post) && not(base <: post) {
-                     pre = pre && post;
-                  };
-               );
-            };
-         };
-      );
-      TAnd { conjugate=conjugate } => (
-         let result = mk-vector(type(Type));
-         for c in conjugate {
-            match enrich-quick-prop(base, c) {
-               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
-               TAny{} => ();
-               rc => ( result = result.push(rc); () );
-            }
-         };
-         if result.length==0 then (pre = ta)
-         else if result.length==1 then (pre = result[0])
-         else (pre = tand(result));
-      );
-      _ => ();
-   };
-   match pre {
-      TGround { tag=tag, parameters=parameters } => (
-         let new-parameters = [] : List<Type>;
-         for p in parameters.reverse {
-            new-parameters = cons( enrich-quick-prop-strong(p,p) , new-parameters );
-         };
-         pre = ts(tag,new-parameters);
-      );
-      TAnd { conjugate=conjugate } => (
-         let result = mk-vector(type(Type));
-         for c in conjugate {
-            match c {
-               TGround { tag=tag, parameters=parameters } => (
-                  let new-parameters = [] : List<Type>;
-                  for p in parameters.reverse {
-                     new-parameters = cons( enrich-quick-prop-strong(p,p) , new-parameters );
-                  };
-                  result = result.push(ts(tag,new-parameters));
-               );
-               _ => result = result.push(c);
-            }
-         };
-         pre = if result.length==0 then ta
-         else   if result.length==1 then result[0]
-         else   tand(result);
       );
       _ => ();
    };
