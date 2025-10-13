@@ -2,7 +2,6 @@
 let denormalize(tt: Type): Type = (
    tt = tt.rewrite-type-alias;
    tt = tt.enrich;
-   tt = tt.sanitize-phi;
    tt
 );
 
