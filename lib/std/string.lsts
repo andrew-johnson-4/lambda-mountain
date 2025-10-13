@@ -202,9 +202,9 @@ let .contains(base: CString, pat: CString): U64 = (
 
 let $"+"(l: CString, r: CString): CString = (
    let buf = malloc(l.length + r.length + 1) as C<"char">[];
+   memset(buf, 0, l.length+r.length+1); 
    strcat(buf, l as C<"char">[]);
    strcat(buf, r as C<"char">[]);
-   buf[l.length + r.length] = 0; 
    buf as CString
 );
 
