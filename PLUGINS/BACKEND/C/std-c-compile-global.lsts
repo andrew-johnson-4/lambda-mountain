@@ -43,7 +43,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    } else match term {
       App{left:Lit{key:c":"}, right:App{left:Var{key:c"__uninitialized"}, right:AType{tt=tt}}} => (
          if not(tt.is-t(c"C-FFI",0)) && not(tt.is-t(c"C-Fragment",0)) {
-            let clean-tt = typeof-term(term).without-tag.without-phi;
+            let clean-tt = typeof-term(term).weaken.without-phi;
             k = mangle-identifier(k, clean-tt);
          };
          (let pre-decl, let post-decl) = std-c-mangle-declaration(tt, term);
@@ -61,7 +61,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
       );
       App{left:Lit{key:c":"}, right:App{t=left, right:AType{tt=tt}}} => (
          if not(tt.is-t(c"C-FFI",0)) && not(tt.is-t(c"C-Fragment",0)) {
-            let clean-tt = typeof-term(term).without-tag.without-phi;
+            let clean-tt = typeof-term(term).weaken.without-phi;
             k = mangle-identifier(k, clean-tt);
          };
          let gend = false;

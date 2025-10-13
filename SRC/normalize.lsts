@@ -1,6 +1,0 @@
-
-let normalize-cache = mk-hashtable-is(type(Type), type(Type));
-
-let normalize(tt: Type): Type = (
-   tt.rewrite-type-alias.weaken.without-tag
-);

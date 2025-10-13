@@ -8,7 +8,7 @@ let typeof-term-normal(t: AST): Type = (
    let nt = type-index-normal.lookup(t, ta);
    if non-zero(nt) then nt
    else (
-      nt = normalize(type-index-plain.lookup(t,ta));
+      nt = type-index-plain.lookup(t,ta).normalize;
       type-index-normal = type-index-normal.bind(t,nt);
       nt
    )

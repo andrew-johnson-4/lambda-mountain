@@ -11,7 +11,7 @@ let plugins-backend-c-compile(): Nil = (
                global-ctx = global-ctx.bind(key.key, kt, fragment);
                std-c-fragment-context = std-c-fragment-context.bind(def-to-sym(program-term), fragment);
             } else {
-               let clean-tt = kt.without-tag.without-phi;
+               let clean-tt = kt.weaken.without-phi;
                let mid = mangle-identifier(key.key, clean-tt);
                fragment = fragment.set(c"fragment-type", SAtom(c"Global"));
                fragment = fragment.set(c"expression", SAtom(mid));

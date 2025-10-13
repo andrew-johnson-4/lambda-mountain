@@ -47,3 +47,7 @@ assert( safe-alloc-block-count == 0 );
 assert( unify( tv(c"a"), t0(c"B"), mk-eof() ) == Some(mk-tctx()).bind(c"a", ta, t0(c"B"), mk-eof()) );
 assert( unify( t1(c"A",tv(c"a")), t1(c"A",t0(c"B")), mk-eof() ) == Some(mk-tctx()).bind(c"a", ta, t0(c"B"), mk-eof()) );
 assert( safe-alloc-block-count == 0 );
+
+assert( unify( t0(c"A::"), t0(c"A::B"), mk-eof() ) == Some(mk-tctx()) );
+assert( unify( t1(c"A::",ta), t1(c"A::B",t0(c"A")), mk-eof() ) == Some(mk-tctx()) );
+assert( safe-alloc-block-count == 0 );
