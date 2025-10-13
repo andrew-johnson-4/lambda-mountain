@@ -1,0 +1,4 @@
+
+let denormalize(tt: Type): Type = (
+   tt.rewrite-type-alias.enrich
+);

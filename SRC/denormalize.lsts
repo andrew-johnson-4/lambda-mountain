@@ -1,10 +1,4 @@
 
-let denormalize(tt: Type): Type = (
-   tt = tt.rewrite-type-alias;
-   tt = tt.enrich;
-   tt
-);
-
 let denormalize-arrow(pt: Type): Type = (
    match pt {
       TAnd{ conjugate=conjugate } => (
