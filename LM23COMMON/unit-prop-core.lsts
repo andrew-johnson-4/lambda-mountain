@@ -1,4 +1,5 @@
 
 import LM23COMMON/unit-tctx-core.lsts;
 import LM23COMMON/prop-core.lsts;
-import LM23COMMON/type-alias.lsts;
+import LM23COMMON/prop-alias.lsts;
+import LM23COMMON/prop-normalize.lsts;
