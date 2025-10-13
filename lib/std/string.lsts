@@ -200,7 +200,13 @@ let .contains(base: CString, pat: CString): U64 = (
    r
 );
 
-let $"+"(l: CString, r: CString): CString = strcat(l as C<"char">[], r as C<"char">[]) as CString;
+let $"+"(l: CString, r: CString): CString = (
+   let buf = malloc(l.length + r.length + 1) as C<"char">[];
+   strcat(buf, l as C<"char">[]);
+   strcat(buf, r as C<"char">[]);
+   buf[l.length + r.length] = 0; 
+   buf as CString
+);
 
 let print(x: CString): Nil = (
    while head-string(x) {
