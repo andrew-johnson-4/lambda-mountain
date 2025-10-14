@@ -15,6 +15,33 @@ let .enrich(base: Type): Type = (
    base
 );
 
+let .enrich-strong(base: Type): Type = (
+   match base {
+      TGround { tag=tag, parameters=parameters } => ( if not(tag.has-prefix(c"Field::") && parameters.length==1) then {
+         let new-parameters = [] : List<Type>;
+         for p in parameters.reverse {
+            new-parameters = cons( p.enrich-strong, new-parameters );
+         };
+         base = ts(tag,new-parameters);
+      });
+      TAnd { conjugate=conjugate } => (
+         let result = mk-vector(type(Type));
+         for c in conjugate {
+            match c.enrich-strong {
+               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
+               TAny{} => ();
+               rc => ( result = result.push(rc); () );
+            }
+         };
+         if result.length==0 then (base = ta)
+         else if result.length==1 then (base = result[0])
+         else (base = tand(result));
+      );
+      _ => ();
+   };
+   base.enrich
+);
+
 let enrich-quick-prop(base: Type, pre: Type): Type = (
    match pre {
       TGround { tag=tag, parameters=parameters } => (
