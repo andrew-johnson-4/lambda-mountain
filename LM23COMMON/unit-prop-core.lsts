@@ -3,3 +3,4 @@ import LM23COMMON/unit-tctx-core.lsts;
 import LM23COMMON/prop-core.lsts;
 import LM23COMMON/prop-alias.lsts;
 import LM23COMMON/prop-normalize.lsts;
+import LM23COMMON/prop-denormalize.lsts;
