@@ -1,8 +1,0 @@
-
-let denormalize(tt: Type): Type = (
-   tt.rewrite-type-alias.enrich
-);
-
-let denormalize-strong(tt: Type): Type = (
-   tt.rewrite-type-alias.enrich-strong
-);
