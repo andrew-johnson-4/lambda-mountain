@@ -1,3 +1,7 @@
 
+declare-unop( $".discriminator-case-tag", raw-type(LM2Struct+CaseNumber<cn>), raw-type(USize), ( l"("; cn : L; l")"; ) );
+declare-unop( $".discriminator-case-tag", raw-type(LM2Struct), raw-type(USize), ( l"("; x; l".discriminator_case_tag)"; ) );
+declare-unop( $".discriminator-case-tag", raw-type(Any[]+LMStruct+CaseNumber<cn>), raw-type(USize), ( l"("; cn : L; l")"; ) );
 declare-unop( $".discriminator-case-tag", raw-type(LMStruct+CaseNumber<cn>), raw-type(USize), ( l"("; cn : L; l")"; ) );
-declare-unop( $".discriminator-case-tag", raw-type(LMStruct), raw-type(USize), ( l"("; x; l".discriminator_case_tag)"; ) );
+declare-unop( $".discriminator-case-tag", raw-type(Any[]+LMStruct), raw-type(USize), ( l"("; x; l"->field_0)"; ) );
+declare-unop( $".discriminator-case-tag", raw-type(LMStruct), raw-type(USize), ( l"("; x; l".field_0)"; ) );

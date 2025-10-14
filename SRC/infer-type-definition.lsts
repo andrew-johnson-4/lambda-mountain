@@ -119,8 +119,8 @@ let infer-type-definition(term: AST): Nil = (
       };
       if not(has-tag-case) && has-any-case then infer-type-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, [] : List<(CString,Type)>, term, has-tag-case);
       if has-any-case {
-         add-quick-prop(lhs-type, lhs-type, t0(c"LMStruct"));
-         add-weaken-quick-prop(lhs-type, lhs-type, t0(c"LMStruct"));
+         add-quick-prop(lhs-type, lhs-type, t0(c"LM2Struct"));
+         add-weaken-quick-prop(lhs-type, lhs-type, t0(c"LM2Struct"));
       };
       if not(has-tag-case) && has-any-case then {
          let tag-case-number = t1(c"CaseNumber", t0(c"0"));
