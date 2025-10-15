@@ -45,3 +45,9 @@ assert( (t0(c"A") && t0(c"B")).slot(c"A",0) == t0(c"A") );
 assert( (t0(c"A") && t0(c"B")).slot(c"B",0) == t0(c"B") );
 assert( (t0(c"A") && t0(c"B")).slot(c"C",0) == ta );
 assert( safe-alloc-block-count == 0 );
+
+assert( ta.simple-tag == c"" );
+assert( tv(c"a").simple-tag == c"" );
+assert( t0(c"A").simple-tag == c"A" );
+assert( t1(c"A",t0(c"B")).simple-tag == c"A" );
+assert( safe-alloc-block-count == 0 );
