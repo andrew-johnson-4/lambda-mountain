@@ -18,3 +18,4 @@ import LM23COMMON/type-can-unify.lsts;
 import LM23COMMON/type-remove-info.lsts;
 import LM23COMMON/type-ground-tag-and-arity.lsts;
 import LM23COMMON/type-into-string.lsts;
+import LM23COMMON/type-is-any-arg-t.lsts;

@@ -16,7 +16,6 @@ import SRC/cons-tail-or-self.lsts;
 
 # Boolean Queries
 import SRC/is-t.lsts;
-import SRC/has-class.lsts;
 
 # Set Operations
 import SRC/without-modifiers.lsts;
