@@ -51,3 +51,9 @@ assert( tv(c"a").simple-tag == c"" );
 assert( t0(c"A").simple-tag == c"A" );
 assert( t1(c"A",t0(c"B")).simple-tag == c"A" );
 assert( safe-alloc-block-count == 0 );
+
+assert( ta.cons-root == ta );
+assert( tv(c"a").cons-root == tv(c"a") );
+assert( t0(c"A").cons-root == t0(c"A") );
+assert( t2(c"Cons",t0(c"A"),t0(c"B")).cons-root == t0(c"A") );
+assert( safe-alloc-block-count == 0 );

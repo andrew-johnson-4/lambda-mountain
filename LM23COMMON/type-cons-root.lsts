@@ -1,0 +1,9 @@
+
+# Cons Root is primarily used in property type propagation
+# t0.prop0(t1,t2) : T0 && Prop0
+let .cons-root(tt: Type): Type = (
+   match tt {
+      TGround{tag:c"Cons", parameters:[tl..hd..]} => hd.cons-root;
+      _ => tt;
+   };
+);
