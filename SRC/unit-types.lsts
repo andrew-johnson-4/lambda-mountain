@@ -3,8 +3,6 @@ import SRC/tctx-substitute.lsts;
 import SRC/tctx-normalize.lsts;
 
 # Constructors / Destructors
-import SRC/arity.lsts;
-import SRC/type-tag.lsts;
 import SRC/cons-tail-or-self.lsts;
 
 # Boolean Queries
