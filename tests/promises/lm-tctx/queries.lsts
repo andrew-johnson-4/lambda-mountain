@@ -1,0 +1,7 @@
+
+import LM23COMMON/unit-tctx-core.lsts;
+
+assert( not(Some(mk-tctx()).is-moved) );
+assert( not(Some(mk-tctx()).bind(c"a",t0(c"A"),mk-eof()).is-moved) );
+assert( Some(mk-tctx()).bind(c"a",t0(c"A") && t1(c"Phi::State",t1(c"Linear",t0(c"Phi::Moved"))),mk-eof()).is-moved );
+assert( safe-alloc-block-count == 0 );
