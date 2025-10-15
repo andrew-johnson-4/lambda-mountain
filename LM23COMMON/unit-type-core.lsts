@@ -14,6 +14,7 @@ import LM23COMMON/type-slot.lsts;
 import LM23COMMON/type-is-arrow.lsts;
 import LM23COMMON/type-is-open.lsts;
 import LM23COMMON/type-is-moved.lsts;
+import LM23COMMON/type-is-linear-live.lsts;
 import LM23COMMON/type-simple-tag.lsts;
 import LM23COMMON/type-can-unify.lsts;
 import LM23COMMON/type-remove-info.lsts;

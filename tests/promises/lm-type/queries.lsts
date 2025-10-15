@@ -27,6 +27,15 @@ assert( t1(c"Phi::State",t1(c"Linear",t0(c"Phi::Moved"))).is-moved );
 assert( (t0(c"A") && t1(c"Phi::State",t1(c"Linear",t0(c"Phi::Moved")))).is-moved );
 assert( safe-alloc-block-count == 0 );
 
+assert( not(ta.is-linear-live) );
+assert( not(tv(c"a").is-linear-live) );
+assert( not(t0(c"A").is-linear-live) );
+assert( not(t1(c"Phi::State",t1(c"Linear",t0(c"Phi::Moved"))).is-linear-live) );
+assert( not((t0(c"A") && t1(c"Phi::State",t1(c"Linear",t0(c"Phi::Moved")))).is-linear-live) );
+assert( t1(c"Phi::State",t1(c"Linear",t0(c"Phi::A"))).is-linear-live );
+assert( (t0(c"A") && t1(c"Phi::State",t1(c"Linear",t0(c"Phi::A")))).is-linear-live );
+assert( safe-alloc-block-count == 0 );
+
 assert( not(ta.is-any-arg-t(c"A",0)) );
 assert( not(tv(c"a").is-any-arg-t(c"A",0)) );
 assert( not(t0(c"B").is-any-arg-t(c"A",0)) );
