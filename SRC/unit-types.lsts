@@ -1,11 +1,4 @@
 
-# Type Definitions
-import SRC/types-definitions.lsts;
-
-# Convenience
-import SRC/type-print.lsts;
-import SRC/deep-hash.lsts;
-
 import SRC/tctx-substitute.lsts;
 import SRC/tctx-normalize.lsts;
 

@@ -17,4 +17,3 @@ let deep-hash(ts: List<Type>): U64 = (
    for t0 in ts { return = return + deep-hash(t0); };
    return;
 );
-
