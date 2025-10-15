@@ -5,8 +5,5 @@ import SRC/tctx-normalize.lsts;
 # Constructors / Destructors
 import SRC/cons-tail-or-self.lsts;
 
-# Boolean Queries
-import SRC/is-t.lsts;
-
 # Set Operations
 import SRC/without-modifiers.lsts;
