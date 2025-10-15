@@ -26,3 +26,17 @@ assert( not(t0(c"A").is-moved) );
 assert( t1(c"Phi::State",t1(c"Linear",t0(c"Phi::Moved"))).is-moved );
 assert( (t0(c"A") && t1(c"Phi::State",t1(c"Linear",t0(c"Phi::Moved")))).is-moved );
 assert( safe-alloc-block-count == 0 );
+
+assert( not(ta.is-any-arg-t(c"A",0)) );
+assert( not(tv(c"a").is-any-arg-t(c"A",0)) );
+assert( not(t0(c"B").is-any-arg-t(c"A",0)) );
+assert( t0(c"A").is-any-arg-t(c"A",0) );
+assert( (t0(c"A") && t0(c"B")).is-any-arg-t(c"A",0) );
+assert( not(t2(c"Cons",ta,ta).is-any-arg-t(c"A",0)) );
+assert( not(t2(c"Cons",tv(c"a"),tv(c"a")).is-any-arg-t(c"A",0)) );
+assert( not(t2(c"Cons",t0(c"B"),t0(c"B")).is-any-arg-t(c"A",0)) );
+assert( t2(c"Cons",t0(c"A"),t0(c"B")).is-any-arg-t(c"A",0) );
+assert( t2(c"Cons",t0(c"B"),t0(c"A")).is-any-arg-t(c"A",0) );
+assert( t2(c"Cons",t0(c"B"),t0(c"A") && t0(c"B")).is-any-arg-t(c"A",0) );
+assert( t2(c"Cons",t0(c"B") && t0(c"A"),t0(c"B")).is-any-arg-t(c"A",0) );
+assert( safe-alloc-block-count == 0 );
