@@ -31,7 +31,6 @@ import SRC/least-upper-bound.lsts;
 import SRC/phi-linear-moved.lsts;
 import SRC/phi-move.lsts;
 import SRC/phi-fresh.lsts;
-import SRC/has-moved.lsts;
 import SRC/expand-implied-phi.lsts;
 import SRC/phi-specialize.lsts;
 import SRC/with-only-phi.lsts;

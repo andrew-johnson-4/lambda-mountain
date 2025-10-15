@@ -1,18 +1,10 @@
 
-let .has-moved(tctx: TypeContext?): U64 = (
-   let moved = false;
-   for TypeContextRow{dt=dt} in tctx.get-or(mk-tctx()).tctx {
-      moved = moved || dt.has-moved;
-   };
-   moved
-);
-
-let .has-moved(tt: Type): U64 = (
+let .is-moved(tt: Type): U64 = (
    match tt {
       TAnd{conjugate=conjugate} => (
          let moved = false;
          for c in conjugate {
-            moved = moved || c.has-moved;
+            moved = moved || c.is-moved;
          };
          moved
       );
@@ -20,7 +12,7 @@ let .has-moved(tt: Type): U64 = (
       TGround{tag=tag,parameters=parameters} => (
          let moved = false;
          for c in parameters {
-            moved = moved || c.has-moved;
+            moved = moved || c.is-moved;
          };
          moved
       );

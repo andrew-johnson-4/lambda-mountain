@@ -19,3 +19,10 @@ assert( (t0(c"A") && tv(c"a")).is-open );
 assert( not(t2(c"Array",ta,ta).is-open) );
 assert( t2(c"Array",tv(c"a"),ta).is-open );
 assert( safe-alloc-block-count == 0 );
+
+assert( not(ta.is-moved) );
+assert( not(tv(c"a").is-moved) );
+assert( not(t0(c"A").is-moved) );
+assert( t1(c"Phi::State",t1(c"Linear",t0(c"Phi::Moved"))).is-moved );
+assert( (t0(c"A") && t1(c"Phi::State",t1(c"Linear",t0(c"Phi::Moved")))).is-moved );
+assert( safe-alloc-block-count == 0 );

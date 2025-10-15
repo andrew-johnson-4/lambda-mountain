@@ -10,7 +10,7 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
       phi-modified = phi-modified.push(pn);
    };
    tctx = apply-move-args(tctx, ft-denormal, at, blame);
-   if not(tctx.get-or(mk-tctx()).is-blob) && inner-tctx.has-moved then exit-error("Linear Value Used After Move In Call To \{fname} : \{ft-denormal}\nWith Arg \{at}", blame);
+   if not(tctx.get-or(mk-tctx()).is-blob) && inner-tctx.is-moved then exit-error("Linear Value Used After Move In Call To \{fname} : \{ft-denormal}\nWith Arg \{at}", blame);
    let closed-type = inner-tctx.substitute(ft);
    if not(ft.is-t(c"Blob",0) || ft.is-t(c"FFI",0)) then closed-type = closed-type.phi-specialize(tctx, blame);
    if closed-type.is-open then exit-error("Unification Did Not Close Before Specialization\nfunction: \{fname} \{ft} = \{closed-type}\nargs: \{at}", blame);
