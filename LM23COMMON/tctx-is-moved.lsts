@@ -1,8 +1,0 @@
-
-let .is-moved(tctx: TypeContext?): U64 = (
-   let moved = false;
-   for TypeContextRow{dt=dt} in tctx.get-or(mk-tctx()).tctx {
-      moved = moved || dt.is-moved;
-   };
-   moved
-);

@@ -1,35 +1,11 @@
 
 let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denormal: Type, at: Type, blame: AST): (TypeContext?, Type) = (
-   if not(can-apply(ft-denormal, at)) then exit-error("Unable to apply and specialize: \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
    let original-tctx = tctx;
-   let inner-tctx = unify(ft-denormal.domain, at, blame).normalize;
-   if inner-tctx.is-none then exit-error("Unable to apply and specialize (unify): \{fname}\nFunction: \{ft-denormal}\nArguments: \{at}", blame);
-   let phi-modified = mk-vector(type(CString));
-   for PhiContextRow{pn=phi-id, pt=phi-tt, pblame=blame} in inner-tctx.get-or(mk-tctx()).pctx {
-      tctx = tctx.bind-phi(pn, pt, pblame);
-      phi-modified = phi-modified.push(pn);
-   };
-   tctx = apply-move-args(tctx, ft-denormal, at, blame);
-   if not(tctx.get-or(mk-tctx()).is-blob) && inner-tctx.is-moved then exit-error("Linear Value Used After Move In Call To \{fname} : \{ft-denormal}\nWith Arg \{at}", blame);
-   let closed-type = inner-tctx.substitute(ft);
-   if not(ft.is-t(c"Blob",0) || ft.is-t(c"FFI",0)) then closed-type = closed-type.phi-specialize(tctx, blame);
-   if closed-type.is-open then exit-error("Unification Did Not Close Before Specialization\nfunction: \{fname} \{ft} = \{closed-type}\nargs: \{at}", blame);
-   let r = inner-tctx.substitute(ft.range);
-   (tctx, r) = phi-initialize(tctx, r, blame);
-   if not(r.is-t(c"Phi::Id",1)) then (tctx, r) = phi-initialize-parameter(tctx, r.expand-implied-phi, blame);
-   if ft.is-t(c"Prop",0) then r = r && at.cons-root;
+   (tctx, let closed-type, let return-type) = tctx.apply(fname, ft-denormal, at, blame);
    if ft.is-open then {
       let special-tctx = inner-tctx.with-pctx( original-tctx.get-or(mk-tctx()).pctx );
       try-specialize(fname, ft, special-tctx, closed-type);
    };
    if fname==c"mark-as-released" then tctx = phi-move(tctx,at,blame); 
-   (tctx, r)
-);
-
-let apply-move-args(tctx: TypeContext?, function-type: Type, args-type: Type, blame: AST): TypeContext? = (
-   let move-args = phi-move-args(function-type, args-type, blame); 
-   for PhiContextRow{pn=phi-id, pt=phi-tt, pblame=blame} in move-args.get-or(mk-tctx()).pctx {
-      tctx = tctx.bind-phi(pn, pt, pblame);
-   };
-   tctx
+   (tctx, return-type)
 );

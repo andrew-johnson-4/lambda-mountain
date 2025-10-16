@@ -9,5 +9,5 @@ import LM23COMMON/tctx-or.lsts;
 import LM23COMMON/tctx-union.lsts;
 import LM23COMMON/tctx-substitute.lsts;
 import LM23COMMON/tctx-compare.lsts;
-import LM23COMMON/tctx-is-moved.lsts;
-import LM23COMMON/tctx-apply-function.lsts;
+import LM23COMMON/tctx-apply.lsts;
+import LM23COMMON/tctx-apply-move-args.lsts;
