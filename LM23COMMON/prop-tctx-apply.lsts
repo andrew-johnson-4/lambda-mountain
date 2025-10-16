@@ -1,0 +1,40 @@
+
+let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST): (TypeContext?, TypeContext?, Type, Type) = (
+   # Fail if arguments are not accepted by function (<:)
+   if not(can-apply(ft, at)) then exit-error("Unable to apply function \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
+
+   # Apply function, then normalize the unification context
+   # If we could remove the normalization here then this whole function would be stateless
+   let apply-tctx = unify(ft.domain, at, blame).normalize;
+
+   # Fail if arguments are not accepted by function (unify)
+   if apply-tctx.is-none then exit-error("Unable to apply (unify) function \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
+
+   # Phi: fail if any used arguments have already been moved
+   if not(tctx.get-or(mk-tctx()).is-blob) && at.is-moved
+   then exit-error("Linear value used after move in call to \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
+
+   # Phi: apply transitions, like (A ~> B)
+   for pr in apply-tctx.get-or(mk-tctx()).pctx {
+      tctx = tctx.bind-phi(pr.phi-id, pr.phi-tt, pr.blame);
+   };
+
+   # Phi: move linear values, like (Linear<A> ~> Linear<Phi::Moved>)
+   tctx = tctx.apply-move-args(ft, at, blame);
+
+   # Specialize the function type
+   let closed-type = apply-tctx.substitute(ft);
+
+   # Fail if specialized function is still open
+   if closed-type.is-open
+   then exit-error("Unification did not close all open type variables in call to \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
+
+   # Specialize the return type
+   let return-type = apply-tctx.substitute(ft.range);
+
+   # Propagate cons root type for Prop functions
+   # like, t0.prop0(t1,t2) : T0 && Prop0
+   if ft.is-t(c"Prop",0) then return-type = return-type && at.cons-root;  
+
+   (tctx, apply-tctx, closed-type, return-type)
+);

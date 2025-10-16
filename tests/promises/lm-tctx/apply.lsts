@@ -1,0 +1,16 @@
+
+# TODO: remove dependency on prop here
+# apply should only need tctx
+import LM23COMMON/unit-prop-core.lsts;
+
+assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",t0(c"A"),t0(c"B")), t0(c"A"), mk-eof() ).third == t2(c"Arrow",t0(c"A"),t0(c"B")) );
+assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",t0(c"A"),t0(c"B")), t0(c"A"), mk-eof() ).fourth == t0(c"B") );
+
+assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",tv(c"a"),tv(c"a")), t0(c"A"), mk-eof() ).third == t2(c"Arrow",t0(c"A"),t0(c"A")) );
+assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",tv(c"a"),tv(c"a")), t0(c"A"), mk-eof() ).fourth == t0(c"A") );
+
+assert( Some(mk-tctx()).apply(c"f", t0(c"Prop") && t2(c"Arrow",t0(c"A"),t0(c"B")), t0(c"A"), mk-eof() ).third == (t0(c"Prop") && t2(c"Arrow",t0(c"A"),t0(c"B"))) );
+assert( Some(mk-tctx()).apply(c"f", t0(c"Prop") && t2(c"Arrow",t0(c"A"),t0(c"B")), t0(c"A"), mk-eof() ).fourth == (t0(c"A") && t0(c"B")) );
+
+assert( Some(mk-tctx()).apply(c"f", t0(c"Prop") && t2(c"Arrow",tv(c"a"),t0(c"B")), t0(c"A"), mk-eof() ).third == (t0(c"Prop") && t2(c"Arrow",t0(c"A"),t0(c"B"))) );
+assert( Some(mk-tctx()).apply(c"f", t0(c"Prop") && t2(c"Arrow",tv(c"a"),t0(c"B")), t0(c"A"), mk-eof() ).fourth == (t0(c"A") && t0(c"B")) );

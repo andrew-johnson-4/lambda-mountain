@@ -23,6 +23,9 @@ let .enrich-strong(base: Type): Type = (
       TGround { tag:c"Arrow", parameters:[p2..p1..] } => (
          base = t2(c"Arrow", p1.enrich-strong, p2.enrich-strong);
       );
+      TGround { tag:c"Array", parameters:[p2..p1..] } => (
+         base = t2(c"Array", p1.enrich-strong, p2.enrich-strong);
+      );
       #TGround { tag=tag, parameters=parameters } => ( if not(tag.has-prefix(c"Field::") && parameters.length==1) then {
       #   let new-parameters = [] : List<Type>;
       #   for p in parameters.reverse {
