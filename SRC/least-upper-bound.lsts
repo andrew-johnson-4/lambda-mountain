@@ -70,7 +70,7 @@ let least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): 
       Tuple{ first:TAny{}, second:TAny{} } => Some(ta);
       _ => None : Type?;
    };
-   (tctx, rt)
+   (tctx, Some(left))
 );
 
 let least-upper-bound(tctx: TypeContext?, left: List<Type>, right: List<Type>, blame: AST): (TypeContext?, List<Type>?) = (
