@@ -4,7 +4,7 @@
 import LM23COMMON/unit-prop-core.lsts;
 
 assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",t0(c"A"),t0(c"B")), t0(c"A"), mk-eof() ).third == t2(c"Arrow",t0(c"A"),t0(c"B")) );
-assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",t0(c"A"),t0(c"B")), t0(c"A"), mk-eof() ).third == t0(c"B") );
+assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",t0(c"A"),t0(c"B")), t0(c"A"), mk-eof() ).fourth == t0(c"B") );
 
 
 #let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST): (TypeContext?, TypeContext?, Type, Type) = (
