@@ -17,7 +17,7 @@ let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denorm
    let r = inner-tctx.substitute(ft.range);
    (tctx, r) = phi-initialize(tctx, r, blame);
    if not(r.is-t(c"Phi::Id",1)) then (tctx, r) = phi-initialize-parameter(tctx, r.expand-implied-phi, blame);
-   if ft.is-t(c"Prop",0) then r = r && cons-root(at);
+   if ft.is-t(c"Prop",0) then r = r && at.cons-root;
    if ft.is-open then {
       let special-tctx = inner-tctx.with-pctx( original-tctx.get-or(mk-tctx()).pctx );
       try-specialize(fname, ft, special-tctx, closed-type);

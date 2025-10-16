@@ -1,21 +1,9 @@
 
-# Type Definitions
-import SRC/types-definitions.lsts;
-
-# Convenience
-import SRC/type-print.lsts;
-import SRC/deep-hash.lsts;
-
 import SRC/tctx-substitute.lsts;
 import SRC/tctx-normalize.lsts;
 
 # Constructors / Destructors
-import SRC/arity.lsts;
-import SRC/type-tag.lsts;
 import SRC/cons-tail-or-self.lsts;
-
-# Boolean Queries
-import SRC/is-t.lsts;
 
 # Set Operations
 import SRC/without-modifiers.lsts;

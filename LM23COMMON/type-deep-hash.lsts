@@ -1,0 +1,19 @@
+
+let deep-hash(tt: Type): U64 = (
+   match tt {
+      TAny{} => 0_u64;
+      TVar{name=name} => deep-hash(name);
+      TAnd{conjugate=conjugate} => (
+         let result = 0_u64;
+         for c in conjugate { result = result + deep-hash(c) };
+         result
+      );
+      TGround{tag=tag,parameters=parameters} => deep-hash(tag) + deep-hash(parameters);
+   }
+);
+
+let deep-hash(ts: List<Type>): U64 = (
+   let return = 0_u64;
+   for t0 in ts { return = return + deep-hash(t0); };
+   return;
+);
