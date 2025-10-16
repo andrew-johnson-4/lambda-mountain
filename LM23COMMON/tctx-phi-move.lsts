@@ -10,7 +10,7 @@ let phi-move(tctx: TypeContext?, tt: Type, blame: AST): TypeContext? = (
             _ => tctx = phi-move(tctx, c, blame);
          }};
          if non-zero(phi-id) && non-zero(phi-state)
-         then tctx = tctx.bind-phi(phi-id, phi-linear-moved(phi-state), blame);
+         then tctx = tctx.bind-phi(phi-id, phi-state.move-linear, blame);
       );
       TGround{parameters=parameters} => (
          for p in parameters {
