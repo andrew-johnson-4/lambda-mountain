@@ -57,3 +57,13 @@ assert( tv(c"a").cons-root == tv(c"a") );
 assert( t0(c"A").cons-root == t0(c"A") );
 assert( t2(c"Cons",t0(c"A"),t0(c"B")).cons-root == t0(c"A") );
 assert( safe-alloc-block-count == 0 );
+
+assert( ta.without-phi == ta );
+assert( tv(c"a").without-phi == tv(c"a") );
+assert( t0(c"A").without-phi == t0(c"A") );
+assert( t2(c"Cons",t0(c"A"),t0(c"B")).without-phi == t2(c"Cons",t0(c"A"),t0(c"B")) );
+assert( t2(c"Cons",t0(c"A") && t1(c"Phi::Id",ta),t0(c"B")).without-phi == t2(c"Cons",t0(c"A"),t0(c"B")) );
+assert( t2(c"Cons",t0(c"A") && t2(c"Phi::Transition",ta,ta),t0(c"B")).without-phi == t2(c"Cons",t0(c"A"),t0(c"B")) );
+assert( t2(c"Cons",t0(c"A") && t1(c"Phi::State",ta),t0(c"B")).without-phi == t2(c"Cons",t0(c"A"),t0(c"B")) );
+assert( t2(c"Arrow",t0(c"A") && t1(c"Phi::State",ta),t0(c"B")).without-phi == t2(c"Arrow",t0(c"A") && t1(c"Phi::State",ta),t0(c"B")) );
+assert( safe-alloc-block-count == 0 );
