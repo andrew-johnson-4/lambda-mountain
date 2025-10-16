@@ -38,7 +38,5 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST): 
    # like, t0.prop0(t1,t2) : T0 && Prop0
    if ft.is-t(c"Prop",0) then return-type = return-type && at.cons-root;  
 
-   print("Apply \{fname} : \{ft}\nArguments: \{at}\nResult \{closed-type}\nResult return: \{return-type}\n");
-
    (tctx, apply-tctx, closed-type, return-type)
 );

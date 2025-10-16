@@ -2,6 +2,9 @@
 let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denormal: Type, at: Type, blame: AST): (TypeContext?, Type) = (
    let original-tctx = tctx;
    (tctx, let apply-tctx, let closed-type, let return-type) = tctx.apply(fname, ft-denormal, at, blame);
+   apply-tctx = apply-tctx.normalize;
+   closed-type = closed-type.normalize;
+   return-type = return-type.normalize;
    if ft.is-open then {
       let special-tctx = apply-tctx.with-pctx( original-tctx.get-or(mk-tctx()).pctx );
       try-specialize(fname, ft, special-tctx, closed-type);

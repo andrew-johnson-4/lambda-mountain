@@ -1,4 +1,6 @@
 
+# TODO: fix this, it just picks left
+
 let least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): (TypeContext?, Type?) = (
    let rt = match (left, right) {
       Tuple{ first:TAnd{lconjugate=conjugate}, second:TAnd{rconjugate=conjugate} } => (
