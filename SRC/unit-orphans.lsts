@@ -39,6 +39,7 @@ import SRC/phi-move-args.lsts;
 import SRC/release-locals.lsts;
 import SRC/without-nested-phi.lsts;
 import SRC/sanitize-phi.lsts;
+import SRC/tctx-normalize.lsts;
 
 let .unroll-seq(t: AST): Vector<AST> = (
    match t {
