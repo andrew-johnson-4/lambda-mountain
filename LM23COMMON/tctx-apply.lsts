@@ -1,5 +1,5 @@
 
-let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST): (TypeContext?, Type, Type) = (
+let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST): (TypeContext?, TypeContext?, Type, Type) = (
    # Fail if arguments are not accepted by function (<:)
    if not(can-apply(ft, at)) then exit-error("Unable to apply function \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
 
@@ -26,7 +26,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST): 
 
    # Fail if specialized function is still open
    if closed-type.is-open
-   then exit-error(c"Unification did not close all open type variables in call to \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
+   then exit-error("Unification did not close all open type variables in call to \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
 
    # Specialize the return type
    let return-type = apply-tctx.substitute(ft.range);
@@ -35,7 +35,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST): 
    # like, t0.prop0(t1,t2) : T0 && Prop0
    if ft.is-t(c"Prop",0) then return-type = return-type && at.cons-root;  
 
-   (tctx, closed-type, return-type)
+   (tctx, apply-tctx, closed-type, return-type)
 );
 
 #let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denormal: Type, at: Type, blame: AST): (TypeContext?, Type) = (

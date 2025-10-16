@@ -1,9 +1,9 @@
 
 let apply-and-specialize(tctx: TypeContext?, fname: CString, ft: Type, ft-denormal: Type, at: Type, blame: AST): (TypeContext?, Type) = (
    let original-tctx = tctx;
-   (tctx, let closed-type, let return-type) = tctx.apply(fname, ft-denormal, at, blame);
+   (tctx, let apply-tctx, let closed-type, let return-type) = tctx.apply(fname, ft-denormal, at, blame);
    if ft.is-open then {
-      let special-tctx = inner-tctx.with-pctx( original-tctx.get-or(mk-tctx()).pctx );
+      let special-tctx = apply-tctx.with-pctx( original-tctx.get-or(mk-tctx()).pctx );
       try-specialize(fname, ft, special-tctx, closed-type);
    };
    if fname==c"mark-as-released" then tctx = phi-move(tctx,at,blame); 
