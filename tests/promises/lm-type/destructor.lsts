@@ -67,3 +67,9 @@ assert( t2(c"Cons",t0(c"A") && t2(c"Phi::Transition",ta,ta),t0(c"B")).without-ph
 assert( t2(c"Cons",t0(c"A") && t1(c"Phi::State",ta),t0(c"B")).without-phi == t2(c"Cons",t0(c"A"),t0(c"B")) );
 assert( t2(c"Arrow",t0(c"A") && t1(c"Phi::State",ta),t0(c"B")).without-phi == t2(c"Arrow",t0(c"A") && t1(c"Phi::State",ta),t0(c"B")) );
 assert( safe-alloc-block-count == 0 );
+
+assert( ta.move-linear == ta );
+assert( tv(c"a").move-linear == tv(c"a") );
+assert( t0(c"A").move-linear == t0(c"A") );
+assert( (t0(c"A") && t1(c"Linear",t0(c"A"))).move-linear == (t0(c"A") && t1(c"Linear",t0(c"Phi::Moved"))) );
+assert( safe-alloc-block-count == 0 );

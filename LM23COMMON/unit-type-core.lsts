@@ -24,3 +24,4 @@ import LM23COMMON/type-is-any-arg-t.lsts;
 import LM23COMMON/type-deep-hash.lsts;
 import LM23COMMON/type-cons-root.lsts;
 import LM23COMMON/type-without-phi.lsts;
+import LM23COMMON/type-move-linear.lsts;

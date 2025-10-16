@@ -52,8 +52,8 @@ let least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): 
             if not(non-zero(left-phi-id)) || not(non-zero(right-phi-id)) || not(non-zero(left-phi-state)) || not(non-zero(right-phi-state)) {
                exit-error("Unable to Merge Phi States: \{left-phi-state} x \{right-phi-state}", blame);
             };
-            tctx = tctx.bind-phi(left-phi-id, phi-linear-moved(left-phi-state), blame);
-            tctx = tctx.bind-phi(right-phi-id, phi-linear-moved(right-phi-state), blame);
+            tctx = tctx.bind-phi(left-phi-id, left-phi-state.move-linear, blame);
+            tctx = tctx.bind-phi(right-phi-id, right-phi-state.move-linear, blame);
             let new-phi-id = uuid();
             let new-phi-state = phi-merge(tctx,left-phi-state,right-phi-state,blame);
             result = result.push(t1(c"Phi::Id",t0(new-phi-id)));
