@@ -35,7 +35,6 @@ import SRC/phi-specialize.lsts;
 import SRC/with-only-phi.lsts;
 import SRC/maybe-retain.lsts;
 import SRC/with-phi.lsts;
-import SRC/without-slot.lsts;
 import SRC/phi-move-args.lsts;
 import SRC/release-locals.lsts;
 import SRC/without-nested-phi.lsts;
