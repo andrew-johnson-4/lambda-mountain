@@ -89,7 +89,6 @@ let apply-global-constructor(tctx: TypeContext?, fname: CString, hint: Type, arg
          tctx = tctx.bind-phi(prow.phi-id, prow.phi-tt, blame);
       };
    };
-   (tctx, result) = phi-initialize(tctx, result, blame);
    tctx = tctx.apply-move-args(simple, arg-types, blame);
    (tctx, result)
 );

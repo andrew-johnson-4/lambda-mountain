@@ -1,32 +1,4 @@
 
-let phi-initialize(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Type) = (
-   match tt {
-      TAnd{conjugate=conjugate} => (
-         let new-conjugate = mk-vector(type(Type), conjugate.length);
-         for c in conjugate {
-            (tctx, c) = phi-initialize(tctx, c, blame);
-            if non-zero(c) then new-conjugate = new-conjugate.push(c);
-         };
-         (tctx, TAnd(new-conjugate))
-      );
-      TGround{tag:c"Arrow"} => (tctx, tt);
-      TGround{tag:c"Phi::Initialize",parameters:[init-tt..]} => (
-         let phi-id = uuid();
-         tctx = tctx.bind-phi(phi-id, init-tt, blame);
-         (tctx, t1(c"Phi::Id",t0(phi-id)))
-      );
-      TGround{tag=tag, parameters=parameters} => (
-         let new-parameters = [] : List<Type>;
-         for p in parameters.reverse {
-            (tctx, p) = phi-initialize(tctx, p, blame);
-            new-parameters = cons(p, new-parameters);
-         };
-         (tctx, ts(tag,new-parameters))
-      );
-      _ => (tctx, tt);
-   };
-);
-
 let phi-initialize-parameter(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Type) = (
    match tt {
       TAnd{conjugate=conjugate} => (

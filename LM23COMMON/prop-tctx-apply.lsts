@@ -5,7 +5,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST): 
 
    # Apply function, then normalize the unification context
    # If we could remove the normalization here then this whole function would be stateless
-   let apply-tctx = unify(ft.domain, at, blame).normalize;
+   let apply-tctx = unify(ft.domain, at, blame).normalize.without-phi-keep-state;
 
    # Fail if arguments are not accepted by function (unify)
    if apply-tctx.is-none then exit-error("Unable to apply (unify) function \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
@@ -23,14 +23,14 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST): 
    tctx = tctx.apply-move-args(ft, at, blame);
 
    # Specialize the function type
-   let closed-type = apply-tctx.substitute(ft);
+   let closed-type = apply-tctx.substitute(ft).without-phi-keep-state;
 
    # Fail if specialized function is still open
    if closed-type.is-open
    then exit-error("Unification did not close all open type variables in call to \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
 
    # Specialize the return type
-   let return-type = apply-tctx.substitute(ft.range);
+   let return-type = apply-tctx.substitute(ft.range).without-phi-keep-state.with-phi-id-if-phi-state;
 
    # Propagate cons root type for Prop functions
    # like, t0.prop0(t1,t2) : T0 && Prop0

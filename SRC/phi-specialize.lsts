@@ -18,10 +18,9 @@ let .phi-specialize(tt: Type, tctx: TypeContext?, blame: AST, is-return: U64): T
       );
       TGround{tag:c"Phi::Id",parameters:[TGround{phi-id=tag,parameters:[]}..]} => (
          let phi-state = tctx.lookup-phi(phi-id).phi-tt;
-         if not(non-zero(phi-state)) then ta
-         else if is-return
-         then t1(c"Phi::Initialize", phi-state)
-         else t1(c"Phi::State", phi-state)
+         if non-zero(phi-state)
+         then t1(c"Phi::State", phi-state)
+         else ta
       );
       TGround{tag=tag,parameters=parameters} => (
          let new-parameters = [] : List<Type>;

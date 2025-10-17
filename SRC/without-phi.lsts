@@ -13,7 +13,6 @@ let .without-any-phi(tt: Type): Type = (
       );
       TGround { tag:c"Phi::Id", parameters:[_..] } => ta;
       TGround { tag:c"Phi::Transition", parameters:[_.._..] } => ta;
-      TGround { tag:c"Phi::Initialize", parameters:[_..] } => ta;
       TGround { tag:c"Phi::State", parameters:[_..] } => ta;
       TGround { tag=tag, parameters=parameters } => ts(tag, parameters.without-any-phi);
       _ => tt;
