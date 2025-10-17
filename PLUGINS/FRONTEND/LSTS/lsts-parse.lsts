@@ -1015,7 +1015,7 @@ let lsts-parse-function-signature(fname: CString, tokens: List<Token>, loc: Sour
        lsts-parse-expect(c":", tokens); tokens = tail(tokens);
        let rtype-rest = lsts-parse-type(tokens);
        out.return-type = rtype-rest.first;
-       if fname!=c"phi" then out.return-type = out.return-type.expand-implied-phi.phi-as-initialize;
+       if fname!=c"phi" then out.return-type = out.return-type.expand-implied-phi;
        tokens = rtype-rest.second;
    } else if non-zero(out.args-type) {
        out.return-type = t0(c"Nil");
