@@ -23,7 +23,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST): 
    tctx = tctx.apply-move-args(ft, at, blame);
 
    # Specialize the function type
-   let closed-type = apply-tctx.substitute(ft);
+   let closed-type = apply-tctx.substitute(ft).without-phi-keep-state;
 
    # Fail if specialized function is still open
    if closed-type.is-open

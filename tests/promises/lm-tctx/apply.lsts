@@ -18,12 +18,11 @@ assert( Some(mk-tctx()).apply(c"f", t0(c"Prop") && t2(c"Arrow",tv(c"a"),t0(c"B")
 assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",t0(c"A"),t0(c"B")), t0(c"A") && t1(c"Phi::Id",t0(c"ABC")) && t1(c"Phi::State",t0(c"A")) && t1(c"Phi::State",t0(c"B")), mk-eof() ).third == t2(c"Arrow",t0(c"A"),t0(c"B")) );
 assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",t0(c"A"),t0(c"B")), t0(c"A") && t1(c"Phi::Id",t0(c"ABC")) && t1(c"Phi::State",t0(c"A")) && t1(c"Phi::State",t0(c"B")), mk-eof() ).fourth == t0(c"B") );
 
-print(Some(mk-tctx()).apply(c"f", t2(c"Arrow",tv(c"a"),tv(c"a")), t0(c"A") && t1(c"Phi::Id",t0(c"ABC")) && t1(c"Phi::State",t0(c"A")) && t1(c"Phi::State",t0(c"B")), mk-eof() ).third.into(type(String)));
-
 assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",tv(c"a"),tv(c"a")), t0(c"A") && t1(c"Phi::Id",t0(c"ABC")) && t1(c"Phi::State",t0(c"A")) && t1(c"Phi::State",t0(c"B")), mk-eof() ).third
                                  == t2(c"Arrow",t0(c"A") && t1(c"Phi::State",t0(c"A")) && t1(c"Phi::State",t0(c"B")),t0(c"A") && t1(c"Phi::State",t0(c"A")) && t1(c"Phi::State",t0(c"B"))) );
 
-print(Some(mk-tctx()).apply(c"f", t2(c"Arrow",tv(c"a"),tv(c"a")), t0(c"A") && t1(c"Phi::Id",t0(c"ABC")) && t1(c"Phi::State",t0(c"A")) && t1(c"Phi::State",t0(c"B")), mk-eof() ).fourth.into(type(String)));
-
 assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",tv(c"a"),tv(c"a")), t0(c"A") && t1(c"Phi::Id",t0(c"ABC")) && t1(c"Phi::State",t0(c"A")) && t1(c"Phi::State",t0(c"B")), mk-eof() ).fourth
                                  <: (t0(c"A") && t1(c"Phi::State",t0(c"A")) && t1(c"Phi::State",t0(c"B")) && t1(c"Phi::Id",ta)) );
+
+assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",tv(c"a"),t2(c"Tuple",tv(c"a"),tv(c"a"))), t0(c"A") && t1(c"Phi::Id",t0(c"ABC")) && t1(c"Phi::State",t0(c"A")) && t1(c"Phi::State",t0(c"B")), mk-eof() ).third
+                                 == t2(c"Arrow",t0(c"A") && t1(c"Phi::State",t0(c"A")) && t1(c"Phi::State",t0(c"B")),t0(c"A") && t1(c"Phi::State",t0(c"A")) && t1(c"Phi::State",t2(c"Tuple",t0(c"A"),t0(c"A")))) );
