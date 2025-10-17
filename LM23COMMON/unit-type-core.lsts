@@ -27,3 +27,4 @@ import LM23COMMON/type-without-phi.lsts;
 import LM23COMMON/type-move-linear.lsts;
 import LM23COMMON/type-can-apply.lsts;
 import LM23COMMON/type-can-receive.lsts;
+import LM23COMMON/type-without-phi-keep-state.lsts;

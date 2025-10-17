@@ -5,7 +5,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST): 
 
    # Apply function, then normalize the unification context
    # If we could remove the normalization here then this whole function would be stateless
-   let apply-tctx = unify(ft.domain, at, blame).normalize;
+   let apply-tctx = unify(ft.domain, at, blame).normalize.without-phi-keep-state;
 
    # Fail if arguments are not accepted by function (unify)
    if apply-tctx.is-none then exit-error("Unable to apply (unify) function \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);

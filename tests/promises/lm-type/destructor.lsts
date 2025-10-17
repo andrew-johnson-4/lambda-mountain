@@ -68,6 +68,19 @@ assert( t2(c"Cons",t0(c"A") && t1(c"Phi::State",ta),t0(c"B")).without-phi == t2(
 assert( t2(c"Arrow",t0(c"A") && t1(c"Phi::State",ta),t0(c"B")).without-phi == t2(c"Arrow",t0(c"A") && t1(c"Phi::State",ta),t0(c"B")) );
 assert( safe-alloc-block-count == 0 );
 
+assert( ta.without-phi-keep-state == ta );
+assert( tv(c"a").without-phi-keep-state == tv(c"a") );
+assert( t0(c"A").without-phi-keep-state == t0(c"A") );
+assert( (t0(c"A") && t1(c"Phi::Id",ta)).without-phi-keep-state == t0(c"A") );
+assert( (t0(c"A") && t2(c"Phi::Transition",ta,ta)).without-phi-keep-state == t0(c"A") );
+assert( (t0(c"A") && t1(c"Phi::State",ta)).without-phi-keep-state == (t0(c"A") && t1(c"Phi::State",ta)) );
+assert( t2(c"Tuple",t0(c"A"),t0(c"B")).without-phi-keep-state == t2(c"Tuple",t0(c"A"),t0(c"B")) );
+assert( t2(c"Tuple",t0(c"A") && t1(c"Phi::Id",ta),t0(c"B")).without-phi-keep-state == t2(c"Tuple",t0(c"A"),t0(c"B")) );
+assert( t2(c"Tuple",t0(c"A") && t2(c"Phi::Transition",ta,ta),t0(c"B")).without-phi-keep-state == t2(c"Tuple",t0(c"A"),t0(c"B")) );
+assert( t2(c"Tuple",t0(c"A") && t1(c"Phi::State",ta),t0(c"B")).without-phi-keep-state == t2(c"Tuple",t0(c"A"),t0(c"B")) );
+assert( t2(c"Arrow",t0(c"A") && t1(c"Phi::State",ta),t0(c"B")).without-phi-keep-state == t2(c"Arrow",t0(c"A") && t1(c"Phi::State",ta),t0(c"B")) );
+assert( safe-alloc-block-count == 0 );
+
 assert( ta.move-linear == ta );
 assert( tv(c"a").move-linear == tv(c"a") );
 assert( t0(c"A").move-linear == t0(c"A") );
