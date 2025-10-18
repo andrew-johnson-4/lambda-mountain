@@ -1,0 +1,18 @@
+
+let .apply-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type): (TypeContext?, Type) = (
+   # Coerce types into denormalized format
+   # TODO: replace with Into<Type::Format::Denormal> parameter types
+   arg-types = denormalize-strong(arg-types);
+   return-type-hint = denormalize-strong(return-type-hint);
+
+   # Find the appropriate function
+   let f-row = tctx.find-callable(fname, arg-types, blame, return-type-hint);
+
+   # Apply function
+   (tctx, let apply-tctx, let closed-type, let return-type) = tctx.apply(fname, f-row.dt, arg-types, blame, return-type-hint);
+
+   # Specialize function if necessary
+   if f-row.dt.is-open then try-specialize(fname, f-row.dt, apply-tctx, closed-type);
+
+   (tctx, return-type)
+);
