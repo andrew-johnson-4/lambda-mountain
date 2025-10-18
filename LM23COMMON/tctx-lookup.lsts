@@ -24,6 +24,7 @@ let .lookup(trs: List<TypeContextRow>, key: CString): TypeContextRow = (
    };
    default
 );
+
 let .lookups(tctx: TypeContext?, key: CString): List<TypeContextRow> = tctx.get-or(mk-tctx()).tctx.lookups(key);
 let .lookups(trs: List<TypeContextRow>, key: CString): List<TypeContextRow> = (
    let default = [] : List<TypeContextRow>;

@@ -67,7 +67,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
          if tt.is-t(c"String",0) {
-            term = t.ascript(t0(c"CString"));
+            term = t.ascript(t0(c"CString") && t0(c"Literal"));
             term = mk-app(mk-var(c"intern"),term);
             (tctx, term) = std-infer-expr(tctx, term, false, Tail, ta);
          } else {
@@ -208,15 +208,14 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          } else if not(non-zero(typeof-term(term))) {
             if hint.is-t(c"List",1) && hint.is-type && key==c"LEOF"
             then {
-               (tctx, let lit-tt) = apply-global-constructor(tctx, key, hint, t0(c"Nil"), term);
-               ascript(term,lit-tt);
+               (tctx, let lit-tt) = tctx.apply-callable(key, t0(c"Nil"), term, hint);
+               ascript(term, lit-tt);
             } else if hint.is-t(c"HashtableEq",2) && hint.is-type && key==c"HashtableEqEOF"
             then {
-               (tctx, let lit-tt) = apply-global-constructor(tctx, key, hint, t0(c"Nil"), term);
-               ascript(term,lit-tt);
+               (tctx, let lit-tt) = tctx.apply-callable(key, t0(c"Nil"), term, hint);
+               ascript(term, lit-tt);
             } else {
-               (tctx, let lit-tt) = apply-global-constructor(tctx, key, hint, ta, term);
-               ascript(term,lit-tt);
+               ascript(term, t2(c"Arrow",t0(c"Any"),t0(c"Any")));
             }
          }
       );
@@ -294,7 +293,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                };
                (tctx, rt) = if typeof-term(l).is-arrow && non-zero(lit-name-if-lit(l)) {
                   let direct-hint = hint-if-hint(l);
-                  (tctx, rt) = apply-global-constructor(tctx, lit-name-if-lit(l), direct-hint, typeof-term(r), term);
+                  (tctx, rt) = tctx.apply-callable(lit-name-if-lit(l), typeof-term(r), term, direct-hint);
                   (tctx, rt)
                } else if typeof-term(l).is-arrow && non-zero(var-name-if-var-or-lit(l)) {
                   (tctx, rt) = apply-global-callable(tctx, var-name-if-var-or-lit(l), typeof-term(r), term); (tctx, rt)
@@ -330,6 +329,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
    if used.is-unused && typeof-term(term).slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1) {
       (tctx, term) = wrap-call(tctx, c".release", term);
    };
+   print("\{term} : \{typeof-term(term)}\n");
    (tctx, term);
 );
 

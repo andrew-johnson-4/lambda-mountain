@@ -46,7 +46,7 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
    }};
 
    # Fail if function needs to be in an unsafe block
-   if non-zero(result) && result.get-or-panic.is-t(c"Unsafe",0) && not(tctx.get-or(mk-tctx()).is-unsafe)
+   if non-zero(result) && result.get-or-panic.dt.is-t(c"Unsafe",0) && not(tctx.get-or(mk-tctx()).is-unsafe)
    then exit-error("Call to unsafe function outside of unsafe block", blame);
 
    # Fail if function call is ambiguous
