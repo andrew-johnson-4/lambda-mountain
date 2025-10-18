@@ -576,12 +576,12 @@ let std-c-expr-of-statement(t: CTerm): AST = (
             (preamble, let arg1-rhs) = std-c-lift-lhs(std-c-expr-of-statement(arg1.get-or-panic));
             if non-zero(arg1-rhs)
             then arg1-rhs
-            else mk-lit(c"").ascript(t0(c"L"))
-         } else { mk-lit(c"").ascript(t0(c"L")) };
+            else mk-lit(c"").ascript(t0(c"L") && t0(c"Literal"))
+         } else { mk-lit(c"").ascript(t0(c"L") && t0(c"Literal")) };
          if arg2.is-some then { args = mk-cons(args, std-c-expr-of-statement(arg2.get-or-panic)); }
-         else { args = mk-cons(args, mk-lit(c"").ascript(t0(c"L"))); };
+         else { args = mk-cons(args, mk-lit(c"").ascript(t0(c"L") && t0(c"Literal"))); };
          if arg3.is-some then { args = mk-cons(args, std-c-expr-of-statement(arg3.get-or-panic)); }
-         else { args = mk-cons(args, mk-lit(c"").ascript(t0(c"L"))); };
+         else { args = mk-cons(args, mk-lit(c"").ascript(t0(c"L") && t0(c"Literal"))); };
          args = mk-cons(args, std-c-expr-of-statement(stmt));
          let for-expr = mk-app(
             Var( c"c::for", with-location(mk-token("c::for"),op.location) ),
