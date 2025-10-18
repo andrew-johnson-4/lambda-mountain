@@ -101,7 +101,7 @@ let infer-global-context(term: AST): Nil = (
             ascript(frhs, ft);
             global-type-context-normal = global-type-context-normal.bind(k.key, ft, term);
             global-type-context-denormal = global-type-context-denormal.bind(k.key, ft, term);
-            Some(mk-tctx()).bind-global(k.key, ft, ft, term);
+            Some(mk-tctx()).bind-global(k.key, ft, denormalize-strong(ft), term);
          };
       );
       _ => ();
