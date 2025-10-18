@@ -1,46 +1,4 @@
 
-let apply-global-constructor(tctx: TypeContext?, fname: CString, hint: Type, arg-types: Type, blame: AST): (TypeContext?, Type) = (
-   hint = hint.rewrite-type-alias;
-   let result = ta;
-   let simple = ta;
-   if non-zero(hint) && hint.is-type {
-      for Tuple{ot=first, kt=second, t=third} in global-type-context-denormal.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
-         if (not(non-zero(hint)) || can-receive(ot, hint)) && (not(non-zero(arg-types)) || can-apply(ot, arg-types)) {
-            let next = if non-zero(hint)
-            then unify(ot.range,hint,blame).normalize.substitute(kt)
-            else kt;
-            simple = ot;
-            if non-zero(result) then result = result && next else result = next;
-         }
-      };
-   } else {
-      for Tuple{ot=first, kt=second, t=third} in global-type-context-denormal.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
-         if not(non-zero(arg-types)) || can-apply(ot, arg-types) {
-            let next = if non-zero(hint)
-            then hint
-            else kt;
-            simple = ot;
-            if non-zero(result) then result = result && next else result = next;
-         }
-      };
-   };
-   if not(non-zero(result)) && non-zero(hint) && not(hint.is-type) then result = hint
-   else if not(non-zero(result)) then exit-error("Unable to apply appropriate global constructor: \{fname} :: \{hint} (\{arg-types})", blame);
-   if result.is-arrow && non-zero(arg-types) {
-      let inner-tctx = if non-zero(hint)
-      then unify(simple.range, hint, blame).normalize
-      else unify(simple.domain, arg-types, blame).normalize;
-      let closed-type = inner-tctx.substitute(simple);
-      if simple.is-open then try-specialize(fname, simple, inner-tctx, closed-type);
-      result = inner-tctx.substitute(simple.range);
-      for prow in inner-tctx.get-or(mk-tctx()).pctx {
-         tctx = tctx.bind-phi(prow.phi-id, prow.phi-tt, blame);
-      };
-   };
-   tctx = tctx.apply-move-args(simple, arg-types, blame);
-   (tctx, result)
-);
-
 let apply-global-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST): (TypeContext?, Type) = apply-global-callable(tctx,fname,arg-types,blame,true);
 let maybe-apply-global-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST): (TypeContext?, Type) = apply-global-callable(tctx,fname,arg-types,blame,false);
 
