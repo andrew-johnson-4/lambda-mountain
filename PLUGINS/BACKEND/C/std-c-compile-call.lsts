@@ -5,7 +5,7 @@ let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor
    let fterm = if non-zero(return-hint-if-constructor) {
       find-global-constructor(fname, return-hint-if-constructor, typeof-term(args), args);
    } else {
-      find-global-callable(fname, typeof-term(args), args);
+      Some(mk-tctx()).find-callable(fname, typeof-term(args), args).blame;
    };
    if not(non-zero(fterm)) then fail("std-c-compile-call Function was null: \{fterm}\nArguments: \{typeof-term(args)}\n");
    if typeof-term(fterm).is-t(c"Blob",0) {
@@ -27,7 +27,7 @@ let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor
       let inner-ctx = mk-fctx().bind(c"ictx", t0(c"ImplicitContext"), ictx)
                                .bind(c"args", typeof-term(args), push-args);
       let r = mk-fragment();
-      match find-global-callable(c"primitive::call", t2(c"Cons",t0(c"ImplicitContext"),typeof-term(args)), args) {
+      match Some(mk-tctx()).find-callable(c"primitive::call", t2(c"Cons",t0(c"ImplicitContext"),typeof-term(args)), args).blame {
          Glb{val:Abs{lhs=lhs, rhs=rhs}} => (
             r = blob-render(inner-ctx, rhs, r);
             r.context = close(ctx);
