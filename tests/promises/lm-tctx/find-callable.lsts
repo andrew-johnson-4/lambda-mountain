@@ -1,0 +1,19 @@
+
+import LM23COMMON/unit-prop-core.lsts;
+
+let tctx = Some(mk-tctx());
+tctx = tctx.bind-global(c"f", t2(c"Arrow", t0(c"A"), t0(c"B")), mk-var(c"a"));
+tctx = tctx.bind-global(c"f", t2(c"Arrow", t0(c"B"), t0(c"B")), mk-var(c"b"));
+tctx = tctx.bind-global(c"f", t2(c"Arrow", t0(c"A") && t0(c"B"), t0(c"B")), mk-var(c"ab"));
+
+assert( tctx.find-callable(c"f", t0(c"A"), mk-eof()).nt == t2(c"Arrow", t0(c"A"), t0(c"B")) );
+assert( tctx.find-callable(c"f", t0(c"A"), mk-eof()).dt == t2(c"Arrow", t0(c"A"), t0(c"B")) );
+assert( tctx.find-callable(c"f", t0(c"A"), mk-eof()).blame == mk-var(c"a") );
+
+assert( tctx.find-callable(c"f", t0(c"B"), mk-eof()).nt == t2(c"Arrow", t0(c"B"), t0(c"B")) );
+assert( tctx.find-callable(c"f", t0(c"B"), mk-eof()).dt == t2(c"Arrow", t0(c"B"), t0(c"B")) );
+assert( tctx.find-callable(c"f", t0(c"B"), mk-eof()).blame == mk-var(c"b") );
+
+assert( tctx.find-callable(c"f", t0(c"A") && t0(c"B"), mk-eof()).nt == t2(c"Arrow", t0(c"A") && t0(c"B"), t0(c"B")) );
+assert( tctx.find-callable(c"f", t0(c"A") && t0(c"B"), mk-eof()).dt == t2(c"Arrow", t0(c"A") && t0(c"B"), t0(c"B")) );
+assert( tctx.find-callable(c"f", t0(c"A") && t0(c"B"), mk-eof()).blame == mk-var(c"ab") );

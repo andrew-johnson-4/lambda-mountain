@@ -283,7 +283,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   then t0(c"MustNotRetain") else ta;
                   let pre-retain-tctx = tctx;
                   (tctx, let new-r) = std-infer-expr(tctx, r, false, Call(var-name-if-var-or-lit(l)), rr-args-hint);
-                  let ftype = typeof-term(find-global-callable( var-name-if-var-or-lit(l), typeof-term(new-r), term ));
+                  let ftype = typeof-term(tctx.find-callable( var-name-if-var-or-lit(l), typeof-term(new-r), term ).blame);
                   if ftype.domain.is-any-arg-t(c"MustNotRetain",0) {
                      (tctx, new-r) = std-infer-expr(pre-retain-tctx, r, false, Call(var-name-if-var-or-lit(l)), ftype.domain && rr-args-hint);
                   };
@@ -313,7 +313,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                rt = phi-state(tctx, rt, term);
                ascript(term, rt);
                if not(rt.is-t(c"Cons",2)) {
-                  let function-type = typeof-term(find-global-callable(var-name-if-var-or-lit(l), typeof-term(r), term));
+                  let function-type = typeof-term(tctx.find-callable(var-name-if-var-or-lit(l), typeof-term(r), term).blame);
                   if function-type.is-t(c"MustRetainOnCall",0) && not(hint.is-t(c"MustNotRetain",0)) && not(tctx.get-or(mk-tctx()).is-blob) {
                     (tctx, term) = maybe-retain(tctx, term);
                   }
@@ -335,7 +335,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 
 let wrap-call(tctx: TypeContext?, fname: CString, term: AST): (TypeContext?, AST) = (
    let args-type = typeof-term(term);
-   let function-type = typeof-term(find-global-callable(fname, args-type, term));
+   let function-type = typeof-term(tctx.find-callable(fname, args-type, term).blame);
    let function-term = mk-var(fname); ascript(function-term, function-type);
    let result = mk-app(function-term, term);
    (tctx, let result-type) = apply-global-callable(tctx, fname, args-type, term);

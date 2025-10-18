@@ -1,38 +1,4 @@
 
-let find-global-callable(fname: CString, arg-types: Type, blame: AST): AST = (
-   arg-types = denormalize-strong(arg-types);
-   let match-set = mk-vector(type((Type,AST)), 16);
-   for Tuple{kt=second, t=third} in global-type-context-denormal.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
-      if can-apply(kt, arg-types) {
-         match-set = match-set.push( (kt, t) );
-      }
-   };
-   let result = mk-eof();
-   for Tuple{kt0=first, t0=second} in match-set { if not(non-zero(result)) {
-      let all-accept = true;
-      for Tuple{kt1=first, t1=second} in match-set {
-         if is(t0,t1) then ()
-         else if most-special(kt0,kt1)!=kt0 then all-accept = false;
-      };
-      if all-accept { result = t0 };
-   }};
-   if not(non-zero(result)) && match-set.length > 0 {
-      eprint("Unable to find unambiguous global callable: \{fname} \{arg-types}\nAt: \{blame.location}\n");
-      for Tuple{kt=first, t=second} in match-set {
-         eprint("\{kt}\n");
-      };
-      exit(1);
-   };
-   if not(non-zero(result)) then {
-      print("Unable to find appropriate global callable: \{fname} \{arg-types}\nAt: \{blame.location}\n");
-      for Tuple{kt=second, t=third} in global-type-context-denormal.lookup(fname, [] : List<Tuple<Type,Type,AST>>) {
-         print("Candidate: \{kt}\n");
-      };
-      exit(1);
-   };
-   result
-);
-
 let find-global-constructor(fname: CString, hint: Type, arg-types: Type, blame: AST): AST = (
    hint = hint.rewrite-type-alias.without-phi;
    let result = ASTEOF();

@@ -10,7 +10,6 @@ import SRC/inference-definitions.lsts;
 # unification
 import SRC/tctx-bind.lsts;
 import SRC/reduce-plural.lsts;
-import SRC/most-special.lsts;
 
 # corollaries
 import SRC/class-info-index.lsts;

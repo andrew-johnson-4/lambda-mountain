@@ -1,6 +1,6 @@
 
 let cc-blob(callee-ctx: FContext, function-name: CString, args-tt: Type, blame: AST): Fragment = (
-   let f = find-global-callable(function-name, args-tt, blame);
+   let f = Some(mk-tctx()).find-callable(function-name, args-tt, blame).blame;
    match f {
       Glb{val:Abs{rhs=rhs}} => (
          let r = blob-render(callee-ctx, rhs, mk-fragment());
