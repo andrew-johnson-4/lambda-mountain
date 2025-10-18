@@ -12,17 +12,18 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ctx = ctx.bind( c"primitive::field-set", ta, ta, mk-var(c"set."+field-name) );
    ctx = ctx.bind( c"primitive::field-get-indirect", ta, ta, mk-var(c"."+field-name) );
    ctx = ctx.bind( c"primitive::field-set-indirect", ta, ta, mk-var(c"set."+field-name) );
-   let field-get = substitute(ctx, find-global-callable(c"primitive::field-get", base-type, blame));
-   let field-set = substitute(ctx, find-global-callable(c"primitive::field-set", t2(c"Cons", base-type, field-type), blame));
-   let field-get-indirect = substitute(ctx, find-global-callable(c"primitive::field-get-indirect", t2(c"Array",base-type,ta), blame));
-   let field-set-indirect = substitute(ctx, find-global-callable(c"primitive::field-set-indirect", t2(c"Cons", t2(c"Array",base-type,ta), field-type), blame));
+   let global-tctx = Some(mk-tctx());
+   let field-get = substitute(ctx, global-tctx.find-callable(c"primitive::field-get", base-type, blame));
+   let field-set = substitute(ctx, global-tctx.find-callable(c"primitive::field-set", t2(c"Cons", base-type, field-type), blame));
+   let field-get-indirect = substitute(ctx, global-tctx.find-callable(c"primitive::field-get-indirect", t2(c"Array",base-type,ta), blame));
+   let field-set-indirect = substitute(ctx, global-tctx.find-callable(c"primitive::field-set-indirect", t2(c"Cons", t2(c"Array",base-type,ta), field-type), blame));
 
    ctx = (None : Maybe<TypeContext>)();
    ctx = ctx.bind( c"base-type", base-type, denormalize(base-type), mk-eof() );
    ctx = ctx.bind( c"field-type", field-type, denormalize(field-type), mk-eof() );
    ctx = ctx.bind( c"field-name", ta, ta, mk-lit(mangled-field-name) );
    ctx = ctx.bind( c"primitive::field-get", ta, ta, mk-var(c"."+to-string(field-ordinal)) );
-   let field-ordinal-get = substitute(ctx, find-global-callable(c"primitive::field-get", base-type, blame));
+   let field-ordinal-get = substitute(ctx, global-tctx.find-callable(c"primitive::field-get", base-type, blame));
 
    type-ast-inserts = type-ast-inserts.push(field-get);
    type-ast-inserts = type-ast-inserts.push(field-set);

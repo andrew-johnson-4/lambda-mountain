@@ -2,8 +2,8 @@
 # specialization does not always choose the lowest on the subsumption hierarchy
 # for example: x -> x <: A -> A
 # but for specialization we choose: A -> A
-# This is because specialization chooses the most specific covariant,covariant domain,range pair
-# This is different than the traditional contravariant,covariant unification for arrows
+# This is because specialization chooses the most specific domain, irrespective of range
+# This is different than the traditional contravariant domain for arrows
 # Theoretically this is justified by flow-of-information during disambiguation
 #    f(x) is interpreted as "f informed by x"
 #    rather than as simply "f of x"
