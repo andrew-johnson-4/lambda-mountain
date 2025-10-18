@@ -329,7 +329,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
    if used.is-unused && typeof-term(term).slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1) {
       (tctx, term) = wrap-call(tctx, c".release", term);
    };
-   print("\{term} : \{typeof-term(term)}\n");
    (tctx, term);
 );
 
