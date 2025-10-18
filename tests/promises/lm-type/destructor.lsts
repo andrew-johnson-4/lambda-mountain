@@ -95,3 +95,13 @@ assert( tv(c"a").move-linear == tv(c"a") );
 assert( t0(c"A").move-linear == t0(c"A") );
 assert( (t0(c"A") && t1(c"Linear",t0(c"A"))).move-linear == (t0(c"A") && t1(c"Linear",t0(c"Phi::Moved"))) );
 assert( safe-alloc-block-count == 0 );
+
+assert( most-special( t0(c"A") && t0(c"B"), t0(c"A") ) == (t0(c"A") && t0(c"B")) );
+assert( most-special( t0(c"A"), t0(c"A") && t0(c"B") ) == (t0(c"A") && t0(c"B")) );
+assert( most-special( tv(c"a"), t0(c"A") ) == t0(c"A") );
+assert( most-special( t0(c"A"), tv(c"a") ) == t0(c"A") );
+assert( most-special( ta, t0(c"A") ) == t0(c"A") );
+assert( most-special( t0(c"A"), ta ) == t0(c"A") );
+assert( most-special( t2(c"Arrow",tv(c"a"),tv(c"a")), t2(c"Arrow",t0(c"A"),t0(c"A")) ) == t2(c"Arrow",t0(c"A"),t0(c"A")) );
+assert( most-special( t2(c"Arrow",t0(c"A"),tv(c"a")), t2(c"Arrow",t0(c"A"),t0(c"A")) ) == t2(c"Arrow",t0(c"A"),t0(c"A")) );
+assert( safe-alloc-block-count == 0 );

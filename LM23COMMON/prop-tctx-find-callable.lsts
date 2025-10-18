@@ -1,10 +1,18 @@
 
 # .find-callable is the central hub for all function and constructor calls
 let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST): TypeContextRow = (
+   tctx.find-callable(fname, arg-types, blame, ta);
+);
+
+let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type): TypeContextRow = (
    arg-types = denormalize-strong(arg-types);
+   return-type-hint = denormalize-strong(return-type-hint);
    let match-set = mk-vector(type(TypeContextRow));
    for tr in tctx.lookups(fname) {
-      if can-apply(tr.dt, arg-types) {
+      # can-receive is an additional refinement on top of argument satisfaction
+      # it is necessary for nullary or partial constructors that need a full type
+      # like, None : TypeContext?
+      if can-apply(tr.dt, arg-types) && (not(non-zero(return-type-hint)) || can-receive(tr.dt, return-type-hint)) {
          match-set = match-set.push(tr);
       }
    };

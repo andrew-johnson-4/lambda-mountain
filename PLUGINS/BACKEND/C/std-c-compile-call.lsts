@@ -2,11 +2,7 @@
 let std-c-compile-call(ctx: FContext, fname: CString, args: AST): Fragment = std-c-compile-call(ctx, fname, ta, args);
 
 let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor: Type, args: AST): Fragment = (
-   let fterm = if non-zero(return-hint-if-constructor) {
-      find-global-constructor(fname, return-hint-if-constructor, typeof-term(args), args);
-   } else {
-      Some(mk-tctx()).find-callable(fname, typeof-term(args), args).blame;
-   };
+   let fterm = Some(mk-tctx()).find-callable(fname, typeof-term(args), args, return-hint-if-constructor).blame;
    if not(non-zero(fterm)) then fail("std-c-compile-call Function was null: \{fterm}\nArguments: \{typeof-term(args)}\n");
    if typeof-term(fterm).is-t(c"Blob",0) {
       let r = mk-fragment();

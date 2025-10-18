@@ -17,3 +17,10 @@ assert( tctx.find-callable(c"f", t0(c"B"), mk-eof()).blame == mk-var(c"b") );
 assert( tctx.find-callable(c"f", t0(c"A") && t0(c"B"), mk-eof()).nt == t2(c"Arrow", t0(c"A") && t0(c"B"), t0(c"B")) );
 assert( tctx.find-callable(c"f", t0(c"A") && t0(c"B"), mk-eof()).dt == t2(c"Arrow", t0(c"A") && t0(c"B"), t0(c"B")) );
 assert( tctx.find-callable(c"f", t0(c"A") && t0(c"B"), mk-eof()).blame == mk-var(c"ab") );
+
+tctx = tctx.bind-global(c"g", t2(c"Arrow", t0(c"A"), t1(c"B",tv(c"x"))), mk-var(c"abx"));
+tctx = tctx.bind-global(c"g", t2(c"Arrow", t0(c"A"), t1(c"B",t0(c"A"))), mk-var(c"aba"));
+
+assert( tctx.find-callable(c"g", t0(c"A"), mk-eof()).nt == t2(c"Arrow", t0(c"A"), t1(c"B",t0(c"A"))) );
+assert( tctx.find-callable(c"g", t0(c"A"), mk-eof()).dt == t2(c"Arrow", t0(c"A"), t1(c"B",t0(c"A"))) );
+assert( tctx.find-callable(c"g", t0(c"A"), mk-eof()).blame == mk-var(c"aba") );
