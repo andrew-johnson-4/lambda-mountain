@@ -6,6 +6,5 @@ let specialize(key: CString, unify-ctx: TypeContext?, result-type: Type, term: A
       infer-global-context(special-term);
       (_, special-term) = std-infer-expr(global-flow-tctx, special-term, false, Used, ta);
       ast-parsed-program = ast-parsed-program + special-term;
-      if key=="LEOF" then print("specialize LEOF : \{result-type}\n\{special-term}\n");
    }
 );
