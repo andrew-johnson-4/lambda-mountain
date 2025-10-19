@@ -16,6 +16,7 @@ let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor
       }; r
    } else if typeof-term(fterm).is-t(c"Prop",0) { std-c-compile-expr(ctx, args, false)
    } else {
+      if typeof-term(fterm).is-open then exit-error("STD C Compile Call is open \{fname} (\{typeof-term(args)}) : \{return-hint-if-constructor}\n", args);
       let push-args = std-c-compile-push-args(ctx, args);
       let function-id = if typeof-term(fterm).is-t(c"FFI",0) || typeof-term(fterm).is-t(c"C-FFI",0)
                         then fname else mangle-identifier-function(fname, typeof-term(fterm));

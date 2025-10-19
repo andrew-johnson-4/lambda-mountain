@@ -1,5 +1,6 @@
 
 let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContext, S) = (
+   print("Render \{term}\n");
    let r = SNil;
    match term {
       ASTNil{} => ();
@@ -60,7 +61,7 @@ let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContex
       App{ left:Var{key:c"mangle"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{id=key}, right:AType{} } } } => r = mangle-identifier(id);
       App{ left:Var{key:c"mangle-pre"}, right:AType{tt=tt} } => (
          r = std-c-mangle-declaration-internal(tt.l1.normalize.rewrite-opaque-type-alias.without-any-phi, term).first;
-         if clone-rope(r)==c"LM_ListLM__LT_LM__GT_" then exit-error("mangle-pre bad \{tt.l1.normalize.rewrite-opaque-type-alias.without-any-phi}\n\{term}\n", term);
+         if clone-rope(r)==c"LM_ListLM__LT_LM__GT_" then exit-error("Bad\n", term);
       );
       App{ left:Var{key:c"mangle-post"}, right:AType{tt=tt} } => r = std-c-mangle-declaration-internal(tt.l1.normalize.rewrite-opaque-type-alias.without-any-phi, term).second;
       App{ left:Abs{ lhs-t=lhs:Var{lhs=key}, rhs:ASTNil{}, tlt=tt }, rhs=right } => (
