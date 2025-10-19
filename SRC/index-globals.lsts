@@ -28,6 +28,4 @@ let global-ctx = FCtxEOF;
 
 let parse-suffixes = [] : List<(CString,Type)>;
 
-let stack-to-specialize = [] : List<StackToSpecialize>;
-
 let config-v3 = true;

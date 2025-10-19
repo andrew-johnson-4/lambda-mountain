@@ -28,8 +28,6 @@ let .into(tr: TypeContextRow, tt: Type<String>): String = "TypeContextRow{ key: 
 
 type alias AContext = List<(CString,AST)>;
 
-type StackToSpecialize = { key:CString, pre-type:Type, ctx:Maybe<TypeContext>, post-type:Type };
-
 type ParsePartial = PME{ term:AST , remainder:List<Token> };
 
 type ApplyResult = { function-type:Type , return-type:Type };

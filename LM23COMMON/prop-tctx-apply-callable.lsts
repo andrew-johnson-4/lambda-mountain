@@ -31,7 +31,9 @@ let .apply-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: 
       (tctx, let apply-tctx, let closed-type, return-type) = tctx.apply(fname, f-row.get-or-panic.dt, arg-types, blame, return-type-hint);
 
       # Specialize function if necessary
-      if f-row.get-or-panic.dt.is-open then try-specialize(fname, f-row.get-or-panic.dt, apply-tctx, closed-type);
+      if not(is-special(fname,closed-type)) {
+         stack-to-specialize = cons( StackToSpecialize(function-name,f-row,unify-ctx,result-type), stack-to-specialize );
+      }
    };
 
    (tctx, return-type)
