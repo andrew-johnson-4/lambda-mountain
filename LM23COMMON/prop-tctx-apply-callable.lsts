@@ -29,11 +29,13 @@ let .apply-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: 
    if non-zero(f-row) {
       # Apply function
       (tctx, let apply-tctx, let closed-type, return-type) = tctx.apply(fname, f-row.get-or-panic.dt, arg-types, blame, return-type-hint);
-      let special-type = closed-type.normalize;
    
       # Specialize function if necessary
-      if not(is-special(fname,special-type)) {
-         stack-to-specialize = cons( StackToSpecialize(fname,apply-tctx,special-type,f-row.get-or-panic.blame), stack-to-specialize );
+      if f-row.get-or-panic.dt.is-open {
+         let special-type = closed-type.normalize;
+         if not(is-special(fname,special-type)) {
+            stack-to-specialize = cons( StackToSpecialize(fname,apply-tctx,special-type,f-row.get-or-panic.blame), stack-to-specialize );
+         }
       }
    };
 
