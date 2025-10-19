@@ -1,7 +1,7 @@
 
 let specialize(key: CString, unify-ctx: TypeContext?, result-type: Type, term: AST): Nil = (
    if not(is-special(key, result-type)) {
-      if key==c"Equal" then print("Specialize \{key} : \{result-type}\n");
+      if key==c".discriminator-case-tag" then print("try specialize \{key} \{typeof-term(term)} = \{result-type}\n");
       mark-as-special(key, result-type);
       let special-term = substitute(unify-ctx, term);
       infer-global-context(special-term);

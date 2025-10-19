@@ -1,6 +1,6 @@
 
 let try-specialize(function-name: CString, ft: Type, unify-ctx: TypeContext?, result-type: Type): Nil = (
-   result-type = result-type.normalize;
+   result-type = unify-ctx.substitute(ft);
    for Tuple{ kt=first, t=third } in global-type-context-normal.lookup(function-name, [] : List<(Type,Type,AST)>) {
       if kt==ft && not(is-special(function-name,result-type)) { match t {
          Glb{val:Abs{}} => stack-to-specialize = cons( StackToSpecialize(function-name,unify-ctx,result-type,t), stack-to-specialize );

@@ -32,7 +32,7 @@ let .apply-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: 
    
       # Specialize function if necessary
       if f-row.get-or-panic.dt.is-open {
-         let special-type = closed-type.normalize;
+         let special-type = apply-tctx.substitute(f-row.get-or-panic.nt);
          if not(is-special(fname,special-type)) {
             stack-to-specialize = cons( StackToSpecialize(fname,apply-tctx,special-type,f-row.get-or-panic.blame), stack-to-specialize );
          }
