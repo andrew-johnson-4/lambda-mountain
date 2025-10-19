@@ -174,47 +174,47 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
 
    let return-id = uuid();
  
-   let body = mk-lit(c"({").ascript(t0(c"L"));
+   let body = mk-lit(c"({").ascript(t0(c"L") && t0(c"Literal"));
    body = mk-cons(body, mk-app(mk-var(c"mangle-pre"),mk-atype(t1(c"Type",base-type))) );
-   body = mk-cons(body, mk-lit(c" ").ascript(t0(c"L")));
-   body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L")));
+   body = mk-cons(body, mk-lit(c" ").ascript(t0(c"L") && t0(c"Literal")));
+   body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")));
    body = mk-cons(body, mk-app(mk-var(c"mangle-post"),mk-atype(t1(c"Type",base-type))) );
-   body = mk-cons(body, mk-lit(c";").ascript(t0(c"L")));
-   body = mk-cons(body, mk-lit(c"memset(&").ascript(t0(c"L")));
-   body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L")));
-   body = mk-cons(body, mk-lit(c",0,sizeof ").ascript(t0(c"L")));
-   body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L")));
-   body = mk-cons(body, mk-lit(c");").ascript(t0(c"L")));
+   body = mk-cons(body, mk-lit(c";").ascript(t0(c"L") && t0(c"Literal")));
+   body = mk-cons(body, mk-lit(c"memset(&").ascript(t0(c"L") && t0(c"Literal")));
+   body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")));
+   body = mk-cons(body, mk-lit(c",0,sizeof ").ascript(t0(c"L") && t0(c"Literal")));
+   body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")));
+   body = mk-cons(body, mk-lit(c");").ascript(t0(c"L") && t0(c"Literal")));
 
    if has-tag-case {
-      body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L")) );
-      body = mk-cons(body, mk-lit(c".discriminator_case_tag=").ascript(t0(c"L")));
-      body = mk-cons(body, mk-lit(to-string(case-number)).ascript(t0(c"L")) );
-      body = mk-cons(body, mk-lit(c";").ascript(t0(c"L")));
+      body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")) );
+      body = mk-cons(body, mk-lit(c".discriminator_case_tag=").ascript(t0(c"L") && t0(c"Literal")));
+      body = mk-cons(body, mk-lit(to-string(case-number)).ascript(t0(c"L") && t0(c"Literal")) );
+      body = mk-cons(body, mk-lit(c";").ascript(t0(c"L") && t0(c"Literal")));
    };
 
    for Tuple{field-name=first, field-type=second} in common-fields.reverse {
       let mangled-field-name = c"0_" + field-name;
-      body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L")) );
-      body = mk-cons(body, mk-lit(c".").ascript(t0(c"L")));
-      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name).ascript(t0(c"L"))) );
-      body = mk-cons(body, mk-lit(c"=").ascript(t0(c"L")));
+      body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")) );
+      body = mk-cons(body, mk-lit(c".").ascript(t0(c"L") && t0(c"Literal")));
+      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name).ascript(t0(c"L") && t0(c"Literal"))) );
+      body = mk-cons(body, mk-lit(c"=").ascript(t0(c"L") && t0(c"Literal")));
       body = mk-cons(body, mk-var(mangled-field-name) );
-      body = mk-cons(body, mk-lit(c";").ascript(t0(c"L")));
+      body = mk-cons(body, mk-lit(c";").ascript(t0(c"L") && t0(c"Literal")));
    };
 
    for Tuple{field-name=first, field-type=second} in case-fields.reverse {
       let mangled-field-name = to-string(case-number) + c"_" + field-name;
-      body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L")) );
-      body = mk-cons(body, mk-lit(c".").ascript(t0(c"L")));
-      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name).ascript(t0(c"L"))) );
-      body = mk-cons(body, mk-lit(c"=").ascript(t0(c"L")));
+      body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")) );
+      body = mk-cons(body, mk-lit(c".").ascript(t0(c"L") && t0(c"Literal")));
+      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name).ascript(t0(c"L") && t0(c"Literal"))) );
+      body = mk-cons(body, mk-lit(c"=").ascript(t0(c"L") && t0(c"Literal")));
       body = mk-cons(body, mk-var(mangled-field-name) );
-      body = mk-cons(body, mk-lit(c";").ascript(t0(c"L")));
+      body = mk-cons(body, mk-lit(c";").ascript(t0(c"L") && t0(c"Literal")));
    };
 
-   body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L")));
-   body = mk-cons(body, mk-lit(c";})").ascript(t0(c"L")));
+   body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")));
+   body = mk-cons(body, mk-lit(c";})").ascript(t0(c"L") && t0(c"Literal")));
 
    let constructor = mk-glb( mk-token(case-tag).with-location(blame.location), mk-abs(args, body.ascript(base-type.expand-implied-phi), t0(c"Blob") ) );
 

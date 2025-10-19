@@ -7,3 +7,4 @@ import LM23COMMON/prop-denormalize.lsts;
 import LM23COMMON/prop-tctx-apply.lsts;
 import LM23COMMON/prop-tctx-normalize.lsts;
 import LM23COMMON/prop-tctx-find-callable.lsts;
+import LM23COMMON/prop-stack-to-specialize.lsts;

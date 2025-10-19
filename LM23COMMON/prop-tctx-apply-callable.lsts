@@ -1,0 +1,43 @@
+
+let .apply-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST): (TypeContext?, Type) = (
+   tctx.apply-callable(fname, arg-types, blame, ta, true);
+);
+
+let .maybe-apply-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST): (TypeContext?, Type) = (
+   tctx.apply-callable(fname, arg-types, blame, ta, false);
+);
+
+let .apply-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type): (TypeContext?, Type) = (
+   tctx.apply-callable(fname, arg-types, blame, return-type-hint, true);
+);
+
+let .maybe-apply-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type): (TypeContext?, Type) = (
+   tctx.apply-callable(fname, arg-types, blame, return-type-hint, false);
+);
+
+let .apply-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type, failable: U64): (TypeContext?, Type) = (
+   # Coerce types into denormalized format
+   # TODO: replace with Into<Type::Format::Denormal> parameter types
+   arg-types = denormalize-strong(arg-types);
+   return-type-hint = denormalize-strong(return-type-hint);
+
+   # Find the appropriate function
+   let f-row = tctx.find-callable(fname, arg-types, blame, return-type-hint, failable);
+
+   let return-type = ta;
+
+   if non-zero(f-row) {
+      # Apply function
+      (tctx, let apply-tctx, let closed-type, return-type) = tctx.apply(fname, f-row.get-or-panic.dt, arg-types, blame, return-type-hint);
+   
+      # Specialize function if necessary
+      if f-row.get-or-panic.dt.is-open {
+         let special-type = apply-tctx.substitute(f-row.get-or-panic.nt);
+         if not(is-special(fname,special-type)) {
+            stack-to-specialize = cons( StackToSpecialize(fname,apply-tctx,special-type,f-row.get-or-panic.blame), stack-to-specialize );
+         }
+      }
+   };
+
+   (tctx, return-type)
+);

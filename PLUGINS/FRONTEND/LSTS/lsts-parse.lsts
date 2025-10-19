@@ -605,6 +605,7 @@ let lsts-parse-ascript(tokens: List<Token>): Tuple<AST,List<Token>> = (
    while lsts-parse-head(tokens)==c":" && non-zero(tokens) && lsts-parse-head(tail(tokens)) != c":" {
       tokens = tail(tokens);
       (let tt, tokens) = lsts-parse-type(tokens);
+      if tt.is-t(c"L",0) then tt = tt && t0(c"Literal");
       tt = phi-as-state(tt).expand-implied-phi;
       match term {
          App{ constructor=left:Lit{}, right:ASTNil{} } => (

@@ -5,3 +5,5 @@ import LM23COMMON/unit-ast-core.lsts;
 import LM23COMMON/unit-tctx-core.lsts;
 import LM23COMMON/unit-prop-core.lsts;
 
+# orphans
+import LM23COMMON/prop-tctx-apply-callable.lsts;

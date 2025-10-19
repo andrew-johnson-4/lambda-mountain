@@ -10,9 +10,9 @@ let typecheck(): Nil = (
    (global-flow-tctx, ast-parsed-program) = std-infer-expr(global-flow-tctx, ast-parsed-program, false, Used, ta);
    while non-zero(stack-to-specialize) { match stack-to-specialize {
       # this can't be a normal for-loop because it gets extended during iteration
-      [StackToSpecialize{ key=key, pre-type=pre-type, ctx=ctx, post-type=post-type }.. rst] => (
+      [StackToSpecialize{ key=key, ctx=ctx, result-type=result-type, term=term }.. rst] => (
          stack-to-specialize = rst;
-         specialize(key, pre-type, ctx, post-type);
+         specialize(key, ctx, result-type, term);
       );
    }};
    validate-interfaces();
