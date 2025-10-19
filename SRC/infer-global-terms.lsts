@@ -42,12 +42,10 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
             );
          };
          let ktd = kto && t0(c"GlobalVariable");
-         global-type-context-normal = global-type-context-normal.bind(k.key, kto, term);
-         global-type-context-denormal = global-type-context-denormal.bind(k.key, ktd, term);
          tctx = tctx.bind-global(k.key, kto, ktd, term);
          mark-global-as-seen(k.key, ktd, ta);
          ascript(term, ktd);
-         (tctx, _) = maybe-apply-global-callable(tctx,c"mov", t2(c"Cons",ktd,ktd), term);
+         (tctx, _) = tctx.maybe-apply-callable(c"mov", t2(c"Cons",ktd,ktd), term);
       );
       _ => (tctx, term) = std-infer-expr(tctx, term, false, Unused, ta);
    };
@@ -65,8 +63,6 @@ let infer-global-context-prim(term: AST): Nil = (
             mark-global-as-seen(k.key, ft, misc-tt);
             ascript(term, ft);
             ascript(frhs, ft);
-            global-type-context-normal = global-type-context-normal.bind(k.key, ft, term);
-            global-type-context-denormal = global-type-context-denormal.bind(k.key, ft, term);
             Some(mk-tctx()).bind-global(k.key, ft, ft, term);
          };
       );
@@ -98,8 +94,6 @@ let infer-global-context(term: AST): Nil = (
             mark-global-as-seen(k.key, ft, misc-tt);
             ascript(term, ft);
             ascript(frhs, ft);
-            global-type-context-normal = global-type-context-normal.bind(k.key, ft, term);
-            global-type-context-denormal = global-type-context-denormal.bind(k.key, ft, term);
             Some(mk-tctx()).bind-global(k.key, ft, denormalize-strong(ft), term);
          };
       );
