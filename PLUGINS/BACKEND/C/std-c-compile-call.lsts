@@ -3,8 +3,10 @@ let std-c-compile-call(ctx: FContext, fname: CString, args: AST): Fragment = std
 
 let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor: Type, args: AST): Fragment = (
    let fterm = Some(mk-tctx()).find-callable(fname, typeof-term(args), args, return-hint-if-constructor).blame;
+   if fname=="LEOF" then print("LEOF (\{typeof-term(args)}) : \{return-hint-if-constructor} = \{typeof-term(fterm)}\n\{fterm}\n");
    if not(non-zero(fterm)) then fail("std-c-compile-call Function was null: \{fterm}\nArguments: \{typeof-term(args)}\n");
    if typeof-term(fterm).is-t(c"Blob",0) {
+      if typeof-term(fterm).is-open then exit-error("STD C Compile Call is open \{fname} (\{typeof-term(args)}) : \{return-hint-if-constructor}\n", args);
       let r = mk-fragment();
       match fterm {
          Glb{val:Abs{lhs=lhs, rhs=rhs}} => (

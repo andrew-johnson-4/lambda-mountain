@@ -31,8 +31,6 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
    # Specialize the function type
    let closed-type = apply-tctx.substitute(ft).without-phi-keep-state;
 
-   if fname==c"LEOF" then print("LEOF Apply ctx \{apply-tctx}\n");
-
    # Fail if specialized function is still open
    if closed-type.is-open
    then exit-error("Unification did not close all open type variables in call to \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
