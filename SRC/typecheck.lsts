@@ -12,7 +12,7 @@ let typecheck(): Nil = (
       # this can't be a normal for-loop because it gets extended during iteration
       [StackToSpecialize{ key=key, ctx=ctx, result-type=result-type, term=term }.. rst] => (
          stack-to-specialize = rst;
-         specialize(key, ctx, post-type, term);
+         specialize(key, ctx, result-type, term);
       );
    }};
    validate-interfaces();

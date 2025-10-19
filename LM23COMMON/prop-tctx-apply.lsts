@@ -8,7 +8,6 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
    if not(can-apply(ft, at)) then exit-error("Unable to apply function \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
 
    # Apply function, then normalize the unification context
-   # If we could remove the normalization here then this whole function would be stateless
    let apply-tctx = if non-zero(return-type-hint)
    then unify(ft.range, return-type-hint, blame).normalize.without-phi-keep-state
    else unify(ft.domain, at, blame).normalize.without-phi-keep-state;
