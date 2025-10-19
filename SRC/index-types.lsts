@@ -6,7 +6,6 @@ import SRC/global-is-seen.lsts;
 
 import SRC/typeof-lhs.lsts;
 import SRC/apply.lsts;
-import SRC/try-specialize.lsts;
 
 import SRC/typeof-var-raw.lsts;
 

@@ -1,4 +1,0 @@
-
-let global-type-context-normal = {} : HashtableEq<CString,List<Tuple<Type,Type,AST>>>;
-let global-type-context-denormal = {} : HashtableEq<CString,List<Tuple<Type,Type,AST>>>;
-let global-flow-tctx = None : TypeContext?;

@@ -35,12 +35,12 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             TGround{tag:c"Array", parameters:[_.. TAny{}..]} => ();
             TGround{tag:c"Array", parameters:[TAny{}.. array-base..]} => (
                mark-var-to-def-todo(tctx, c"open", deref-type, o-t);
-               maybe-apply-global-callable(tctx, c"open", deref-type, term);
+               tctx.maybe-apply-callable(c"open", deref-type, term);
                deref-type = array-base;
             );
             _ => (
                mark-var-to-def-todo(tctx, c"open", deref-type, o-t);
-               apply-global-callable(tctx, c"open", deref-type, term);
+               tctx.apply-callable(c"open", deref-type, term);
             );
          };
          ascript(term, deref-type);
@@ -127,7 +127,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
             };
             if not(typeof-term(cond).is-t(c"Bool",0)) {
-               apply-global-callable(tctx, c"into-branch-conditional", typeof-term(cond), cond);
+               tctx.apply-callable(c"into-branch-conditional", typeof-term(cond), cond);
             };
             let lub = if typeof-term(t).is-t(c"Never",0) then typeof-term(f)
             else if typeof-term(f).is-t(c"Never",0) || typeof-term(f).is-t(c"Nil",0) then typeof-term(t)
@@ -296,7 +296,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   (tctx, rt) = tctx.apply-callable(lit-name-if-lit(l), typeof-term(r), term, direct-hint);
                   (tctx, rt)
                } else if typeof-term(l).is-arrow && non-zero(var-name-if-var-or-lit(l)) {
-                  (tctx, rt) = apply-global-callable(tctx, var-name-if-var-or-lit(l), typeof-term(r), term); (tctx, rt)
+                  (tctx, rt) = tctx.apply-callable(var-name-if-var-or-lit(l), typeof-term(r), term); (tctx, rt)
                } else {
                   (tctx, t2(c"Cons", typeof-term(l), typeof-term(r)))
                };
@@ -337,7 +337,7 @@ let wrap-call(tctx: TypeContext?, fname: CString, term: AST): (TypeContext?, AST
    let function-type = typeof-term(tctx.find-callable(fname, args-type, term).blame);
    let function-term = mk-var(fname); ascript(function-term, function-type);
    let result = mk-app(function-term, term);
-   (tctx, let result-type) = apply-global-callable(tctx, fname, args-type, term);
+   (tctx, let result-type) = tctx.apply-callable(fname, args-type, term);
    result-type = phi-state(tctx, result-type, term);
    ascript(result, result-type);
    (tctx, result)

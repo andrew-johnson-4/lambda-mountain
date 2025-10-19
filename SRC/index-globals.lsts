@@ -29,3 +29,5 @@ let global-ctx = FCtxEOF;
 let parse-suffixes = [] : List<(CString,Type)>;
 
 let config-v3 = true;
+
+let global-flow-tctx = None : TypeContext?;
