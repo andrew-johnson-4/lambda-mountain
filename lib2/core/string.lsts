@@ -28,7 +28,7 @@ let .retain(x: String): String = (
    x
 );
 
-#let .length(s: String): USize = s.end-offset - s.start-offset;
+let .length(s: String): USize = s.end-offset - s.start-offset;
 
 let cmp(l: String, r: String): Ord = (
    let l_size = l.end-offset - l.start-offset;
@@ -59,40 +59,40 @@ let .into(cs: CString, tt: Type<String>): String = (
    String(0 as USize, cs_length, od)
 );
 
-#let $"[:]"(s: String, begin: I64, end: I64): String = (
-#   let s_length = s.length as I64;
-#   if end == minimum-I64 then end = s_length;
-#   if begin < 0_i64 then begin = s_length + begin;
-#   if end < 0_i64 then end = s_length + end;
-#   if begin < 0_i64 or begin > s_length then fail(c"String [:] Slice Start Index Out of Bounds");
-#   if end < 0_i64 or end > s_length then fail(c"String [:] Slice End Index Out of Bounds");
-#   let start_offset = ((s.start-offset as I64) + begin) as USize;
-#   let end_offset = ((s.start-offset as I64) + end) as USize;
-#   s.data.retain;
-#   String(start_offset, end_offset, s.data)
-#);
+let $"[:]"(s: String, begin: I64, end: I64): String = (
+   let s_length = s.length as I64;
+   if end == minimum-I64 then end = s_length;
+   if begin < 0_i64 then begin = s_length + begin;
+   if end < 0_i64 then end = s_length + end;
+   if begin < 0_i64 or begin > s_length then fail(c"String [:] Slice Start Index Out of Bounds");
+   if end < 0_i64 or end > s_length then fail(c"String [:] Slice End Index Out of Bounds");
+   let start_offset = ((s.start-offset as I64) + begin) as USize;
+   let end_offset = ((s.start-offset as I64) + end) as USize;
+   s.data.retain;
+   String(start_offset, end_offset, s.data)
+);
 
-#let print(s: String): Nil = (
-#   fwrite((s.data.data + s.start-offset) as C<"void">[], sizeof(U8) as USize, s.length as USize, stdout);
-#   ()
-#);
+let print(s: String): Nil = (
+   fwrite((s.data.data + s.start-offset) as C<"void">[], sizeof(U8) as USize, s.length as USize, stdout);
+   ()
+);
 
-#let eprint(s: String): Nil = (
-#   fwrite((s.data.data + s.start-offset) as C<"void">[], sizeof(U8) as USize, s.length as USize, stderr);
-#   ()
-#);
+let eprint(s: String): Nil = (
+   fwrite((s.data.data + s.start-offset) as C<"void">[], sizeof(U8) as USize, s.length as USize, stderr);
+   ()
+);
 
-#let $"+"(l: String, r: String): String = (
-#   let l_length = l.length;
-#   let r_length = r.length;
-#   let cs_length = l_length + r_length;
-#   let od = mk-owned-data(type(U8), cs_length);
-#   memcpy(od.data as C<"void">[], l.data.data as C<"void">[], l_length as USize);
-#   memcpy((od.data + l_length) as C<"void">[], r.data.data as C<"void">[], r_length as USize);
-#   String(0 as USize, cs_length, od) 
-#);
+let $"+"(l: String, r: String): String = (
+   let l_length = l.length;
+   let r_length = r.length;
+   let cs_length = l_length + r_length;
+   let od = mk-owned-data(type(U8), cs_length);
+   memcpy(od.data as C<"void">[], l.data.data as C<"void">[], l_length as USize);
+   memcpy((od.data + l_length) as C<"void">[], r.data.data as C<"void">[], r_length as USize);
+   String(0 as USize, cs_length, od) 
+);
 
-#let fail(msg: String): Never = (
-#   fwrite((msg.data.data + msg.start-offset) as C<"void">[], sizeof(USize) as USize, msg.length, stderr);
-#   exit(1) as Never;
-#);
+let fail(msg: String): Never = (
+   fwrite((msg.data.data + msg.start-offset) as C<"void">[], sizeof(USize) as USize, msg.length, stderr);
+   exit(1) as Never;
+);
