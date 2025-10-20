@@ -40,3 +40,17 @@ let .into(l: Maybe<x>, tt: Type<String>): String = (
       _ => "None";
    }
 );
+
+let .expect(l: Maybe<x>, msg: CString): x = (
+   match l {
+      Some{content=content} => content;
+      _ => fail(msg);
+   }
+);
+
+let .expect(l: Maybe<x>, msg: String): x = (
+   match l {
+      Some{content=content} => content;
+      _ => fail(msg);
+   }
+);
