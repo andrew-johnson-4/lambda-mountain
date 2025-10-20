@@ -84,12 +84,6 @@ assert( t2(c"Cons",t0(c"A") && t1(c"Phi::State",ta),t0(c"B")).without-phi-keep-s
 assert( t2(c"Cons",t0(c"A") && t1(c"Phi::Id",ta),t0(c"B")).without-phi-keep-state == t2(c"Cons",t0(c"A"),t0(c"B")) );
 assert( safe-alloc-block-count == 0 );
 
-assert( ta.with-phi-id-if-phi-state == ta );
-assert( tv(c"a").with-phi-id-if-phi-state == tv(c"a") );
-assert( t0(c"A").with-phi-id-if-phi-state == t0(c"A") );
-assert( (t0(c"A") && t1(c"Phi::State",ta)).with-phi-id-if-phi-state <: (t0(c"A") && t1(c"Phi::State",ta) && t1(c"Phi::Id",ta)) );
-assert( safe-alloc-block-count == 0 );
-
 assert( ta.move-linear == ta );
 assert( tv(c"a").move-linear == tv(c"a") );
 assert( t0(c"A").move-linear == t0(c"A") );

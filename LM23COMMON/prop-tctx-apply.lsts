@@ -35,7 +35,8 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
    then exit-error("Unification did not close all open type variables in call to \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
 
    # Specialize the return type
-   let return-type = apply-tctx.substitute(ft.range).without-phi-keep-state.with-phi-id-if-phi-state;
+   let return-type = apply-tctx.substitute(ft.range).without-phi-keep-state;
+   (tctx, return-type) = tctx.with-phi-id-if-phi-state(return-type, blame);
 
    # Propagate cons root type for Prop functions
    # like, t0.prop0(t1,t2) : T0 && Prop0

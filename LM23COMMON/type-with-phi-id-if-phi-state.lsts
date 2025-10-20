@@ -1,6 +1,0 @@
-
-let .with-phi-id-if-phi-state(tt: Type): Type = (
-   if tt.is-t(c"Phi::State",1)
-   then tt = tt && t1(c"Phi::Id",t0(uuid()));
-   tt
-);
