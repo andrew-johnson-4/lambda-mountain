@@ -3,6 +3,11 @@
 
 let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): (TypeContext?, Type) = (
    let rt = ta;
+
+   # least-upper-bound is the intersection of all ground types in a conjugate
+   # note also, if a type parameter "disappears", then the entire type disappears
+   # example: A[] x B[] => ?
+   # the array type disappears entirely because the roots A x B are not compatible
    if left.is-and && not(right.is-and) then (tctx, rt) = tctx.least-upper-bound(left, tand(right), blame)
    else          if right.is-and && not(left.is-and) then (tctx, rt) = tctx.least-upper-bound(tand(left), right, blame)
    else          match (left, right) {
@@ -47,15 +52,21 @@ let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST):
       Tuple{ first:TAny{}, second:TAny{} } => ();
       _ => ();
    };
-   # merge Phi::State if lub is non-zero and both sides have phi state
-   #if non-zero(left-phi-id) || non-zero(right-phi-id) || non-zero(left-phi-state) || non-zero(right-phi-state) {
-   #   tctx = tctx.bind-phi(left-phi-id, left-phi-state.move-linear, blame);
-   #   tctx = tctx.bind-phi(right-phi-id, right-phi-state.move-linear, blame);
-   #   let new-phi-id = uuid();
-   #   let new-phi-state = phi-merge(tctx,left-phi-state,right-phi-state,blame);
-   #   result = result.push(t1(c"Phi::Id",t0(new-phi-id)));
-   #   tctx = tctx.bind-phi(new-phi-id, new-phi-state, blame);
-   #};
+
+   if non-zero(rt) && left.is-t(c"Phi::State",1) && right.is-t(c"Phi::State",1) {
+      # Merge and bind new phi state
+      let new-phi-state = tctx.phi-merge(left.slot(c"Phi::State",1).l1, right.slot(c"Phi::State",1).l1, blame);
+      let new-phi-id = uuid();
+      tctx = tctx.bind-phi(new-phi-id, new-phi-state, blame);
+
+      # Move linear variables in left and right types
+      tctx = tctx.bind-phi(left.slot(c"Phi::Id",1).l1.simple-tag, left.slot(c"Phi::Id",1).l1.move-linear, blame);
+      tctx = tctx.bind-phi(right.slot(c"Phi::Id",1).l1.simple-tag, right.slot(c"Phi::Id",1).l1.move-linear, blame);
+
+      # Add Phi::Id to least-upper-bound
+      rt = rt && t1(c"Phi::Id",t0(new-phi-id));
+   };
+
    (tctx, rt)
 );
 
