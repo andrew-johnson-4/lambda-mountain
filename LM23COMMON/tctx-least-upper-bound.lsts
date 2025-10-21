@@ -63,10 +63,12 @@ let .least-upper-bound(tctx: TypeContext?, left: List<Type>, right: List<Type>, 
    let ts = match (left, right) {
       Tuple{ first:[lt..ls], second:[rt..rs] } => (
          (tctx, let tt) = tctx.least-upper-bound(lt,rt,blame);
-         if not(non-zero(lt)) && not(non-zero(rt)) then ta
-         else if non-zero(tt) {
+         if not(non-zero(lt)) && not(non-zero(rt)) then {
             (tctx, let ts) = tctx.least-upper-bound(ls,rs,blame);
-            if ts.is-some then Some(cons(tt.get-or-panic,ts.get-or-panic)) else None : List<Type>?
+            if ts.is-some then Some(cons(tt,ts.get-or-panic)) else None : List<Type>?
+         } else if non-zero(tt) {
+            (tctx, let ts) = tctx.least-upper-bound(ls,rs,blame);
+            if ts.is-some then Some(cons(tt,ts.get-or-panic)) else None : List<Type>?
          } else None : List<Type>?
       );
       Tuple{ first:[], second:[] } => Some([] : List<Type>);
