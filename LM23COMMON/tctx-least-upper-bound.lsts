@@ -2,21 +2,22 @@
 # TODO: fix this, it just picks left
 
 let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): (TypeContext?, Type) = (
-   let resullt = if left.is-and && not(right.is-and) then tctx.least-upper-bound(left, tand(right), blame)
-   else          if right.is-and && not(left.is-and) then tctx.least-upper-bound(tand(left), right, blame)
+   let rt = ta;
+   if left.is-and && not(right.is-and) then (tctx, rt) = tctx.least-upper-bound(left, tand(right), blame)
+   else          if right.is-and && not(left.is-and) then (tctx, rt) = tctx.least-upper-bound(tand(left), right, blame)
    else          match (left, right) {
       Tuple{ first:TAnd{lconjugate=conjugate}, second:TAnd{rconjugate=conjugate} } => (
          let result = mk-vector(type(Type));
          let li = 0_u64;
          let ri = 0_u64;
          while li < lconjugate.length && ri < rconjugate.length {
-            if lconjugate[li].is-t(c"Phi::Id",1) {}
+            if lconjugate[li].is-t(c"Phi::Id",1) {
                li = li + 1;
-            } else if rconjugate[ri].is-t(c"Phi::Id",1) {}
+            } else if rconjugate[ri].is-t(c"Phi::Id",1) {
                ri = ri + 1;
-            } else if lconjugate[li].is-t(c"Phi::State",1) {}
+            } else if lconjugate[li].is-t(c"Phi::State",1) {
                li = li + 1;
-            } else if rconjugate[ri].is-t(c"Phi::State",1) {}
+            } else if rconjugate[ri].is-t(c"Phi::State",1) {
                ri = ri + 1;
             } else if lconjugate[li].simple-tag < rconjugate[ri].simple-tag {
                li = li + 1;
@@ -33,18 +34,18 @@ let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST):
                ri = ri + 1;
             }
          };
-         if result.length == 0 then ta
-         else if result.length == 1 then result[0]
-         else tand(result)
+         if result.length == 0 then rt=ta
+         else if result.length == 1 then rt=result[0]
+         else rt=tand(result)
       );
       Tuple{ first:TGround{ltag=tag,lparameters=parameters}, second:TGround{rtag=tag,rparameters=parameters} } => (
          if ltag==rtag && lparameters.length==rparameters.length {
             (tctx, let ps) = tctx.least-upper-bound(lparameters, rparameters, blame);
-            if ps.is-some then ts(ltag,ps.get-or-panic) else ta
-         } else ta
+            if ps.is-some then rt = ts(ltag,ps.get-or-panic);
+         }
       );
-      Tuple{ first:TAny{}, second:TAny{} } => ta;
-      _ => ta;
+      Tuple{ first:TAny{}, second:TAny{} } => ();
+      _ => ();
    };
    # merge Phi::State if lub is non-zero and both sides have phi state
    #if non-zero(left-phi-id) || non-zero(right-phi-id) || non-zero(left-phi-state) || non-zero(right-phi-state) {
@@ -55,7 +56,7 @@ let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST):
    #   result = result.push(t1(c"Phi::Id",t0(new-phi-id)));
    #   tctx = tctx.bind-phi(new-phi-id, new-phi-state, blame);
    #};
-   (tctx, Some(left))
+   (tctx, rt)
 );
 
 let .least-upper-bound(tctx: TypeContext?, left: List<Type>, right: List<Type>, blame: AST): (TypeContext?, List<Type>?) = (
