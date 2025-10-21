@@ -131,7 +131,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             };
             let lub = if typeof-term(t).is-t(c"Never",0) then typeof-term(f)
             else if typeof-term(f).is-t(c"Never",0) || typeof-term(f).is-t(c"Nil",0) then typeof-term(t)
-            else { (tctx, let lub) = least-upper-bound(tctx, typeof-term(t), typeof-term(f), term); lub };
+            else { (tctx, let lub) = tctx.least-upper-bound(typeof-term(t), typeof-term(f), term); lub };
             ascript(term, lub);
             if is-scoped {
                (tctx, term) = release-locals(tctx, tctx-t, term, hint); # tctx-t includes both tctx-cond and tctx-t

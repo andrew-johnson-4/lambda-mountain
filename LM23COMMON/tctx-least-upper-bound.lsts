@@ -1,89 +1,75 @@
 
 # TODO: fix this, it just picks left
 
-let least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): (TypeContext?, Type) = (
-   let rt = match (left, right) {
+let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): (TypeContext?, Type) = (
+   let resullt = if left.is-and && not(right.is-and) then tctx.least-upper-bound(left, tand(right), blame)
+   else          if right.is-and && not(left.is-and) then tctx.least-upper-bound(tand(left), right, blame)
+   else          match (left, right) {
       Tuple{ first:TAnd{lconjugate=conjugate}, second:TAnd{rconjugate=conjugate} } => (
          let result = mk-vector(type(Type));
          let li = 0_u64;
          let ri = 0_u64;
-         let accept = true;
-         let left-phi-state = ta;
-         let left-phi-id = c"";
-         let right-phi-state = ta;
-         let right-phi-id = c"";
-         while accept && (li < lconjugate.length || ri < rconjugate.length) {
-            if li < lconjugate.length && ( lconjugate[li].is-t(c"Constant",0)
-                                        || lconjugate[li].is-t(c"Literal",0)
-                                        || lconjugate[li].is-t(c"LocalVariable",0)
-                                        || lconjugate[li].is-t(c"GlobalVariable",0)
-                                        || lconjugate[li].is-t(c"MustNotMove",0)
-            ) {
+         while li < lconjugate.length && ri < rconjugate.length {
+            if lconjugate[li].is-t(c"Phi::Id",1) {}
                li = li + 1;
-            } else if ri < rconjugate.length && ( rconjugate[ri].is-t(c"Constant",0) 
-                                               || rconjugate[ri].is-t(c"Literal",0)
-                                               || rconjugate[ri].is-t(c"LocalVariable",0)
-                                               || rconjugate[ri].is-t(c"GlobalVariable",0)
-                                               || rconjugate[ri].is-t(c"MustNotMove",0)
-            ) {
+            } else if rconjugate[ri].is-t(c"Phi::Id",1) {}
                ri = ri + 1;
-            } else if li < lconjugate.length && lconjugate[li].is-t(c"Phi::Id",1) {
-               left-phi-id = lconjugate[li].l1.simple-tag;
+            } else if lconjugate[li].is-t(c"Phi::State",1) {}
                li = li + 1;
-            } else if ri < rconjugate.length && rconjugate[ri].is-t(c"Phi::Id",1) {
-               right-phi-id = rconjugate[ri].l1.simple-tag;
+            } else if rconjugate[ri].is-t(c"Phi::State",1) {}
                ri = ri + 1;
-            } else if li < lconjugate.length && lconjugate[li].is-t(c"Phi::State",1) {
-               left-phi-state = lconjugate[li].l1;
+            } else if lconjugate[li].simple-tag < rconjugate[ri].simple-tag {
                li = li + 1;
-            } else if ri < rconjugate.length && rconjugate[ri].is-t(c"Phi::State",1) {
-               right-phi-state = rconjugate[ri].l1;
+            } else if rconjugate[ri].simple-tag < lconjugate[li].simple-tag {
                ri = ri + 1;
-            } else if li < lconjugate.length && ri < rconjugate.length {
-               (tctx, let tt) = least-upper-bound(tctx,lconjugate[li], rconjugate[ri], blame);
-               if tt.is-some {
-                  result = result.push(tt.get-or-panic);
-                  li = li + 1;
-                  ri = ri + 1;
-               } else accept = false
-            } else accept = false;
+            } else if lconjugate[li].simple-arity < rconjugate[ri].simple-arity {
+               li = li + 1;
+            } else if rconjugate[ri].simple-arity < lconjugate[li].simple-arity {
+               ri = ri + 1;
+            } else {
+               (tctx, let tt) = tctx.least-upper-bound(lconjugate[li], rconjugate[ri], blame);
+               if non-zero(tt) then result = result.push(tt);
+               li = li + 1;
+               ri = ri + 1;
+            }
          };
-         if non-zero(left-phi-id) || non-zero(right-phi-id) || non-zero(left-phi-state) || non-zero(right-phi-state) {
-            if not(non-zero(left-phi-id)) || not(non-zero(right-phi-id)) || not(non-zero(left-phi-state)) || not(non-zero(right-phi-state)) {
-               exit-error("Unable to Merge Phi States: \{left-phi-state} x \{right-phi-state}", blame);
-            };
-            tctx = tctx.bind-phi(left-phi-id, left-phi-state.move-linear, blame);
-            tctx = tctx.bind-phi(right-phi-id, right-phi-state.move-linear, blame);
-            let new-phi-id = uuid();
-            let new-phi-state = phi-merge(tctx,left-phi-state,right-phi-state,blame);
-            result = result.push(t1(c"Phi::Id",t0(new-phi-id)));
-            tctx = tctx.bind-phi(new-phi-id, new-phi-state, blame);
-         };
-         if accept then Some(TAnd(result)) else None : Type?
+         if result.length == 0 then ta
+         else if result.length == 1 then result[0]
+         else tand(result)
       );
       Tuple{ first:TGround{ltag=tag,lparameters=parameters}, second:TGround{rtag=tag,rparameters=parameters} } => (
-         if ltag==rtag {
-            (tctx, let ps) = least-upper-bound(tctx, lparameters, rparameters, blame);
-            if ps.is-some then Some(ts(ltag,ps.get-or-panic)) else None : Type?
-         } else None : Type?
+         if ltag==rtag && lparameters.length==rparameters.length {
+            (tctx, let ps) = tctx.least-upper-bound(lparameters, rparameters, blame);
+            if ps.is-some then ts(ltag,ps.get-or-panic) else ta
+         } else ta
       );
-      Tuple{ first:TAny{}, second:TAny{} } => Some(ta);
-      _ => None : Type?;
+      Tuple{ first:TAny{}, second:TAny{} } => ta;
+      _ => ta;
    };
+   # merge Phi::State if lub is non-zero and both sides have phi state
+   #if non-zero(left-phi-id) || non-zero(right-phi-id) || non-zero(left-phi-state) || non-zero(right-phi-state) {
+   #   tctx = tctx.bind-phi(left-phi-id, left-phi-state.move-linear, blame);
+   #   tctx = tctx.bind-phi(right-phi-id, right-phi-state.move-linear, blame);
+   #   let new-phi-id = uuid();
+   #   let new-phi-state = phi-merge(tctx,left-phi-state,right-phi-state,blame);
+   #   result = result.push(t1(c"Phi::Id",t0(new-phi-id)));
+   #   tctx = tctx.bind-phi(new-phi-id, new-phi-state, blame);
+   #};
    (tctx, Some(left))
 );
 
-let least-upper-bound(tctx: TypeContext?, left: List<Type>, right: List<Type>, blame: AST): (TypeContext?, List<Type>?) = (
-   let tt = match (left, right) {
+let .least-upper-bound(tctx: TypeContext?, left: List<Type>, right: List<Type>, blame: AST): (TypeContext?, List<Type>?) = (
+   let ts = match (left, right) {
       Tuple{ first:[lt..ls], second:[rt..rs] } => (
-         (tctx, let tt) = least-upper-bound(tctx,lt,rt,blame);
-         if tt.is-some {
-            (tctx, let ts) = least-upper-bound(tctx,ls,rs,blame);
+         (tctx, let tt) = tctx.least-upper-bound(lt,rt,blame);
+         if not(non-zero(lt)) && not(non-zero(rt)) then ta
+         else if non-zero(tt) {
+            (tctx, let ts) = tctx.least-upper-bound(ls,rs,blame);
             if ts.is-some then Some(cons(tt.get-or-panic,ts.get-or-panic)) else None : List<Type>?
          } else None : List<Type>?
       );
       Tuple{ first:[], second:[] } => Some([] : List<Type>);
       _ => None : List<Type>?;
    };
-   (tctx, tt)
+   (tctx, ts)
 );
