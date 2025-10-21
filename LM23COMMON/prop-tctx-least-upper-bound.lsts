@@ -60,11 +60,12 @@ let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST):
       tctx = tctx.bind-phi(new-phi-id, new-phi-state, blame);
 
       # Move linear variables in left and right types
-      tctx = tctx.bind-phi(left.slot(c"Phi::Id",1).l1.simple-tag, left.slot(c"Phi::Id",1).l1.move-linear, blame);
-      tctx = tctx.bind-phi(right.slot(c"Phi::Id",1).l1.simple-tag, right.slot(c"Phi::Id",1).l1.move-linear, blame);
+      tctx = tctx.bind-phi(left.slot(c"Phi::Id",1).l1.simple-tag, left.slot(c"Phi::State",1).l1.move-linear, blame);
+      tctx = tctx.bind-phi(right.slot(c"Phi::Id",1).l1.simple-tag, right.slot(c"Phi::State",1).l1.move-linear, blame);
 
       # Add Phi::Id to least-upper-bound
       rt = rt && t1(c"Phi::Id",t0(new-phi-id));
+      print("LUB WITH PHI\nLeft \{left}\nRight \{right}\nResult \{rt}\n");
    };
 
    (tctx, rt)

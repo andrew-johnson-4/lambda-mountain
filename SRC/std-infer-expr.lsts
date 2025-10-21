@@ -227,6 +227,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          let before-tctx = tctx; # make sure to capture locals as "local" scope
          tctx = infer-ctx(tctx, lhs);
          (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type && t0(c"TailPosition"));
+         print("Move Return Type \{typeof-term(new-inner-rhs)}\n");
          tctx = phi-move(tctx, typeof-term(new-inner-rhs), term);
          if not(tctx.get-or(mk-tctx()).is-blob) {
             (tctx, new-inner-rhs) = release-locals(before-tctx, tctx, new-inner-rhs, misc-tt);
