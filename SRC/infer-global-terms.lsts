@@ -17,7 +17,7 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
       Glb{k=key, rhs=val} => (
          (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Used, ta);
          if not(is(rhs,new-rhs)) then {
-            tctx = phi-move(tctx, typeof-term(rhs), term);
+            tctx = tctx.phi-move(typeof-term(rhs), term);
             let new-term = mk-glb(k, new-rhs);
             mark-var-to-def(new-term, term);
             term = new-term;
@@ -28,7 +28,7 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
             App{left:Lit{key:c":"}, right:App{right:AType{hint=tt}}} => (
                if not(hint.is-t(c"MustNotMove",0)) {
                   (tctx, let new-kto) = phi-fresh(tctx, kto, term);
-                  tctx = phi-move(tctx, kto, term);
+                  tctx = tctx.phi-move(kto, term);
                   kto = new-kto;
                } else {
                   (tctx, let new-kto) = phi-fresh(tctx, kto, term);
@@ -37,7 +37,7 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
             );
             _ => (
                (tctx, let new-kto) = phi-fresh(tctx, kto, term);
-               tctx = phi-move(tctx, kto, term);
+               tctx = tctx.phi-move(kto, term);
                kto = new-kto;
             );
          };
