@@ -49,3 +49,9 @@ assert( t2(c"Cons",t0(c"B"),t0(c"A")).is-any-arg-t(c"A",0) );
 assert( t2(c"Cons",t0(c"B"),t0(c"A") && t0(c"B")).is-any-arg-t(c"A",0) );
 assert( t2(c"Cons",t0(c"B") && t0(c"A"),t0(c"B")).is-any-arg-t(c"A",0) );
 assert( safe-alloc-block-count == 0 );
+
+assert( (t0(c"A") && t0(c"B")).is-and );
+assert( not(t0(c"A").is-and) );
+assert( not(ta.is-and) );
+assert( not(tv(c"a").is-and) );
+assert( safe-alloc-block-count == 0 );

@@ -1,0 +1,87 @@
+
+let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): (TypeContext?, Type) = (
+   let rt = ta;
+
+   # least-upper-bound is the intersection of all ground types in a conjugate
+   # note also, if a type parameter "disappears", then the entire type disappears
+   # example: A[] x B[] => ?
+   # the array type disappears entirely because the roots A x B are not compatible
+   if left.is-and && not(right.is-and) then (tctx, rt) = tctx.least-upper-bound(left, tand(right), blame)
+   else          if right.is-and && not(left.is-and) then (tctx, rt) = tctx.least-upper-bound(tand(left), right, blame)
+   else          match (left, right) {
+      Tuple{ first:TAnd{lconjugate=conjugate}, second:TAnd{rconjugate=conjugate} } => (
+         let result = mk-vector(type(Type));
+         let li = 0_u64;
+         let ri = 0_u64;
+         while li < lconjugate.length && ri < rconjugate.length {
+            if lconjugate[li].is-t(c"Phi::Id",1) {
+               li = li + 1;
+            } else if rconjugate[ri].is-t(c"Phi::Id",1) {
+               ri = ri + 1;
+            } else if lconjugate[li].is-t(c"Phi::State",1) {
+               li = li + 1;
+            } else if rconjugate[ri].is-t(c"Phi::State",1) {
+               ri = ri + 1;
+            } else if lconjugate[li].simple-tag < rconjugate[ri].simple-tag {
+               li = li + 1;
+            } else if rconjugate[ri].simple-tag < lconjugate[li].simple-tag {
+               ri = ri + 1;
+            } else if lconjugate[li].simple-arity < rconjugate[ri].simple-arity {
+               li = li + 1;
+            } else if rconjugate[ri].simple-arity < lconjugate[li].simple-arity {
+               ri = ri + 1;
+            } else {
+               (tctx, let tt) = tctx.least-upper-bound(lconjugate[li], rconjugate[ri], blame);
+               if non-zero(tt) then result = result.push(tt);
+               li = li + 1;
+               ri = ri + 1;
+            }
+         };
+         if result.length == 0 then rt=ta
+         else if result.length == 1 then rt=result[0]
+         else rt=tand(result)
+      );
+      Tuple{ first:TGround{ltag=tag,lparameters=parameters}, second:TGround{rtag=tag,rparameters=parameters} } => (
+         if ltag==rtag && lparameters.length==rparameters.length {
+            (tctx, let ps) = tctx.least-upper-bound(lparameters, rparameters, blame);
+            if ps.is-some then rt = ts(ltag,ps.get-or-panic);
+         }
+      );
+      Tuple{ first:TAny{}, second:TAny{} } => ();
+      _ => ();
+   };
+
+   if non-zero(rt) && left.is-t(c"Phi::State",1) && right.is-t(c"Phi::State",1) {
+      # Merge and bind new phi state
+      let new-phi-state = tctx.phi-merge(left.slot(c"Phi::State",1).l1, right.slot(c"Phi::State",1).l1, blame);
+      let new-phi-id = uuid();
+      tctx = tctx.bind-phi(new-phi-id, new-phi-state, blame);
+
+      # Move linear variables in left and right types
+      tctx = tctx.bind-phi(left.slot(c"Phi::Id",1).l1.simple-tag, left.slot(c"Phi::State",1).l1.move-linear, blame);
+      tctx = tctx.bind-phi(right.slot(c"Phi::Id",1).l1.simple-tag, right.slot(c"Phi::State",1).l1.move-linear, blame);
+
+      # Add Phi::Id to least-upper-bound
+      rt = rt && t1(c"Phi::Id",t0(new-phi-id));
+   };
+
+   (tctx, rt)
+);
+
+let .least-upper-bound(tctx: TypeContext?, left: List<Type>, right: List<Type>, blame: AST): (TypeContext?, List<Type>?) = (
+   let ts = match (left, right) {
+      Tuple{ first:[lt..ls], second:[rt..rs] } => (
+         (tctx, let tt) = tctx.least-upper-bound(lt,rt,blame);
+         if not(non-zero(lt)) && not(non-zero(rt)) then {
+            (tctx, let ts) = tctx.least-upper-bound(ls,rs,blame);
+            if ts.is-some then Some(cons(tt,ts.get-or-panic)) else None : List<Type>?
+         } else if non-zero(tt) {
+            (tctx, let ts) = tctx.least-upper-bound(ls,rs,blame);
+            if ts.is-some then Some(cons(tt,ts.get-or-panic)) else None : List<Type>?
+         } else None : List<Type>?
+      );
+      Tuple{ first:[], second:[] } => Some([] : List<Type>);
+      _ => None : List<Type>?;
+   };
+   (tctx, ts)
+);

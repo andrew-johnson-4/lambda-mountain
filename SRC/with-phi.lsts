@@ -1,4 +1,0 @@
-
-let .with-phi(tt: Type): Type = (
-   tt && tt.enrich.with-only-phi-state
-);

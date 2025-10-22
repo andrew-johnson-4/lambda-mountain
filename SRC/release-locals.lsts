@@ -34,11 +34,11 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       then mk-var(return-id)
       else mk-nil();
       (tctx-after, return-term) = std-infer-expr(tctx-after, return-term, false, Used, t0(c"MustNotRetain"));
-      tctx-after = phi-move(tctx-after, typeof-term(return-term), term);
+      tctx-after = tctx-after.phi-move(typeof-term(return-term), term);
       term = mk-cons(term, return-term); ascript(term,return-type);
    };
    for nd in needs-mark-release {
-      tctx-after = phi-move(tctx-after, nd.denormalized-and-phi-type(tctx-after), term);
+      tctx-after = tctx-after.phi-move(nd.denormalized-and-phi-type(tctx-after), term);
    };
    tctx-before = tctx-before.with-pctx( phi-merge(tctx-before,tctx-after.get-or(mk-tctx()).pctx,tctx-before.get-or(mk-tctx()).pctx,term) );
    (tctx-before, term)

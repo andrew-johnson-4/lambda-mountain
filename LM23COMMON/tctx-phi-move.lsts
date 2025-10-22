@@ -1,23 +1,11 @@
 
-let phi-move(tctx: TypeContext?, tt: Type, blame: AST): TypeContext? = (
-   if not(tctx.get-or(mk-tctx()).is-blob) then match tt {
-      TAnd{conjugate=conjugate} => (
-         let phi-id = c"";
-         let phi-state = ta;
-         for c in conjugate { match c {
-            TGround{tag:c"Phi::Id",parameters:[TGround{pid=tag}..]} => phi-id = pid;
-            TGround{tag:c"Phi::State",parameters:[pst..]} => phi-state = pst;
-            _ => tctx = phi-move(tctx, c, blame);
-         }};
-         if non-zero(phi-id) && non-zero(phi-state)
-         then tctx = tctx.bind-phi(phi-id, phi-state.move-linear, blame);
-      );
-      TGround{parameters=parameters} => (
-         for p in parameters {
-            tctx = phi-move(tctx, p, blame);
-         };
-      );
-      _ => ();
+let .phi-move(tctx: TypeContext?, tt: Type, blame: AST): TypeContext? = (
+   tt = tctx.with-phi(tt);
+   if not(tctx.get-or(mk-tctx()).is-blob) then {
+      let phi-id = tt.slot(c"Phi::Id",1).l1.simple-tag;
+      let phi-state = tt.slot(c"Phi::State",1).l1;
+      if non-zero(phi-id) && non-zero(phi-state)
+      then tctx = tctx.bind-phi(phi-id, phi-state.move-linear, blame);
    };
    tctx
 );

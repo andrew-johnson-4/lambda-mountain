@@ -1,0 +1,10 @@
+
+import lib2/core/bedrock.lsts;
+
+# Nil is dominant
+let f1(): Nil = if true then 1 else ();
+let f2(): Nil = if true then () else 1;
+
+# Never is recessive
+let f1(): U64 = if true then 1 else fail(c"Never");
+let f2(): U64 = if true then fail(c"Never") else 1;

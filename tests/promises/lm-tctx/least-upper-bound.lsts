@@ -1,0 +1,21 @@
+
+import LM23COMMON/unit-prop-core.lsts;
+
+let tctx = Some(mk-tctx());
+
+assert( tctx.least-upper-bound( ta, ta, mk-eof() ).second == ta );
+assert( tctx.least-upper-bound( t0(c"A"), ta, mk-eof() ).second == ta );
+assert( tctx.least-upper-bound( ta, t0(c"A"), mk-eof() ).second == ta );
+assert( tctx.least-upper-bound( t0(c"A"), t0(c"A"), mk-eof() ).second == t0(c"A") );
+assert( tctx.least-upper-bound( t0(c"A") && t0(c"B"), t0(c"A"), mk-eof() ).second == t0(c"A") );
+assert( tctx.least-upper-bound( t0(c"A"), t0(c"A") && t0(c"B"), mk-eof() ).second == t0(c"A") );
+assert( tctx.least-upper-bound( t0(c"A"), t0(c"A") && tv(c"b"), mk-eof() ).second == t0(c"A") );
+assert( tctx.least-upper-bound( t0(c"A") && tv(c"b"), t0(c"A"), mk-eof() ).second == t0(c"A") );
+assert( tctx.least-upper-bound( t2(c"A",ta,ta), t2(c"A",ta,ta), mk-eof() ).second == t2(c"A",ta,ta) );
+assert( tctx.least-upper-bound( t2(c"A",t0(c"B"),ta), t2(c"A",t0(c"B"),ta), mk-eof() ).second == t2(c"A",t0(c"B"),ta) );
+assert( tctx.least-upper-bound( t2(c"A",ta,t0(c"B")), t2(c"A",ta,t0(c"B")), mk-eof() ).second == t2(c"A",ta,t0(c"B")) );
+assert( tctx.least-upper-bound( t2(c"A",ta,t0(c"B") && t0(c"C")), t2(c"A",ta,t0(c"B")), mk-eof() ).second == t2(c"A",ta,t0(c"B")) );
+assert( tctx.least-upper-bound( t2(c"A",ta,t0(c"B")), t2(c"A",ta,t0(c"B") && t0(c"C")), mk-eof() ).second == t2(c"A",ta,t0(c"B")) );
+assert( tctx.least-upper-bound( t2(c"A",ta,t0(c"B")), t2(c"A",ta,ta), mk-eof() ).second == ta );
+assert( tctx.least-upper-bound( t2(c"A",t0(c"B"),ta), t2(c"A",ta,ta), mk-eof() ).second == ta );
+assert( safe-alloc-block-count == 0 );

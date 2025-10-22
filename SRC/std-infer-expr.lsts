@@ -4,7 +4,7 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
    let tt = rhs-tt && t0(c"LocalVariable");
    (tctx, tt) = phi-fresh(tctx, tt, blame);
    if not(hint.is-t(c"MustNotMove",0)) {
-      tctx = phi-move(tctx, rhs-tt, blame);
+      tctx = tctx.phi-move(rhs-tt, blame);
    };
    tctx = tctx.bind(key, ta, tt, def);
    (tctx, tt)
@@ -129,9 +129,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             if not(typeof-term(cond).is-t(c"Bool",0)) {
                tctx.apply-callable(c"into-branch-conditional", typeof-term(cond), cond);
             };
-            let lub = if typeof-term(t).is-t(c"Never",0) then typeof-term(f)
-            else if typeof-term(f).is-t(c"Never",0) || typeof-term(f).is-t(c"Nil",0) then typeof-term(t)
-            else { (tctx, let lub) = least-upper-bound(tctx, typeof-term(t), typeof-term(f), term); lub.get-or(ta); };
+            let lub = if typeof-term(f).is-t(c"Never",0) then typeof-term(t)
+            else if typeof-term(t).is-t(c"Never",0) then typeof-term(f)
+            else if typeof-term(f).is-t(c"Nil",0) || typeof-term(t).is-t(c"Nil",0) then t0(c"Nil")
+            else { (tctx, let lub) = tctx.least-upper-bound(typeof-term(t), typeof-term(f), term); lub };
             ascript(term, lub);
             if is-scoped {
                (tctx, term) = release-locals(tctx, tctx-t, term, hint); # tctx-t includes both tctx-cond and tctx-t
@@ -226,7 +227,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          let before-tctx = tctx; # make sure to capture locals as "local" scope
          tctx = infer-ctx(tctx, lhs);
          (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type && t0(c"TailPosition"));
-         tctx = phi-move(tctx, typeof-term(new-inner-rhs), term);
+         tctx = tctx.phi-move(typeof-term(new-inner-rhs), term);
          if not(tctx.get-or(mk-tctx()).is-blob) {
             (tctx, new-inner-rhs) = release-locals(before-tctx, tctx, new-inner-rhs, misc-tt);
          };
@@ -306,7 +307,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   let to-tt = typeof-term(r).slot(c"Cons",2).l2;
                   tctx = phi-override(tctx, from-tt, to-tt, term);
                   if not(hint.is-t(c"MustNotMove",0)) {
-                     tctx = phi-move(tctx, from-tt, term);
+                     tctx = tctx.phi-move(from-tt, term);
                   };
                };
                rt = phi-state(tctx, rt, term);
