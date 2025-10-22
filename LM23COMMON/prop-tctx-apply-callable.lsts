@@ -18,7 +18,7 @@ let .maybe-apply-callable(tctx: TypeContext?, fname: CString, arg-types: Type, b
 let .apply-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type, failable: U64): (TypeContext?, Type) = (
    # Coerce types into denormalized format
    # TODO: replace with Into<Type::Format::Denormal> parameter types
-   arg-types = denormalize-strong(arg-types);
+   arg-types = tctx.with-phi(denormalize-strong(arg-types));
    return-type-hint = denormalize-strong(return-type-hint);
 
    # Find the appropriate function
