@@ -37,13 +37,12 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
    # Specialize the return type
    let return-type = apply-tctx.substitute(ft.range).without-phi-keep-state.expand-implied-phi;
    (tctx, return-type) = tctx.with-phi-id-if-phi-state(return-type, blame);
-   return-type = return-type.without-phi-keep-id;
-
-   if return-type.is-t(c"String",0) then print("Apply \{fname} (\{at}) : \{ft} => \{return-type}\nPhi \{tctx.with-phi(return-type)}\n");
 
    # Propagate cons root type for Prop functions
    # like, t0.prop0(t1,t2) : T0 && Prop0
    if ft.is-t(c"Prop",0) then return-type = return-type && at.cons-root;  
+
+   print("Apply \{fname} : \{at} => \{tctx.with-phi(return-type)}\n");
 
    (tctx, apply-tctx, closed-type, return-type)
 );

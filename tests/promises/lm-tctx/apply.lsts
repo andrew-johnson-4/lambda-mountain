@@ -25,7 +25,7 @@ if true {
    (let tctx, let apply-tctx, let closed-type, let result-type) =
    Some(mk-tctx()).apply(c"f", t2(c"Arrow",tv(c"a"),tv(c"a")), t0(c"A") && t1(c"Phi::Id",t0(c"ABC")) && t1(c"Phi::State",t0(c"A")), mk-eof() );
 
-   assert( result-type <: (t0(c"A") && t1(c"Phi::Id",ta)) );
+   assert( result-type <: (t0(c"A") && t1(c"Phi::Id",ta) && t1(c"Phi::State",t0(c"A"))) );
    assert( tctx.with-phi(result-type) <: (t0(c"A") && t1(c"Phi::State",t0(c"A")) && t1(c"Phi::Id",ta)) );
 };
 
