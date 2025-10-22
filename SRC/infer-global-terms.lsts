@@ -44,7 +44,7 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
          let ktd = kto && t0(c"GlobalVariable");
          tctx = tctx.bind-global(k.key, kto, ktd, term);
          mark-global-as-seen(k.key, ktd, ta);
-         ascript(term, ktd);
+         tctx.ascript(term, ktd);
          (tctx, _) = tctx.maybe-apply-callable(c"mov", t2(c"Cons",ktd,ktd), term);
       );
       _ => (
@@ -63,8 +63,8 @@ let infer-global-context-prim(term: AST): Nil = (
          if k.key.has-prefix(c"primitive::") then {
             let ft = t2(c"Arrow", typeof-lhs(lhs), return-type).without-phi-keep-state && misc-tt;
             mark-global-as-seen(k.key, ft, misc-tt);
-            ascript(term, ft);
-            ascript(frhs, ft);
+            Some(mk-tctx()).ascript(term, ft);
+            Some(mk-tctx()).ascript(frhs, ft);
             Some(mk-tctx()).bind-global(k.key, ft, ft, term);
          };
       );
@@ -94,8 +94,8 @@ let infer-global-context(term: AST): Nil = (
          else {
             let ft = t2(c"Arrow", typeof-lhs(lhs), return-type).without-phi-keep-state && misc-tt;
             mark-global-as-seen(k.key, ft, misc-tt);
-            ascript(term, ft);
-            ascript(frhs, ft);
+            Some(mk-tctx()).ascript(term, ft);
+            Some(mk-tctx()).ascript(frhs, ft);
             Some(mk-tctx()).bind-global(k.key, ft, denormalize-strong(ft), term);
          };
       );
