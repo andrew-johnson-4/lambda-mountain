@@ -29,4 +29,3 @@ let .expand-implied-phi(tt: Type): Type = (
    };
    tt
 );
-
