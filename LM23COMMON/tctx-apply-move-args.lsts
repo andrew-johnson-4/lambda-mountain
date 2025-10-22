@@ -1,6 +1,6 @@
 
 let .apply-move-args(tctx: TypeContext?, function-type: Type, args-type: Type, blame: AST): TypeContext? = (
-   let move-args = phi-move-args(function-type, args-type, blame);
+   let move-args = tctx.phi-move-args(function-type, args-type, blame);
    for PhiContextRow{pn=phi-id, pt=phi-tt, pblame=blame} in move-args.get-or(mk-tctx()).pctx {
       tctx = tctx.bind-phi(pn, pt, pblame);
    };
