@@ -1,6 +1,4 @@
 
-# TODO: fix this, it just picks left
-
 let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST): (TypeContext?, Type) = (
    let rt = ta;
 
@@ -65,7 +63,6 @@ let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST):
 
       # Add Phi::Id to least-upper-bound
       rt = rt && t1(c"Phi::Id",t0(new-phi-id));
-      print("LUB WITH PHI\nLeft \{left}\nRight \{right}\nResult \{rt}\n");
    };
 
    (tctx, rt)
