@@ -2,7 +2,6 @@
 let .with-phi-id-if-phi-state(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Type) = (
    if tt.is-t(c"Phi::State",1) {
       let phi-id = uuid();
-      print("Phi Id if State\n");
       tctx = tctx.bind-phi(phi-id, tt.slot(c"Phi::State",1).l1, blame);
       tt = tt && t1(c"Phi::Id",t0(phi-id));
    };

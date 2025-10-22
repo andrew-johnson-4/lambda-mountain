@@ -4,7 +4,6 @@ let .phi-move-args(tctx: TypeContext?, params: Type, args: Type, blame: AST): Ty
       tctx = tctx.phi-move-args(params.slot(c"Cons",2).l1, args.slot(c"Cons",2).l1, blame);
       tctx = tctx.phi-move-args(params.slot(c"Cons",2).l2, args.slot(c"Cons",2).l2, blame);
    } else {
-      print("Phi Move \{args}\n");
       if not(params.is-t(c"MustNotMove",0)) && not(args.is-t(c"MustNotMove",0)) && args.is-t(c"Phi::State",1) {
          tctx = tctx.phi-move(args, blame);
       };

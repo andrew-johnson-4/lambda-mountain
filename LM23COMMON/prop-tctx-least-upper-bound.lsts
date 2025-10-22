@@ -55,7 +55,6 @@ let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST):
       # Merge and bind new phi state
       let new-phi-state = tctx.phi-merge(left.slot(c"Phi::State",1).l1, right.slot(c"Phi::State",1).l1, blame);
       let new-phi-id = uuid();
-      print("Phi LUB\n");
       tctx = tctx.bind-phi(new-phi-id, new-phi-state, blame);
 
       # Move linear variables in left and right types

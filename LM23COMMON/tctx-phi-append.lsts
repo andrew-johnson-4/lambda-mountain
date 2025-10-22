@@ -4,7 +4,6 @@ let .phi-append(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeC
 );
 
 let .phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>): List<PhiContextRow> = (
-   print("Phi Append Start\n");
    let seen = {} : HashtableEq<CString,U64>;
    for pr1 in tctx-secondary {
       if not(seen.has(pr1.phi-id)) {
@@ -13,6 +12,5 @@ let .phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiConte
          seen = seen.bind(pr1.phi-id, true);
       };
    };
-   print("Phi Append End\n");
    tctx-primary
 );

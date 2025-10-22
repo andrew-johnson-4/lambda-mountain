@@ -86,7 +86,6 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
             });
          };
          if non-zero(phi-id) && non-zero(phi-state-out) then {
-            print("Phi Unify\n");
             result = result.bind-phi(phi-id, phi-state-out, blame);
          };
          ctx = result;
