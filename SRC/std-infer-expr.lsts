@@ -294,14 +294,17 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, ta);
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
                };
-               (tctx, rt) = if typeof-term(l).is-arrow && non-zero(lit-name-if-lit(l)) {
+               (tctx, let function-type, rt) = if typeof-term(l).is-arrow && non-zero(lit-name-if-lit(l)) {
                   let direct-hint = hint-if-hint(l);
+                  let function-type = tctx.find-callable(var-name-if-var-or-lit(l), typeof-term(r), term).nt;
                   (tctx, rt) = tctx.apply-callable(lit-name-if-lit(l), typeof-term(r), term, direct-hint);
-                  (tctx, rt)
+                  (tctx, function-type, rt)
                } else if typeof-term(l).is-arrow && non-zero(var-name-if-var-or-lit(l)) {
-                  (tctx, rt) = tctx.apply-callable(var-name-if-var-or-lit(l), typeof-term(r), term); (tctx, rt)
+                  let function-type = tctx.find-callable(var-name-if-var-or-lit(l), typeof-term(r), term).nt;
+                  (tctx, rt) = tctx.apply-callable(var-name-if-var-or-lit(l), typeof-term(r), term);
+                  (tctx, function-type, rt)
                } else {
-                  (tctx, t2(c"Cons", typeof-term(l), typeof-term(r)))
+                  (tctx, ta, t2(c"Cons", typeof-term(l), typeof-term(r)))
                };
                if not(used.is-call) { rt = cons-tail-or-self(rt); };
                if var-name-if-var-or-lit(l)==c"mov" && typeof-term(r).is-t(c"Cons",2) {
@@ -315,7 +318,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                rt = tctx.with-phi(rt);
                ascript(term, rt);
                if not(rt.is-t(c"Cons",2)) {
-                  let function-type = typeof-term(tctx.find-callable(var-name-if-var-or-lit(l), typeof-term(r), term).blame);
                   if function-type.is-t(c"MustRetainOnCall",0) && not(hint.is-t(c"MustNotRetain",0)) && not(tctx.get-or(mk-tctx()).is-blob) {
                     (tctx, term) = maybe-retain(tctx, term);
                   }
