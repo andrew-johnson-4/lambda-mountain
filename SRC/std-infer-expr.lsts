@@ -1,6 +1,6 @@
 
 let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, blame: AST, hint: Type): (TypeContext?, Type) = (
-   let rhs-tt = phi-state(tctx,typeof-term(rhs),blame);
+   let rhs-tt = tctx.with-phi(typeof-term(rhs));
    let tt = rhs-tt && t0(c"LocalVariable");
    (tctx, tt) = phi-fresh(tctx, tt, blame);
    if not(hint.is-t(c"MustNotMove",0)) {
@@ -190,7 +190,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          if key==c"__uninitialized" then ascript(term, hint)
          else (
             vt = typeof-var(term, tctx, key);
-            vt = phi-state(tctx, vt, term);
+            vt = tctx.with-phi(vt);
          );
          mark-var-to-def-todo(tctx, key, ta, term);
          # TailPosition LocalVariables don't need to be retained because +1/-1 retain/release cancels itself out
@@ -311,7 +311,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      tctx = tctx.phi-move(from-tt, term);
                   };
                };
-               rt = phi-state(tctx, rt, term);
+               rt = tctx.with-phi(rt);
                ascript(term, rt);
                if not(rt.is-t(c"Cons",2)) {
                   let function-type = typeof-term(tctx.find-callable(var-name-if-var-or-lit(l), typeof-term(r), term).blame);
@@ -340,7 +340,6 @@ let wrap-call(tctx: TypeContext?, fname: CString, term: AST): (TypeContext?, AST
    let function-term = mk-var(fname); ascript(function-term, function-type);
    let result = mk-app(function-term, term);
    (tctx, let result-type) = tctx.apply-callable(fname, args-type, term);
-   result-type = phi-state(tctx, result-type, term);
    ascript(result, result-type);
    (tctx, result)
 );

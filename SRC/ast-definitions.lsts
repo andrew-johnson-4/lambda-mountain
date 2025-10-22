@@ -10,12 +10,6 @@ let .normalized-type(tr: TypeContextRow): Type = (
       _ => ta;
    }
 );
-let .denormalized-type(tr: TypeContextRow): Type = (
-   match tr {
-      TypeContextRow{ nt=nt, dt=dt } => if non-zero(dt) then dt else denormalize(nt);
-      _ => ta;
-   }
-);
 let .def(tr: TypeContextRow): AST = (
    match tr {
       TypeContextRow{ blame=blame } => blame;
@@ -23,7 +17,6 @@ let .def(tr: TypeContextRow): AST = (
    }
 );
 
-let .denormalized-and-phi-type(tr: TypeContextRow, tctx: TypeContext?): Type = phi-state(tctx,tr.denormalized-type,tr.def);
 let .into(tr: TypeContextRow, tt: Type<String>): String = "TypeContextRow{ key: \"\{tr.key}\", dt: \"\{tr.dt}\" }";
 
 type alias AContext = List<(CString,AST)>;
