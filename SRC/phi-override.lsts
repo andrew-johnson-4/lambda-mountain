@@ -19,6 +19,7 @@ let phi-override(tctx: TypeContext?, from-tt: Type, to-tt: Type, blame: AST): Ty
             TGround{tag:c"Phi::State",parameters:[phi-state..]} => new-phi-type = new-phi-type && phi-state;
             _ => ();
          };
+         print("Phi Override\n");
          tctx = tctx.bind-phi(phi-id, new-phi-type, blame);
       );
       _ => ();

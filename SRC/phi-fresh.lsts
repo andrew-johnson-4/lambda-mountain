@@ -20,6 +20,7 @@ let phi-fresh(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Type) = 
                new-conjugate = new-conjugate.push(c);
             );
          }};
+         print("Phi fresh\n");
          if non-zero(phi-id) && non-zero(phi-state)
          then tctx = tctx.bind-phi(phi-id, phi-state, blame);
          tt = TAnd(new-conjugate);

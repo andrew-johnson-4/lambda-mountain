@@ -25,7 +25,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
    };
 
    # Phi: move linear values, like (Linear<A> ~> Linear<Phi::Moved>)
-   tctx = tctx.apply-move-args(ft.domain, at, blame);
+   tctx = tctx.phi-move-args(ft.domain, at, blame);
 
    # Specialize the function type
    let closed-type = apply-tctx.substitute(ft).without-phi-keep-state;
