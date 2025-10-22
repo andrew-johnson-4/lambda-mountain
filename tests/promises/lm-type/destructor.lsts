@@ -114,3 +114,11 @@ assert( most-special( t0(c"A"), ta ) == t0(c"A") );
 assert( most-special( t2(c"Arrow",tv(c"a"),tv(c"a")), t2(c"Arrow",t0(c"A"),t0(c"A")) ) == t2(c"Arrow",t0(c"A"),t0(c"A")) );
 assert( most-special( t2(c"Arrow",t0(c"A"),tv(c"a")), t2(c"Arrow",t0(c"A"),t0(c"A")) ) == t2(c"Arrow",t0(c"A"),t0(c"A")) );
 assert( safe-alloc-block-count == 0 );
+
+assert( ta.without-slot(c"A",0) == ta );
+assert( tv(c"a").without-slot(c"A",0) == tv(c"a") );
+assert( t0(c"A").without-slot(c"A",0) == ta );
+assert( t0(c"B").without-slot(c"A",0) == t0(c"B") );
+assert( (t0(c"A") && t0(c"B")).without-slot(c"A",0) == t0(c"B") );
+assert( (t0(c"A") && t0(c"B") && t0(c"C")).without-slot(c"A",0) == (t0(c"B") && t0(c"C")) );
+assert( safe-alloc-block-count == 0 );
