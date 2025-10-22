@@ -1,6 +1,5 @@
 
 import SRC/substitute.lsts;
-import SRC/is-special.lsts;
 import SRC/index-of-tag.lsts;
 import SRC/global-is-seen.lsts;
 
