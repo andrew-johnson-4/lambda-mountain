@@ -24,14 +24,11 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
 
    let match-set = mk-vector(type(TypeContextRow));
 
-   if fname==c"Tuple" then print("Find Callable Tuple \{arg-types}\n");
-
    # Find all accepting function candidates
    for tr in tctx.lookups(fname) {
       # can-receive is an additional refinement on top of argument satisfaction
       # it is necessary for nullary or partial constructors that need a full type
       # like, None : TypeContext?
-      if fname==c"Tuple" then print("Find Callable Tuple Candidate can-apply=\{can-apply(tr.dt, arg-types)} must-receive=\{non-zero(return-type-hint)} can-receive=\{can-receive(tr.dt, return-type-hint)} \{tr.dt}\n");
       if can-apply(tr.dt, arg-types) && (not(non-zero(return-type-hint)) || can-receive(tr.dt, return-type-hint)) {
          match-set = match-set.push(tr);
       }

@@ -59,7 +59,7 @@ let infer-global-context-prim(term: AST): Nil = (
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
          if k.key.has-prefix(c"primitive::") then {
-            let ft = t2(c"Arrow", typeof-lhs(lhs), return-type) && misc-tt;
+            let ft = t2(c"Arrow", typeof-lhs(lhs), return-type).without-phi-keep-state && misc-tt;
             mark-global-as-seen(k.key, ft, misc-tt);
             ascript(term, ft);
             ascript(frhs, ft);
@@ -90,7 +90,7 @@ let infer-global-context(term: AST): Nil = (
          if k.key.has-prefix(c"primitive::") then ()
          else if misc-tt.is-t(c"TypedMacro",0) then bind-new-macro(k.key, frhs)
          else {
-            let ft = t2(c"Arrow", typeof-lhs(lhs), return-type) && misc-tt;
+            let ft = t2(c"Arrow", typeof-lhs(lhs), return-type).without-phi-keep-state && misc-tt;
             mark-global-as-seen(k.key, ft, misc-tt);
             ascript(term, ft);
             ascript(frhs, ft);
