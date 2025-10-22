@@ -4,13 +4,15 @@ let .phi-append(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeC
 );
 
 let .phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>): List<PhiContextRow> = (
-   let seen = mk-vector(type(CString));
+   print("Phi Append Start\n");
+   let seen = {} : HashtableEq<CString,U64>;
    for pr1 in tctx-secondary {
-      if not(seen.contains(pr1.phi-id)) {
+      if not(seen.has(pr1.phi-id)) {
          let pr2 = tctx-primary.lookup(pr1.phi-id);
          if not(is(pr1,pr2)) then tctx-primary = cons( pr1, tctx-primary );
-         seen = seen.push(pr1.phi-id);
+         seen = seen.bind(pr1.phi-id, true);
       };
    };
+   print("Phi Append End\n");
    tctx-primary
 );

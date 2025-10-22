@@ -1,5 +1,6 @@
 
 let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>, blame: AST): List<PhiContextRow> = (
+   print("Phi Merge Start\n");
    let seen = mk-vector(type(CString));
    for Tuple{ sid=phi-id, st=phi-tt, pblame=blame } in tctx-secondary {
       if not(seen.contains(sid)) {
@@ -12,5 +13,6 @@ let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tct
          seen = seen.push(sid);
       };
    };
+   print("Phi Merge End\n");
    tctx-primary
 );
