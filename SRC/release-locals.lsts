@@ -39,7 +39,6 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    for nd in needs-mark-release {
       tctx-after = tctx-after.phi-move(nd.denormalized-and-phi-type(tctx-after), term);
    };
-   print("PHI MERGE RELEASE LOCALS\n");
    tctx-before = tctx-before.phi-append(tctx-after);
    (tctx-before, term)
 );

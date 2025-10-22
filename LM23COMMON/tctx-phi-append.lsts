@@ -1,6 +1,6 @@
 
 let .phi-append(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeContext? = (
-   tctx-primary.with-phi( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx) ) 
+   tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx) ) 
 );
 
 let .phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>): List<PhiContextRow> = (

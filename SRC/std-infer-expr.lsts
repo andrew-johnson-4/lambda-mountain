@@ -115,7 +115,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                (tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
                if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
                then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
-               print("PHI MERGE IF 1\n");
                tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
             } else {
                (tctx, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
@@ -125,7 +124,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                tctx = tctx-t;
                if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
                then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
-               print("PHI MERGE IF 2\n");
                tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
             };
             if not(typeof-term(cond).is-t(c"Bool",0)) {

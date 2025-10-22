@@ -6,7 +6,6 @@ let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tct
          let pt = tctx-primary.lookup(sid);
          if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,pblame), tctx-primary )
          else (
-            print("phi-merge Phi Merge\nLeft: \{pt.phi-tt}\nRight: \{st}\nLeft Term: \{pt.blame} \{pt.blame.location}\nRight Term: \{pblame} \{pblame.location}\n");
             let rt = tctx-globals.phi-merge(pt.phi-tt, st, blame);
             if not(is(pt.phi-tt,rt)) then tctx-primary = cons( PhiContextRow(sid,rt,blame), tctx-primary );
          );
