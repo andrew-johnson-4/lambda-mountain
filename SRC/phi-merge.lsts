@@ -3,24 +3,13 @@ let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tct
    let seen = mk-vector(type(CString));
    for Tuple{ sid=phi-id, st=phi-tt, pblame=blame } in tctx-secondary {
       if not(seen.contains(sid)) {
-         let pt = tctx-primary.lookup(sid).phi-tt;
+         let pt = tctx-primary.lookup(sid);
          if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,pblame), tctx-primary )
          else (
-            let rt = tctx-globals.phi-merge(pt, st, blame);
-            if not(is(pt,rt)) then tctx-primary = cons( PhiContextRow(sid,rt,blame), tctx-primary );
+            print("phi-merge Phi Merge\nLeft: \{pt.phi-tt}\nRight: \{st}\nLeft Term: \{pt.blame} \{pt.blame.location}\nRight Term: \{pblame} \{pblame.location}\n");
+            let rt = tctx-globals.phi-merge(pt.phi-tt, st, blame);
+            if not(is(pt.phi-tt,rt)) then tctx-primary = cons( PhiContextRow(sid,rt,blame), tctx-primary );
          );
-         seen = seen.push(sid);
-      };
-   };
-   tctx-primary
-);
-
-let phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>): List<PhiContextRow> = (
-   let seen = mk-vector(type(CString));
-   for Tuple{ sid=phi-id, st=phi-tt, pblame=blame } in tctx-secondary {
-      if not(seen.contains(sid)) {
-         let pt = tctx-primary.lookup(sid).phi-tt;
-         if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,pblame), tctx-primary );
          seen = seen.push(sid);
       };
    };

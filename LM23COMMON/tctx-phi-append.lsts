@@ -1,0 +1,16 @@
+
+let .phi-append(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeContext? = (
+   tctx-primary.with-phi( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx) ) 
+);
+
+let .phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>): List<PhiContextRow> = (
+   let seen = mk-vector(type(CString));
+   for pr1 in tctx-secondary {
+      if not(seen.contains(pr1.phi-id)) {
+         let pr2 = tctx-primary.lookup(pr1.phi-id);
+         if not(is(pr1,pr2)) then tctx-primary = cons( pr1, tctx-primary );
+         seen = seen.push(pr1.phi-id);
+      };
+   };
+   tctx-primary
+);
