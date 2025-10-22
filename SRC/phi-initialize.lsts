@@ -11,7 +11,6 @@ let phi-initialize-parameter(tctx: TypeContext?, tt: Type, blame: AST): (TypeCon
       );
       TGround{tag:c"Phi::State",parameters:[init-tt..]} => (
          let phi-id = uuid();
-         print("Phi initialize parameter\n");
          tctx = tctx.bind-phi(phi-id, init-tt, blame);
          (tctx, t1(c"Phi::Id",t0(phi-id)))
       );

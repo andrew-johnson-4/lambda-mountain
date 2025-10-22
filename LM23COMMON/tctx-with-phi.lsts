@@ -6,7 +6,6 @@ let .with-phi(tctx: TypeContext?, tt: Type): Type = (
    } else if tt.is-t(c"Phi::Id",1) {
       if tt.is-t(c"Phi::State",1) then tt = tt.without-slot(c"Phi::State",1);
       let phi-state = tctx.lookup-phi(tt.slot(c"Phi::Id",1).l1.simple-tag).phi-tt;
-      if not(non-zero(phi-state)) then fail("Could not find Phi::Id in Context \{tt}\n");
       if non-zero(phi-state) then tt = tt && t1(c"Phi::State", phi-state);
    };
    tt

@@ -6,7 +6,6 @@ let .phi-move(tctx: TypeContext?, tt: Type, blame: AST): TypeContext? = (
       let phi-state = tt.slot(c"Phi::State",1).l1;
       if non-zero(phi-id) && non-zero(phi-state) {
          tctx = tctx.bind-phi(phi-id, phi-state.move-linear, blame);
-         print("Phi Move \{phi-id} : \{phi-state.move-linear}\n");
       }
    };
    tctx

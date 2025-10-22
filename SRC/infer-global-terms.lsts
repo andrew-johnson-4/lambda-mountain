@@ -49,7 +49,6 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
       );
       _ => (
          (tctx, term) = std-infer-expr(tctx, term, false, Unused, ta);
-         print("Global \{term}\n");
       );
    };
    (tctx, term)
