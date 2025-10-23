@@ -253,7 +253,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             if var-name-if-var(l)==c"list::cons" { match r {
                App{k=left, m=right} => (
                   (tctx, let new-k) = std-infer-expr(tctx, k, false, Call(c"list::cons"), ta);
-                  (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), t1(c"List",typeof-term(k).normalize));
+                  print("typeof-term(k) : " + typeof-term(new-k).into(type(String)) );
+                  print("list::cons : " + t1(c"List",typeof-term(new-k).normalize).into(type(String)) );
+                  (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), t1(c"List",typeof-term(new-k).normalize));
                   if not(is(k,new-k)) || not(is(m,new-m)) then { r = mk-cons(new-k, new-m) };
                );
                _ => ();
@@ -261,7 +263,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             if var-name-if-var(l)==c"map::cons" { match r {
                App{kv=left, m=right} => (
                   (tctx, let new-kv) = std-infer-expr(tctx, kv, false, Call(c"map::cons"), ta);
-                  (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), t2(c"HashtableEq",typeof-term(kv).normalize.r2,typeof-term(kv).normalize.r1));
+                  (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), t2(c"HashtableEq",typeof-term(new-kv).normalize.r2,typeof-term(new-kv).normalize.r1));
                   if not(is(kv,new-kv)) || not(is(m,new-m)) then { r = mk-cons(new-kv, new-m) };
                );
                _ => ();
@@ -327,6 +329,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
    if used.is-unused && typeof-term(term).slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1) {
       (tctx, term) = wrap-call(tctx, c".release", term);
    };
+   print("\{term} : \{typeof-term(term)}\n");
    (tctx, term);
 );
 
