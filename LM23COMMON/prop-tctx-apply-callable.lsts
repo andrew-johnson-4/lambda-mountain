@@ -19,7 +19,7 @@ let .apply-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: 
    # Coerce types into denormalized format
    # TODO: replace with Into<Type::Format::Denormal> parameter types
    arg-types = denormalize-strong(arg-types);
-   return-type-hint = denormalize-strong(return-type-hint);
+   return-type-hint = denormalize-strong(return-type-hint).expand-implied-phi;
 
    # Find the appropriate function
    let f-row = tctx.find-callable(fname, arg-types, blame, return-type-hint, failable);
