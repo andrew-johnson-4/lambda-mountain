@@ -250,25 +250,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             tctx.ascript(term, if used.is-tail then typeof-term(r) else t2(c"Cons", typeof-term(l), typeof-term(r)));
          } else {
             let rt = ta;
-            if var-name-if-var(l)==c"list::cons" { match r {
-               App{k=left, m=right} => (
-                  (tctx, let new-k) = std-infer-expr(tctx, k, false, Call(c"list::cons"), ta);
-                  print("typeof-term(k) : " + typeof-term(new-k).into(type(String)) );
-                  print("list::cons : " + t1(c"List",typeof-term(new-k).normalize).into(type(String)) );
-                  (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), t1(c"List",typeof-term(new-k).normalize));
-                  if not(is(k,new-k)) || not(is(m,new-m)) then { r = mk-cons(new-k, new-m) };
-               );
-               _ => ();
-            }};
-            if var-name-if-var(l)==c"map::cons" { match r {
-               App{kv=left, m=right} => (
-                  (tctx, let new-kv) = std-infer-expr(tctx, kv, false, Call(c"map::cons"), ta);
-                  (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), t2(c"HashtableEq",typeof-term(new-kv).normalize.r2,typeof-term(new-kv).normalize.r1));
-                  if not(is(kv,new-kv)) || not(is(m,new-m)) then { r = mk-cons(new-kv, new-m) };
-               );
-               _ => ();
-            }};
-
             if index-macro-table.has(var-name-if-var(l)) {
                (tctx, term) = std-apply-macro(tctx, term, used);
                is-macro = true;
@@ -279,10 +260,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   let rr-args-hint = if var-name-if-var-or-lit(l)==c".retain" || var-name-if-var-or-lit(l)==c".release"
                   then t0(c"MustNotRetain") else ta;
                   let pre-retain-tctx = tctx;
-                  (tctx, let new-r) = std-infer-expr(tctx, r, false, Call(var-name-if-var-or-lit(l)), rr-args-hint);
+                  (tctx, let new-r) = std-infer-call-arg(tctx, r, var-name-if-var-or-lit(l), rr-args-hint);
                   let ftype = typeof-term(tctx.find-callable( var-name-if-var-or-lit(l), typeof-term(new-r), term ).blame);
                   if ftype.domain.is-any-arg-t(c"MustNotRetain",0) {
-                     (tctx, new-r) = std-infer-expr(pre-retain-tctx, r, false, Call(var-name-if-var-or-lit(l)), ftype.domain && rr-args-hint);
+                     (tctx, new-r) = std-infer-call-arg(pre-retain-tctx, r, var-name-if-var-or-lit(l), ftype.domain && rr-args-hint);
                   };
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
                } else {
@@ -341,4 +322,30 @@ let wrap-call(tctx: TypeContext?, fname: CString, term: AST): (TypeContext?, AST
    (tctx, let result-type) = tctx.apply-callable(fname, args-type, term);
    tctx.ascript(result, result-type);
    (tctx, result)
+);
+
+let std-infer-call-arg(tctx: TypeContext?, term: AST, function-name: CString, hint: Type): (TypeContext?, AST) = (
+   if function-name==c"list::cons" { match term {
+      App{k=left, m=right} => (
+         (tctx, let new-k) = std-infer-expr(tctx, k, false, Call(function-name), ta);
+         print("typeof-term(k) : " + typeof-term(new-k).into(type(String)) );
+         print("list::cons : " + t1(c"List",typeof-term(new-k).normalize).into(type(String)) );
+         (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), t1(c"List",typeof-term(new-k).normalize));
+         if not(is(k,new-k)) || not(is(m,new-m)) then { k = new-k; m = new-m; term = mk-cons(k, m); };
+         tctx.ascript(term, t2(c"Cons",typeof-term(k),typeof-term(m)));
+         (tctx, term)
+      );
+      _ => (tctx, term);
+   }} else if function-name==c"map::cons" { match term {
+      App{k=left, m=right} => (
+         (tctx, let new-k) = std-infer-expr(tctx, k, false, Call(function-name), ta);
+         print("typeof-term(k) : " + typeof-term(new-k).into(type(String)) );
+         print("map::cons : " + t1(c"List",typeof-term(new-k).normalize).into(type(String)) );
+         (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), t2(c"HashtableEq",typeof-term(new-k).normalize.slot(c"Cons",2).l1,typeof-term(new-k).normalize.slot(c"Cons",2).l2));
+         if not(is(k,new-k)) || not(is(m,new-m)) then { k = new-k; m = new-m; term = mk-cons(k, m); };
+         tctx.ascript(term, t2(c"Cons",typeof-term(k),typeof-term(m)));
+         (tctx, term)
+      );
+      _ => (tctx, term);
+   }} else std-infer-expr(tctx, term, false, Call(function-name), hint);
 );
