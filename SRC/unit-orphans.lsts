@@ -6,7 +6,6 @@ import SRC/index-plugins.lsts;
 import SRC/index-tokenize.lsts;
 import SRC/substitute.lsts;
 import SRC/validate-interfaces.lsts;
-import SRC/tctx-to-string.lsts;
 import SRC/std-infer-expr.lsts;
 import SRC/decorate-var-to-def.lsts;
 import SRC/macro-table.lsts;
@@ -29,6 +28,7 @@ import SRC/maybe-retain.lsts;
 import SRC/release-locals.lsts;
 import SRC/without-nested-phi.lsts;
 import SRC/sanitize-phi.lsts;
+import SRC/tctx-to-string.lsts;
 
 let .unroll-seq(t: AST): Vector<AST> = (
    match t {

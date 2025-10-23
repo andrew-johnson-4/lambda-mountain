@@ -51,3 +51,5 @@ assert( safe-alloc-block-count == 0 );
 assert( unify( t0(c"A::"), t0(c"A::B"), mk-eof() ) == Some(mk-tctx()) );
 assert( unify( t1(c"A::",ta), t1(c"A::B",t0(c"A")), mk-eof() ) == Some(mk-tctx()) );
 assert( safe-alloc-block-count == 0 );
+
+print( unify( t1(c"Phi::State",t0(c"A")) && t2(c"Phi::Transition",t0(c"A"),t0(c"B")), t1(c"Phi::State",t0(c"A")) && t1(c"Phi::Id",t0(c"ABC")), mk-eof() ).into(type(String)) );
