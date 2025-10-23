@@ -24,12 +24,6 @@ let .dt(tr: TypeContextRow): Type = (
       _ => ta;
    }
 );
-let .denormalized(tr: TypeContextRow): Type = (
-   match tr {
-      TypeContextRow{ nt=nt, dt=dt } => if non-zero(dt) then dt else denormalize(nt);
-      _ => ta;
-   }
-);
 let .direct-type(tr: TypeContextRow): Type = (
    match tr {
       TypeContextRow{ nt=nt, dt=dt } => if non-zero(nt) then nt else dt;
