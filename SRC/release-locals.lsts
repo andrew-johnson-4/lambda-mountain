@@ -7,10 +7,12 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    while non-zero(tctx-after-tctx) && not(is(tctx-before-tctx, tctx-after-tctx)) {
       let tr = head(tctx-after-tctx);
       let dt = tctx-after.with-phi(tr.denormalized);
+      print("Needs Release? \{tr.blame} \{dt}\n");
       if dt.slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).is-linear-live {
          if dt.is-t(c"MustNotRetain",0)
          then needs-mark-release = cons(tr, needs-mark-release)
          else needs-release = cons(tr, needs-release);
+         print("Needed Release \{dt}\n");
       };
       tctx-after-tctx = tail(tctx-after-tctx);
    };
@@ -40,5 +42,6 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       tctx-after = tctx-after.phi-move(tctx-after.with-phi(nd.denormalized), term);
    };
    tctx-before = tctx-before.phi-append(tctx-after);
+   print("Lookup phi: " + tctx-before.lookup-phi(c"uuid__4c5b000000000000").phi-tt.into(type(String)));
    (tctx-before, term)
 );
