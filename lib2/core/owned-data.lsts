@@ -43,6 +43,10 @@ let .pop(od: OwnedData<t>[]): t = (
    od.data[od.current-length]
 );
 
+let open(od: OwnedData<t>[]): t = (
+   od[0]
+);
+
 let .release(od: OwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
       od.reference-count = od.reference-count - 1;

@@ -33,14 +33,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          let deref-type = typeof-term(r);
          match deref-type.slot(c"Array",2) {
             TGround{tag:c"Array", parameters:[_.. TAny{}..]} => ();
-            TGround{tag:c"Array", parameters:[TAny{}.. array-base..]} => (
-               mark-var-to-def-todo(tctx, c"open", deref-type, o-t);
-               tctx.maybe-apply-callable(c"open", deref-type, term);
-               deref-type = array-base;
-            );
             _ => (
                mark-var-to-def-todo(tctx, c"open", deref-type, o-t);
-               tctx.apply-callable(c"open", deref-type, term);
+               (tctx, deref-type) = tctx.apply-callable(c"open", deref-type, term);
             );
          };
          tctx.ascript(term, deref-type);

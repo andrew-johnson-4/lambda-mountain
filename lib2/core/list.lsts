@@ -1,5 +1,5 @@
 
-type List<x> implies MustRetain, MustRelease zero LEOF = LEOF | LCons { head: x, tail: OwnedData<List<x>> };
+type List<x> implies MustRetain, MustRelease zero LEOF = LEOF | LCons { head: x, tail: OwnedData<List<x>>[] };
 
 let .release(t: List<x>): Nil = (
    if type(x) <: type(MustRelease) {
