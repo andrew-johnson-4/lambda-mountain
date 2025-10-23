@@ -107,7 +107,7 @@ let substitute(tctx: TypeContext?, t: AST, is-return: U64): AST = (
       Lit{v=key,vtk=token} => mk-lit(v,unique(vtk));
       Var{v=key,vtk=token} => mk-var(v,unique(vtk));
       Abs{lhs=lhs,rhs=rhs,tt=tt} => mk-abs(substitute-lhs(tctx,lhs),substitute(tctx,rhs,true),tctx.substitute(tt));
-      AType{tt=tt} => mk-atype(tctx.substitute(tt));
+      AType{tt=tt} => mk-atype(tctx.substitute(tt).sanitize-phi);
       App{is-cons=is-cons,lt=left,rt=right} => mk-cons-or-app(is-cons,substitute(tctx,lt),substitute(tctx,rt));
       Seq{seq=seq} => (
          t = mk-eof();
