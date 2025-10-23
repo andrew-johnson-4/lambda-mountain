@@ -20,11 +20,14 @@ let .retain(t: List<x>): List<x> = (
 );
 
 let cmp(l: List<x>, r: List<x>): Ord = (
-   match (l, r) {
-      Tuple{ first:LEOF{}, second:LEOF{} } => Equal;
-      Tuple{ first:LCons{ lhead=head, ltail=tail }, second:LCons{ rhead=head, rtail=tail } } => cmp(lhead,rhead) && cmp(ltail,rtail);
-      _ => cmp(l.discriminator-case-tag, r.discriminator-case-tag);
-   }
+   if  l.discriminator-case-tag==(l as Tag::LCons).discriminator-case-tag
+   and r.discriminator-case-tag==(r as Tag::LCons).discriminator-case-tag {
+      cmp( (l as Tag::LCons).head, (r as Tag::LCons).head ) &&
+      cmp( open((l as Tag::LCons).tail), open((r as Tag::LCons).tail) )
+   } else if l.discriminator-case-tag==(l as Tag::LEOF).discriminator-case-tag
+         and r.discriminator-case-tag==(r as Tag::LEOF).discriminator-case-tag {
+      Equal
+   } else cmp(l.discriminator-case-tag, r.discriminator-case-tag)
 );
 
 let deep-hash(l: List<x>): U64 = (
