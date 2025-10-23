@@ -1,0 +1,38 @@
+
+type List<x> implies MustRetain, MustRelease zero LEOF = LEOF | LCons { head: x, tail: OwnedData<List<x>> };
+
+let .release(t: List<x>): Nil = (
+   if type(x) <: type(MustRelease) {
+   if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag {
+      (t as Tag::LCons).head.release;
+      open((t as Tag::LCons).tail).release;
+   }};
+   mark-as-released(t);
+);
+
+let .retain(t: List<x>): List<x> = (
+   if type(x) <: type(MustRelease) {
+   if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag {
+      (t as Tag::LCons).head.retain;
+      open((t as Tag::LCons).tail).retain;
+   }};
+   t
+);
+
+let cmp(l: List<x>, r: List<x>): Ord = (
+   match (l, r) {
+      Tuple{ first:LEOF{}, second:LEOF{} } => Equal;
+      Tuple{ first:LCons{ lhead=head, ltail=tail }, second:LCons{ rhead=head, rtail=tail } } => cmp(lhead,rhead) && cmp(ltail,rtail);
+      _ => cmp(l.discriminator-case-tag, r.discriminator-case-tag);
+   }
+);
+
+let deep-hash(l: List<x>): U64 = (
+   if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag
+   then deep-hash((t as Tag::LCons).head) + deep-hash(open((t as Tag::LCons).tail))
+   else 0
+);
+
+let .into(l: List<x>, tt: Type<String>): String = (
+   "[..TODO..List.into(String)..]"
+);
