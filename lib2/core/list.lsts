@@ -4,20 +4,18 @@ type List<x> implies MustRetain, MustRelease zero LEOF = LEOF | LCons { head: x,
 let $"list::cons"(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
 
 let .release(t: List<x>): Nil = (
-   if type(x) <: type(MustRelease) {
    if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag {
-      (t as Tag::LCons).head.release;
-      open((t as Tag::LCons).tail).release;
-   }};
+      if type(x) <: type(MustRelease) then (t as Tag::LCons).head.release;
+      (t as Tag::LCons).tail.release;
+   };
    mark-as-released(t);
 );
 
 let .retain(t: List<x>): List<x> = (
-   if type(x) <: type(MustRelease) {
    if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag {
-      (t as Tag::LCons).head.retain;
-      open((t as Tag::LCons).tail).retain;
-   }};
+      if type(x) <: type(MustRelease) then (t as Tag::LCons).head.retain;
+      (t as Tag::LCons).tail.retain
+   };
    t
 );
 
