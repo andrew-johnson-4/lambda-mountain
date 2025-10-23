@@ -32,7 +32,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
 
    # Fail if specialized function is still open
    if closed-type.is-open
-   then exit-error("Unification did not close all open type variables in call to \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
+   then exit-error("Unification did not close all open type variables in call to \{fname}\nFunction: \{ft}\nArguments: \{at}\nReturn Hint: \{return-type-hint}\nClosed: \{closed-type}", blame);
 
    # Specialize the return type
    let return-type = apply-tctx.substitute(ft.range).without-phi-keep-state.expand-implied-phi;
