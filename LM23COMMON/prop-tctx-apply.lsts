@@ -21,6 +21,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
 
    # Phi: apply transitions, like (A ~> B)
    for pr in apply-tctx.get-or(mk-tctx()).pctx {
+      print("Transition Phi \{pr.phi-id} ~> \{pr.phi-tt}\n");
       tctx = tctx.bind-phi(pr.phi-id, pr.phi-tt, pr.blame);
    };
 
