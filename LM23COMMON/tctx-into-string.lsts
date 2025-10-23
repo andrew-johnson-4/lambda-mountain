@@ -1,0 +1,8 @@
+
+let .into(tctx: Maybe<TypeContext>, tt: Type<String>): String = (
+   let result = "";
+   for TypeContextRow{first=key,third=direct-type} in tctx.get-or(mk-tctx()).tctx {
+      result = result + "\{first} : \{third}\n";
+   };
+   result
+);
