@@ -1,7 +1,6 @@
 
 let .ascript(tctx: TypeContext?, t: AST, tt: Type): Nil = (
    tt = tctx.with-phi(tt);
-   print("ascript \{t} : \{tt}\n");
    if non-zero(tt) {
       let prev-tt = typeof-term(t);
       if non-zero(prev-tt) {
