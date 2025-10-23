@@ -13,7 +13,7 @@ let .release(t: List<x>): Nil = (
 
 let .retain(t: List<x>): List<x> = (
    if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag {
-      if type(x) <: type(MustRelease) then (t as Tag::LCons).head.retain;
+      if type(x) <: type(MustRetain) then (t as Tag::LCons).head.retain;
       (t as Tag::LCons).tail.retain
    };
    t
