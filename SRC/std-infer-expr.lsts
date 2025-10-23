@@ -310,7 +310,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
    if used.is-unused && typeof-term(term).slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1) {
       (tctx, term) = wrap-call(tctx, c".release", term);
    };
-   print("\{term} : \{typeof-term(term)}\n");
    (tctx, term);
 );
 
@@ -328,8 +327,6 @@ let std-infer-call-arg(tctx: TypeContext?, term: AST, function-name: CString, hi
    if function-name==c"list::cons" { match term {
       App{k=left, m=right} => (
          (tctx, let new-k) = std-infer-expr(tctx, k, false, Call(function-name), ta);
-         print("typeof-term(k) : " + typeof-term(new-k).into(type(String)) );
-         print("list::cons : " + t1(c"List",typeof-term(new-k).normalize).into(type(String)) );
          (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), t1(c"List",typeof-term(new-k).normalize));
          if not(is(k,new-k)) || not(is(m,new-m)) then { k = new-k; m = new-m; term = mk-cons(k, m); };
          tctx.ascript(term, t2(c"Cons",typeof-term(k),typeof-term(m)));
@@ -339,8 +336,6 @@ let std-infer-call-arg(tctx: TypeContext?, term: AST, function-name: CString, hi
    }} else if function-name==c"map::cons" { match term {
       App{k=left, m=right} => (
          (tctx, let new-k) = std-infer-expr(tctx, k, false, Call(function-name), ta);
-         print("typeof-term(k) : " + typeof-term(new-k).into(type(String)) );
-         print("map::cons : " + t1(c"List",typeof-term(new-k).normalize).into(type(String)) );
          (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), t2(c"HashtableEq",typeof-term(new-k).normalize.slot(c"Cons",2).l1,typeof-term(new-k).normalize.slot(c"Cons",2).l2));
          if not(is(k,new-k)) || not(is(m,new-m)) then { k = new-k; m = new-m; term = mk-cons(k, m); };
          tctx.ascript(term, t2(c"Cons",typeof-term(k),typeof-term(m)));

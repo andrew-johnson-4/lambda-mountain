@@ -1,7 +1,6 @@
 
 let .phi-move(tctx: TypeContext?, tt: Type, blame: AST): TypeContext? = (
    tt = tctx.with-phi(tt);
-   print("Move \{tt}\n");
    if not(tctx.get-or(mk-tctx()).is-blob) then {
       let phi-id = tt.slot(c"Phi::Id",1).l1.simple-tag;
       let phi-state = tt.slot(c"Phi::State",1).l1;
