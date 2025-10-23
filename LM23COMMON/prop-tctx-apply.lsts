@@ -4,8 +4,6 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST): 
 );
 
 let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, return-type-hint: Type): (TypeContext?, TypeContext?, Type, Type) = (
-   if fname==c"mark-as-released" then print("Mark as Released \{ft} (\{at})\n");
-
    # Fail if arguments are not accepted by function (<:)
    if not(can-apply(ft, at)) then exit-error("Unable to apply function \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
 
@@ -23,7 +21,6 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
 
    # Phi: apply transitions, like (A ~> B)
    for pr in apply-tctx.get-or(mk-tctx()).pctx {
-      print("Transition Phi \{pr.phi-id} ~> \{pr.phi-tt}\n");
       tctx = tctx.bind-phi(pr.phi-id, pr.phi-tt, pr.blame);
    };
 

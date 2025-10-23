@@ -11,13 +11,13 @@ assert( ("1","1") < ("1","2") );
 assert( ("1","1") < ("2","1") );
 assert( safe-alloc-block-count == 0 );
 
-#assert( ("1","2",3) == ("1","2",3) );
-#assert( ("1","1",1) < ("1","1",2) );
-#assert( (1,"1","1") < (2,"1","1") );
-#assert( safe-alloc-block-count == 0 );
+assert( ("1","2",3) == ("1","2",3) );
+assert( ("1","1",1) < ("1","1",2) );
+assert( (1,"1","1") < (2,"1","1") );
+assert( safe-alloc-block-count == 0 );
 
-#assert( ("1","2",3,0) == ("1","2",3,0) );
-#assert( ("1","1",1,0) < ("1","1",2,0) );
-#assert( (1,"1","1",0) < (2,"1","1",0) );
-#assert( safe-alloc-block-count == 0 );
+assert( ("1","2",3,0) == ("1","2",3,0) );
+assert( ("1","1",1,0) < ("1","1",2,0) );
+assert( (1,"1","1",0) < (2,"1","1",0) );
+assert( safe-alloc-block-count == 0 );
 
