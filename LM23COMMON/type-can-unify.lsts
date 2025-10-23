@@ -30,25 +30,16 @@ let can-unify(fpt: Type, pt: Type): U64 = (
                TGround{tag:c"MustNotRetain"} => ();
                TGround{tag:c"MustNotMove"} => ();
                TGround{tag:c"Phi::Transition", parameters:[phi-to..phi-from..]} => (
-                  let scan-states = true;
                   let skip-state-check = false;
-                  while scan-states && ri < rconjugate.length { match rconjugate[ri] {
-                     TGround{tag:c"Phi::Id",parameters:[TGround{new-phi-id=tag}..]} => ri = ri + 1;
+                  for st in rconjugate { match st {
                      TGround{tag:c"Phi::State",parameters:[new-phi-state..]} => (
                         phi-state-in = phi-state-in && new-phi-state;
-                        ri = ri + 1;
                      );
                      TGround{tag:c"Phi::Transition",parameters:[new-phi-to..new-phi-from..]} => (
                         result = result && can-unify(phi-to, new-phi-to) && can-unify(phi-from, new-phi-from);
-                        ri = ri + 1;
                         skip-state-check = true;
                      );
-                     TGround{tag=tag} => (
-                        if tag < c"Phi::Transition"
-                        then ri = ri + 1
-                        else scan-states = false
-                     );
-                     _ => scan-states = false;
+                     _ => ();
                   }};
                   if not(skip-state-check) then result = result && can-unify(phi-from, phi-state-in);
                );
