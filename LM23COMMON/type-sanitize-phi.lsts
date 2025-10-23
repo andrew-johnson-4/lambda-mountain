@@ -14,17 +14,8 @@ let .sanitize-phi(tt: Type): Type = (
          else if result.length==1 then result[0]
          else tand(result)
       );
-      TGround { tag:c"Tuple" } => tt.without-any-phi;
-      TGround { tag:tag, parameters:[p1..] } => if tag.has-prefix(c"Field::")
-                        then t1(tag,p1.without-any-phi)
-                        else tt;
+      TGround { tag:c"Arrow" } => tt.without-phi-keep-state;
+      TGround { tag:tag, parameters:parameters } => ts(tag,parameters.without-phi);
       _ => tt;
-   }
-);
-
-let .sanitize-phi(tt: List<Type>): List<Type> = (
-   match tt {
-      [hd..tl] => cons( hd.sanitize-phi, tl.sanitize-phi );
-      tl => tl;
    }
 );
