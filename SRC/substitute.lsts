@@ -64,7 +64,7 @@ let substitute-lhs(tctx: TypeContext?, t: AST): AST = substitute-lhs(tctx, t, 0)
 let substitute-lhs(tctx: TypeContext?, t: AST, idx: U64): AST = (
    match t {
       App{ ps=left, right:App{ left:Lit{key:c":",ctk=token}, right:App{ left:Var{v=key,vtk=token}, right:AType{vt=tt} } } } => (
-         vt = substitute-macro(tctx, vt.accept-interface(idx)).phi-specialize(tctx,t);
+         vt = substitute-macro(tctx, vt.accept-interface(idx)).phi-specialize(tctx,t).without-phi-keep-state;
          mk-app( substitute-lhs(tctx,ps,idx+1), 
             mk-app( mk-lit(c":",unique(ctk)), mk-app(
                mk-var(v,unique(vtk)), mk-atype(vt)
@@ -72,7 +72,7 @@ let substitute-lhs(tctx: TypeContext?, t: AST, idx: U64): AST = (
          )
       );
       App{ left:Lit{key:c":",ctk=token}, right:App{ left:Var{v=key,vtk=token}, right:AType{vt=tt} } } => (
-         vt = substitute-macro(tctx, vt.accept-interface(idx)).phi-specialize(tctx,t);
+         vt = substitute-macro(tctx, vt.accept-interface(idx)).phi-specialize(tctx,t).without-phi-keep-state;
          mk-app( mk-lit(c":",unique(ctk)), mk-app(
             mk-var(v,unique(vtk)), mk-atype(tctx.substitute(vt.accept-interface(idx)))
          ))
@@ -107,7 +107,7 @@ let substitute(tctx: TypeContext?, t: AST, is-return: U64): AST = (
       Lit{v=key,vtk=token} => mk-lit(v,unique(vtk));
       Var{v=key,vtk=token} => mk-var(v,unique(vtk));
       Abs{lhs=lhs,rhs=rhs,tt=tt} => mk-abs(substitute-lhs(tctx,lhs),substitute(tctx,rhs,true),tctx.substitute(tt));
-      AType{tt=tt} => mk-atype(tctx.substitute(tt));
+      AType{tt=tt} => mk-atype(tctx.substitute(tt).sanitize-phi);
       App{is-cons=is-cons,lt=left,rt=right} => mk-cons-or-app(is-cons,substitute(tctx,lt),substitute(tctx,rt));
       Seq{seq=seq} => (
          t = mk-eof();

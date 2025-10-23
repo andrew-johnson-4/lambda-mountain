@@ -1,0 +1,41 @@
+
+type List<x> implies MustRetain, MustRelease zero LEOF = LEOF | LCons { head: x, tail: OwnedData<List<x>>[] };
+
+let $"list::cons"(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
+
+let .release(t: List<x>): Nil = (
+   if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag {
+      if type(x) <: type(MustRelease) then (t as Tag::LCons).head.release;
+      (t as Tag::LCons).tail.release;
+   };
+   mark-as-released(t);
+);
+
+let .retain(t: List<x>): List<x> = (
+   if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag {
+      if type(x) <: type(MustRetain) then (t as Tag::LCons).head.retain;
+      (t as Tag::LCons).tail.retain
+   };
+   t
+);
+
+let cmp(l: List<x>, r: List<x>): Ord = (
+   if  l.discriminator-case-tag==(l as Tag::LCons).discriminator-case-tag
+   and r.discriminator-case-tag==(r as Tag::LCons).discriminator-case-tag {
+      cmp( (l as Tag::LCons).head, (r as Tag::LCons).head ) &&
+      cmp( open((l as Tag::LCons).tail), open((r as Tag::LCons).tail) )
+   } else if l.discriminator-case-tag==(l as Tag::LEOF).discriminator-case-tag
+         and r.discriminator-case-tag==(r as Tag::LEOF).discriminator-case-tag {
+      Equal
+   } else cmp(l.discriminator-case-tag, r.discriminator-case-tag)
+);
+
+let deep-hash(l: List<x>): U64 = (
+   if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag
+   then deep-hash((t as Tag::LCons).head) + deep-hash(open((t as Tag::LCons).tail))
+   else 0
+);
+
+let .into(l: List<x>, tt: Type<String>): String = (
+   "[..TODO..List.into(String)..]"
+);

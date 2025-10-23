@@ -27,7 +27,6 @@ import SRC/with-only-phi.lsts;
 import SRC/maybe-retain.lsts;
 import SRC/release-locals.lsts;
 import SRC/without-nested-phi.lsts;
-import SRC/sanitize-phi.lsts;
 import SRC/tctx-to-string.lsts;
 
 let .unroll-seq(t: AST): Vector<AST> = (
