@@ -85,7 +85,9 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
                _ => result = result && unify(lc,pt,blame);
             });
          };
-         if non-zero(phi-id) && non-zero(phi-state-out) then result = result.bind-phi(phi-id, phi-state-out, blame);
+         if non-zero(phi-id) && non-zero(phi-state-out) then {
+            result = result.bind-phi(phi-id, phi-state-out, blame);
+         };
          ctx = result;
       );
       Tuple{ first:TAnd{ lconjugate=conjugate }, rt=second } => (

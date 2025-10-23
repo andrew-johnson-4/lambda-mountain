@@ -1,8 +1,12 @@
 
 let .with-phi(tctx: TypeContext?, tt: Type): Type = (
-   if tt.is-t(c"Phi::Id",1) && not(tt.is-t(c"Phi::State",1)) {
+   if tt.is-t(c"Cons",2) {
+      let ct = tt.slot(c"Cons",2);
+      tt = t2(c"Cons", tctx.with-phi(ct.l1), tctx.with-phi(ct.l2));
+   } else if tt.is-t(c"Phi::Id",1) {
+      if tt.is-t(c"Phi::State",1) then tt = tt.without-slot(c"Phi::State",1);
       let phi-state = tctx.lookup-phi(tt.slot(c"Phi::Id",1).l1.simple-tag).phi-tt;
-      tt = tt && t1(c"Phi::State", phi-state);
+      if non-zero(phi-state) then tt = tt && t1(c"Phi::State", phi-state);
    };
    tt
 );

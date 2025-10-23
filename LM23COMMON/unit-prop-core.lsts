@@ -12,4 +12,5 @@ import LM23COMMON/prop-stack-to-specialize.lsts;
 import LM23COMMON/prop-tctx-apply-callable.lsts;
 import LM23COMMON/prop-tctx-phi-merge.lsts;
 import LM23COMMON/prop-tctx-least-upper-bound.lsts;
+import LM23COMMON/prop-tctx-definition.lsts;
 import LM23COMMON/prop-expand-implied-phi.lsts;

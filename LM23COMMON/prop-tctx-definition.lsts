@@ -1,0 +1,7 @@
+
+let .denormalized(tr: TypeContextRow): Type = (
+   match tr {
+      TypeContextRow{ nt=nt, dt=dt } => if non-zero(dt) then dt else denormalize(nt);
+      _ => ta;
+   }
+);
