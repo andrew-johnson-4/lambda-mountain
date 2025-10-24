@@ -44,14 +44,13 @@ let .pop(od: OwnedData<t>[]): t = (
 );
 
 let open(od: OwnedData<t>[]): t = (
-   let d = od[0];
-   if type(t) <: type(MustRetain) then mark-as-released(d.retain);
-   d
+   od[0];
 );
 
 let close(d: t): OwnedData<t>[] = (
    let od = mk-owned-data(type(t), 1);
    od.push(d);
+   mark-as-released(d);
    od
 );
 
