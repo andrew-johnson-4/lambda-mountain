@@ -16,10 +16,14 @@ assert( safe-alloc-block-count == 0 );
 #assert( safe-alloc-block-count == 0 );
 
 let x = ["1"];
-x.retain; x.release;
-#mark-as-released(x.retain); x.release;
-#mark-as-released(x.retain); x.release;
-#mark-as-released(x.retain); x.release;
+mark-as-released(x.retain); x.release;
+mark-as-released(x.retain); x.release;
+mark-as-released(x.retain); x.release;
+mark-as-released(x.retain); x.release;
+mark-as-released(x.retain); x.release;
+mark-as-released(x.retain); x.release;
+mark-as-released(x.retain); x.release;
+mark-as-released(x.retain); x.release;
 
 #assert( ["1"] == ["1"] );
 #assert( ["1"] <= ["1"] );

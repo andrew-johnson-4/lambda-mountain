@@ -22,7 +22,6 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
             term = new-term;
             rhs = new-rhs;
          };
-         print("Glb \{rhs} : \{typeof-term(rhs)}\n");
          let kto = typeof-term(rhs);
          let ktd = kto && t0(c"GlobalVariable");
          tctx = tctx.bind-global(k.key, kto, ktd, term);
@@ -32,7 +31,6 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
       );
       _ => (
          (tctx, term) = std-infer-expr(tctx, term, false, Unused, ta);
-         print("Glb \{term}\n");
       );
    };
    (tctx, term)

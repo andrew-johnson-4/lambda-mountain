@@ -11,7 +11,7 @@ let .phi-fresh(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Type) =
    (tctx, tt)
 );
 
-let .fresh(tctx: TypeContext?, tr: TypeContextRow): (TypeContext?, TypeContextRow) = (
+let .phi-fresh(tctx: TypeContext?, tr: TypeContextRow): (TypeContext?, TypeContextRow) = (
    match tr {
       TypeContextRow{ key=key, nt=nt, dt=dt, blame=blame } => (
          (tctx, nt) = tctx.phi-fresh(nt, blame);
