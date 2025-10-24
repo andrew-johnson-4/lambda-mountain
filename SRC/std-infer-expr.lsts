@@ -2,7 +2,7 @@
 let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, blame: AST, hint: Type): (TypeContext?, Type) = (
    let rhs-tt = tctx.with-phi(typeof-term(rhs));
    let tt = rhs-tt && t0(c"LocalVariable");
-   (tctx, tt) = phi-fresh(tctx, tt, blame);
+   (tctx, tt) = tctx.phi-fresh(tt, blame);
    if not(hint.is-t(c"MustNotMove",0)) {
       tctx = tctx.phi-move(rhs-tt, blame);
    };
