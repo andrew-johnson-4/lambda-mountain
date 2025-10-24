@@ -44,7 +44,7 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
          let ktd = kto && t0(c"GlobalVariable");
          tctx = tctx.bind-global(k.key, kto, ktd, term);
          mark-global-as-seen(k.key, ktd, ta);
-         tctx.ascript(term, ktd);
+         tctx = tctx.ascript(term, ktd);
          (tctx, _) = tctx.maybe-apply-callable(c"mov", t2(c"Cons",ktd,ktd), term);
       );
       _ => (

@@ -18,14 +18,14 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Tail(), ta);
          if not(is(rhs,new-rhs)) then { rhs = new-rhs; term = mk-app(mk-abs(def,mk-nil(),misc-tt),rhs); };
          (tctx, let tt) = std-bind-term(tctx, lname, rhs, def, term, hint);
-         tctx.ascript(def, tt);
-         tctx.ascript(term, t0(c"Nil"));
+         tctx = tctx.ascript(def, tt);
+         tctx = tctx.ascript(term, t0(c"Nil"));
       );
       App{o-t=left:Var{key:c"typeof"}, r=right} => (
          (tctx, let new-r) = std-infer-expr(tctx, r, is-scoped, Used, ta);
          if not(is(r,new-r)) then { r = new-r; term = mk-app(o-t, r); };
-         tctx.ascript(o-t, t2(c"Arrow",typeof-term(r),t1(c"Type",typeof-term(r))));
-         tctx.ascript(term, t1(c"Type",typeof-term(r)));
+         tctx = tctx.ascript(o-t, t2(c"Arrow",typeof-term(r),t1(c"Type",typeof-term(r))));
+         tctx = tctx.ascript(term, t1(c"Type",typeof-term(r)));
       );
       App{o-t=left:Var{key:c"open"}, r=right} => (
          (tctx, let new-r) = std-infer-expr(tctx, r, false, Used(), ta);
@@ -38,19 +38,19 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                (tctx, deref-type) = tctx.apply-callable(c"open", deref-type, term);
             );
          };
-         tctx.ascript(term, deref-type);
+         tctx = tctx.ascript(term, deref-type);
       );
       App{szof=left:Var{key:c"sizeof"}, right:AType{}} => (
          let tt = t0(c"U64");
-         tctx.ascript(term, tt);
-         tctx.ascript(szof, tt);
+         tctx = tctx.ascript(term, tt);
+         tctx = tctx.ascript(szof, tt);
       );
       App{szof=left:Var{key:c"scope"}, r=right} => (
          (let inner-tctx, let new-r) = std-infer-expr(tctx, r, true, Tail(), ta);
          tctx = tctx.with-pctx(inner-tctx.get-or(mk-tctx()).pctx);
          (tctx, new-r) = release-locals(tctx, inner-tctx, new-r, hint);
          if not(is(r,new-r)) then { r = new-r; term = mk-app(szof, r); };
-         tctx.ascript(term, typeof-term(r));
+         tctx = tctx.ascript(term, typeof-term(r));
       );
       App{szof=left:Var{key:c"unsafe"}, r=right} => (
          let direct-tctx = tctx.get-or(mk-tctx());
@@ -70,7 +70,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             add-concrete-type-instance(tt, term);
             (tctx, let new-t) = std-infer-expr(tctx, t, false, Tail(), tt);
             if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
-            tctx.ascript(term, typeof-term(t));
+            tctx = tctx.ascript(term, typeof-term(t));
          };
       );
       App{asc=left:Var{key:c"as"}, right:App{t=left,right:AType{tt=tt}}} => (
@@ -81,7 +81,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          let inner-tt = typeof-term(t).normalize;
          if tt.simple-tag.has-prefix(c"Tag::") then tt = tt && inner-tt
          else tt = tt && inner-tt.with-only-class;
-         tctx.ascript(term, tt);
+         tctx = tctx.ascript(term, tt);
       );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
          let short-circuit = ASTEOF;
@@ -128,19 +128,19 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             else if typeof-term(t).is-t(c"Never",0) then typeof-term(f)
             else if typeof-term(f).is-t(c"Nil",0) || typeof-term(t).is-t(c"Nil",0) then t0(c"Nil")
             else { (tctx, let lub) = tctx.least-upper-bound(typeof-term(t), typeof-term(f), term); lub };
-            tctx.ascript(term, lub);
+            tctx = tctx.ascript(term, lub);
             if is-scoped {
                (tctx, term) = release-locals(tctx, tctx-t, term, hint); # tctx-t includes both tctx-cond and tctx-t
                (tctx, term) = release-locals(tctx, tctx-f, term, hint);
             };
          }
       );
-      ASTEOF{} => tctx.ascript(term, t0(c"Nil"));
-      ASTNil{} => tctx.ascript(term, t0(c"Nil"));
-      Meta{} => tctx.ascript(term, t0(c"Nil"));
+      ASTEOF{} => tctx = tctx.ascript(term, t0(c"Nil"));
+      ASTNil{} => tctx = tctx.ascript(term, t0(c"Nil"));
+      Meta{} => tctx = tctx.ascript(term, t0(c"Nil"));
       Typedef{} => ();
-      AType{tt:TGround{tag:c"Type",parameters:[p1..]}} => tctx.ascript(term, t1(c"Type",p1.sanitize-phi));
-      AType{tt=tt} => tctx.ascript(term, tt.sanitize-phi);
+      AType{tt:TGround{tag:c"Type",parameters:[p1..]}} => tctx = tctx.ascript(term, t1(c"Type",p1.sanitize-phi));
+      AType{tt=tt} => tctx = tctx.ascript(term, tt.sanitize-phi);
       Seq{seq=seq} => (
          let def-i = 0_u64;
          while def-i < seq.length { match seq[def-i] {
@@ -181,7 +181,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       Var{key=key, token=token} => (
          let vt = ta;
-         if key==c"__uninitialized" then tctx.ascript(term, hint)
+         if key==c"__uninitialized" then tctx = tctx.ascript(term, hint)
          else (
             vt = typeof-var(term, tctx, key);
             vt = tctx.with-phi(vt);
@@ -192,26 +192,26 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          && not(hint.is-t(c"MustNotRetain",0))
          && not(tctx.get-or(mk-tctx()).is-blob) {
             if vt.is-t(c"LocalVariable",0) || vt.is-t(c"GlobalVariable",0) then vt = vt && t0(c"MustNotMove");
-            tctx.ascript(term, vt);
+            tctx = tctx.ascript(term, vt);
             (tctx, term) = maybe-retain(tctx, term);
          } else {
-            tctx.ascript(term, vt);
+            tctx = tctx.ascript(term, vt);
          };
       );
       Lit{key=key, token=token} => (
          if hint.is-t(c"Literal",0) {
-            tctx.ascript(term,hint);
+            tctx = tctx.ascript(term,hint);
          } else if not(non-zero(typeof-term(term))) {
             if hint.is-t(c"List",1) && hint.is-type && key==c"LEOF"
             then {
                (tctx, let lit-tt) = tctx.apply-callable(key, t0(c"Nil"), term, hint);
-               tctx.ascript(term, lit-tt);
+               tctx = tctx.ascript(term, lit-tt);
             } else if hint.is-t(c"HashtableEq",2) && hint.is-type && key==c"HashtableEqEOF"
             then {
                (tctx, let lit-tt) = tctx.apply-callable(key, t0(c"Nil"), term, hint);
-               tctx.ascript(term, lit-tt);
+               tctx = tctx.ascript(term, lit-tt);
             } else {
-               tctx.ascript(term, t2(c"Arrow",t0(c"Any"),t0(c"Any")));
+               tctx = tctx.ascript(term, t2(c"Arrow",t0(c"Any"),t0(c"Any")));
             }
          }
       );
@@ -232,10 +232,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             rhs = mk-app(asc.unique,mk-app(inner-rhs,mk-atype(return-type)));
             term = mk-abs(lhs,rhs,misc-tt);
          };
-         if not(misc-tt.is-t(c"Blob",0)) && not(misc-tt.is-t(c"C-FFI",0)) then tctx.ascript(inner-rhs, return-type);
-         tctx.ascript(rhs, return-type);
+         if not(misc-tt.is-t(c"Blob",0)) && not(misc-tt.is-t(c"C-FFI",0)) then tctx = tctx.ascript(inner-rhs, return-type);
+         tctx = tctx.ascript(rhs, return-type);
          let domain-tt = typeof-lhs(lhs);
-         tctx.ascript(term, t2(c"Arrow", typeof-lhs(lhs), return-type) && misc-tt);
+         tctx = tctx.ascript(term, t2(c"Arrow", typeof-lhs(lhs), return-type) && misc-tt);
       );
       App{ is-cons=is-cons, l=left, r=right } => (
          let is-macro = false;
@@ -247,7 +247,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             if typeof-term(new-l).is-arrow then r-used = Call(var-name-if-var-or-lit(new-l)); # if l was a macro then it could be macro::concat
             (tctx, let new-r) = std-infer-expr(tctx, r, false, if used.is-tail then used else Used, rhint);
             if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-cons(new-l, new-r) };
-            tctx.ascript(term, if used.is-tail then typeof-term(r) else t2(c"Cons", typeof-term(l), typeof-term(r)));
+            tctx = tctx.ascript(term, if used.is-tail then typeof-term(r) else t2(c"Cons", typeof-term(l), typeof-term(r)));
          } else {
             let rt = ta;
             if index-macro-table.has(var-name-if-var(l)) {
@@ -264,7 +264,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   let ftype = typeof-term(tctx.find-callable( var-name-if-var-or-lit(l), typeof-term(new-r), term ).blame);
                   if ftype.domain.is-any-arg-t(c"MustNotRetain",0) {
                      (tctx, new-r) = std-infer-call-arg(pre-retain-tctx, r, var-name-if-var-or-lit(l), ftype.domain && rr-args-hint);
-                     print("Double Infer " + tctx.lookup-phi(c"uuid__fc5b000000000000").phi-tt.into(type(String)) + "\n");
                   };
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
                } else {
@@ -293,7 +292,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   };
                };
                rt = tctx.with-phi(rt);
-               tctx.ascript(term, rt);
+               tctx = tctx.ascript(term, rt);
                if not(rt.is-t(c"Cons",2)) {
                   if function-type.is-t(c"MustRetainOnCall",0) && not(hint.is-t(c"MustNotRetain",0)) && not(tctx.get-or(mk-tctx()).is-blob) {
                     (tctx, term) = maybe-retain(tctx, term);
@@ -317,10 +316,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 let wrap-call(tctx: TypeContext?, fname: CString, term: AST): (TypeContext?, AST) = (
    let args-type = typeof-term(term);
    let function-type = typeof-term(tctx.find-callable(fname, args-type, term).blame);
-   let function-term = mk-var(fname); tctx.ascript(function-term, function-type);
+   let function-term = mk-var(fname); tctx = tctx.ascript(function-term, function-type);
    let result = mk-app(function-term, term);
    (tctx, let result-type) = tctx.apply-callable(fname, args-type, term);
-   tctx.ascript(result, result-type);
+   tctx = tctx.ascript(result, result-type);
    (tctx, result)
 );
 
@@ -330,7 +329,7 @@ let std-infer-call-arg(tctx: TypeContext?, term: AST, function-name: CString, hi
          (tctx, let new-k) = std-infer-expr(tctx, k, false, Call(function-name), ta);
          (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), t1(c"List",typeof-term(new-k).normalize));
          if not(is(k,new-k)) || not(is(m,new-m)) then { k = new-k; m = new-m; term = mk-cons(k, m); };
-         tctx.ascript(term, t2(c"Cons",typeof-term(k),typeof-term(m)));
+         tctx = tctx.ascript(term, t2(c"Cons",typeof-term(k),typeof-term(m)));
          (tctx, term)
       );
       _ => (tctx, term);
@@ -339,7 +338,7 @@ let std-infer-call-arg(tctx: TypeContext?, term: AST, function-name: CString, hi
          (tctx, let new-k) = std-infer-expr(tctx, k, false, Call(function-name), ta);
          (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), t2(c"HashtableEq",typeof-term(new-k).normalize.slot(c"Cons",2).l1,typeof-term(new-k).normalize.slot(c"Cons",2).l2));
          if not(is(k,new-k)) || not(is(m,new-m)) then { k = new-k; m = new-m; term = mk-cons(k, m); };
-         tctx.ascript(term, t2(c"Cons",typeof-term(k),typeof-term(m)));
+         tctx = tctx.ascript(term, t2(c"Cons",typeof-term(k),typeof-term(m)));
          (tctx, term)
       );
       _ => (tctx, term);
