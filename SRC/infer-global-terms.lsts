@@ -17,35 +17,17 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
       Glb{k=key, rhs=val} => (
          (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Used, ta);
          if not(is(rhs,new-rhs)) then {
-            tctx = tctx.phi-move(typeof-term(rhs), term);
             let new-term = mk-glb(k, new-rhs);
             mark-var-to-def(new-term, term);
             term = new-term;
             rhs = new-rhs;
          };
          let kto = typeof-term(rhs);
-         match rhs {
-            App{left:Lit{key:c":"}, right:App{right:AType{hint=tt}}} => (
-               if not(hint.is-t(c"MustNotMove",0)) {
-                  (tctx, let new-kto) = phi-fresh(tctx, kto, term);
-                  tctx = tctx.phi-move(kto, term);
-                  kto = new-kto;
-               } else {
-                  (tctx, let new-kto) = phi-fresh(tctx, kto, term);
-                  kto = new-kto;
-               }
-            );
-            _ => (
-               (tctx, let new-kto) = phi-fresh(tctx, kto, term);
-               tctx = tctx.phi-move(kto, term);
-               kto = new-kto;
-            );
-         };
          let ktd = kto && t0(c"GlobalVariable");
          tctx = tctx.bind-global(k.key, kto, ktd, term);
          mark-global-as-seen(k.key, ktd, ta);
-         tctx.ascript(term, ktd);
-         (tctx, _) = tctx.maybe-apply-callable(c"mov", t2(c"Cons",ktd,ktd), term);
+         tctx = tctx.ascript(term, ktd);
+         (tctx, _) = tctx.maybe-apply-callable(c"mov", t2(c"Cons",ktd.without-phi,ktd.without-phi), term);
       );
       _ => (
          (tctx, term) = std-infer-expr(tctx, term, false, Unused, ta);

@@ -1,7 +1,13 @@
 
 let typeof-var-raw(sloc: AST, tctx: TypeContext?, vname: CString): Type = (
-   let row = tctx.lookups(vname);
-   if non-zero(row) then head(row).denormalized else ta
+   let rows = tctx.lookups(vname);
+   if non-zero(rows) then {
+      let tr = head(rows);
+      if tr.denormalized.is-t(c"MustRetain",0) {
+         (tctx, tr) = tctx.phi-fresh(tr);
+      };
+      tr.denormalized
+   } else ta
 );
 
 let defof-var(sloc: AST, tctx: TypeContext?, vname: CString): AST = (
