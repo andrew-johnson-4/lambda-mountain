@@ -1,0 +1,13 @@
+
+let .phi-move-all(tctx: TypeContext?): TypeContext? = (
+   let seen = {} : HashtableEq<CString,U64>;
+   for pr in tctx.get-or(mk-tctx()).pctx {
+      if not(seen.has(pr.phi-id)) {
+         if pr.phi-tt.is-linear-live {
+            tctx = tctx.bind-phi(pr.phi-id, pr.phi-tt.move-linear, pr.blame);
+         };
+         seen = seen.bind(pr.phi-id, true);
+      }
+   };
+   tctx
+);
