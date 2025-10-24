@@ -2,7 +2,6 @@
 let .ascript(tctx: TypeContext?, t: AST, tt: Type): Nil = (
    tt = tctx.with-phi(tt);
    if non-zero(tt) {
-      tt = tctx.with-phi(tt);
       let prev-tt = typeof-term(t);
       if non-zero(prev-tt) {
          let norm-tt = tt.normalize.without-phi;
@@ -10,6 +9,10 @@ let .ascript(tctx: TypeContext?, t: AST, tt: Type): Nil = (
             if not(prev-tt <: norm-tt) {
                exit-error("Type Ascription Inequality\n\{typeof-term-normal(t)} does not imply \{norm-tt}", t);
             }
+         };
+         print("Ascript \{tt} <> \{prev-tt}\n");
+         if tt.slot(c"Phi::Id",1).l1.simple-tag != prev-tt.slot(c"Phi::Id",1).l1.simple-tag {
+            tctx = tctx.phi-move(tt, t);
          }
       } else ascript-force(t, tt);
    }
