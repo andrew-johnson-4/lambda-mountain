@@ -1,5 +1,11 @@
 
 type phi MustRelease = ToRelease{ promise:'a } | Released;
 
-let :Blob mark-as-released(x: x+(MustRelease::ToRelease<'a> ~> MustRelease::Released)+MustNotRetain): Nil = ();
-let :Blob mark-as-released(x: x+(MustRelease::Released ~> MustRelease::Released)+MustNotRetain): Nil = ();
+let :Blob mark-as-released(x: x+(MustRelease::ToRelease<'a> ~> MustRelease::Released)+MustNotRetain): Nil = (
+   $":frame"($":frame"(x));
+   $":expression"($":expression"(x));
+);
+let :Blob mark-as-released(x: x+(MustRelease::Released ~> MustRelease::Released)+MustNotRetain): Nil = (
+   $":frame"($":frame"(x));
+   $":expression"($":expression"(x));
+);
