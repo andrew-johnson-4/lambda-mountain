@@ -272,12 +272,12 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                };
                (tctx, let function-type, rt) = if typeof-term(l).is-arrow && non-zero(lit-name-if-lit(l)) {
                   let direct-hint = hint-if-hint(l);
-                  let function-type = tctx.find-callable(var-name-if-var-or-lit(l), typeof-term(r), term).nt;
-                  (tctx, rt) = tctx.apply-callable(lit-name-if-lit(l), typeof-term(r), term, direct-hint);
+                  let function-type = tctx.find-callable(var-name-if-var-or-lit(l), typeof-term(r), term, hint).nt;
+                  (tctx, rt) = tctx.apply-callable(lit-name-if-lit(l), typeof-term(r), term, direct-hint && hint);
                   (tctx, function-type, rt)
                } else if typeof-term(l).is-arrow && non-zero(var-name-if-var-or-lit(l)) {
-                  let function-type = tctx.find-callable(var-name-if-var-or-lit(l), typeof-term(r), term).nt;
-                  (tctx, rt) = tctx.apply-callable(var-name-if-var-or-lit(l), typeof-term(r), term);
+                  let function-type = tctx.find-callable(var-name-if-var-or-lit(l), typeof-term(r), term, hint).nt;
+                  (tctx, rt) = tctx.apply-callable(var-name-if-var-or-lit(l), typeof-term(r), term, hint);
                   (tctx, function-type, rt)
                } else {
                   (tctx, ta, t2(c"Cons", typeof-term(l), typeof-term(r)))
@@ -310,6 +310,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
    if used.is-unused && typeof-term(term).slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1) {
       (tctx, term) = wrap-call(tctx, c".release", term);
    };
+   print("\{term} : \{typeof-term(term)}\n");
    (tctx, term);
 );
 

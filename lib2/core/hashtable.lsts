@@ -1,12 +1,34 @@
 
 type Hashtable<k,v> implies MustRetain, MustRelease
-   = { data: OwnedData<(Bool,k,v)>[], occupied: USize, capacity: USize };
+   = { data: OwnedData<(Bool,k,v)>[] };
+
+let .release(x: Hashtable<k,v>): Nil = (
+   if (x.data as USize) != 0 {
+      x.data.release;
+   };
+   mark-as-released(x);
+);
+
+let .retain(x: Hashtable<k,v>): Hashtable<k,v> = (
+   if (x.data as USize) != 0 {
+      x.data.retain;
+   };
+   x
+);
 
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>, capacity: USize): Hashtable<k,v> = (
-   let ptr = mk-owned-data(type((Bool,k,v)), capacity);
-   Vector( ptr, 0_sz, 0_sz )
+   Hashtable( mk-owned-data(type((Bool,k,v)), capacity) )
 );
 
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>): Hashtable<k,v> = (
-   mk-hashtable(type(k), type(v), 0)
+   Hashtable( mk-owned-data(type((Bool,k,v)), 0) )
 );
+
+let mk-hashtable(capacity: USize): Hashtable<k,v> = (
+   Hashtable( mk-owned-data(type((Bool,k,v)), capacity) )
+);
+
+let mk-hashtable(): Hashtable<k,v> = (
+   Hashtable( mk-owned-data(type((Bool,k,v)), 0) )
+);
+

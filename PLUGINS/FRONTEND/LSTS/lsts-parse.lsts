@@ -652,7 +652,9 @@ let lsts-parse-mul(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-parse-map(tokens: List<Token>): Tuple<AST,List<Token>> = (
    lsts-parse-expect(c"{", tokens); let loc = head(tokens).location; tokens = tail(tokens);
-   let term = Lit( c"HashtableEqEOF", with-location(mk-token("HashtableEqEOF"),loc) );
+   let term = if config-v3
+   then mk-app( Var( c"mk-hashtable", with-location(mk-token("mk-hashtable"),loc) ), mk-nil() )
+   else Lit( c"HashtableEqEOF", with-location(mk-token("HashtableEqEOF"),loc) );
    if lsts-parse-head(tokens)==c"for" {
       fail("TODO map comprehension at \{loc}\n")
    } else {

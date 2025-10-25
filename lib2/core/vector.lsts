@@ -26,6 +26,15 @@ let mk-vector(ty: Type<t>): Vector<t> = (
    mk-vector(type(t), 0)
 );
 
+let mk-vector(capacity: USize): Vector<t> = (
+   let ptr = mk-owned-data(type(t), capacity);
+   Vector( ptr, 0_sz, 0_sz )
+);
+
+let mk-vector(): Vector<t> = (
+   mk-vector(type(t), 0)
+);
+
 let .length(v: Vector<t>): USize = (
    v.end-offset - v.start-offset
 );
