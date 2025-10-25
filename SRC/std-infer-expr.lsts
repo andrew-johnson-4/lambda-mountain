@@ -61,6 +61,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = Some(direct-tctx);
       );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
+         if tt.is-t(c"Hashtable",2) { match t {
+            App{ left:Var{key:c"map::cons"} } => tt = tt && t0(c"ReturnHint");
+            App{ left:Var{key:c"mk-hashtable"} } => tt = tt && t0(c"ReturnHint");
+            _ => ();
+         }};
          if tt.is-t(c"String",0) {
             term = t.ascript(t0(c"CString") && t0(c"Literal"));
             term = mk-app(mk-var(c"intern"),term);
