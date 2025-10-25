@@ -1,2 +1,4 @@
 
 import lib2/core/bedrock.lsts;
+
+{} : Hashtable<U64,U64>;

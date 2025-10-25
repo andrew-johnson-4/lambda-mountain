@@ -61,6 +61,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = Some(direct-tctx);
       );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
+         if tt.is-t(c"Hashtable",2) { match t {
+            App{ left:Var{key:c"map::cons"} } => tt = tt && t0(c"ReturnHint");
+            App{ left:Var{key:c"mk-hashtable"} } => tt = tt && t0(c"ReturnHint");
+            _ => ();
+         }};
          if tt.is-t(c"String",0) {
             term = t.ascript(t0(c"CString") && t0(c"Literal"));
             term = mk-app(mk-var(c"intern"),term);
@@ -272,12 +277,15 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                };
                (tctx, let function-type, rt) = if typeof-term(l).is-arrow && non-zero(lit-name-if-lit(l)) {
                   let direct-hint = hint-if-hint(l);
-                  let function-type = tctx.find-callable(var-name-if-var-or-lit(l), typeof-term(r), term).nt;
-                  (tctx, rt) = tctx.apply-callable(lit-name-if-lit(l), typeof-term(r), term, direct-hint);
+                  if hint.is-t(c"ReturnHint",0) then direct-hint = direct-hint && hint;
+                  let function-type = tctx.find-callable(var-name-if-var-or-lit(l), typeof-term(r), term, direct-hint.as-return-hint).nt;
+                  (tctx, rt) = tctx.apply-callable(lit-name-if-lit(l), typeof-term(r), term, direct-hint.as-return-hint);
                   (tctx, function-type, rt)
                } else if typeof-term(l).is-arrow && non-zero(var-name-if-var-or-lit(l)) {
-                  let function-type = tctx.find-callable(var-name-if-var-or-lit(l), typeof-term(r), term).nt;
-                  (tctx, rt) = tctx.apply-callable(var-name-if-var-or-lit(l), typeof-term(r), term);
+                  let direct-hint = ta;
+                  if hint.is-t(c"ReturnHint",0) then direct-hint = direct-hint && hint;
+                  let function-type = tctx.find-callable(var-name-if-var-or-lit(l), typeof-term(r), term, direct-hint.as-return-hint).nt;
+                  (tctx, rt) = tctx.apply-callable(var-name-if-var-or-lit(l), typeof-term(r), term, direct-hint.as-return-hint);
                   (tctx, function-type, rt)
                } else {
                   (tctx, ta, t2(c"Cons", typeof-term(l), typeof-term(r)))
@@ -336,7 +344,10 @@ let std-infer-call-arg(tctx: TypeContext?, term: AST, function-name: CString, hi
    }} else if function-name==c"map::cons" { match term {
       App{k=left, m=right} => (
          (tctx, let new-k) = std-infer-expr(tctx, k, false, Call(function-name), ta);
-         (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), t2(c"HashtableEq",typeof-term(new-k).normalize.slot(c"Cons",2).l1,typeof-term(new-k).normalize.slot(c"Cons",2).l2));
+         let direct-hint = if config-v3
+         then t2(c"Hashtable",typeof-term(new-k).normalize.slot(c"Cons",2).l1,typeof-term(new-k).normalize.slot(c"Cons",2).l2) && t0(c"ReturnHint")
+         else t2(c"HashtableEq",typeof-term(new-k).normalize.slot(c"Cons",2).l1,typeof-term(new-k).normalize.slot(c"Cons",2).l2);
+         (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), direct-hint);
          if not(is(k,new-k)) || not(is(m,new-m)) then { k = new-k; m = new-m; term = mk-cons(k, m); };
          tctx = tctx.ascript(term, t2(c"Cons",typeof-term(k),typeof-term(m)));
          (tctx, term)
