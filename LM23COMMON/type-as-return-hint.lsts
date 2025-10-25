@@ -1,0 +1,18 @@
+
+let .as-return-hint(tt: Type): Type = (
+   match tt {
+      TAnd { conjugate=conjugate } => (
+         let result = mk-vector(type(Type), 0_u64);
+         for c in conjugate {
+            c = c.as-return-hint;
+            if non-zero(c) then result = result.push(c);
+         };
+         if result.length==0 then ta
+         else if result.length==1 then result[0]
+         else tand(result)
+      );
+      TGround { tag:c"TailPosition", parameters:[] } => ta;
+      TVar {} => ta;
+      _ => tt;
+   }
+);
