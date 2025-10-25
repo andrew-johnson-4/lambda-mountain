@@ -35,12 +35,12 @@ let safe-alloc-impl(nb: USize): ?[] = (
 
    let ptr = malloc(nb) as ?[];
 
-   # Zero Out Memory
-   memset(ptr as C<"void">[], 0, nb);
-
    if ptr as USize == 0_sz {
       fail(c"malloc fail");
    };
+
+   # Zero Out Memory
+   memset(ptr as C<"void">[], 0, nb);
 
    mark-memory-as-safe(ptr as U8[], nb);
    safe-alloc-block-count = safe-alloc-block-count + 1; # TODO conditional compilation
@@ -52,12 +52,12 @@ let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
 
    let new_ptr = realloc(ptr as C<"void">[], nb) as ?[];
 
-   # Zero Out Memory
-   memset(new_ptr as C<"void">[], 0, nb);
-
    if new_ptr as USize == 0_sz {
       fail(c"realloc fail");
    };
+
+   # Zero Out Memory
+   memset(new_ptr as C<"void">[], 0, nb);
 
    mark-memory-as-safe(new_ptr as U8[], nb);
    new_ptr
