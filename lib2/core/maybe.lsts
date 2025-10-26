@@ -1,0 +1,35 @@
+
+type Maybe<x> implies MustRetain, MustRelease zero None = None | Some { content: x };
+
+let .release(t: Maybe<x>): Nil = (
+   if t.discriminator-case-tag==(t as Tag::Some).discriminator-case-tag {
+      if type(x) <: type(MustRelease) { (t as Tag::Some).content.release; };
+   };
+   mark-as-released(t);
+);
+
+let .retain(t: Maybe<x>): Maybe<x> = (
+   if t.discriminator-case-tag==(t as Tag::Some).discriminator-case-tag {
+      if type(x) <: type(MustRetain) { mark-as-released((t as Tag::Some).content.retain); };
+   };
+   t
+);
+
+let cmp(l: Maybe<x>, r: Maybe<x>): Ord = (
+   if l.discriminator-case-tag==(l as Tag::Some).discriminator-case-tag
+   and r.discriminator-case-tag==(r as Tag::Some).discriminator-case-tag
+   then cmp((l as Tag::Some).content, (r as Tag::Some).content)
+   else cmp(l.discriminator-case-tag,r.discriminator-case-tag);
+);
+
+let deep-hash(t: Maybe<x>): U64 = (
+   if t.discriminator-case-tag==(t as Tag::Some).discriminator-case-tag
+   then deep-hash((t as Tag::Some).content)
+   else 0
+);
+
+let .into(t: Maybe<x>, tt: Type<String>): String = (
+   if t.discriminator-case-tag==(t as Tag::Some).discriminator-case-tag
+   then "Some(" + (t as Tag::Some).into(type(String)) + ")"
+   else "None"
+);
