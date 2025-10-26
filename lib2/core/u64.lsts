@@ -58,3 +58,5 @@ let .into(i: U64, tt: Type<String>): String = (
    };
    String(0 as USize, cs_length, od)
 );
+
+let hash(x: U64): U64 = x as U64;

@@ -38,3 +38,5 @@ let cmp(l: USize, r: USize): Ord = (
 );
 
 let .into(i: USize, tt: Type<String>): String = (i as U64).into(type(String));
+
+let hash(x: USize): U64 = x as U64;
