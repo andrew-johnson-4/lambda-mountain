@@ -24,9 +24,6 @@ let cmp(l: List<x>, r: List<x>): Ord = (
    and r.discriminator-case-tag==(r as Tag::LCons).discriminator-case-tag {
       cmp( (l as Tag::LCons).head, (r as Tag::LCons).head ) &&
       cmp( open((l as Tag::LCons).tail), open((r as Tag::LCons).tail) )
-   } else if l.discriminator-case-tag==(l as Tag::LEOF).discriminator-case-tag
-         and r.discriminator-case-tag==(r as Tag::LEOF).discriminator-case-tag {
-      Equal
    } else cmp(l.discriminator-case-tag, r.discriminator-case-tag)
 );
 

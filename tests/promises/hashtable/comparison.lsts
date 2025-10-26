@@ -1,4 +1,14 @@
 
 import lib2/core/bedrock.lsts;
 
-{} : Hashtable<U64,U64>;
+#assert( ({} : Hashtable<U64,U64>)[0] == ({} : Hashtable<U64,U64>)[0] );
+#assert( {1:2}[1] == {1:2}[1] );
+#assert( {1:2}[1] != {2:3}[1] );
+#assert( {1:2}[1] == {1:2,2:3}[1] );
+assert( safe-alloc-block-count == 0 );
+
+#assert( ({} : Hashtable<U64,U64>) == ({} : Hashtable<U64,U64>) );
+#assert( {"1":"2"} == {"1":"2"} );
+#assert( {"1":"2"} != {"2":"3"} );
+#assert( {"1":"2"} != {"1":"2","2":"3"} );
+#assert( safe-alloc-block-count == 0 );
