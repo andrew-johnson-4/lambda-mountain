@@ -14,3 +14,5 @@ import LM23COMMON/prop-tctx-phi-merge.lsts;
 import LM23COMMON/prop-tctx-least-upper-bound.lsts;
 import LM23COMMON/prop-tctx-definition.lsts;
 import LM23COMMON/prop-expand-implied-phi.lsts;
+import LM23COMMON/prop-is-phi-type.lsts;
+import LM23COMMON/prop-phi-as-state.lsts;

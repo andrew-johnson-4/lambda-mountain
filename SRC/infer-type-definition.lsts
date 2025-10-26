@@ -34,7 +34,6 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
 );
 
 let type-base-type-index = {} : HashtableEq<(CString,U64),U64>;
-let phi-type-index = {} : HashtableEq<(CString,U64),U64>;
 let phi-parameters-index = {} : HashtableEq<(CString,U64),Type>;
 
 let phi-parameters(tag: CString, ps: U64): Type = phi-parameters-index.lookup((tag,ps),ta);
@@ -42,10 +41,6 @@ let phi-parameters(tag: CString, ps: U64): Type = phi-parameters-index.lookup((t
 let .is-type(tt: Type): U64 = (
    let gta = tt.normalize.ground-tag-and-arity;
    type-base-type-index.has(gta)
-);
-
-let .is-phi-type(tt: Type): U64 = (
-   phi-type-index.has(tt.ground-tag-and-arity)
 );
 
 let infer-type-definition(term: AST): Nil = (
