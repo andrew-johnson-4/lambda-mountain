@@ -32,3 +32,14 @@ let mk-hashtable(): Hashtable<k,v> = (
    Hashtable( mk-owned-data(type((Bool,k,v)), 0) )
 );
 
+let .bind(h: Hashtable<k,v>, key: k): Hashtable<k,v> = (
+   h
+);
+
+let $"map::cons"(key: k, val: v, h: Hashtable<k,v>): Hashtable<k,v> = (
+   h
+);
+
+let $"[]"(h: Hashtable<k,v>, key: k): Maybe<k> = (
+   None : Maybe<k>
+);
