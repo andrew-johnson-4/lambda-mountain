@@ -11,7 +11,7 @@ let .without-slot(tt: Type, t-tag: CString, t-arity: U64): Type = (
          else if result.length==1 then result[0]
          else tand(result)
       );
-      TGround { tag=tag, parameters=parameters } => if tag==t-tag && parameters.length==t-arity then ta else tt;
+      TGround { tag=tag, parameters=parameters } => if tag==t-tag and parameters.length==t-arity then ta else tt;
       _ => tt;
    }
 );

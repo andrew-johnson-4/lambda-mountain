@@ -12,8 +12,8 @@
 # None : Nil -> U64?  (most special)
 
 let most-special(t0: Type, t1: Type): Type = (
-   if t0.is-arrow && t1.is-arrow {
-      if t0.domain <: t1.domain && t1.domain <: t0.domain {
+   if t0.is-arrow and t1.is-arrow {
+      if t0.domain <: t1.domain and t1.domain <: t0.domain {
          if t0.range <: t1.range then t0
          else if t1.range <: t0.range then t1
          else ta

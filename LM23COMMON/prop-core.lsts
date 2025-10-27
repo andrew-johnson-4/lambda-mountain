@@ -26,7 +26,7 @@ let .enrich-strong(base: Type): Type = (
       TGround { tag:c"Array", parameters:[p2..p1..] } => (
          base = t2(c"Array", p1.enrich-strong, p2.enrich-strong);
       );
-      #TGround { tag=tag, parameters=parameters } => ( if not(tag.has-prefix(c"Field::") && parameters.length==1) then {
+      #TGround { tag=tag, parameters=parameters } => ( if not(tag.has-prefix(c"Field::") and parameters.length==1) then {
       #   let new-parameters = [] : List<Type>;
       #   for p in parameters.reverse {
       #      new-parameters = cons( p.enrich-strong, new-parameters );
@@ -60,7 +60,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
                   let tctx = unify(lt, base, ASTEOF);
                   tctx.substitute(rt);
                ) else rt;
-               if not(pre <: post) && not(base <: post) {
+               if not(pre <: post) and not(base <: post) {
                   pre = pre && post;
                };
             );
@@ -72,7 +72,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
                      let tctx = unify(lt, base, ASTEOF);
                      tctx.substitute(rt);
                   ) else rt;
-                  if not(pre <: post) && not(base <: post) {
+                  if not(pre <: post) and not(base <: post) {
                      pre = pre && post;
                   };
                );
@@ -137,7 +137,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
                base = remove-info(base, rt);
             );
          };
-         if tag==c"Array" && parameters.length==2 {
+         if tag==c"Array" and parameters.length==2 {
             for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
                if can-unify(lt, original-base) then (
                   base = remove-info(base, rt);

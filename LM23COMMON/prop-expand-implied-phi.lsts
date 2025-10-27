@@ -9,7 +9,7 @@ let .expand-implied-phi(tt: Type): Type = (
             let ga = c.ground-tag-and-arity;
             let ip = implied-phi-index.lookup(ga,ta);
             let ps = t1(c"Phi::State",ip);
-            if non-zero(ip) && not(can-unify(ps, tt)) {
+            if non-zero(ip) and not(can-unify(ps, tt)) {
                tt = tt && ps
             }
          }
@@ -21,7 +21,7 @@ let .expand-implied-phi(tt: Type): Type = (
          let ga = tt.ground-tag-and-arity;
          let ip = implied-phi-index.lookup(ga,ta);
          let ps = t1(c"Phi::State",ip);
-         if non-zero(ip) && not(can-unify(ps, tt)) {
+         if non-zero(ip) and not(can-unify(ps, tt)) {
             tt = tt && ps
          }
       );

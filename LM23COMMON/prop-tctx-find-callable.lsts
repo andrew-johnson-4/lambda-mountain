@@ -29,7 +29,7 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
       # can-receive is an additional refinement on top of argument satisfaction
       # it is necessary for nullary or partial constructors that need a full type
       # like, None : TypeContext?
-      if can-apply(tr.dt, arg-types) && (not(non-zero(return-type-hint)) || can-receive(tr.dt, return-type-hint)) {
+      if can-apply(tr.dt, arg-types) and (not(non-zero(return-type-hint)) || can-receive(tr.dt, return-type-hint)) {
          match-set = match-set.push(tr);
       }
    };
@@ -46,11 +46,11 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
    }};
 
    # Fail if function needs to be in an unsafe block
-   if failable && non-zero(result) && result.get-or-panic.dt.is-t(c"Unsafe",0) && not(tctx.get-or(mk-tctx()).is-unsafe)
+   if failable and non-zero(result) and result.get-or-panic.dt.is-t(c"Unsafe",0) and not(tctx.get-or(mk-tctx()).is-unsafe)
    then exit-error("Call to unsafe function outside of unsafe block", blame);
 
    # Fail if function call is ambiguous
-   if failable && not(non-zero(result)) && match-set.length > 0 {
+   if failable and not(non-zero(result)) and match-set.length > 0 {
       eprint("Unable to find unambiguous callable: \{fname} \{arg-types} return hint: \{return-type-hint}\nAt: \{blame.location}\n");
       for tr in match-set {
          eprint("\{tr.dt}\n");
@@ -59,7 +59,7 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
    };
 
    # Fail if function call is ambiguous
-   if failable && not(non-zero(result)) then {
+   if failable and not(non-zero(result)) then {
       print("Unable to find appropriate callable: \{fname} \{arg-types} return hint: \{return-type-hint}\nAt: \{blame.location}\n");
       for tr in tctx.lookups(fname) {
          print("Candidate: \{tr.dt}\n");

@@ -7,7 +7,7 @@ let .is-any-arg-t(tt: Type, t-expect: CString, p-expect: U64): U64 = (
          result
       );
       TGround { tag:c"Cons", parameters:[l1..l2..] } => l1.is-any-arg-t(t-expect,p-expect) || l2.is-any-arg-t(t-expect,p-expect);
-      TGround { tag:tag, parameters:parameters } => tag==t-expect && parameters.length==p-expect;
+      TGround { tag:tag, parameters:parameters } => tag==t-expect and parameters.length==p-expect;
       _ => false;
    }
 );

@@ -4,7 +4,7 @@ let $"<:"(pt: Type, fpt: Type): U64 = can-unify(fpt,pt);
 let can-unify(fpt: List<Type>, pt: List<Type>): U64 = (
    if fpt.length == pt.length {
       let ok = true;
-      while ok && non-zero(fpt) {
+      while ok and non-zero(fpt) {
          if not(can-unify(head(fpt), head(pt))) then (ok = false);
          fpt = tail(fpt); pt = tail(pt);
       };
@@ -48,7 +48,7 @@ let can-unify(fpt: Type, pt: Type): U64 = (
                   let rc = rconjugate[ri];
                   let rtag = rc.simple-tag;
                   if not(non-zero(rtag)) then () else (
-                     while ri<rconjugate.length && rtag < ltag {
+                     while ri<rconjugate.length and rtag < ltag {
                         ri = ri + 1;
                         if ri < rconjugate.length {
                            rc = rconjugate[ri];
@@ -56,7 +56,7 @@ let can-unify(fpt: Type, pt: Type): U64 = (
                         }
                      };
                      let scan-ri = ri;
-                     while scan-ri<rconjugate.length && rtag==ltag {
+                     while scan-ri<rconjugate.length and rtag==ltag {
                         this-result-ok = this-result-ok || can-unify(lc,rc);
                         scan-ri = scan-ri + 1;
                         if scan-ri < rconjugate.length {
@@ -132,7 +132,7 @@ let can-unify(fpt: Type, pt: Type): U64 = (
       Tuple{
           first:TGround{ltn=tag, lps=parameters},
           second:TGround{rtn=tag, rps=parameters}
-      } => (ltn==rtn || (ltn.has-suffix(c"::") && rtn.has-prefix(ltn))) && can-unify(lps,rps);
+      } => (ltn==rtn || (ltn.has-suffix(c"::") and rtn.has-prefix(ltn))) and can-unify(lps,rps);
       _ => false;
    };
 );
