@@ -47,10 +47,9 @@ let $"map::cons"(key: k, val: v, h: Hashtable<k,v>): Hashtable<k,v> = (
 let $"[]"(h: Hashtable<k,v>, key: k): Maybe<k> = (
    let row_index = h.find-row-index-by-key(key);
    print("Row Index \{row_index}\n");
-   None : Maybe<k>
-   #if row_index == (-1 as USize)
-   #then (None : Maybe<k>)
-   #else Some(h.data[row_index])
+   if row_index == (-1 as USize)
+   then (None : Maybe<v>)
+   else Some(h.data[row_index].third)
 );
 
 let .find-row-index-by-key(h: Hashtable<k,v>, key: k): USize = (
