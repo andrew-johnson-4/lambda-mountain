@@ -6,16 +6,20 @@ type OwnedData<t> = {
    data: t[]+FlexibleArrayMember
 };
 
-let mk-owned-data(tt: Type<t>, capacity: USize): OwnedData<t>[] = (
+let mk-owned-data(tt: Type<t>, capacity: USize, occupied: USize): OwnedData<t>[] = (
    let od = safe-alloc(
       # TODO: make sizeof return USize
       (sizeof(OwnedData<t>) as USize) + (sizeof(t) as USize) * capacity,
       type(OwnedData<t>)
    );
    od.reference-count = 1;
-   od.occupied = 0;
+   od.occupied = occupied;
    od.capacity = capacity;
    od
+);
+
+let mk-owned-data(tt: Type<t>, capacity: USize): OwnedData<t>[] = (
+   mk-owned-data(tt, capacity, 0)
 );
 
 # Overwrites the contents behind the previous owned data

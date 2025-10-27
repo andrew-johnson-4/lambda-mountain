@@ -20,21 +20,21 @@ let .retain(x: Hashtable<k,v>): Hashtable<k,v> = (
 );
 
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>, capacity: USize): Hashtable<k,v> = (
-   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), capacity) )
+   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), capacity, capacity) )
 );
 
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>): Hashtable<k,v> = (
    # Default initial hashtable size is 16
-   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), 16) )
+   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), 16, 16) )
 );
 
 let mk-hashtable(capacity: USize): Hashtable<k,v> = (
-   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), capacity) )
+   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), capacity, capacity) )
 );
 
 let mk-hashtable(): Hashtable<k,v> = (
    # Default initial hashtable size is 16
-   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), 16) )
+   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), 16, 16) )
 );
 
 let .bind(h: Hashtable<k,v>, key: k, val: v): Hashtable<k,v> = (
