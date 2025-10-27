@@ -7,6 +7,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    while non-zero(tctx-after-tctx) && not(is(tctx-before-tctx, tctx-after-tctx)) {
       let tr = head(tctx-after-tctx);
       let dt = tctx-after.with-phi(tr.denormalized);
+      print("Maybe Release \{tr.key} : \{dt}\n");
       if dt.slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).is-linear-live {
          if dt.is-t(c"MustNotRetain",0)
          then needs-mark-release = cons(tr, needs-mark-release)

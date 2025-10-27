@@ -299,9 +299,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      App{ right:Var{dst-var=key} } => (
                         let real-to-tt = tctx.lookup(dst-var).direct-type;
                         if real-to-tt.slot(c"Phi::Id",1).l1.simple-tag != to-tt.slot(c"Phi::Id",1).l1.simple-tag {
+                           print("Move DIFF \{to-tt} x \{real-to-tt}\n");
                            tctx = tctx.phi-override(real-to-tt, from-tt, term);
                            tctx = tctx.phi-move(to-tt, term);
                         } else {
+                           print("Move NODIFF \{to-tt}\n");
                            tctx = tctx.phi-override(to-tt, from-tt, term);
                         }
                      );
