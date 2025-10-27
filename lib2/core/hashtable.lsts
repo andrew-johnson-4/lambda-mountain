@@ -48,12 +48,12 @@ let .bind(h: Hashtable<k,v>, key: k, val: v): Hashtable<k,v> = (
    if occupied >= capacity * 2 / 3 {
       # Growth factor is 2x
       let new-h = mk-hashtable(capacity * 2) : Hashtable<k,v>;
-      let old-i = 0_sz;
-      while old-i < capacity {
-         let old-kv = contents[old-i];
-         if is(old-kv.first,HashtableRowFilled)
-         then new-h.bind-direct(old-kv.second, old-kv.third);
-         old-i = old-i + 1;
+      let old_i = 0_sz;
+      while old_i < capacity {
+         let old_kv = contents[old_i];
+         if is(old_kv.first,HashtableRowFilled)
+         then new-h.bind-direct(old_kv.second, old_kv.third);
+         old_i = old_i + 1;
       };
       h.data.replace(new-h.data);
    };

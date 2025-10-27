@@ -29,7 +29,7 @@ let .replace(od1: OwnedData<t>[], od2: OwnedData<t>[]): Nil = (
 let $"[]"(od: OwnedData<t>[], idx: USize): t = (
    if (od as USize)==0
    then fail(c"OwnedData [] Access Null Pointer");
-   if idx >= od.occupied then fail(c"OwnedData [] Index Access Out of Bounds");
+   if idx >= od.occupied then fail("OwnedData [\{idx}] Index Access Out of Bounds");
    od.data[idx]
 );
 
