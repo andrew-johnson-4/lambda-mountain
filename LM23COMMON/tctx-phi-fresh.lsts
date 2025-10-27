@@ -2,7 +2,7 @@
 let .phi-fresh(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Type) = (
    let old-phi-id = tt.slot(c"Phi::Id",1).l1.simple-tag;
    let old-phi-state = tt.slot(c"Phi::State",1).l1;
-   if non-zero(old-phi-id) && non-zero(old-phi-state)
+   if non-zero(old-phi-id) and non-zero(old-phi-state)
    then {
       let new-phi-id = uuid();
       tctx = tctx.bind-phi(new-phi-id, old-phi-state, blame);

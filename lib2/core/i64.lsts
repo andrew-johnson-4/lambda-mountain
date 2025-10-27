@@ -65,3 +65,5 @@ let .into(i: I64, tt: Type<String>): String = (
 );
 
 let abs(i: I64): I64 = if i<0 then 0_i64 - i else i;
+
+let hash(x: I64): U64 = x as U64;

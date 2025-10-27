@@ -7,7 +7,7 @@ let validate-interfaces(): Nil = (
           interface-shape-index.lookup(interface-type.ground-tag-and-arity, [] : List<(CString,Type,Type)>) {
          args-type = denormalize(tctx.substitute(args-type).reify-type-variables);
          return-type = tctx.substitute(return-type).reify-type-variables;
-         let function-type = typeof-var-raw( blame, (None : Maybe<TypeContext>)(), symbol-name );
+         let function-type = typeof-var-raw( blame, (None : Maybe<TypeContext>)(), symbol-name, false );
          (_, let apply-return-type) = (None : TypeContext?).apply-callable(symbol-name, args-type, blame);
          if not(can-unify(return-type, denormalize(apply-return-type))) {
             fail("Function Application Yielded Unexpected Return Value\n"

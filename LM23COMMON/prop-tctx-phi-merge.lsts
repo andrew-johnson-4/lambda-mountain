@@ -1,5 +1,5 @@
 
 let .phi-merge(tctx: TypeContext?, left-phi-state: Type, right-phi-state: Type, blame: AST): Type = (
-   if can-unify(left-phi-state,right-phi-state) && can-unify(right-phi-state,left-phi-state) then left-phi-state
+   if can-unify(left-phi-state,right-phi-state) and can-unify(right-phi-state,left-phi-state) then left-phi-state
    else tctx.apply-callable(c"phi", t2(c"Cons",left-phi-state,right-phi-state), blame).second;
 );
