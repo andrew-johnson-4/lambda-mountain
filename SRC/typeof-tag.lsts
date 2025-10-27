@@ -1,4 +1,4 @@
 
 let typeof-tag(tag: CString): Type = (
-   typeof-var-raw(mk-eof(), (None : Maybe<TypeContext>)(), tag)
+   typeof-var-raw(mk-eof(), (None : Maybe<TypeContext>)(), tag, true)
 );

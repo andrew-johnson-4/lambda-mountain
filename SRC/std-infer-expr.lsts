@@ -10,10 +10,9 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
-   print("Term: \{term}\n");
    match term {
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
-         if typeof-var-raw(term, tctx, lname).is-t(c"LocalVariable",0)
+         if typeof-var-raw(term, tctx, lname, true).is-t(c"LocalVariable",0)
          then exit-error("Variable Name Is Already Bound In Outer Scope \{lname}", term);
          (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Tail(), ta);
          if not(is(rhs,new-rhs)) then { rhs = new-rhs; term = mk-app(mk-abs(def,mk-nil(),misc-tt),rhs); };
@@ -188,7 +187,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          let vt = ta;
          if key==c"__uninitialized" then tctx = tctx.ascript(term, hint)
          else (
-            vt = typeof-var(term, tctx, key);
+            vt = typeof-var(term, tctx, key, hint.is-t(c"MustNotFresh",0));
             vt = tctx.with-phi(vt);
          );
          mark-var-to-def-todo(tctx, key, ta, term);
@@ -264,7 +263,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                if typeof-term(l).is-arrow {
                   let rr-args-hint = if var-name-if-var-or-lit(l)==c".retain" || var-name-if-var-or-lit(l)==c".release"
                   then t0(c"MustNotRetain") else ta;
-                  if  var-name-if-var-or-lit(l)==c"mov" then rr-args-hint = rr-args-hint && t0(c"MustNotFresh");
+                  if  var-name-if-var-or-lit(l)==c".release" then rr-args-hint = rr-args-hint && t0(c"MustNotFresh");
                   let pre-retain-tctx = tctx;
                   (tctx, let new-r) = std-infer-call-arg(tctx, r, var-name-if-var-or-lit(l), rr-args-hint);
                   let ftype = typeof-term(tctx.find-callable( var-name-if-var-or-lit(l), typeof-term(new-r), term ).blame);
