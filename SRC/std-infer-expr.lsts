@@ -10,6 +10,7 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
+   print("Term: \{term}\n");
    match term {
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
          if typeof-var-raw(term, tctx, lname).is-t(c"LocalVariable",0)
@@ -187,7 +188,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          let vt = ta;
          if key==c"__uninitialized" then tctx = tctx.ascript(term, hint)
          else (
-            vt = typeof-var(term, tctx, key, hint.is-t(c"MustNotFresh",0));
+            vt = typeof-var(term, tctx, key);
             vt = tctx.with-phi(vt);
          );
          mark-var-to-def-todo(tctx, key, ta, term);
@@ -294,7 +295,18 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                if var-name-if-var-or-lit(l)==c"mov" && typeof-term(r).is-t(c"Cons",2) {
                   let from-tt = typeof-term(r).slot(c"Cons",2).l1;
                   let to-tt = typeof-term(r).slot(c"Cons",2).l2;
-                  tctx = tctx.phi-override(to-tt, from-tt, term);
+                  match r {
+                     App{ right:Var{dst-var=key} } => (
+                        let real-to-tt = tctx.lookup(dst-var).direct-type;
+                        if real-to-tt.slot(c"Phi::Id",1).l1.simple-tag != to-tt.slot(c"Phi::Id",1).l1.simple-tag {
+                           tctx = tctx.phi-override(real-to-tt, from-tt, term);
+                           tctx = tctx.phi-move(to-tt, term);
+                        } else {
+                           tctx = tctx.phi-override(to-tt, from-tt, term);
+                        }
+                     );
+                     _ => tctx = tctx.phi-override(to-tt, from-tt, term);
+                  };
                   if not(hint.is-t(c"MustNotMove",0)) && not(to-tt.is-t(c"MustRetain",0)) {
                      tctx = tctx.phi-move(from-tt, term);
                   };
