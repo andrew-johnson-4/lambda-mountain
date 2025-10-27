@@ -3,7 +3,6 @@ let .phi-override(tctx: TypeContext?, dst: Type, src: Type, blame: AST): TypeCon
    let dst-id = dst.slot(c"Phi::Id",1).l1.simple-tag;
    let src-tt = src.slot(c"Phi::State",1).l1;
    if non-zero(dst-id) && non-zero(src-tt) {
-      print("Override \{dst} <= \{src}\n");
       tctx = tctx.bind-phi(dst-id, src-tt, blame);
    };
    tctx

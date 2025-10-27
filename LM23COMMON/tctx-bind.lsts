@@ -9,7 +9,6 @@ let .bind(tctx: TypeContext?, k: CString, kt: Type, blame: AST): TypeContext? = 
    ));
 );
 let .bind(tctx: TypeContext?, k: CString, nt: Type, dt: Type, blame: AST): TypeContext? = (
-   if dt.is-t(c"Phi::State",1) then print("Bind \{k} : \{nt}, \{dt}\n");
    Some(TypeContext(
       cons( TypeContextRow(k, nt, dt, blame), tctx.get-or(mk-tctx()).tctx ),
       tctx.get-or(mk-tctx()).pctx,
