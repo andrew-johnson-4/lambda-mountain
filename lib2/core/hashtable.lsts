@@ -20,37 +20,64 @@ let .retain(x: Hashtable<k,v>): Hashtable<k,v> = (
 );
 
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>, capacity: USize): Hashtable<k,v> = (
-   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), capacity) )
+   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), capacity, capacity) )
 );
 
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>): Hashtable<k,v> = (
-   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), 0) )
+   # Default initial hashtable size is 0 (Stack Only)
+   Hashtable( 0 as OwnedData<(HashtableRowExists,k,v)>[] )
 );
 
 let mk-hashtable(capacity: USize): Hashtable<k,v> = (
-   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), capacity) )
+   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), capacity, capacity) )
 );
 
 let mk-hashtable(): Hashtable<k,v> = (
-   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), 0) )
+   # Default initial hashtable size is 0 (Stack Only)
+   Hashtable( 0 as OwnedData<(HashtableRowExists,k,v)>[] )
 );
 
-let .bind(h: Hashtable<k,v>, key: k): Hashtable<k,v> = (
+let .bind(h: Hashtable<k,v>, key: k, val: v): Hashtable<k,v> = (
+   if (h.data as USize) == 0 or h.data.capacity == 0 {
+      # Hashtables can be allocated on the stack as empty values
+      # Resize these to size 32 next
+      h = mk-hashtable(32) : Hashtable<k,v>;
+   };
+   let occupied = h.data.occupied;
+   let capacity = h.data.capacity;
+   let contents = h.data;
+   # Resize if >= 2/3 full
+   if occupied >= capacity * 2 / 3 {
+      # Growth factor is 2x
+      let new-h = mk-hashtable(capacity * 2) : Hashtable<k,v>;
+      let old_i = 0_sz;
+      while old_i < capacity {
+         let old_kv = contents[old_i];
+         if is(old_kv.first,HashtableRowFilled)
+         then new-h.bind-direct(old_kv.second, old_kv.third);
+         old_i = old_i + 1;
+      };
+      h = new-h;
+   };
+   h.bind-direct(key, val);
    h
+);
+
+let .bind-direct(h: Hashtable<k,v>, key: k, val: v): Nil = (
+   print("Bind Direct \{key} : \{val}\n");
 );
 
 let $"map::cons"(key: k, val: v, h: Hashtable<k,v>): Hashtable<k,v> = (
-   h
+   h.bind(key,val)
 );
 
 
 let $"[]"(h: Hashtable<k,v>, key: k): Maybe<k> = (
    let row_index = h.find-row-index-by-key(key);
    print("Row Index \{row_index}\n");
-   None : Maybe<k>
-   #if row_index == (-1 as USize)
-   #then (None : Maybe<k>)
-   #else Some(h.data[row_index])
+   if row_index == (-1 as USize)
+   then (None : Maybe<v>)
+   else Some(h.data[row_index].third)
 );
 
 let .find-row-index-by-key(h: Hashtable<k,v>, key: k): USize = (

@@ -1,46 +1,50 @@
 
 type OwnedData<t> = {
    reference-count: USize,
-   current-length: USize,
+   occupied: USize,
    capacity: USize,
    data: t[]+FlexibleArrayMember
 };
 
-let mk-owned-data(tt: Type<t>, capacity: USize): OwnedData<t>[] = (
+let mk-owned-data(tt: Type<t>, capacity: USize, occupied: USize): OwnedData<t>[] = (
    let od = safe-alloc(
       # TODO: make sizeof return USize
       (sizeof(OwnedData<t>) as USize) + (sizeof(t) as USize) * capacity,
       type(OwnedData<t>)
    );
    od.reference-count = 1;
-   od.current-length = 0;
+   od.occupied = occupied;
    od.capacity = capacity;
    od
+);
+
+let mk-owned-data(tt: Type<t>, capacity: USize): OwnedData<t>[] = (
+   mk-owned-data(tt, capacity, 0)
 );
 
 let $"[]"(od: OwnedData<t>[], idx: USize): t = (
    if (od as USize)==0
    then fail(c"OwnedData [] Access Null Pointer");
-   if idx >= od.current-length then fail(c"OwnedData [] Index Access Out of Bounds");
+   if idx >= od.occupied then fail("OwnedData [\{idx}] Index Access Out of Bounds");
    od.data[idx]
 );
 
 let .push(od: OwnedData<t>[], d: s): Nil = (
    if (od as USize)==0
    then fail(c"OwnedData .push Into Null Pointer");
-   if od.current-length >= od.capacity
+   if od.occupied >= od.capacity
    then fail(c"OwnedData .push Exceeds Maximum Length");
-   od.data[od.current-length] = d;
-   od.current-length = od.current-length + 1;
+   od.data[od.occupied] = d;
+   od.occupied = od.occupied + 1;
 );
 
 let .pop(od: OwnedData<t>[]): t = (
    if (od as USize)==0
    then fail(c"OwnedData .pop From Null Pointer");
-   if od.current-length == 0
+   if od.occupied == 0
    then fail(c"OwnedData .pop From Empty Data");
-   od.current-length = od.current-length - 1;
-   od.data[od.current-length]
+   od.occupied = od.occupied - 1;
+   od.data[od.occupied]
 );
 
 let open(od: OwnedData<t>[]): t = (
@@ -59,7 +63,7 @@ let .release(od: OwnedData<t>[]): Nil = (
       if od.reference-count == 0 {
          if type(t) <: type(MustRelease) {
             let dlo = 0_sz;
-            let dhi = od.current-length;
+            let dhi = od.occupied;
             while dlo < dhi {
                od.data[dlo].release;
                dlo = dlo + 1;
