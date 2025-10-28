@@ -8,7 +8,6 @@ import SRC/unit-error.lsts;
 import SRC/inference-definitions.lsts;
 
 # unification
-import SRC/tctx-bind.lsts;
 import SRC/reduce-plural.lsts;
 
 # corollaries
