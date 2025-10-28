@@ -20,7 +20,7 @@ let .retain(x: Hashtable<k,v>): Hashtable<k,v> = (
 );
 
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>, capacity: USize): Hashtable<k,v> = (
-   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), capacity, capacity) )
+   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), capacity) )
 );
 
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>): Hashtable<k,v> = (
@@ -29,7 +29,7 @@ let mk-hashtable(tyk: Type<k>, tyv: Type<v>): Hashtable<k,v> = (
 );
 
 let mk-hashtable(capacity: USize): Hashtable<k,v> = (
-   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), capacity, capacity) )
+   Hashtable( mk-owned-data(type((HashtableRowExists,k,v)), capacity) )
 );
 
 let mk-hashtable(): Hashtable<k,v> = (
@@ -52,7 +52,7 @@ let .bind(h: Hashtable<k,v>, key: k, val: v): Hashtable<k,v> = (
       let new-h = mk-hashtable(capacity * 2) : Hashtable<k,v>;
       let old_i = 0_sz;
       while old_i < capacity {
-         let old_kv = contents[old_i];
+         let old_kv = contents.get-all-occupied(old_i);
          if is(old_kv.first,HashtableRowFilled)
          then new-h.bind-direct(old_kv.second, old_kv.third);
          old_i = old_i + 1;
@@ -69,14 +69,15 @@ let .bind-direct(h: Hashtable<k,v>, key: k, val: v): Nil = (
       let found = false;
       let contents = h.data;
       let ki = (key_hash as USize) % contents.capacity;
-      let kv = contents[ki];
+      let kv = contents.get-all-occupied(ki);
       if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
       while not(found) and is(kv.first,HashtableRowFilled) {
          ki = (ki + 1) % contents.capacity;
-         kv = contents[ki];
+         kv = contents.get-all-occupied(ki);
          if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
       };
-      contents[ki] = (HashtableRowFilled,key,val);
+      if not(is(kv.first,HashtableRowFilled)) then contents.occupied = contents.occupied + 1;
+      contents.set-all-occupied(ki, (HashtableRowFilled,key,val));
    };
 );
 
@@ -87,10 +88,9 @@ let $"map::cons"(key: k, val: v, h: Hashtable<k,v>): Hashtable<k,v> = (
 
 let $"[]"(h: Hashtable<k,v>, key: k): Maybe<k> = (
    let row_index = h.find-row-index-by-key(key);
-   print("Row Index \{row_index}\n");
    if row_index == (-1 as USize)
    then (None : Maybe<v>)
-   else Some(h.data[row_index].third)
+   else Some(h.data.get-all-occupied(row_index).third)
 );
 
 let .find-row-index-by-key(h: Hashtable<k,v>, key: k): USize = (
@@ -100,11 +100,11 @@ let .find-row-index-by-key(h: Hashtable<k,v>, key: k): USize = (
       let found = false;
       let contents = h.data;
       let ki = (key_hash as USize) % contents.capacity;
-      let kv = contents[ki];
+      let kv = contents.get-all-occupied(ki);
       if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
       while not(is(kv.first,HashtableRowEmpty)) and not(found) {
          ki = (ki + 1) % contents.capacity;
-         kv = contents[ki];
+         kv = contents.get-all-occupied(ki);
          if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
       };
       if found then row_index = ki;
