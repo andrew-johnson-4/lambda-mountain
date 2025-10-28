@@ -64,7 +64,20 @@ let .bind(h: Hashtable<k,v>, key: k, val: v): Hashtable<k,v> = (
 );
 
 let .bind-direct(h: Hashtable<k,v>, key: k, val: v): Nil = (
-   print("Bind Direct \{key} : \{val}\n");
+   if (h.data as USize) != 0 and h.data.capacity > 0 {
+      let key_hash = hash(key);
+      let found = false;
+      let contents = h.data;
+      let ki = (key_hash as USize) % contents.capacity;
+      let kv = contents[ki];
+      if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
+      while not(found) and is(kv.first,HashtableRowFilled) {
+         ki = (ki + 1) % contents.capacity;
+         kv = contents[ki];
+         if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
+      };
+      contents[ki] = (HashtableRowFilled,key,val);
+   };
 );
 
 let $"map::cons"(key: k, val: v, h: Hashtable<k,v>): Hashtable<k,v> = (
