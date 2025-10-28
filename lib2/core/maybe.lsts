@@ -30,6 +30,6 @@ let deep-hash(t: Maybe<x>): U64 = (
 
 let .into(t: Maybe<x>, tt: Type<String>): String = (
    if t.discriminator-case-tag==(t as Tag::Some).discriminator-case-tag
-   then "Some(" + (t as Tag::Some).into(type(String)) + ")"
+   then "Some(" + (t as Tag::Some).content.into(type(String)) + ")"
    else "None"
 );
