@@ -29,25 +29,10 @@ let $"[]"(od: OwnedData<t>[], idx: USize): t = (
    od.data[idx]
 );
 
-let .get-all-occupied(od: OwnedData<t>[], idx: USize): t = (
-   if (od as USize)==0
-   then fail(c"OwnedData [] Access Null Pointer");
-   if idx >= od.capacity then fail("OwnedData [\{idx}] Index Access Out of Bounds");
-   od.data[idx]
-);
-
 let $"set[]"(od: OwnedData<t>[], idx: USize, val: t): Nil = (
    if (od as USize)==0
    then fail(c"OwnedData set[] Access Null Pointer");
    if idx >= od.occupied then fail("OwnedData set[\{idx}] Index Access Out of Bounds");
-   if type(t) <: type(MustRelease) then od.data[idx].release;
-   od.data[idx] = val;
-);
-
-let .set-all-occupied(od: OwnedData<t>[], idx: USize, val: t): Nil = (
-   if (od as USize)==0
-   then fail(c"OwnedData set[] Access Null Pointer");
-   if idx >= od.capacity then fail("OwnedData set[\{idx}] Index Access Out of Bounds");
    if type(t) <: type(MustRelease) then od.data[idx].release;
    od.data[idx] = val;
 );
