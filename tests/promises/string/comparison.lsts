@@ -38,3 +38,8 @@ assert( "ab"[-1 : ] == "b" );
 assert( "ab"[ : -1] == "a" );
 assert( "ab"[ : ] == "ab" );
 assert( safe-alloc-block-count == 0 );
+
+assert( "abc"[0] == 97 );
+assert( "abc"[1] == 98 );
+assert( "abc"[2] == 99 );
+assert( safe-alloc-block-count == 0 );
