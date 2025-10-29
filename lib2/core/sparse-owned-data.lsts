@@ -1,0 +1,61 @@
+
+type SparseOwnedData<t> = {
+   reference-count: USize,
+   occupied: USize,
+   capacity: USize,
+   data: t[]+FlexibleArrayMember
+};
+
+let mk-sparse-owned-data(tt: Type<t>, capacity: USize, occupied: USize): SparseOwnedData<t>[] = (
+   let od = safe-alloc(
+      # TODO: make sizeof return USize
+      (sizeof(SparseOwnedData<t>) as USize) + (sizeof(t) as USize) * capacity,
+      type(SparseOwnedData<t>)
+   );
+   od.reference-count = 1;
+   od.occupied = occupied;
+   od.capacity = capacity;
+   od
+);
+
+let mk-sparse-owned-data(tt: Type<t>, capacity: USize): SparseOwnedData<t>[] = (
+   mk-sparse-owned-data(tt, capacity, 0)
+);
+
+let $"[]"(od: SparseOwnedData<t>[], idx: USize): t = (
+   if (od as USize)==0
+   then fail(c"SparseOwnedData [] Access Null Pointer");
+   if idx >= od.capacity then fail("SparseOwnedData [\{idx}] Index Access Out of Bounds");
+   od.data[idx]
+);
+
+let $"set[]"(od: SparseOwnedData<t>[], idx: USize, val: t): Nil = (
+   if (od as USize)==0
+   then fail(c"SparseOwnedData set[] Access Null Pointer");
+   if idx >= od.capacity then fail("SparseOwnedData set[\{idx}] Index Access Out of Bounds");
+   if type(t) <: type(MustRelease) then od.data[idx].release;
+   od.data[idx] = val;
+);
+
+let .release(od: SparseOwnedData<t>[]): Nil = (
+   if (od as USize)!=0 {
+      od.reference-count = od.reference-count - 1;
+      if od.reference-count == 0 {
+         if type(t) <: type(MustRelease) {
+            let dlo = 0_sz;
+            let dhi = od.capacity;
+            while dlo < dhi {
+               od.data[dlo].release;
+               dlo = dlo + 1;
+            };
+         };
+         safe-free(od);
+      };
+   }
+);
+
+let .retain(od: SparseOwnedData<t>[]): Nil = (
+   if (od as USize)!=0 {
+      od.reference-count = od.reference-count + 1;
+   }
+);

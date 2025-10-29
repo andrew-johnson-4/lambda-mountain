@@ -27,6 +27,7 @@ import lib2/core/cmp.lsts;
 
 # Requires Phi typing
 import lib2/core/owned-data.lsts;
+import lib2/core/sparse-owned-data.lsts;
 import lib2/core/string.lsts;
 import lib2/core/vector.lsts;
 import lib2/core/tuple.lsts;
