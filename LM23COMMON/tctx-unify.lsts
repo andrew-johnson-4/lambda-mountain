@@ -16,6 +16,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       Tuple{ first:TGround{tag:c"Any"} } => ctx = yes;
       Tuple{ first:TGround{tag:c"MustNotRetain"} } => ctx = yes;
       Tuple{ first:TGround{tag:c"MustNotMove"} } => ctx = yes;
+      Tuple{ first:TGround{tag:c"MustReleaseAfterCall"} } => ctx = yes;
       Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => ctx = no;
       Tuple{ first:TVar{name=name}, second:TGround{tag=tag} } => (
          ctx = ctx.bind(name, ta, pt, Lit(tag, mk-token(tag)));
@@ -34,6 +35,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
                TGround{tag:c"Any"} => ();
                TGround{tag:c"MustNotRetain"} => ();
                TGround{tag:c"MustNotMove"} => ();
+               TGround{tag:c"MustReleaseAfterCall"} => ();
                TGround{tag:c"Phi::Transition", parameters:[phi-to..phi-from..]} => (
                   for st in rconjugate { match st {
                      TGround{tag:c"Phi::Id",parameters:[TGround{new-phi-id=tag}..]} => (

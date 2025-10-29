@@ -16,3 +16,7 @@ assert( cmp(c"b", c"a") == GreaterThan );
 assert( c"".length == 0 );
 assert( c"a".length == 1 );
 assert( c"ab".length == 2 );
+
+assert( c"abc"[0] == 97 );
+assert( c"abc"[1] == 98 );
+assert( c"abc"[2] == 99 );

@@ -18,6 +18,7 @@ let can-unify(fpt: Type, pt: Type): U64 = (
       Tuple{ first:TGround{tag:c"Any"} } => true;
       Tuple{ first:TGround{tag:c"MustNotRetain"} } => true;
       Tuple{ first:TGround{tag:c"MustNotMove"} } => true;
+      Tuple{ first:TGround{tag:c"MustReleaseAfterCall"} } => true;
       Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => false;
       Tuple{ first:TVar{} } => true;
       Tuple{ first:TAnd{ lconjugate=conjugate }, second:TAnd{ rconjugate=conjugate } } => (
@@ -29,6 +30,7 @@ let can-unify(fpt: Type, pt: Type): U64 = (
                TGround{tag:c"Any"} => ();
                TGround{tag:c"MustNotRetain"} => ();
                TGround{tag:c"MustNotMove"} => ();
+               TGround{tag:c"MustReleaseAfterCall"} => ();
                TGround{tag:c"Phi::Transition", parameters:[phi-to..phi-from..]} => (
                   let skip-state-check = false;
                   for st in rconjugate { match st {

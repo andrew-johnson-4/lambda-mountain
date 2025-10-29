@@ -30,3 +30,23 @@ let print(msg: CString): Nil = (
 let eprint(msg: CString): Nil = (
    fputs(msg, stderr); ()
 );
+
+let $"[]"(l: CString, idx: USize): U8 = (
+   (l as U8[])[idx]
+);
+
+let hash(key: CString): U64 = (
+   let i = 0_sz;
+   let key_length = key.length;
+   let result = 0_u64;
+   while i < key_length {
+      result = result + key[i];
+      result = result + (result << 10);
+      result = result ^ (result >> 6);
+      i = i + 1;
+   };
+   result = result + (result << 3);
+   result = result ^ (result >> 11);
+   result = result + (result << 15);
+   result
+);
