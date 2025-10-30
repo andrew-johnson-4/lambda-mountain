@@ -28,8 +28,10 @@ let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, p
          (tctx, prefix, postfix, new-args)
       );
    }} else {
-      (tctx, let args-type) = tctx.phi-fresh(typeof-term(args), args);
-      print("Fresh \{args-type}\n");
+   
+      let args-type = typeof-term(args);  
+      if param-types.is-t(c"MustReleaseAfterCall",0) and typeof-term(args).is-t(c"MustRelease",0)
+      then (tctx, args-type) = tctx.phi-fresh(typeof-term(args), args);
 
       let tmp-id = uuid();
       let tmp-var1 = mk-var(tmp-id); tctx = tctx.ascript(tmp-var1, args-type);
@@ -47,6 +49,7 @@ let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, p
       then {
          let release-type = tctx.find-callable(c".release", args-type, args ).dt;
          let release-var = mk-var(c".release"); tctx = tctx.ascript(release-var, release-type);
+         print("RELEASE \{args-type}\n");
          (tctx, let release-return) = tctx.apply-callable(c".release", args-type, args);
          let do-release = mk-app(release-var, tmp-var2); tctx = tctx.ascript(do-release, release-return);
  

@@ -25,6 +25,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
    };
 
    # Phi: move linear values, like (Linear<A> ~> Linear<Phi::Moved>)
+   if fname==c".release" then print("Move \{ft} x \{at}\n");
    tctx = tctx.phi-move-args(ft.domain, at, blame);
 
    # Specialize the function type
