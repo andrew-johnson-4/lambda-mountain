@@ -314,9 +314,22 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 
                (tctx, let prefix, let postfix, let tmpresult, let new-r) = std-maybe-release-after-call(tctx, function-type, r);
                if not(is(r,new-r)) then { r = new-r; term = mk-app(l,r); };
-
                rt = tctx.with-phi(rt);
                tctx = tctx.ascript(term, rt);
+
+               if non-zero(prefix) {
+                  let new-term = mk-cons(prefix, term);
+                  ascript-force(new-term, typeof-term(term));
+                  term = new-term;
+               };
+               if non-zero(postfix) and non-zero(tmpresult) {
+                  let new-term = mk-cons(term, postfix);
+                  ascript-force(new-term, typeof-term(postfix));
+                  new-term = mk-cons(new-term, tmpresult);
+                  ascript-force(new-term, typeof-term(term));
+                  term = new-term;
+               };
+
                if not(rt.is-t(c"Cons",2)) {
                   if function-type.is-t(c"MustRetainOnCall",0) && not(hint.is-t(c"MustNotRetain",0)) && not(tctx.get-or(mk-tctx()).is-blob) {
                     (tctx, term) = maybe-retain(tctx, term);
