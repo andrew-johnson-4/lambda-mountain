@@ -1,13 +1,9 @@
 
-let std-maybe-release-after-call(tctx: TypeContext?, function-type: Type, args: AST): (TypeContext?, AST, AST, AST, AST) = (
+let std-maybe-release-after-call(tctx: TypeContext?, function-type: Type, args: AST): (TypeContext?, AST, AST, AST) = (
    if function-type.domain.is-any-arg-t(c"MustReleaseAfterCall",0)
    && is-paired-release(function-type.domain, typeof-term(args))
-   then (
-      let tmpresult = mk-var(uuid());
-      (tctx, let prefix, let postfix, args) = std-release-after-call(tctx, function-type.domain, mk-eof(), mk-eof(), args);
-      (tctx, prefix, postfix, tmpresult, args)
-   );
-   else (tctx, mk-eof(), mk-eof(), mk-eof(), args)
+   then std-release-after-call(tctx, function-type.domain, mk-eof(), mk-eof(), args);
+   else (tctx, mk-eof(), mk-eof(), args)
 );
 
 let is-paired-release(pt: Type, at: Type): U64 = (
