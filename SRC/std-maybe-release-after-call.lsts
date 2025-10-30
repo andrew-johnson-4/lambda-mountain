@@ -1,0 +1,6 @@
+
+let std-maybe-release-after-call(tctx: TypeContext?, function-type: Type, args: AST): (TypeContext?, AST, AST, AST, AST) = (
+   if function-type.domain.is-any-arg-t(c"MustReleaseAfterCall",0)
+   then print("Must Release After Call \{args} : \{function-type}\n");
+   (tctx, mk-eof(), mk-eof(), mk-eof(), args)
+);
