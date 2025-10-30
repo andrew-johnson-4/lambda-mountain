@@ -28,9 +28,12 @@ let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, p
          (tctx, prefix, postfix, new-args)
       );
    }} else {
+      (tctx, let args-type) = tctx.phi-fresh(typeof-term(args), args);
+
       let tmp-id = uuid();
-      let tmp-var1 = mk-var(tmp-id); tctx = tctx.ascript(tmp-var1, typeof-term(args));
-      let tmp-var2 = mk-var(tmp-id); tctx = tctx.ascript(tmp-var2, typeof-term(args));
+      let tmp-var1 = mk-var(tmp-id); tctx = tctx.ascript(tmp-var1, args-type);
+      let tmp-var2 = mk-var(tmp-id); tctx = tctx.ascript(tmp-var2, args-type);
+      let tmp-var3 = mk-var(tmp-id); tctx = tctx.ascript(tmp-var3, args-type);
       let tmp-nil = mk-nil(); tctx = tctx.ascript(tmp-nil, t0(c"Nil"));
       let declare = mk-abs(tmp-var1, tmp-nil, ta); tctx = tctx.ascript(declare, t0(c"Nil"));
       let bind = mk-app(declare, args); tctx = tctx.ascript(bind, t0(c"Nil"));
@@ -41,16 +44,16 @@ let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, p
 
       if param-types.is-t(c"MustReleaseAfterCall",0) and typeof-term(args).is-t(c"MustRelease",0)
       then {
-         let release-type = tctx.find-callable(c".release", typeof-term(args), args ).dt;
+         let release-type = tctx.find-callable(c".release", args-type, args ).dt;
          let release-var = mk-var(c".release"); tctx = tctx.ascript(release-var, release-type);
-         let tmp-var3 = mk-var(tmp-id); tctx = tctx.ascript(tmp-var3, typeof-term(args));
-         let do-release = mk-app(release-var, tmp-var3); tctx = tctx.ascript(do-release, t0(c"Nil"));
+         (tctx, let release-return) = tctx.apply-callable(c".release", args-type, args);
+         let do-release = mk-app(release-var, tmp-var2); tctx = tctx.ascript(do-release, release-return);
  
          if non-zero(postfix)
          then (postfix = mk-cons( postfix, do-release ); tctx = tctx.ascript(postfix, t0(c"Nil"));)
          else postfix = do-release;
       };
 
-      (tctx, prefix, postfix, tmp-var2)
+      (tctx, prefix, postfix, tmp-var3)
    }
 );
