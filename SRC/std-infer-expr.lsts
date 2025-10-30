@@ -258,9 +258,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                (tctx, term) = std-apply-macro(tctx, term, used);
                is-macro = true;
             } else {
-               let prefix = mk-eof();
-               let postfix = mk-eof();
-               let tmpresult = mk-eof();
                (tctx, let new-l) = std-infer-expr(tctx, l, false, used, ta);
                if not(is(l,new-l)) then { l = new-l; term = mk-app(l,r); };
                if typeof-term(l).is-arrow {
@@ -274,7 +271,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      (tctx, new-r) = std-infer-call-arg(pre-retain-tctx, r, var-name-if-var-or-lit(l), ftype.domain && rr-args-hint);
                   };
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
-                  (tctx, prefix, postfix, tmpresult, r) = std-maybe-release-after-call(tctx, ftype, r);
                } else {
                   (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, ta);
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
@@ -315,6 +311,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      tctx = tctx.phi-move(from-tt, term);
                   };
                };
+
+               (tctx, let prefix, let postfix, let tmpresult, let new-r) = std-maybe-release-after-call(tctx, function-type, r);
+               if not(is(r,new-r)) then { r = new-r; term = mk-app(l,r); };
+
                rt = tctx.with-phi(rt);
                tctx = tctx.ascript(term, rt);
                if not(rt.is-t(c"Cons",2)) {
