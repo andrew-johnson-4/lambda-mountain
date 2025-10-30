@@ -37,11 +37,14 @@ let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, p
       print("STALE \{typeof-term(args)}\n FRESH \{typeof-term(args)}\n");
 
       let tmp-id = uuid();
-      let tmp-var1 = mk-var(tmp-id); ascript-force(tmp-var1, args-type);
+      let tmp-def = mk-var(tmp-id); ascript-force(tmp-def, args-type);
       let tmp-var2 = mk-var(tmp-id); ascript-force(tmp-var2, args-type);
       let tmp-direct = mk-var(tmp-id); ascript-force(tmp-direct, typeof-term(args));
+      tctx = tctx.bind(tmp-id, ta, args-type, tmp-def);
+      mark-var-to-def-todo(tctx, tmp-id, ta, tmp-var2);
+      mark-var-to-def-todo(tctx, tmp-id, ta, tmp-direct);
       let tmp-nil = mk-nil(); ascript-force(tmp-nil, t0(c"Nil"));
-      let declare = mk-abs(tmp-var1, tmp-nil, ta); ascript-force(declare, t0(c"Nil"));
+      let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, t0(c"Nil"));
       let bind = mk-app(declare, args); ascript-force(bind, t0(c"Nil"));
 
       if non-zero(prefix)
