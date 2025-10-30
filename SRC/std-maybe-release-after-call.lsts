@@ -5,7 +5,6 @@ let std-maybe-release-after-call(tctx: TypeContext?, function-type: Type, args: 
    then (
       let tmpresult = mk-var(uuid());
       (tctx, let prefix, let postfix, args) = std-release-after-call(tctx, function-type.domain, mk-eof(), mk-eof(), args);
-      print("Release After Call \{function-type}\nPrefix \{prefix}\nPostfix \{postfix}\nArgs \{args}\nResult \{tmpresult}\n");
       (tctx, prefix, postfix, tmpresult, args)
    );
    else (tctx, mk-eof(), mk-eof(), mk-eof(), args)
@@ -25,7 +24,6 @@ let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, p
          (tctx, prefix, postfix, right) = std-release-after-call(tctx, param-types.slot(c"Cons",2).l2, prefix, postfix, right);
          let new-args = mk-cons(left, right);
          ascript-force(new-args, typeof-term(args));
-         print("ARGS TYPE \{typeof-term(new-args)}\n ORGINAL \{typeof-term(args)}\n");
          (tctx, prefix, postfix, new-args)
       );
    }} else {
@@ -34,7 +32,6 @@ let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, p
          (tctx, args-type) = tctx.phi-fresh(typeof-term(args), args);
          args-type = args-type.without-slot(c"MustNotMove",0);
       };
-      print("STALE \{typeof-term(args)}\n FRESH \{typeof-term(args)}\n");
 
       let tmp-id = uuid();
       let tmp-def = mk-var(tmp-id); ascript-force(tmp-def, args-type);
@@ -55,7 +52,6 @@ let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, p
       then {
          let release-type = tctx.find-callable(c".release", args-type, args ).dt;
          let release-var = mk-var(c".release"); ascript-force(release-var, release-type);
-         print("RELEASE \{args-type}\n");
          (tctx, let release-return) = tctx.apply-callable(c".release", args-type, args);
          let do-release = mk-app(release-var, tmp-var2); ascript-force(do-release, release-return);
  
