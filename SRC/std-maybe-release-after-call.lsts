@@ -24,11 +24,11 @@ let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, p
          (tctx, prefix, postfix, left) = std-release-after-call(tctx, param-types.slot(c"Cons",2).l1, prefix, postfix, left);
          (tctx, prefix, postfix, right) = std-release-after-call(tctx, param-types.slot(c"Cons",2).l2, prefix, postfix, right);
          let new-args = mk-cons(left, right);
-         tctx = tctx.ascript(new-args, typeof-term(args));
+         ascript-force(new-args, typeof-term(args));
+         print("ARGS TYPE \{typeof-term(new-args)}\n ORGINAL \{typeof-term(args)}\n");
          (tctx, prefix, postfix, new-args)
       );
    }} else {
-   
       let args-type = typeof-term(args);  
       if param-types.is-t(c"MustReleaseAfterCall",0) and typeof-term(args).is-t(c"MustRelease",0) {
          (tctx, args-type) = tctx.phi-fresh(typeof-term(args), args);
@@ -37,27 +37,27 @@ let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, p
       print("STALE \{typeof-term(args)}\n FRESH \{typeof-term(args)}\n");
 
       let tmp-id = uuid();
-      let tmp-var1 = mk-var(tmp-id); tctx = tctx.ascript(tmp-var1, args-type);
-      let tmp-var2 = mk-var(tmp-id); tctx = tctx.ascript(tmp-var2, args-type);
-      let tmp-direct = mk-var(tmp-id); tctx = tctx.ascript(tmp-direct, typeof-term(args));
-      let tmp-nil = mk-nil(); tctx = tctx.ascript(tmp-nil, t0(c"Nil"));
-      let declare = mk-abs(tmp-var1, tmp-nil, ta); tctx = tctx.ascript(declare, t0(c"Nil"));
-      let bind = mk-app(declare, args); tctx = tctx.ascript(bind, t0(c"Nil"));
+      let tmp-var1 = mk-var(tmp-id); ascript-force(tmp-var1, args-type);
+      let tmp-var2 = mk-var(tmp-id); ascript-force(tmp-var2, args-type);
+      let tmp-direct = mk-var(tmp-id); ascript-force(tmp-direct, typeof-term(args));
+      let tmp-nil = mk-nil(); ascript-force(tmp-nil, t0(c"Nil"));
+      let declare = mk-abs(tmp-var1, tmp-nil, ta); ascript-force(declare, t0(c"Nil"));
+      let bind = mk-app(declare, args); ascript-force(bind, t0(c"Nil"));
 
       if non-zero(prefix)
-      then (prefix = mk-cons( prefix, bind ); tctx = tctx.ascript(prefix, t0(c"Nil"));)
+      then (prefix = mk-cons( prefix, bind ); ascript-force(prefix, t0(c"Nil"));)
       else prefix = bind;
 
       if param-types.is-t(c"MustReleaseAfterCall",0) and typeof-term(args).is-t(c"MustRelease",0)
       then {
          let release-type = tctx.find-callable(c".release", args-type, args ).dt;
-         let release-var = mk-var(c".release"); tctx = tctx.ascript(release-var, release-type);
+         let release-var = mk-var(c".release"); ascript-force(release-var, release-type);
          print("RELEASE \{args-type}\n");
          (tctx, let release-return) = tctx.apply-callable(c".release", args-type, args);
-         let do-release = mk-app(release-var, tmp-var2); tctx = tctx.ascript(do-release, release-return);
+         let do-release = mk-app(release-var, tmp-var2); ascript-force(do-release, release-return);
  
          if non-zero(postfix)
-         then (postfix = mk-cons( postfix, do-release ); tctx = tctx.ascript(postfix, t0(c"Nil"));)
+         then (postfix = mk-cons( postfix, do-release ); ascript-force(postfix, t0(c"Nil"));)
          else postfix = do-release;
       };
 
