@@ -30,8 +30,10 @@ let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, p
    }} else {
    
       let args-type = typeof-term(args);  
-      if param-types.is-t(c"MustReleaseAfterCall",0) and typeof-term(args).is-t(c"MustRelease",0)
-      then (tctx, args-type) = tctx.phi-fresh(typeof-term(args), args);
+      if param-types.is-t(c"MustReleaseAfterCall",0) and typeof-term(args).is-t(c"MustRelease",0) {
+         (tctx, args-type) = tctx.phi-fresh(typeof-term(args), args);
+      };
+      print("STALE \{typeof-term(args)}\n FRESH \{typeof-term(args)}\n");
 
       let tmp-id = uuid();
       let tmp-var1 = mk-var(tmp-id); tctx = tctx.ascript(tmp-var1, args-type);
