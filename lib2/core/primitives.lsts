@@ -2,7 +2,7 @@
 declare-unop( $"cdecl::return", raw-type(Any), raw-type(Nil), (l"return "; x; l";";) );
 declare-unop( $"cdecl::return", raw-type(Nil), raw-type(Nil), (x; l";";) );
 
-declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs+MustNotRetain+MustReleaseAfterCall), raw-type(Nil), ( l"({"; y; l"="; x; l";({});})"; ) );
+declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs+MustNotRetain+MustReleaseAfterCall+MustNotRewrite), raw-type(Nil), ( l"({"; y; l"="; x; l";({});})"; ) );
 
 # needs to be declared to prevent a special case during inference
 # this only needs to be declared if you want to support casting type information into String literals

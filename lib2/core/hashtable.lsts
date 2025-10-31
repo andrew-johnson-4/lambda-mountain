@@ -36,7 +36,9 @@ let mk-hashtable(tyk: Type<k>, tyv: Type<v>): Hashtable<k,v> = (
 
 let mk-hashtable(capacity: USize): Hashtable<k,v> = (
    print(c"Mk 3\n");
-   Hashtable( mk-sparse-owned-data(type((HashtableRowExists,k,v)), capacity) )
+   let r = Hashtable( mk-sparse-owned-data(type((HashtableRowExists,k,v)), capacity) );
+   print("Mk H Sparse Ref PValue:\{r.data as U64}\n");
+   r
 );
 
 let mk-hashtable(): Hashtable<k,v> = (
