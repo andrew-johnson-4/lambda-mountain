@@ -41,7 +41,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    else if k==c"main" && not(non-zero(compile-global-c-main-term)) then {
       compile-global-c-main-term = term;
    } else match term {
-      App{left:Lit{key:c":"}, right:App{left:Var{key:c"__uninitialized"}, right:AType{tt=tt}}} => (
+      App{left:Lit{key:c":"}, right:App{left:ASTNil{}, right:AType{tt=tt}}} => (
          if not(tt.is-t(c"C-FFI",0)) && not(tt.is-t(c"C-Fragment",0)) {
             let clean-tt = typeof-term(term).weaken.without-phi;
             k = mangle-identifier(k, clean-tt);
@@ -100,7 +100,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          ctx = std-c-compile-destructure-args( ctx, lhs, false );
          let loc = term.location;
          let initialized = match rhs {
-            App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{} } } => false;
+            App{ left:Lit{key:c":"}, right:App{ left:ASTNil{}, right:AType{} } } => false;
             _ => true;
          };
          if initialized || can-unify(t1(c"C",t0(c"typedef")), tt) {

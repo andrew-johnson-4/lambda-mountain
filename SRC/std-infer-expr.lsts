@@ -10,6 +10,7 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
+   print("Infer \{term}\n");
    match term {
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
          if typeof-var-raw(term, tctx, lname, true).is-t(c"LocalVariable",0)
@@ -58,6 +59,12 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          (tctx, term) = std-infer-expr(Some(direct-tctx), r, false, Tail, ta);
          direct-tctx.is-unsafe = is-unsafe;
          tctx = Some(direct-tctx);
+      );
+      App{asc=left:Lit{key:c":"}, right:App{inner=left:ASTNil{},right:AType{tt=tt}}} => (
+         tt = tt.rewrite-type-alias;
+         add-concrete-type-instance(tt, term);
+         tctx = tctx.ascript(inner, tt);
+         tctx = tctx.ascript(term, tt);
       );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
          if tt.is-t(c"Hashtable",2) { match t {
@@ -184,12 +191,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          };
       );
       Var{key=key, token=token} => (
-         let vt = ta;
-         if key==c"__uninitialized" then tctx = tctx.ascript(term, hint)
-         else (
-            vt = typeof-var(term, tctx, key, hint.is-t(c"MustNotFresh",0));
-            vt = tctx.with-phi(vt);
-         );
+         let vt = typeof-var(term, tctx, key, hint.is-t(c"MustNotFresh",0));
+         vt = tctx.with-phi(vt);
          mark-var-to-def-todo(tctx, key, ta, term);
          # TailPosition LocalVariables don't need to be retained because +1/-1 retain/release cancels itself out
          if not(hint.is-t(c"TailPosition",0) && vt.is-t(c"LocalVariable",0))

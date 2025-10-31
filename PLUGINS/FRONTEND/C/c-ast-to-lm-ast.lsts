@@ -28,7 +28,7 @@ let std-c-declare(t: CTerm): Nil = (
                   mk-token(name), close(App( false,
                      close(Lit(c":", mk-token(c":"))),
                      close(App( false,
-                        close(Var(c"__uninitialized", mk-token(c"__uninitialized"))),
+                        close(mk-nil()),
                         close(AType( return-type && t0(c"C-FFI") ))
                      ))
                   ))
@@ -82,7 +82,7 @@ let std-c-declare(t: CTerm): Nil = (
                      mk-token(name), close(App( false,
                         close(Lit(c":", mk-token(c":"))),
                         close(App( false,
-                           close(Var(c"__uninitialized", mk-token(c"__uninitialized"))),
+                           close(mk-nil()),
                            close(AType( return-type && t0(c"C-FFI") ))
                         ))
                      ))
@@ -191,7 +191,7 @@ let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, misc-type: Typ
          (untern(name), Abs( close(params), close(App( false,
                close(Lit(c":", mk-token(c":"))),
                close(App( false,
-                  close(Var(c"__uninitialized", mk-token(c"__uninitialized"))),
+                  close(mk-nil()),
                   close(AType( return-type ))
                ))
             )), misc-type && t0(c"C-FFI")
@@ -201,7 +201,7 @@ let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, misc-type: Typ
          (untern(name), Abs( close(params), close(App( false,
                close(Lit(c":", mk-token(c":"))),
                close(App( false,
-                  close(Var(c"__uninitialized", mk-token(c"__uninitialized"))),
+                  close(mk-nil()),
                   close(AType( return-type ))
                ))
             )), misc-type && t0(c"C-FFI")
@@ -374,7 +374,7 @@ let std-c-lift-lhs(rhs: AST): (AST, AST) = (
           if is(lhs, mk-eof()) then (lhs = new-lhs) else (lhs = App( true, close(lhs), close(new-lhs) ));
           if is(rhs, mk-eof()) then (rhs = new-rhs) else (rhs = App( true, close(rhs), close(new-rhs) ));
        );
-       App{ left:App{ left:Var{key:c"let"}, binding=right }, right:App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{tt=tt}  } } } => (
+       App{ left:App{ left:Var{key:c"let"}, binding=right }, right:App{ left:Lit{key:c":"}, right:App{ left:ASTNil{}, right:AType{tt=tt}  } } } => (
           let new-lhs = rhs;
           rhs = mk-eof();
           if is(lhs, mk-eof()) then (lhs = new-lhs) else (lhs = App( true, close(lhs), close(new-lhs) ));
@@ -388,7 +388,7 @@ let std-c-lift-lhs(rhs: AST): (AST, AST) = (
              close(App(
                 close(Lit( c":", mk-token(c":") )),
                 close(App(
-                   close(Var( c"__uninitialized", mk-token(c"__uninitialized") )),
+                   close(mk-nil()),
                    close(AType( tt ))
                 ))
              ))
@@ -414,7 +414,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          match std-c-expr-of-statement(arg1) {
             Var{key=key} => (
                mk-cons(
-                  mk-app( mk-app( mk-var("let"), mk-var(key) ), mk-var("__uninitialized").ascript(t1(c"C",t0(c":Label"))) ),
+                  mk-app( mk-app( mk-var("let"), mk-var(key) ), mk-nil().ascript(t1(c"C",t0(c":Label"))) ),
                   std-c-expr-of-statement(arg2)
                )
             );
@@ -474,7 +474,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
                   close(App(
                      close(Lit( c":", mk-token(c":") )),
                      close(App(
-                        close(Var( c"__uninitialized", mk-token(c"__uninitialized") )),
+                        close(mk-nil()),
                         close(AType( return-type && t0(c"C-FFI") ))
                      ))
                   ))
@@ -511,7 +511,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
                   close(App(
                      close(Lit( c":", mk-token(c":") )),
                      close(App(
-                        close(Var( c"__uninitialized", mk-token(c"__uninitialized") )),
+                        close(mk-nil()),
                         close(AType( return-type && t0(c"C-FFI") ))
                      ))
                   ))
