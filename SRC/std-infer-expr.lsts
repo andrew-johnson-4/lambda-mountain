@@ -228,18 +228,20 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = Some(direct-tctx);
          let before-tctx = tctx; # make sure to capture locals as "local" scope
          tctx = infer-ctx(tctx, lhs);
-         (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type && t0(c"TailPosition"));
-         tctx = tctx.phi-move(typeof-term(new-inner-rhs), term);
-         if not(tctx.get-or(mk-tctx()).is-blob) {
-            (tctx, new-inner-rhs) = release-locals(before-tctx, tctx, new-inner-rhs, misc-tt);
+         if not(inner-rhs.is-nil) {
+            (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type && t0(c"TailPosition"));
+            tctx = tctx.phi-move(typeof-term(new-inner-rhs), term);
+            if not(tctx.get-or(mk-tctx()).is-blob) {
+               (tctx, new-inner-rhs) = release-locals(before-tctx, tctx, new-inner-rhs, misc-tt);
+            };
+            if not(is(inner-rhs,new-inner-rhs))
+            then {
+               inner-rhs = new-inner-rhs;
+               rhs = mk-app(asc.unique,mk-app(inner-rhs,mk-atype(return-type)));
+               term = mk-abs(lhs,rhs,misc-tt);
+            };
+            if not(misc-tt.is-t(c"Blob",0)) && not(misc-tt.is-t(c"C-FFI",0)) then tctx = tctx.ascript(inner-rhs, return-type);
          };
-         if not(is(inner-rhs,new-inner-rhs))
-         then {
-            inner-rhs = new-inner-rhs;
-            rhs = mk-app(asc.unique,mk-app(inner-rhs,mk-atype(return-type)));
-            term = mk-abs(lhs,rhs,misc-tt);
-         };
-         if not(misc-tt.is-t(c"Blob",0)) && not(misc-tt.is-t(c"C-FFI",0)) then tctx = tctx.ascript(inner-rhs, return-type);
          tctx = tctx.ascript(rhs, return-type);
          let domain-tt = typeof-lhs(lhs);
          tctx = tctx.ascript(term, t2(c"Arrow", typeof-lhs(lhs), return-type) && misc-tt);

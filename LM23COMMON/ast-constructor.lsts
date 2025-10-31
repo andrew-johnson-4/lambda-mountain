@@ -225,3 +225,10 @@ let .ascript(t: AST, tt: Type): AST = (
       mk-cons( t, mk-atype(tt) )
    )
 );
+
+let .is-nil(t: AST): U64 = (
+   match t {
+      ASTNil{} => true;
+      _ => false;
+   }
+);
