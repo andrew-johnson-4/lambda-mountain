@@ -334,6 +334,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   new-term = mk-cons(new-term, postfix); ascript-force(new-term, typeof-term(postfix));
                   new-term = mk-cons(new-term, tmp-var); ascript-force(new-term, typeof-term(term));
                   term = new-term;
+                  print("Release After Call: \{term}\n");
                };
 
                if not(rt.is-t(c"Cons",2)) {
