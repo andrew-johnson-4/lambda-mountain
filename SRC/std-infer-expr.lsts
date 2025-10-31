@@ -312,12 +312,12 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   };
                };
 
-               (tctx, let prefix, let postfix, let after-result) = std-maybe-release-after-call(tctx, function-type, r);
                rt = tctx.with-phi(rt);
                tctx = tctx.ascript(term, rt);
 
+               (tctx, let prefix, let postfix, let new-args) = std-maybe-release-after-call(tctx, function-type, r);
                if non-zero(postfix) {
-                  if not(is(r,after-result)) then { r = after-result; term = mk-app(l,r); ascript-force(term, rt); };
+                  if not(is(r,new-args)) { term = mk-app(l,new-args); ascript-force(term,rt); };
 
                   let tmp-id = uuid();
                   let tmp-def = mk-var(tmp-id); ascript-force(tmp-def, typeof-term(term));
