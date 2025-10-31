@@ -63,7 +63,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{asc=left:Lit{key:c":"}, right:App{inner=left:ASTNil{},right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
          add-concrete-type-instance(tt, term);
-         tctx = tctx.ascript(inner, tt);
+         tctx = tctx.ascript(inner, t0(c"Nil"));
          tctx = tctx.ascript(term, tt);
       );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
