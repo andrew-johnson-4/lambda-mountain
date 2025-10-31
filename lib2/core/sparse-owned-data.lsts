@@ -15,7 +15,7 @@ let mk-sparse-owned-data(tt: Type<t>, capacity: USize, occupied: USize): SparseO
    od.reference-count = 1;
    od.occupied = occupied;
    od.capacity = capacity;
-   print("Mk Sparse Ref:\{od.reference-count} Occupied:\{od.occupied} Capacity:\{od.capacity}\n");
+   print("Mk Sparse Ref:\{od.reference-count} Occupied:\{od.occupied} Capacity:\{od.capacity} PValue:\{od as U64}\n");
    od
 );
 

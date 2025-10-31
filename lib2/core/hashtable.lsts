@@ -52,6 +52,7 @@ let .bind(h: Hashtable<k,v>, key: k, val: v): Hashtable<k,v> = (
       # Resize these to size 32 next
       print(c"Bind 1\n");
       h = mk-hashtable(32) : Hashtable<k,v>;
+      print("H Sparse Ref PValue:\{h.data as U64}\n");
       print("H Sparse Ref:\{h.data.reference-count} Occupied:\{h.data.occupied} Capacity:\{h.data.capacity}\n");
    };
    print(c"Bind 2\n");
