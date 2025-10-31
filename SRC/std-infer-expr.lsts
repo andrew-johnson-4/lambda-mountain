@@ -275,6 +275,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, ta);
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
                };
+
                (tctx, let function-type, rt) = if typeof-term(l).is-arrow && non-zero(lit-name-if-lit(l)) {
                   let direct-hint = hint-if-hint(l);
                   if hint.is-t(c"ReturnHint",0) then direct-hint = direct-hint && hint;
@@ -310,8 +311,32 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      tctx = tctx.phi-move(from-tt, term);
                   };
                };
+
                rt = tctx.with-phi(rt);
                tctx = tctx.ascript(term, rt);
+
+               (tctx, let prefix, let postfix, let new-args) = std-maybe-release-after-call(tctx, function-type, r);
+               if non-zero(postfix) {
+                  if not(is(r,new-args)) { term = mk-app(l,new-args); ascript-force(term,rt); };
+
+                  let tmp-id = uuid();
+                  let tmp-def = mk-var(tmp-id); ascript-force(tmp-def, typeof-term(term));
+                  let tmp-var = mk-var(tmp-id); ascript-force(tmp-var, typeof-term(term));
+                  tctx = tctx.bind(tmp-id, ta, typeof-term(term), tmp-def);
+                  mark-var-to-def-todo(tctx, tmp-id, ta, tmp-var);
+                  let tmp-nil = mk-nil(); ascript-force(tmp-nil, t0(c"Nil"));
+                  let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, t0(c"Nil"));
+                  let bind = mk-app(declare, term); ascript-force(bind, t0(c"Nil"));
+
+                  let new-term = bind;
+                  if non-zero(prefix) {
+                     new-term = mk-cons(prefix, new-term); ascript-force(new-term, t0(c"Nil"));
+                  };
+                  new-term = mk-cons(new-term, postfix); ascript-force(new-term, typeof-term(postfix));
+                  new-term = mk-cons(new-term, tmp-var); ascript-force(new-term, typeof-term(term));
+                  term = new-term;
+               };
+
                if not(rt.is-t(c"Cons",2)) {
                   if function-type.is-t(c"MustRetainOnCall",0) && not(hint.is-t(c"MustNotRetain",0)) && not(tctx.get-or(mk-tctx()).is-blob) {
                     (tctx, term) = maybe-retain(tctx, term);

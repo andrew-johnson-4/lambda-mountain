@@ -2,6 +2,7 @@
 type Tuple<x,y> implements DefaultPrintable = { first: x, second: y };
 type Tuple<x,y,z> implements DefaultPrintable = { first: x, second: y, third: z };
 type Tuple<w,x,y,z> = { first: w, second: x, third: y, fourth: z };
+type Tuple<v,w,x,y,z> = { first: v, second: w, third: x, fourth: y, fifth: z };
 
 let cmp(l: Tuple<x,y>, r: Tuple<x,y>): Ord = (
    cmp(l.first, r.first) && cmp(l.second, r.second)

@@ -29,7 +29,7 @@ let mk-hashtable(tyk: Type<k>, tyv: Type<v>): Hashtable<k,v> = (
 );
 
 let mk-hashtable(capacity: USize): Hashtable<k,v> = (
-   Hashtable( mk-sparse-owned-data(type((HashtableRowExists,k,v)), capacity) )
+   Hashtable( mk-sparse-owned-data(type((HashtableRowExists,k,v)), capacity) );
 );
 
 let mk-hashtable(): Hashtable<k,v> = (

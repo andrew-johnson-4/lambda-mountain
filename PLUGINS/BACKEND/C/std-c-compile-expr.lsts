@@ -21,11 +21,12 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       App{ left:Abs{lhs=lhs:Var{name=key}, rhs:ASTNil{}}, rhs=right } => (
          let lt = typeof-term(lhs).without-modifiers;
-         let v = mk-fragment().set(c"expression",if std-c-is-ctype(lt) then SAtom(name) else SAtom(uuid()));
+         let v = mk-fragment().set(c"expression",if lt.is-t(c"Nil",0) then SAtom(c"({})") else if std-c-is-ctype(lt) then SAtom(name) else SAtom(uuid()));
          let f = mk-fragment();
          std-c-fragment-context = std-c-fragment-context.bind( lhs, v );
          ctx = ctx.bind( name, lt, v );
-         if lt.is-t(c"C",0) && lt.slot(c"C",0).r1.is-t(c":Label",0) {
+         if lt.is-t(c"Nil",0) {
+         } else if lt.is-t(c"C",0) && lt.slot(c"C",0).r1.is-t(c":Label",0) {
             f = f.set(c"expression", v.get(c"expression") + SAtom(c":"));
          } else {
             (let pre, let post) = std-c-mangle-declaration(lt, t);
@@ -50,9 +51,13 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             _ => (
                let rf = std-c-compile-expr(ctx, rhs, false);
                f = f.set(c"frame", f.get(c"frame") + rf.get(c"frame"));
-               f = f.set(c"expression", SAtom(c"({")
-                 + v.get(c"expression")
-                 + SAtom(c"=") + rf.get(c"expression") + SAtom(c";({});})"));
+               if lt.is-t(c"Nil",0) {
+                  f = f.set(c"expression", SAtom(c"({") + rf.get(c"expression") + SAtom(c";({});})"));
+               } else {
+                  f = f.set(c"expression", SAtom(c"({")
+                    + v.get(c"expression")
+                    + SAtom(c"=") + rf.get(c"expression") + SAtom(c";({});})"));
+               };
             );
          };
          f.context = close(ctx); f

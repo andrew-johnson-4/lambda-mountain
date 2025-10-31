@@ -1,0 +1,81 @@
+
+let std-maybe-release-after-call(tctx: TypeContext?, function-type: Type, args: AST): (TypeContext?, AST, AST, AST) = (
+   if function-type.domain.is-any-arg-t(c"MustReleaseAfterCall",0)
+   && is-paired-release(function-type.domain, typeof-term(args))
+   then std-release-after-call(tctx, function-type.domain, mk-eof(), mk-eof(), args);
+   else (tctx, mk-eof(), mk-eof(), args)
+);
+
+let is-paired-release(pt: Type, at: Type): U64 = (
+   if pt.is-t(c"Cons",2) or at.is-t(c"Cons",2)
+   then (is-paired-release(pt.slot(c"Cons",2).l1, at.slot(c"Cons",2).l1)
+      or is-paired-release(pt.slot(c"Cons",2).l2, at.slot(c"Cons",2).l2))
+   else (pt.is-t(c"MustReleaseAfterCall",0) and at.is-t(c"MustRelease",0))
+);
+
+let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, postfix: AST, args: AST): (TypeContext?, AST, AST, AST) = (
+   if param-types.is-t(c"Cons",2) { match args {
+      App{ left=left, right=right } => (
+         (tctx, prefix, postfix, left) = std-release-after-call(tctx, param-types.slot(c"Cons",2).l1, prefix, postfix, left);
+         (tctx, prefix, postfix, right) = std-release-after-call(tctx, param-types.slot(c"Cons",2).l2, prefix, postfix, right);
+         let new-args = mk-cons(left, right);
+         ascript-force(new-args, typeof-term(args));
+         (tctx, prefix, postfix, new-args)
+      );
+   }} else {
+      let args-type = typeof-term(args);  
+      if param-types.is-t(c"MustReleaseAfterCall",0) and typeof-term(args).is-t(c"MustRelease",0) {
+         (tctx, args-type) = tctx.phi-fresh(typeof-term(args), args);
+         args-type = args-type.without-slot(c"MustNotMove",0);
+      };
+
+      let tmp-return = args;
+      if param-types.is-t(c"MustReleaseAfterCall",0) and typeof-term(args).is-t(c"MustRelease",0)
+      then {
+         (let tmp-release, tmp-return) = if param-types.is-t(c"MustNotRewrite",0) {
+            let tmp-id = uuid();
+            let tmp-def = mk-var(tmp-id); ascript-force(tmp-def, args-type);
+            let tmp-var2 = mk-var(tmp-id); ascript-force(tmp-var2, args-type);
+            tctx = tctx.bind(tmp-id, ta, args-type, tmp-def);
+            mark-var-to-def-todo(tctx, tmp-id, ta, tmp-var2);
+            let tmp-nil = mk-nil(); ascript-force(tmp-nil, t0(c"Nil"));
+            let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, t0(c"Nil"));
+            let bind = mk-app(declare, args); ascript-force(bind, t0(c"Nil"));
+
+            if non-zero(prefix)
+            then (prefix = mk-cons( prefix, bind ); ascript-force(prefix, t0(c"Nil"));)
+            else prefix = bind;
+
+            (tmp-var2, args)
+         } else {
+            let tmp-id = uuid();
+            let tmp-def = mk-var(tmp-id); ascript-force(tmp-def, args-type);
+            let tmp-var2 = mk-var(tmp-id); ascript-force(tmp-var2, args-type);
+            let tmp-direct = mk-var(tmp-id); ascript-force(tmp-direct, typeof-term(args));
+            tctx = tctx.bind(tmp-id, ta, args-type, tmp-def);
+            mark-var-to-def-todo(tctx, tmp-id, ta, tmp-var2);
+            mark-var-to-def-todo(tctx, tmp-id, ta, tmp-direct);
+            let tmp-nil = mk-nil(); ascript-force(tmp-nil, t0(c"Nil"));
+            let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, t0(c"Nil"));
+            let bind = mk-app(declare, args); ascript-force(bind, t0(c"Nil"));
+
+            if non-zero(prefix)
+            then (prefix = mk-cons( prefix, bind ); ascript-force(prefix, t0(c"Nil"));)
+            else prefix = bind;
+
+            (tmp-var2, tmp-direct)
+         };
+
+         let release-type = tctx.find-callable(c".release", args-type, args ).dt;
+         let release-var = mk-var(c".release"); ascript-force(release-var, release-type);
+         (tctx, let release-return) = tctx.apply-callable(c".release", args-type, args);
+         let do-release = mk-app(release-var, tmp-release); ascript-force(do-release, release-return);
+ 
+         if non-zero(postfix)
+         then (postfix = mk-cons( postfix, do-release ); ascript-force(postfix, t0(c"Nil"));)
+         else postfix = do-release;
+      };
+
+      (tctx, prefix, postfix, tmp-return)
+   }
+);
