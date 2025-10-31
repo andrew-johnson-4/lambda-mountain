@@ -47,7 +47,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             }
          };
          match rhs {
-            App{ left:Lit{key:c":"}, right:App{ left:Var{key:c"__uninitialized"}, right:AType{tt=tt} } } => ();
+            App{ left:Lit{key:c":"}, right:App{ left:ASTNil{}, right:AType{tt=tt} } } => ();
             _ => (
                let rf = std-c-compile-expr(ctx, rhs, false);
                f = f.set(c"frame", f.get(c"frame") + rf.get(c"frame"));

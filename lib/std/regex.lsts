@@ -29,7 +29,7 @@ let .has-prefix(text: String, rgx: Regex): U64 = (
 );
 
 let $"=="(text: CString, rgx: Regex): U64 = (
-   let matches = $"__uninitialized" : C<"regmatch_t">[1];
+   let matches = () : C<"regmatch_t">[1];
    let a1 = &rgx as C<"regex_t">[];
    let a2 = text as C<"char">[];
    let a3 = 1 as C<"size_t">;
@@ -47,7 +47,7 @@ let $"=="(text: CString, rgx: Regex): U64 = (
 
 # TODO remove (this method name is a misnomer), correct name is ".get-prefix"
 let .remove-prefix(text: String, rgx: Regex): String = (
-   let matches = $"__uninitialized" : C<"regmatch_t">[1];
+   let matches = () : C<"regmatch_t">[1];
    let a1 = &rgx as C<"regex_t">[];
    let a2 = text.start as C<"char">[];
    let a3 = 1 as C<"size_t">;
@@ -65,7 +65,7 @@ let .remove-prefix(text: String, rgx: Regex): String = (
 );
 
 let .get-prefix(text: String, rgx: Regex): String = (
-   let matches = $"__uninitialized" : C<"regmatch_t">[1];
+   let matches = () : C<"regmatch_t">[1];
    let a1 = &rgx as C<"regex_t">[];
    let a2 = text.start as C<"char">[];
    let a3 = 1 as C<"size_t">;

@@ -1053,7 +1053,7 @@ let lsts-parse-let(tokens: List<Token>): (AST, List<Token>) = (
       args-list = sig.first.args-list;
       return-type = sig.first.return-type;
    };
-   let return-term = Var( c"__uninitialized", with-location(mk-token("__uninitialized"),loc) );
+   let return-term = mk-nil();
    if lsts-parse-head(tokens) == c"=" {
       lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
       (return-term, tokens) = lsts-parse-small-expression(tokens);
