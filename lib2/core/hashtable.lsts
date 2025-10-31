@@ -6,64 +6,48 @@ type Hashtable<k,v> implies MustRetain, MustRelease
 
 
 let .release(x: Hashtable<k,v>): Nil = (
-   print(c"Release H 1\n");
    if (x.data as USize) != 0 {
-      print(c"Release H 2\n");
       x.data.release;
    };
    mark-as-released(x);
 );
 
 let .retain(x: Hashtable<k,v>): Hashtable<k,v> = (
-   print(c"Retain H 1\n");
    if (x.data as USize) != 0 {
-      print(c"Retain H 2\n");
       x.data.retain;
    };
    x
 );
 
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>, capacity: USize): Hashtable<k,v> = (
-   print(c"Mk 1\n");
    Hashtable( mk-sparse-owned-data(type((HashtableRowExists,k,v)), capacity) )
 );
 
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>): Hashtable<k,v> = (
-   print(c"Mk 2\n");
    # Default initial hashtable size is 0 (Stack Only)
    Hashtable( 0 as SparseOwnedData<(HashtableRowExists,k,v)>[] )
 );
 
 let mk-hashtable(capacity: USize): Hashtable<k,v> = (
-   print(c"Mk 3\n");
-   let r = Hashtable( mk-sparse-owned-data(type((HashtableRowExists,k,v)), capacity) );
-   print("Mk H Sparse Ref PValue:\{r.data as U64}\n");
-   r
+   Hashtable( mk-sparse-owned-data(type((HashtableRowExists,k,v)), capacity) );
 );
 
 let mk-hashtable(): Hashtable<k,v> = (
-   print(c"Mk 4\n");
    # Default initial hashtable size is 0 (Stack Only)
    Hashtable( 0 as SparseOwnedData<(HashtableRowExists,k,v)>[] )
 );
 
 let .bind(h: Hashtable<k,v>, key: k, val: v): Hashtable<k,v> = (
-   print(c"Bind 0\n");
    if (h.data as USize) == 0 or h.data.capacity == 0 {
       # Hashtables can be allocated on the stack as empty values
       # Resize these to size 32 next
-      print(c"Bind 1\n");
       h = mk-hashtable(32) : Hashtable<k,v>;
-      print("H Sparse Ref PValue:\{h.data as U64}\n");
-      print("H Sparse Ref:\{h.data.reference-count} Occupied:\{h.data.occupied} Capacity:\{h.data.capacity}\n");
    };
-   print(c"Bind 2\n");
    let occupied = h.data.occupied;
    let capacity = h.data.capacity;
    let contents = h.data;
    # Resize if >= 2/3 full
    if occupied >= capacity * 2 / 3 {
-      print(c"Bind 3\n");
       # Growth factor is 2x
       let new-h = mk-hashtable(capacity * 2) : Hashtable<k,v>;
       let old_i = 0_sz;
@@ -73,13 +57,9 @@ let .bind(h: Hashtable<k,v>, key: k, val: v): Hashtable<k,v> = (
          then new-h.bind-direct(old_kv.second, old_kv.third);
          old_i = old_i + 1;
       };
-      print(c"Bind 4\n");
       h = new-h;
-      print(c"Bind 5\n");
    };
-   print(c"Bind 6\n");
    h.bind-direct(key, val);
-   print(c"Bind 7\n");
    h
 );
 

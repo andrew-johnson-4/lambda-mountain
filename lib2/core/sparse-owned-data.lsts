@@ -15,7 +15,6 @@ let mk-sparse-owned-data(tt: Type<t>, capacity: USize, occupied: USize): SparseO
    od.reference-count = 1;
    od.occupied = occupied;
    od.capacity = capacity;
-   print("Mk Sparse Ref:\{od.reference-count} Occupied:\{od.occupied} Capacity:\{od.capacity} PValue:\{od as U64}\n");
    od
 );
 
@@ -39,9 +38,7 @@ let $"set[]"(od: SparseOwnedData<t>[], idx: USize, val: t): Nil = (
 );
 
 let .release(od: SparseOwnedData<t>[]): Nil = (
-   print(c"Release S 0\n");
    if (od as USize)!=0 {
-      print(c"Release S 1\n");
       od.reference-count = od.reference-count - 1;
       if od.reference-count == 0 {
          if type(t) <: type(MustRelease) {
@@ -58,9 +55,7 @@ let .release(od: SparseOwnedData<t>[]): Nil = (
 );
 
 let .retain(od: SparseOwnedData<t>[]): Nil = (
-   print(c"Retain S 0\n");
    if (od as USize)!=0 {
-      print(c"Retain S 1\n");
       od.reference-count = od.reference-count + 1;
    }
 );
