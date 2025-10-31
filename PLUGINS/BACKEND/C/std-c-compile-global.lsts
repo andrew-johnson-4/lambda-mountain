@@ -100,7 +100,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          ctx = std-c-compile-destructure-args( ctx, lhs, false );
          let loc = term.location;
          let initialized = match rhs {
-            App{ left:Lit{key:c":"}, right:App{ left:ASTNil{}, right:AType{} } } => false;
+            App{ left:Lit{key:c":"}, right:App{ left:ASTNil{}, right:AType{asc-tt=tt} } } => asc-tt.is-t(c"Nil",0);
             _ => true;
          };
          if initialized || can-unify(t1(c"C",t0(c"typedef")), tt) {
