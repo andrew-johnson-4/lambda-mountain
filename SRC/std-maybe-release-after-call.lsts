@@ -29,42 +29,43 @@ let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, p
          args-type = args-type.without-slot(c"MustNotMove",0);
       };
 
-      (let tmp-release, let tmp-return) = if param-types.is-t(c"MustNotRewrite",0) {
-         let tmp-id = uuid();
-         let tmp-def = mk-var(tmp-id); ascript-force(tmp-def, args-type);
-         let tmp-var2 = mk-var(tmp-id); ascript-force(tmp-var2, args-type);
-         tctx = tctx.bind(tmp-id, ta, args-type, tmp-def);
-         mark-var-to-def-todo(tctx, tmp-id, ta, tmp-var2);
-         let tmp-nil = mk-nil(); ascript-force(tmp-nil, t0(c"Nil"));
-         let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, t0(c"Nil"));
-         let bind = mk-app(declare, args); ascript-force(bind, t0(c"Nil"));
-
-         if non-zero(prefix)
-         then (prefix = mk-cons( prefix, bind ); ascript-force(prefix, t0(c"Nil"));)
-         else prefix = bind;
-
-         (tmp-var2, args)
-      } else {
-         let tmp-id = uuid();
-         let tmp-def = mk-var(tmp-id); ascript-force(tmp-def, args-type);
-         let tmp-var2 = mk-var(tmp-id); ascript-force(tmp-var2, args-type);
-         let tmp-direct = mk-var(tmp-id); ascript-force(tmp-direct, typeof-term(args));
-         tctx = tctx.bind(tmp-id, ta, args-type, tmp-def);
-         mark-var-to-def-todo(tctx, tmp-id, ta, tmp-var2);
-         mark-var-to-def-todo(tctx, tmp-id, ta, tmp-direct);
-         let tmp-nil = mk-nil(); ascript-force(tmp-nil, t0(c"Nil"));
-         let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, t0(c"Nil"));
-         let bind = mk-app(declare, args); ascript-force(bind, t0(c"Nil"));
-
-         if non-zero(prefix)
-         then (prefix = mk-cons( prefix, bind ); ascript-force(prefix, t0(c"Nil"));)
-         else prefix = bind;
-
-         (tmp-var2, tmp-direct)
-      };
-
+      let tmp-return = args;
       if param-types.is-t(c"MustReleaseAfterCall",0) and typeof-term(args).is-t(c"MustRelease",0)
       then {
+         (let tmp-release, tmp-return) = if param-types.is-t(c"MustNotRewrite",0) {
+            let tmp-id = uuid();
+            let tmp-def = mk-var(tmp-id); ascript-force(tmp-def, args-type);
+            let tmp-var2 = mk-var(tmp-id); ascript-force(tmp-var2, args-type);
+            tctx = tctx.bind(tmp-id, ta, args-type, tmp-def);
+            mark-var-to-def-todo(tctx, tmp-id, ta, tmp-var2);
+            let tmp-nil = mk-nil(); ascript-force(tmp-nil, t0(c"Nil"));
+            let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, t0(c"Nil"));
+            let bind = mk-app(declare, args); ascript-force(bind, t0(c"Nil"));
+
+            if non-zero(prefix)
+            then (prefix = mk-cons( prefix, bind ); ascript-force(prefix, t0(c"Nil"));)
+            else prefix = bind;
+
+            (tmp-var2, args)
+         } else {
+            let tmp-id = uuid();
+            let tmp-def = mk-var(tmp-id); ascript-force(tmp-def, args-type);
+            let tmp-var2 = mk-var(tmp-id); ascript-force(tmp-var2, args-type);
+            let tmp-direct = mk-var(tmp-id); ascript-force(tmp-direct, typeof-term(args));
+            tctx = tctx.bind(tmp-id, ta, args-type, tmp-def);
+            mark-var-to-def-todo(tctx, tmp-id, ta, tmp-var2);
+            mark-var-to-def-todo(tctx, tmp-id, ta, tmp-direct);
+            let tmp-nil = mk-nil(); ascript-force(tmp-nil, t0(c"Nil"));
+            let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, t0(c"Nil"));
+            let bind = mk-app(declare, args); ascript-force(bind, t0(c"Nil"));
+
+            if non-zero(prefix)
+            then (prefix = mk-cons( prefix, bind ); ascript-force(prefix, t0(c"Nil"));)
+            else prefix = bind;
+
+            (tmp-var2, tmp-direct)
+         };
+
          let release-type = tctx.find-callable(c".release", args-type, args ).dt;
          let release-var = mk-var(c".release"); ascript-force(release-var, release-type);
          (tctx, let release-return) = tctx.apply-callable(c".release", args-type, args);
