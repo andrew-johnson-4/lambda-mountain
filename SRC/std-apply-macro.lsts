@@ -102,7 +102,10 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
       (tctx, result) = std-apply-macro-candidates(tctx, mname, margs, candidates);
    };
    if strong && not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs}\n", margs);
-   if strong then (tctx, result) = std-infer-expr(tctx, result, false, used, ta);
+   if strong {
+      (tctx, result) = std-infer-expr(tctx, result, false, used, ta);
+      mark-free-and-seen(result);
+   };
    (tctx, result)
 );
 
@@ -124,6 +127,7 @@ let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type): (T
       TVar{} => (tctx, ta, t);
       _ => (
          (let protected-tctx, t) = std-infer-expr(tctx, t, false, Used(), ta);
+         mark-free-and-seen(t);
          tctx = tctx.with-pctx( protected-tctx.get-or(mk-tctx()).pctx );
          (tctx, typeof-term(t), t);
       );
