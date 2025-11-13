@@ -39,6 +39,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
                TGround{tag:c"MustReleaseAfterCall"} => ();
                TGround{tag:c"MustNotRewrite"} => ();
                TGround{tag:c"Phi::Transition", parameters:[phi-to..phi-from..]} => (
+                  print("Unify Transition: \{fpt} x \{pt}\n");
                   for st in rconjugate { match st {
                      TGround{tag:c"Phi::Id",parameters:[TGround{new-phi-id=tag}..]} => (
                         phi-id = new-phi-id;
@@ -51,7 +52,9 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
                   if can-unify(phi-from, phi-state-in)
                   then (
                      result = result && unify(phi-from, phi-state-in, blame);
+                     print("Transition Successful: \{result}\n");
                      phi-state-out = phi-state-out && phi-to;
+                     print("Transition Successful: \{result} x \{phi-state-out}\n");
                   );
                );
                TGround{ltag=tag} => (
@@ -83,6 +86,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
          };
          if non-zero(phi-id) and non-zero(phi-state-out) then {
             result = result.bind-phi(phi-id, phi-state-out, blame);
+            print("Bound Transition \{result} x \{phi-id},\{phi-state-out}\n");
          };
          ctx = result;
       );
