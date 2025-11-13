@@ -1,0 +1,3 @@
+Compilation Error: Unable to find appropriate callable: g A + CaseNumber<0> + CaseNumber<0> + LMStruct + LMStruct + Phi::Id<"uuid__d1ab000000000000"> + Phi::State<AState::First> + Sized + Sized return hint: ?
+At: In File tests/promises/phi/simple-reject.lsts Line 10 Column 1
+Candidate: Arrow<A + CaseNumber<0> + LMStruct + Phi::State<AState::Second> + Sized,Nil + Sized>

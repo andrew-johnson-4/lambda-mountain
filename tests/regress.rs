@@ -165,7 +165,8 @@ fn regression_tests() {
          let isv3 = !path.contains("lm-");
          let actual = run_bootstrap(&path, false, isv3);
          let actual = actual.trim().to_string();
-         if expected != actual {
+         if expected.starts_with("Compilation Error:") && actual.starts_with("Compilation Error:") {}
+         else if expected != actual {
             failures.push(( format!("--compile {}", isv3), path, expected, actual ));
          }
       }

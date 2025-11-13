@@ -1,0 +1,32 @@
+
+# .without-any-phi removes all top-level phi information
+# i.e. phi types for *this* type
+# Arrow parameters keep phi state because it is still part of that compound type
+
+let .without-any-phi(tt: Type): Type = (
+   match tt {
+      TAnd { conjugate=conjugate } => (
+         let result = mk-vector(type(Type), 0_u64);
+         for c in conjugate {
+            c = c.without-any-phi;
+            if non-zero(c) then result = result.push(c);
+         };
+         if result.length==0 then ta
+         else if result.length==1 then result[0]
+         else tand(result)
+      );
+      TGround { tag:c"Arrow", parameters:[rng..dom..] } => t2(c"Arrow",dom.without-phi-keep-state,rng.without-phi-keep-state);
+      TGround { tag:c"Phi::Id", parameters:[_..] } => ta;
+      TGround { tag:c"Phi::Transition", parameters:[_.._..] } => ta;
+      TGround { tag:c"Phi::State", parameters:[_..] } => ta;
+      TGround { tag=tag, parameters=parameters } => ts(tag, parameters.without-any-phi);
+      _ => tt;
+   }
+);
+
+let .without-any-phi(tt: List<Type>): List<Type> = (
+   match tt {
+      [hd..tl] => cons( hd.without-any-phi, tl.without-any-phi );
+      tl => tl;
+   }
+);

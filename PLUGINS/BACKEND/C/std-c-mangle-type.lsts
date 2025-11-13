@@ -1,6 +1,6 @@
 
 let std-c-mangle-type(tt: Type, blame: AST): S = (
-   tt = tt.normalize.rewrite-opaque-type-alias.normalize.without-phi;
+   tt = tt.normalize.rewrite-opaque-type-alias.normalize.without-any-phi;
    let r = std-c-mangle-type-internal(tt, blame);
    if not(non-zero(r)) then fail("Unable To Mangle \{tt}\nAt \{blame.location}\n\{blame}\n");
    r
