@@ -38,4 +38,3 @@ import LM23COMMON/type-without-phi-keep-state.lsts;
 import LM23COMMON/type-without-phi-keep-id.lsts;
 import LM23COMMON/type-most-special.lsts;
 import LM23COMMON/type-as-return-hint.lsts;
-import LM23COMMON/type-with-phi-id.lsts;

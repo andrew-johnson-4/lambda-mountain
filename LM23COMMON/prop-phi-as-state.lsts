@@ -6,7 +6,7 @@ let phi-as-state(tt: Type): Type = (
          for c in conjugate {
             new-conjugate = new-conjugate.push(phi-as-state(c));
          };
-         TAnd(new-conjugate);
+         tand(new-conjugate);
       );
       TGround{tag:c"Cons",parameters:[t1..t0..]} => t2(c"Cons",t0,t1);
       TGround{} => if tt.is-phi-type then t1(c"Phi::State",tt) else tt;

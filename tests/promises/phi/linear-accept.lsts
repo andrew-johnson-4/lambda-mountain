@@ -1,0 +1,12 @@
+
+import lib2/core/bedrock.lsts;
+
+type A = {};
+type phi AState = First{promise:'a} | Second;
+
+let f(a: A+AState::First<'a>): A+AState::Second = a;
+let g(a: A+AState::Second): Nil = ();
+
+let c(): Nil = (
+   g(f(A as AState::First<'a>));
+);

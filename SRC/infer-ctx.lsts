@@ -2,13 +2,13 @@
 let infer-ctx(tctx: TypeContext?, lhs: AST): TypeContext? = (
    match lhs {
       App{ left:Lit{key:c":"}, right:App{ v-t=left:Var{v=key,vtk=token}, right:AType{tt=tt} } } => (
-         (tctx, tt) = phi-initialize-parameter(tctx, tt, lhs);
+         (tctx, tt) = tctx.phi-initialize(tt, lhs);
          let dt = denormalize(tt) && t0(c"LocalVariable");
          let nt = tt.normalize;
          tctx = infer-tctx(tctx.bind(v, nt, dt, v-t), tt);
       );
       App{ ps=left, right:App{ left:Lit{key:c":"}, right:App{ v-t=left:Var{v=key,vtk=token}, right:AType{tt=tt} } } } => (
-         (tctx, tt) = phi-initialize-parameter(tctx, tt, lhs);
+         (tctx, tt) = tctx.phi-initialize(tt, lhs);
          let dt = denormalize(tt) && t0(c"LocalVariable");
          let nt = tt.normalize;
          tctx = infer-tctx(infer-ctx(tctx.bind(v, nt, dt, v-t),ps), tt);
