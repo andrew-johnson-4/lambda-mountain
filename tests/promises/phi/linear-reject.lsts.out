@@ -1,0 +1,3 @@
+Compilation Error: As A + Phi::Id<"uuid__4afb000000000000"> + Phi::State<AState::First<Linear<Phi::Live>>>
+Linear Variables Must Be Used: #uuid__4afb000000000000 AState::First<Linear<Phi::Live>> as('A(())(Phi::State<AState::First<Linear<Phi::Live>>>))
+In File tests/promises/phi/linear-reject.lsts Line 11 Column 6
