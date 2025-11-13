@@ -1,22 +1,10 @@
 
 let .phi-initialize(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Type) = (
-   if not(tt.is-t(c"Phi::Id",1)) {
-      (tctx, tt) = tctx.phi-initialize-inner(tt, blame);
-      tt = tctx.with-phi(tt);
-   } else if tt.is-t(c"Phi::State",1) {
-      let phi-id = tt.slot(c"Phi::Id",1).l1.simple-tag;
-      let phi-state = tt.slot(c"Phi::Id",1).l1;
-      tctx = tctx.bind-phi(phi-id, phi-state, blame);
-   };
-   (tctx, tt)
-);
-
-let .phi-initialize-inner(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Type) = (
    match tt {
       TAnd{conjugate=conjugate} => (
          let new-conjugate = mk-vector(type(Type), conjugate.length);
          for c in conjugate {
-            (tctx, c) = tctx.phi-initialize-inner(c, blame);
+            (tctx, c) = tctx.phi-initialize(c, blame);
             if non-zero(c) then new-conjugate = new-conjugate.push(c);
          };
          (tctx, tand(new-conjugate))
@@ -29,7 +17,7 @@ let .phi-initialize-inner(tctx: TypeContext?, tt: Type, blame: AST): (TypeContex
       TGround{tag=tag, parameters=parameters} => (
          let new-parameters = [] : List<Type>;
          for p in parameters.reverse {
-            (tctx, p) = tctx.phi-initialize-inner(p, blame);
+            (tctx, p) = tctx.phi-initialize(p, blame);
             new-parameters = cons(p, new-parameters);
          };
          (tctx, ts(tag,new-parameters))
