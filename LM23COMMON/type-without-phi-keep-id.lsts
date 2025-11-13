@@ -19,7 +19,7 @@ let .without-phi-keep-id(tt: Type): Type = (
       );
       TGround { tag:c"Arrow", parameters:[rng..dom..] } => t2(c"Arrow",dom.without-phi-keep-state,rng.without-phi-keep-state);
       TGround { tag:c"Phi::Id", parameters:[_..] } => tt;
-      TGround { tag:c"Phi::Transition", parameters:[_..] } => tt;
+      TGround { tag:c"Phi::Transition", parameters:[_.._..] } => tt;
       TGround { tag:c"Phi::State", parameters:[_..] } => ta;
       TGround { tag=tag, parameters=parameters } => ts(tag, parameters.without-phi);
       _ => tt;
