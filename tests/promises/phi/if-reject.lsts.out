@@ -1,0 +1,2 @@
+Compilation Error: Unable to find appropriate callable: phi Cons<AState::Second,AState::First> return hint: ?
+At: In File tests/promises/phi/if-reject.lsts Line 10 Column 3
