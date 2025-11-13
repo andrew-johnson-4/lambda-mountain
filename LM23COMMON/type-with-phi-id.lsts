@@ -1,0 +1,6 @@
+
+let .with-phi-id(tt: Type): Type = (
+   if tt.is-t(c"Phi::State",1) and not(tt.is-t(c"Phi::Id",1))
+   then tt && t1(c"Phi::Id",t0(uuid()))
+   else tt
+);
