@@ -34,7 +34,6 @@ let can-unify(fpt: Type, pt: Type): U64 = (
                TGround{tag:c"MustReleaseAfterCall"} => ();
                TGround{tag:c"MustNotRewrite"} => ();
                TGround{tag:c"Phi::Transition", parameters:[phi-to..phi-from..]} => (
-                  print("Can Unify Transition: \{fpt} x \{pt}\n");
                   let skip-state-check = false;
                   for st in rconjugate { match st {
                      TGround{tag:c"Phi::State",parameters:[new-phi-state..]} => (
