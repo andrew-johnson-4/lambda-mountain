@@ -91,7 +91,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          let inner-tt = typeof-term(t).normalize;
          if tt.simple-tag.has-prefix(c"Tag::") then tt = tt && inner-tt
          else tt = tt && inner-tt.with-only-class;
-         (tctx, tt) = tctx.phi-initialize(tt, term);
+         if tt.is-t(c"Phi::State",1) {
+            (tctx, tt) = tctx.phi-initialize(tt, term);
+         };
          tctx = tctx.ascript(term, tt);
       );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
