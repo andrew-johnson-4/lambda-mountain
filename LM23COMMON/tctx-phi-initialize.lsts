@@ -5,9 +5,16 @@ let .phi-initialize(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Ty
          let new-conjugate = mk-vector(type(Type), conjugate.length);
          for c in conjugate {
             (tctx, c) = tctx.phi-initialize(c, blame);
-            if non-zero(c) then new-conjugate = new-conjugate && c;
+            if non-zero(c) then match c {
+               TAnd{c-conjugate=conjugate} => (
+                  for cc in c-conjugate {
+                     new-conjugate = new-conjugate.push(cc);
+                  }
+               );
+               _ => new-conjugate = new-conjugate.push(c);
+            }
          };
-         (tctx, TAnd(new-conjugate))
+         (tctx, tand(new-conjugate))
       );
       TGround{tag:c"Phi::State",parameters:[init-tt..]} => (
          let phi-id = uuid();
