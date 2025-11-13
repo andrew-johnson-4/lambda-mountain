@@ -1,7 +1,13 @@
 
 let .phi-initialize(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Type) = (
-   (tctx, tt) = tctx.phi-initialize-inner(tt, blame);
-   tt = tctx.with-phi(tt);
+   if not(tt.is-t(c"Phi::Id",1)) {
+      (tctx, tt) = tctx.phi-initialize-inner(tt, blame);
+      tt = tctx.with-phi(tt);
+   } else if tt.is-t(c"Phi::State",1) {
+      let phi-id = tt.slot(c"Phi::Id",1).l1.simple-tag;
+      let phi-state = tt.slot(c"Phi::Id",1).l1;
+      tctx = tctx.bind-phi(phi-id, phi-state, blame);
+   };
    (tctx, tt)
 );
 
