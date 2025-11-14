@@ -15,14 +15,14 @@ mk-vector(type(String), 2).push("A").push("B");
 mk-vector(type(String), 2).push("A").push("B").push("C");
 assert( safe-alloc-block-count == 0 );
 
-#assert( mk-vector(type(U64), 2).push(123).push(456)[0] == 123 );
-#assert( safe-alloc-block-count == 0 );
+assert( mk-vector(type(U64), 2).push(123).push(456)[0] == 123 );
+assert( safe-alloc-block-count == 0 );
 
-#assert( mk-vector(type(U64), 2).push(123).push(456)[1] == 456 );
-#assert( safe-alloc-block-count == 0 );
+assert( mk-vector(type(U64), 2).push(123).push(456)[1] == 456 );
+assert( safe-alloc-block-count == 0 );
 
-#assert(
-#   mk-vector(type(String), 2).push("A").push("B").push("C") ==
-#   mk-vector(type(String), 2).push("A").push("B").push("C")
-#);
-#assert( safe-alloc-block-count == 0 );
+assert(
+   mk-vector(type(String), 2).push("A").push("B").push("C") ==
+   mk-vector(type(String), 2).push("A").push("B").push("C")
+);
+assert( safe-alloc-block-count == 0 );
