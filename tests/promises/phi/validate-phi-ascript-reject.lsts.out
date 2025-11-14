@@ -1,0 +1,5 @@
+Compilation Error: Ascripted value does not match declared type:
+Expected Phi::State<AState::Second>
+Found A + CaseNumber<0> + LMStruct + Phi::Id<"uuid__2d9b000000000000"> + Phi::State<AState::First> + Sized
+
+In File tests/promises/phi/validate-phi-ascript-reject.lsts Line 7 Column 4
