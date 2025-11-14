@@ -34,7 +34,7 @@ let mk-vector(): Vector<t> = (
 );
 
 let .length(v: Vector<t>): USize = (
-   if (v.data as USize) != 0 then 0 else v.data.occupied
+   if (v.data as USize) == 0 then 0 else v.data.occupied
 );
 
 let $"[]"(v: Vector<t>, idx: USize): t = (
@@ -58,9 +58,7 @@ let .push(v: Vector<t>, i: x): Vector<t> = (
    if (v.data as USize)==0 or v.data.occupied==v.data.capacity {
       let new_capacity = if v.length==0 then 4_sz
       else (v.length >> 1_sz) + v.length; # this is mul 1.5, not 3
-      let old-data = v.data; # TODO automatically call .release on mov destination
       v = v.realloc(new_capacity);
-      old-data.release;
    };
    v.data.push(i);
    v
