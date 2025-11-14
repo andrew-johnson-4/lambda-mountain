@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm tests/promises/list/comparison.lsts
+	lm tests/promises/phi/implied-phi-accept.lsts
 	gcc tmp.c
 	./a.out
 

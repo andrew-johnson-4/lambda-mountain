@@ -3,7 +3,7 @@ let implied-phi-index = {} : HashtableEq<(CString,U64),Type>;
 
 let .expand-implied-phi(tt: Type): Type = (
    let original-tt = tt;
-   match tt {
+   if not(tt.is-t(c"Phi::State",1)) then match tt {
       TAnd{conjugate=conjugate} => (
          for c in conjugate {
             let ga = c.ground-tag-and-arity;
