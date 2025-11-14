@@ -1,0 +1,5 @@
+Compilation Error: Return value does not match declared type:
+Expected A + Phi::State<AState::Second>
+Found A + CaseNumber<0> + LMStruct + LocalVariable + Phi::Id<"uuid__4feb000000000000"> + Phi::State<AState::First> + Sized
+
+In File tests/promises/phi/validate-phi-returns-reject.lsts Line 7 Column 1
