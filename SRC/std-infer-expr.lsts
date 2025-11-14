@@ -239,8 +239,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          if not(inner-rhs.is-nil) {
             (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type && t0(c"TailPosition"));
             if not(direct-tctx.is-blob) {
-               if not(can-unify(return-type, typeof-term(new-inner-rhs)))
-               then exit-error("Return value does not match declared type:\nExpected \{return-type}\nFound \{typeof-term(new-inner-rhs)}\n", term);
+               let return-type-after-alias = return-type.rewrite-type-alias;
+               if not(can-unify(return-type-after-alias, typeof-term(new-inner-rhs)))
+               then exit-error("Return value does not match declared type:\nExpected \{return-type-after-alias}\nFound \{typeof-term(new-inner-rhs)}\n", term);
             };
             tctx = tctx.phi-move(typeof-term(new-inner-rhs), term);
             if not(tctx.get-or(mk-tctx()).is-blob) {
