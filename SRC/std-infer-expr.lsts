@@ -94,6 +94,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          else tt = tt && inner-tt.with-only-class;
          if original-tt.is-t(c"Phi::State",1) {
             (tctx, tt) = tctx.phi-initialize(tt, term);
+            if typeof-term(t).is-linear-live
+            then tctx = tctx.phi-move(typeof-term(t), term);
          };
          tctx = tctx.ascript(term, tt);
       );
