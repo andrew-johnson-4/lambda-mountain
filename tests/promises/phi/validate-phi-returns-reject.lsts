@@ -1,0 +1,10 @@
+
+import lib2/core/bedrock.lsts;
+
+type A = {};
+type phi AState = First | Second;
+
+let f(a: A+AState::First): A+AState::Second = a;
+let g(a: A+AState::Second): Nil = ();
+
+g(f(A as AState::First));

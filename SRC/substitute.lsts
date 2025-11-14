@@ -90,7 +90,7 @@ let substitute(tctx: TypeContext?, t: AST, is-return: U64): AST = (
       ASTEOF{} => t;
       ASTNil{} => t;
       App{ left:Lit{key:c":",ctk=token}, right:App{ left:Var{v=key,vtk=token}, right:AType{vt=tt} } } => (
-         vt = substitute-macro(tctx, vt);
+         vt = substitute-macro(tctx, vt).expand-implied-phi.without-phi-keep-state;
          t = mk-app( mk-lit(c":",unique(ctk)), mk-app(mk-var(v,unique(vtk)), mk-atype(vt)) );
          let found = false;
          for TypeContextRow{tk=key,ta=def} in tctx.get-or(mk-tctx()).tctx {
@@ -101,7 +101,7 @@ let substitute(tctx: TypeContext?, t: AST, is-return: U64): AST = (
          }; t
       );
       App{ left:Lit{key:c":",ctk=token}, right:App{ inner-t=left, right:AType{vt=tt} } } => (
-         vt = substitute-macro(tctx, vt);
+         vt = substitute-macro(tctx, vt).expand-implied-phi.without-phi-keep-state;
          mk-app( mk-lit(c":",unique(ctk)), mk-app(substitute(tctx, inner-t), mk-atype(vt)) );
       );
       Lit{v=key,vtk=token} => mk-lit(v,unique(vtk));

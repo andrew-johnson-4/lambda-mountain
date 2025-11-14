@@ -14,13 +14,10 @@ let .phi-initialize(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Ty
          tctx = tctx.bind-phi(phi-id, init-tt, blame);
          (tctx, t1(c"Phi::Id",t0(phi-id)))
       );
-      TGround{tag=tag, parameters=parameters} => (
-         let new-parameters = [] : List<Type>;
-         for p in parameters.reverse {
-            (tctx, p) = tctx.phi-initialize(p, blame);
-            new-parameters = cons(p, new-parameters);
-         };
-         (tctx, ts(tag,new-parameters))
+      TGround{tag:c"Cons",parameters:[p2..p1..]} => (
+         (tctx, p1) = tctx.phi-initialize(p1, blame);
+         (tctx, p2) = tctx.phi-initialize(p2, blame);
+         (tctx, t2(c"Cons",p1,p2))
       );
       _ => (tctx, tt);
    };

@@ -1,0 +1,7 @@
+
+import lib2/core/bedrock.lsts;
+
+type A = {};
+type phi AState = First | Second;
+
+(A as AState::First) : AState::Second;

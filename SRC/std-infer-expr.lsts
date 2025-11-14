@@ -81,6 +81,14 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             (tctx, let new-t) = std-infer-expr(tctx, t, false, Tail(), tt);
             if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
             tctx = tctx.ascript(term, typeof-term(t));
+            let direct-tctx = tctx.get-or(mk-tctx());
+            if not(direct-tctx.is-blob or typeof-term(t).is-arrow) {
+               # TODO: remove the special exception for "Arrows" here, which is a workaround for raw constructors
+               # frontend is producing ((None : TContext?)()) instead of (None() : TContext?)
+               # the return hint stuff is working, so all the hard work is done. I think only the frontend needs to change
+               if not(can-unify(tt, typeof-term(t)))
+               then exit-error("Ascripted value does not match declared type:\nExpected \{tt}\nFound \{typeof-term(t)}\n", term);
+            };
          };
       );
       App{asc=left:Var{key:c"as"}, right:App{t=left,right:AType{tt=tt}}} => (
@@ -178,11 +186,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             match new-val {
                Abs{lhs=lhs, old-wrapped-rhs=rhs:App{ akey=left:Lit{key:c":"}, right:App{ rhs=left, right:AType{rhs-tt=tt} } }, tlt=tt} => (
                   if not(tlt.is-t(c"Blob",0) || tlt.is-t(c"C-FFI",0) || tlt.is-t(c"FFI",0) || tlt.is-t(c"Phi::Source",0) ) {
-                     rhs-tt = rhs-tt.rewrite-type-alias;
-                     if not(can-unify(rhs-tt.without-phi, typeof-term(rhs)))
-                     then exit-error("Return value does not match declared type:\nExpected \{rhs-tt}\nFound \{typeof-term(rhs)}\n", term);
-                  };
-                  if not(tlt.is-t(c"Blob",0) || tlt.is-t(c"C-FFI",0) || tlt.is-t(c"FFI",0) || tlt.is-t(c"Phi::Source",0) ) {
                      validate-pctx-release(inner-tctx);
                   };
                );
@@ -235,6 +238,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = infer-ctx(tctx, lhs);
          if not(inner-rhs.is-nil) {
             (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type && t0(c"TailPosition"));
+            if not(direct-tctx.is-blob) {
+               let return-type-after-alias = return-type.rewrite-type-alias;
+               if not(can-unify(return-type-after-alias, typeof-term(new-inner-rhs)))
+               then exit-error("Return value does not match declared type:\nExpected \{return-type-after-alias}\nFound \{typeof-term(new-inner-rhs)}\n", term);
+            };
             tctx = tctx.phi-move(typeof-term(new-inner-rhs), term);
             if not(tctx.get-or(mk-tctx()).is-blob) {
                (tctx, new-inner-rhs) = release-locals(before-tctx, tctx, new-inner-rhs, misc-tt);
