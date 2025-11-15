@@ -38,6 +38,9 @@ let mk-hashtable(): Hashtable<k,v> = (
 );
 
 let .bind(h: Hashtable<k,v>, key: k, val: v): Hashtable<k,v> = (
+   print("Bind \{key} : \{val}\n");
+   let alloc-count = safe-alloc-block-count;
+   print("Before Bind: \{alloc-count}\n");
    if (h.data as USize) == 0 or h.data.capacity == 0 {
       # Hashtables can be allocated on the stack as empty values
       # Resize these to size 32 next
@@ -48,6 +51,8 @@ let .bind(h: Hashtable<k,v>, key: k, val: v): Hashtable<k,v> = (
    let contents = h.data;
    # Resize if >= 2/3 full
    if occupied >= capacity * 2 / 3 {
+      alloc-count = safe-alloc-block-count;
+      print("Before Resize Count: \{alloc-count}\n");
       # Growth factor is 2x
       let new-h = mk-hashtable(capacity * 2) : Hashtable<k,v>;
       let old_i = 0_sz;
@@ -57,9 +62,15 @@ let .bind(h: Hashtable<k,v>, key: k, val: v): Hashtable<k,v> = (
          then new-h.bind-direct(old_kv.second, old_kv.third);
          old_i = old_i + 1;
       };
+      alloc-count = safe-alloc-block-count;
+      print("After Resize Count Before Overassign: \{alloc-count}\n");
       h = new-h;
+      alloc-count = safe-alloc-block-count;
+      print("After Resize Count After Overassign: \{alloc-count}\n");
    };
    h.bind-direct(key, val);
+   alloc-count = safe-alloc-block-count;
+   print("After Bind: \{alloc-count}\n");
    h
 );
 
