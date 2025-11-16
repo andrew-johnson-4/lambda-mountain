@@ -34,7 +34,7 @@ let .bind-global(tctx: TypeContext?, k: CString, nt: Type, dt: Type, blame: AST)
 let .bind-phi(tctx: TypeContext?, k: CString, kt: Type, blame: AST): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
-      cons( PhiContextRow(k,kt,blame,false) , tctx.get-or(mk-tctx()).pctx ),
+      cons( PhiContextRow(k,kt,blame) , tctx.get-or(mk-tctx()).pctx ),
       tctx.get-or(mk-tctx()).is-unsafe,
       tctx.get-or(mk-tctx()).is-blob,
       tctx.get-or(mk-tctx()).function-name

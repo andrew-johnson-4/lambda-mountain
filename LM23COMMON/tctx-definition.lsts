@@ -2,7 +2,7 @@
 let global-tctx = {} : HashtableEq<CString,List<TypeContextRow>>;
 
 type TypeContextRow zero NullTypeContextRow = NullTypeContextRow | TypeContextRow { key: CString, nt: Type, dt: Type, blame: AST };
-type PhiContextRow zero NullPhiContextRow = NullPhiContextRow | PhiContextRow { phi-id: CString, phi-tt: Type, blame: AST, dead-on-arrival: U64 };
+type PhiContextRow zero NullPhiContextRow = NullPhiContextRow | PhiContextRow { phi-id: CString, phi-tt: Type, blame: AST };
 type TypeContext = { tctx:List<TypeContextRow>, pctx: List<PhiContextRow>, is-unsafe: U64, is-blob: U64, function-name:CString };
 let mk-tctx(): TypeContext = TypeContext( [] : List<TypeContextRow>, [] : List<PhiContextRow>, false, false, c"" );
 
@@ -55,10 +55,3 @@ let .blame(tr: PhiContextRow): AST = (
       _ => ASTEOF;
    }
 );
-let .dead-on-arrival(tr: PhiContextRow): U64 = (
-   match tr {
-      PhiContextRow{ dead-on-arrival=dead-on-arrival } => dead-on-arrival;
-      _ => false;
-   }
-);
-

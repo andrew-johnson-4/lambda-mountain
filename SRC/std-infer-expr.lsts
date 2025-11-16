@@ -288,7 +288,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   (tctx, let new-r) = std-infer-call-arg(tctx, r, var-name-if-var-or-lit(l), rr-args-hint);
                   let ftype = typeof-term(tctx.find-callable( var-name-if-var-or-lit(l), typeof-term(new-r), term ).blame);
                   if ftype.domain.is-any-arg-t(c"MustNotRetain",0) {
-                     pre-retain-tctx = pre-retain-tctx.phi-append-dead-on-arrival(tctx);
+                     pre-retain-tctx = pre-retain-tctx.phi-append(tctx);
                      (tctx, new-r) = std-infer-call-arg(pre-retain-tctx, r, var-name-if-var-or-lit(l), ftype.domain && rr-args-hint);
                   };
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
