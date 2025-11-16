@@ -298,7 +298,7 @@ let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
          lsts-parse-expect(c"~", tokens); tokens = tail(tokens);
          lsts-parse-expect(c">", tokens); tokens = tail(tokens);
          (let tail-type, tokens) = lsts-parse-type-conjugate(tokens);
-         base-type = t2(c"Phi::Transition", base-type, tail-type);
+         base-type = t2(c"Phi::Transition", base-type, tail-type) && t0(c"MustNotFresh");
       }
    };
    (base-type, tokens)

@@ -6,13 +6,15 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
       tctx = tctx.phi-move(rhs-tt, blame);
    };
    tctx = tctx.bind(key, ta, tt, def);
+   if key==c"r" then print("tuple.lsts let \{key} => \{tt}\n");
    (tctx, tt)
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
    if not(term.is-free-and-seen) { match term {
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
-         if typeof-var-raw(term, tctx, lname, true).is-t(c"LocalVariable",0)
+         (tctx, let check-tt) = typeof-var-raw(term, tctx, lname, true);
+         if check-tt.is-t(c"LocalVariable",0)
          then exit-error("Variable Name Is Already Bound In Outer Scope \{lname}", term);
          (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Tail(), ta);
          if not(is(rhs,new-rhs)) then { rhs = new-rhs; term = mk-app(mk-abs(def,mk-nil(),misc-tt),rhs); };
@@ -200,7 +202,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          };
       );
       Var{key=key, token=token} => (
-         let vt = typeof-var(term, tctx, key, hint.is-t(c"MustNotFresh",0));
+         if key=="r" then print("tuple.lsts ref r hint = \{hint}\n");
+         (tctx, let vt) = typeof-var(term, tctx, key, hint.is-t(c"MustNotFresh",0));
          vt = tctx.with-phi(vt, term);
          mark-var-to-def-todo(tctx, key, ta, term);
          # TailPosition LocalVariables don't need to be retained because +1/-1 retain/release cancels itself out
@@ -294,6 +297,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, ta);
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
                };
+               if var-name-if-var-or-lit(l)==c"mark-as-released" then print("tuple.lsts mark-as-released final r = \{tctx.with-phi(typeof-term(r),term)}\n");
 
                (tctx, let function-type, rt) = if typeof-term(l).is-arrow && non-zero(lit-name-if-lit(l)) {
                   let direct-hint = hint-if-hint(l);
