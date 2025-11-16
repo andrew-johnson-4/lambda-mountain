@@ -39,5 +39,7 @@ let .apply-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: 
       }
    };
 
+   if fname==c"[]" and return-type.is-t(c"Tuple",3) then print("[] sparse returns \{return-type}\n");
+
    (tctx, return-type)
 );

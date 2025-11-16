@@ -2,10 +2,11 @@
 let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, blame: AST, hint: Type): (TypeContext?, Type) = (
    let rhs-tt = tctx.with-phi(typeof-term(rhs));
    let tt = rhs-tt && t0(c"LocalVariable");
-   if not(hint.is-t(c"MustNotMove",0)) {
+   if not(hint.is-t(c"MustNotMove",0)) and not(tt.is-t(c"MustRetain",0)) {
       tctx = tctx.phi-move(rhs-tt, blame);
    };
    tctx = tctx.bind(key, ta, tt, def);
+   print("Bind \{key} : \{tt} -> \{tctx.with-phi(tt)}\n");
    (tctx, tt)
 );
 
