@@ -7,7 +7,6 @@ let .with-phi(tctx: TypeContext?, tt: Type, blame: AST): Type = (
       let nt = tt;
       if tt.is-t(c"Phi::State",1) then nt = tt.without-slot(c"Phi::State",1);
       let phi-state = tctx.lookup-phi(tt.slot(c"Phi::Id",1).l1.simple-tag).phi-tt;
-      if not(non-zero(phi-state)) then print("Could not find phi variable: \{tt} at \{blame.location} \{blame}\n");
       if non-zero(phi-state) then tt = nt && t1(c"Phi::State", phi-state);
    };
    tt

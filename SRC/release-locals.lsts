@@ -46,10 +46,9 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    };
    while non-zero(tctx-after-pctx) && not(is(tctx-before-pctx, tctx-after-pctx)) {
       let tr = head(tctx-after-pctx);
-      if not(pid-seen.has(tr.phi-id)) and tr.phi-tt.slot(c"MustRelease::ToRelease",1).is-linear-live {
+      if tr.dead-on-arrival and not(pid-seen.has(tr.phi-id)) and tr.phi-tt.slot(c"MustRelease::ToRelease",1).is-linear-live {
          pid-seen = pid-seen.bind(tr.phi-id,true);
-         print("Maybe should we move this? \{tr.phi-id}\n");
-         #tctx-after = tctx-after.bind-phi(tr.phi-id,tr.phi-tt.move-linear,tr.blame);
+         tctx-after = tctx-after.bind-phi(tr.phi-id, tr.phi-tt.move-linear, tr.blame);
       };
       tctx-after-pctx = tail(tctx-after-pctx);
    };
