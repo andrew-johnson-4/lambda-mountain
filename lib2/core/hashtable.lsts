@@ -90,7 +90,9 @@ let $"map::cons"(key: k, val: v, h: Hashtable<k,v>): Hashtable<k,v> = (
 
 
 let $"[]"(h: Hashtable<k,v>, key: k): Maybe<k> = (
+   print("before find h.ref = \{h.data.reference-count} key.ref = \{key.data.reference-count}\n");
    let row_index = h.find-row-index-by-key(key);
+   print("after find h.ref = \{h.data.reference-count} key.ref = \{key.data.reference-count}\n");
    if row_index == (-1 as USize)
    then (None : Maybe<v>)
    else Some(h.data[row_index].third)
@@ -104,13 +106,13 @@ let .find-row-index-by-key(h: Hashtable<k,v>, key: k): USize = (
       let contents = h.data;
       let ki = (key_hash as USize) % contents.capacity;
       let kv = contents[ki];
-      if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
-      while not(is(kv.first,HashtableRowEmpty)) and not(found) {
-         ki = (ki + 1) % contents.capacity;
-         kv = contents[ki];
-         if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
-      };
-      if found then row_index = ki;
+      #if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
+      #while not(is(kv.first,HashtableRowEmpty)) and not(found) {
+      #   ki = (ki + 1) % contents.capacity;
+      #   kv = contents[ki];
+      #   if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
+      #};
+      #if found then row_index = ki;
    };
    row_index
 );
