@@ -1,11 +1,12 @@
 
 let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>, blame: AST): List<PhiContextRow> = (
    let seen = mk-vector(type(CString));
-   for Tuple{ sid=phi-id, st=phi-tt, pblame=blame } in tctx-secondary {
+   for Tuple{ sid=phi-id, st=phi-tt, pblame=blame, sdead-on-arrival=dead-on-arrival } in tctx-secondary {
       if not(seen.contains(sid)) {
          let pt = tctx-primary.lookup(sid);
          if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,pblame,pt.dead-on-arrival), tctx-primary )
          else (
+            print("Merge \{sdead-on-arrival} \{typeof-term(pblame)} x \{pt.dead-on-arrival} \{typeof-term(pt.blame)}\n");
             let rt = tctx-globals.phi-merge(pt.phi-tt, st, blame);
             if not(is(pt.phi-tt,rt)) then tctx-primary = cons( PhiContextRow(sid,rt,blame,pt.dead-on-arrival), tctx-primary );
          );

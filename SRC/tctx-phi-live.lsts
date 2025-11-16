@@ -1,0 +1,14 @@
+
+let .phi-live(tctx: TypeContext?, tt: Type): TypeContext? = (
+   match tt {
+      TGround{tag:c"Cons",parameters:[p2..p1..]} => (
+         tctx = tctx.phi-live(p1);
+         tctx = tctx.phi-live(p2);
+      );
+      _ => (
+         let pr = tctx.lookup-phi(tt.slot(c"Phi::Id",1).l1.simple-tag);
+         if non-zero(pr) then print("Phi Live: dead:\{pr.dead-on-arrival} \{pr.phi-id} \{tt}\n");
+      );
+   };
+   tctx
+);
