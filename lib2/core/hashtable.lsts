@@ -90,9 +90,7 @@ let $"map::cons"(key: k, val: v, h: Hashtable<k,v>): Hashtable<k,v> = (
 
 
 let $"[]"(h: Hashtable<k,v>, key: k): Maybe<k> = (
-   print("before find h.ref = \{h.data.reference-count} key.ref = \{key.data.reference-count}\n");
    let row_index = h.find-row-index-by-key(key);
-   print("after find h.ref = \{h.data.reference-count} key.ref = \{key.data.reference-count}\n");
    if row_index == (-1 as USize)
    then (None : Maybe<v>)
    else Some(h.data[row_index].third)
