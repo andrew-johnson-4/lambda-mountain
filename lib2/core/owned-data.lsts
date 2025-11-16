@@ -35,7 +35,6 @@ let $"set[]"(od: OwnedData<t>[], idx: USize, val: t): Nil = (
    if idx >= od.occupied then fail("OwnedData set[\{idx}] Index Access Out of Bounds");
    if type(t) <: type(MustRelease) then od.data[idx].release;
    od.data[idx] = val;
-   mark-as-released(val);
 );
 
 let .push(od: OwnedData<t>[], d: s): Nil = (
