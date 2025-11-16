@@ -1,6 +1,6 @@
 
 let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, blame: AST, hint: Type): (TypeContext?, Type) = (
-   let rhs-tt = tctx.with-phi(typeof-term(rhs));
+   let rhs-tt = tctx.with-phi(typeof-term(rhs), rhs);
    let tt = rhs-tt && t0(c"LocalVariable");
    if not(hint.is-t(c"MustNotMove",0)) and not(tt.is-t(c"MustRetain",0)) {
       tctx = tctx.phi-move(rhs-tt, blame);
@@ -202,7 +202,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       Var{key=key, token=token} => (
          let vt = typeof-var(term, tctx, key, hint.is-t(c"MustNotFresh",0));
-         vt = tctx.with-phi(vt);
+         vt = tctx.with-phi(vt, term);
          mark-var-to-def-todo(tctx, key, ta, term);
          # TailPosition LocalVariables don't need to be retained because +1/-1 retain/release cancels itself out
          if not(hint.is-t(c"TailPosition",0) && vt.is-t(c"LocalVariable",0))
@@ -332,7 +332,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   };
                };
 
-               rt = tctx.with-phi(rt);
+               rt = tctx.with-phi(rt, term);
                tctx = tctx.ascript(term, rt);
 
                (tctx, let prefix, let postfix, let new-args) = std-maybe-release-after-call(tctx, function-type, r);

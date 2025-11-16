@@ -6,7 +6,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    let needs-mark-release = [] : List<TypeContextRow>;
    while non-zero(tctx-after-tctx) && not(is(tctx-before-tctx, tctx-after-tctx)) {
       let tr = head(tctx-after-tctx);
-      let dt = tctx-after.with-phi(tr.denormalized);
+      let dt = tctx-after.with-phi(tr.denormalized, term);
       if dt.slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).is-linear-live {
          if dt.is-t(c"MustNotRetain",0)
          then needs-mark-release = cons(tr, needs-mark-release)
@@ -37,7 +37,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       term = mk-cons(term, return-term); tctx-after.ascript(term,return-type);
    };
    for nd in needs-mark-release {
-      tctx-after = tctx-after.phi-move(tctx-after.with-phi(nd.denormalized), term);
+      tctx-after = tctx-after.phi-move(tctx-after.with-phi(nd.denormalized, term), term);
    };
    tctx-before = tctx-before.phi-append(tctx-after);
    (tctx-before, term)
