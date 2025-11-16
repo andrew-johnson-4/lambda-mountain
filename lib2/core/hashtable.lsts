@@ -104,13 +104,13 @@ let .find-row-index-by-key(h: Hashtable<k,v>, key: k): USize = (
       let contents = h.data;
       let ki = (key_hash as USize) % contents.capacity;
       let kv = contents[ki];
-      #if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
-      #while not(is(kv.first,HashtableRowEmpty)) and not(found) {
-      #   ki = (ki + 1) % contents.capacity;
-      #   kv = contents[ki];
-      #   if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
-      #};
-      #if found then row_index = ki;
+      if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
+      while not(is(kv.first,HashtableRowEmpty)) and not(found) {
+         ki = (ki + 1) % contents.capacity;
+         kv = contents[ki];
+         if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
+      };
+      if found then row_index = ki;
    };
    row_index
 );
