@@ -8,7 +8,8 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       let tr = head(tctx-after-tctx);
       let dt = tctx-after.with-phi(tr.denormalized, term);
       if dt.slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).is-linear-live {
-         if dt.is-t(c"MustNotRetain",0)
+         let pt = tctx-after.lookup-phi(dt.slot(c"Phi::Id",1).l1.simple-tag);
+         if dt.is-t(c"MustNotRetain",0) or pt.dead-on-arrival
          then needs-mark-release = cons(tr, needs-mark-release)
          else needs-release = cons(tr, needs-release);
       };
