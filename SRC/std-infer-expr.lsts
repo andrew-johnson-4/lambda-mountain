@@ -2,7 +2,7 @@
 let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, blame: AST, hint: Type): (TypeContext?, Type) = (
    let rhs-tt = tctx.with-phi(typeof-term(rhs));
    let tt = rhs-tt && t0(c"LocalVariable");
-   if not(hint.is-t(c"MustNotMove",0)) {
+   if not(hint.is-t(c"MustNotMove",0)) and not(tt.is-t(c"MustRetain",0)) {
       tctx = tctx.phi-move(rhs-tt, blame);
    };
    tctx = tctx.bind(key, ta, tt, def);
@@ -86,6 +86,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                # TODO: remove the special exception for "Arrows" here, which is a workaround for raw constructors
                # frontend is producing ((None : TContext?)()) instead of (None() : TContext?)
                # the return hint stuff is working, so all the hard work is done. I think only the frontend needs to change
+               tt = tt.without-slot(c"ReturnHint",0);
                if not(can-unify(tt, typeof-term(t)))
                then exit-error("Ascripted value does not match declared type:\nExpected \{tt}\nFound \{typeof-term(t)}\n", term);
             };
