@@ -35,12 +35,14 @@ let $"set[]"(od: SparseOwnedData<t>[], idx: USize, val: t): Nil = (
    if idx >= od.capacity then fail("SparseOwnedData set[\{idx}] Index Access Out of Bounds");
    if type(t) <: type(MustRelease) then od.data[idx].release;
    od.data[idx] = val;
+   mark-as-released(val);
 );
 
 let .release(od: SparseOwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
       od.reference-count = od.reference-count - 1;
       if od.reference-count == 0 {
+         print(c"Release Sparse Data\n");
          if type(t) <: type(MustRelease) {
             let dlo = 0_sz;
             let dhi = od.capacity;

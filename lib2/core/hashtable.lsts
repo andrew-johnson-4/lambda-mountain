@@ -73,10 +73,12 @@ let .bind-direct(h: Hashtable<k,v>, key: k, val: v): Nil = (
       let contents = h.data;
       let ki = (key_hash as USize) % contents.capacity;
       let kv = contents[ki];
+      print("kv.ref = \{if (kv.second.data as USize)!=0 then kv.second.data.reference-count else 0},\{if (kv.third.data as USize)!=0 then kv.second.data.reference-count else 0}\n");
       if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
       while not(found) and is(kv.first,HashtableRowFilled) {
          ki = (ki + 1) % contents.capacity;
          kv = contents[ki];
+         print("kv.ref = \{if (kv.second.data as USize)!=0 then kv.second.data.reference-count else 0},\{if (kv.third.data as USize)!=0 then kv.second.data.reference-count else 0}\n");
          if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
       };
       if not(is(kv.first,HashtableRowFilled)) then contents.occupied = contents.occupied + 1;
