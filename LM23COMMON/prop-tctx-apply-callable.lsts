@@ -39,7 +39,5 @@ let .apply-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: 
       }
    };
 
-   if fname==c"mark-as-released" then print("DOMARK \{arg-types} => \{tctx.with-phi(arg-types,blame)}\n");
-
    (tctx, return-type)
 );
