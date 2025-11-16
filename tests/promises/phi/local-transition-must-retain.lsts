@@ -1,0 +1,19 @@
+
+import lib2/core/bedrock.lsts;
+
+# MustRetain has different rules for transitions and some phi inference
+# this is due to linear variables often being "copied" instead of "moved"
+# However, transitions should *always* apply to the bound initial variable directly, not the unique reference location
+
+type A implies MustRetain = {};
+type phi AState = First | Second;
+
+let .retain(a: A): A = a;
+let f(a: A+(AState::First ~> AState::Second)): Nil = ();
+let g(a: A+AState::Second): Nil = ();
+
+if true {
+   let x = A as AState::First;
+   f(x);
+   g(x);
+};

@@ -30,7 +30,6 @@ let .into(l: Tuple<x,y>, tt: Type<String>): String = (
 );
 
 let .release(t: Tuple<x,y,z>): Nil = (
-   print(c"Release 3-tuple\n");
    if type(x) <: type(MustRelease) { t.first.release; };
    if type(y) <: type(MustRelease) { t.second.release; };
    if type(z) <: type(MustRelease) { t.third.release; };
@@ -38,7 +37,6 @@ let .release(t: Tuple<x,y,z>): Nil = (
 );
 
 let .retain(t: Tuple<x,y,z>): Tuple<x,y,z> = (
-   print(c"Retain 3-tuple\n");
    if type(x) <: type(MustRetain) { let r = t.first.retain; mark-as-released(r); };
    if type(y) <: type(MustRetain) { let r = t.second.retain; mark-as-released(r); };
    if type(z) <: type(MustRetain) { let r = t.third.retain; mark-as-released(r); };

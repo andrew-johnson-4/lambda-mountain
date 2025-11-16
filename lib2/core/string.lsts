@@ -8,7 +8,6 @@ let .release(x: String): Nil = (
       # however, mark-as-released prevents this case of infinite recursion
       # this is necessary when writing custom .release implementations
       # but normally most users won't need to use "mark-as-released" very often
-      if x.data.reference-count==1 then print(c"Release String\n");
       x.data.release;
    };
    mark-as-released(x);
