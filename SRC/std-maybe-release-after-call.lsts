@@ -14,6 +14,7 @@ let is-paired-release(pt: Type, at: Type): U64 = (
 );
 
 let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, postfix: AST, args: AST): (TypeContext?, AST, AST, AST) = (
+   print("Release after call params:\{param-types} args:\{typeof-term(args)}\n");
    if param-types.is-t(c"Cons",2) { match args {
       App{ left=left, right=right } => (
          (tctx, prefix, postfix, left) = std-release-after-call(tctx, param-types.slot(c"Cons",2).l1, prefix, postfix, left);
@@ -26,6 +27,7 @@ let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, p
       let args-type = typeof-term(args);  
       if param-types.is-t(c"MustReleaseAfterCall",0) and typeof-term(args).is-t(c"MustRelease",0) {
          (tctx, args-type) = tctx.phi-fresh(typeof-term(args), args);
+         print("Fresh \{typeof-term(args)} x \{args-type}\n");
          args-type = args-type.without-slot(c"MustNotMove",0);
       };
 
