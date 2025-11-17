@@ -1,5 +1,5 @@
 
-import lib2/core/bedrock.lsts;
+import lib2/core/baremetal.lsts;
 
 # MustRetain has different rules for transitions and some phi inference
 # this is due to linear variables often being "copied" instead of "moved"
