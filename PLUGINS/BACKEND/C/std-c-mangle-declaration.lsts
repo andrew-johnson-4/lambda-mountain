@@ -1,7 +1,14 @@
 
 let std-c-mangle-declaration(tt: Type, blame: AST): Tuple<S,S> = (
    let is-flexible-array-member = tt.is-t(c"FlexibleArrayMember",0);
-   std-c-mangle-declaration-internal(tt.normalize.rewrite-opaque-type-alias.without-any-phi, is-flexible-array-member, blame);
+   let o-tt-1 = tt;
+   let o-tt-2 = o-tt-1.normalize;
+   let o-tt-3 = o-tt-2.rewrite-opaque-type-alias;
+   let o-tt-4 = o-tt-3.without-any-phi;
+   tt = tt.normalize.rewrite-opaque-type-alias.without-any-phi;
+   let r = std-c-mangle-declaration-internal(tt, is-flexible-array-member, blame);
+   if clone-rope(r.first)+clone-rope(r.second)==c"" then print("Empty Decl \{o-tt-1} \{o-tt-2} \{o-tt-3} \{o-tt-4}\n");
+   r
 );
 
 let std-c-mangle-declaration-internal(tt: Type, blame: AST): Tuple<S,S> = std-c-mangle-declaration-internal(tt, false, blame);
