@@ -200,7 +200,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          };
       );
       Var{key=key, token=token} => (
-         (tctx, let vt) = typeof-var(term, tctx, key, hint.is-t(c"MustNotFresh",0));
+         (tctx, let vt) = typeof-var(term, tctx, key, hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
          vt = tctx.with-phi(vt, term);
          print("typeof Var 1 \{key} : hint=\{hint}, val=\{vt}\n");
          mark-var-to-def-todo(tctx, key, ta, term);
@@ -245,6 +245,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                if not(can-unify(return-type-after-alias, typeof-term(new-inner-rhs)))
                then exit-error("Return value does not match declared type:\nExpected \{return-type-after-alias}\nFound \{typeof-term(new-inner-rhs)}\n", term);
             };
+            print("Return value \{typeof-term(new-inner-rhs)}\n");
             tctx = tctx.phi-move(typeof-term(new-inner-rhs), term);
             if not(tctx.get-or(mk-tctx()).is-blob) {
                (tctx, new-inner-rhs) = release-locals(before-tctx, tctx, new-inner-rhs, misc-tt);
