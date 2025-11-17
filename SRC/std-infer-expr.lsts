@@ -60,8 +60,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       App{asc=left:Lit{key:c":"}, right:App{inner=left:ASTNil{},right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
-         if not(tt.is-t(c"C-FFI",0)) and not(can-unify(tt, typeof-term(inner)))
-         then exit-error("Ascripted value does not match declared type:\nExpected \{tt}\nFound \{typeof-term(inner)}\n", term);
          add-concrete-type-instance(tt, term);
          tctx = tctx.ascript(inner, t0(c"Nil"));
          tctx = tctx.ascript(term, tt);
@@ -79,7 +77,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          } else {
             tt = tt.rewrite-type-alias;
             add-concrete-type-instance(tt, term);
-            (tctx, let new-t) = std-infer-expr(tctx, t, false, Tail(), tt);
+            (tctx, let new-t) = std-infer-expr(tctx, t, false, Tail, tt);
             if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
             tctx = tctx.ascript(term, typeof-term(t));
             let direct-tctx = tctx.get-or(mk-tctx());
@@ -271,7 +269,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             (tctx, let new-l) = std-infer-expr(tctx, l, false, if used.is-call then used else Unused, lhint);
             let r-used = if used.is-tail then used else Used;
             if typeof-term(new-l).is-arrow then r-used = Call(var-name-if-var-or-lit(new-l)); # if l was a macro then it could be macro::concat
-            (tctx, let new-r) = std-infer-expr(tctx, r, false, if used.is-tail then used else Used, rhint);
+            (tctx, let new-r) = std-infer-expr(tctx, r, false, if used.is-tail then used else if used.is-unused then used else Used, rhint);
             if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-cons(new-l, new-r) };
             tctx = tctx.ascript(term, if used.is-tail then typeof-term(r) else t2(c"Cons", typeof-term(l), typeof-term(r)));
          } else {
@@ -367,8 +365,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       _ => fail("Unexpected Term in std-infer-expr\n\{term}\n");
    };
+   if used.is-unused {
+      print("Unused release \{typeof-term(term)}\n");
+   };
    if used.is-unused && typeof-term(term).slot(c"Phi::State",1).is-linear-live {
-      print("Unused release\n");
+      print("Unused release \{typeof-term(term)}\n");
       if typeof-term(term).slot(c"Phi::State",1).is-t(c"MustRelease::ToRelease",1) {
          (tctx, term) = wrap-call(tctx, c".release", term);
       } else {
