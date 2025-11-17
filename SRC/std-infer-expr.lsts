@@ -291,7 +291,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   if ftype.domain.is-any-arg-t(c"MustNotRetain",0) {
                      let post-retain-tctx = tctx;
                      (tctx, new-r) = std-infer-call-arg(pre-retain-tctx, r, var-name-if-var-or-lit(l), ftype.domain && rr-args-hint);
-                     print("Must Not Retain \{typeof-term(new-r)}\n");
                      tctx = tctx.phi-append-dead-on-arrival(post-retain-tctx);
                   };
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
