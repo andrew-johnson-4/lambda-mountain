@@ -1,5 +1,6 @@
 
 let .phi-fresh(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Type) = (
+   tt = tctx.with-phi(tt, blame);
    let old-phi-id = tt.slot(c"Phi::Id",1).l1.simple-tag;
    let old-phi-state = tt.slot(c"Phi::State",1).l1;
    if non-zero(old-phi-id) and non-zero(old-phi-state)

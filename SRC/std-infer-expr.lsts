@@ -214,7 +214,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          } else {
             tctx = tctx.ascript(term, vt);
          };
-         let must-not-fresh = hint.is-t(c"MustNotFresh",0);
+         print("Var \{key} : hint=\{hint}, val=\{tctx.with-phi(vt,term)}\n");
       );
       Lit{key=key, token=token} => (
          if hint.is-t(c"Literal",0) {
@@ -284,7 +284,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                if typeof-term(l).is-arrow {
                   let rr-args-hint = if var-name-if-var-or-lit(l)==c".retain" || var-name-if-var-or-lit(l)==c".release"
                   then t0(c"MustNotRetain") else ta;
-                  if  var-name-if-var-or-lit(l)==c".release" then rr-args-hint = rr-args-hint && t0(c"MustNotFresh");
+                  if var-name-if-var-or-lit(l)==c".release" then rr-args-hint = rr-args-hint && t0(c"MustNotFresh");
                   let pre-retain-tctx = tctx;
                   (tctx, let new-r) = std-infer-call-arg(tctx, r, var-name-if-var-or-lit(l), rr-args-hint);
                   let ftype = typeof-term(tctx.find-callable( var-name-if-var-or-lit(l), typeof-term(new-r), term ).blame);
@@ -377,6 +377,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
    if used.is-unused && typeof-term(term).slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1) {
       (tctx, term) = wrap-call(tctx, c".release", term);
    }};
+   print("\{term} : \{typeof-term(term)}\n");
    (tctx, term);
 );
 
