@@ -32,6 +32,7 @@ let .bind-global(tctx: TypeContext?, k: CString, nt: Type, dt: Type, blame: AST)
 );
 
 let .bind-phi(tctx: TypeContext?, k: CString, kt: Type, blame: AST): TypeContext? = (
+   print("Bind phi \{k} : \{kt}\n");
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
       cons( PhiContextRow(k,kt,blame,false) , tctx.get-or(mk-tctx()).pctx ),
