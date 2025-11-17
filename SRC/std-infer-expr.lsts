@@ -203,6 +203,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       Var{key=key, token=token} => (
          (tctx, let vt) = typeof-var(term, tctx, key, hint.is-t(c"MustNotFresh",0));
+         vt = tctx.with-phi(vt, term);
          print("typeof Var 1 \{key} : hint=\{hint}, val=\{vt}\n");
          mark-var-to-def-todo(tctx, key, ta, term);
          # TailPosition LocalVariables don't need to be retained because +1/-1 retain/release cancels itself out
@@ -339,6 +340,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 
                (tctx, let prefix, let postfix, let new-args) = std-maybe-release-after-call(tctx, function-type, r);
                if non-zero(postfix) {
+                  print("Release After Call \{term}\n");
                   if not(is(r,new-args)) { term = mk-app(l,new-args); ascript-force(term,rt); };
 
                   let tmp-id = uuid();
