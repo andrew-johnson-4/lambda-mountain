@@ -13,11 +13,10 @@ let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
             }
          };
          if tt.slot(c"Phi::Id",1).l1.simple-tag != prev-tt.slot(c"Phi::Id",1).l1.simple-tag {
-            tctx = tctx.phi-move(prev-tt, t);
+            tctx = tctx.phi-move(tt, t);
          }
-      };
+      } else ascript-force(t, tt);
       print("Ascript force with phi \{t} : \{tt}\n");
-      ascript-force(t, tt);
    };
    tctx
 );
