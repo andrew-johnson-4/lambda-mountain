@@ -287,13 +287,13 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   if  var-name-if-var-or-lit(l)==c".release" then rr-args-hint = rr-args-hint && t0(c"MustNotFresh");
                   let pre-retain-tctx = tctx;
                   (tctx, let new-r) = std-infer-call-arg(tctx, r, var-name-if-var-or-lit(l), rr-args-hint);
-                  print("call-arg 1 \{typeof-term(new-r)}\n");
+                  print("call-arg 1 \{term} \{typeof-term(new-r)}\n");
                   let ftype = typeof-term(tctx.find-callable( var-name-if-var-or-lit(l), typeof-term(new-r), term ).blame);
                   if ftype.domain.is-any-arg-t(c"MustNotRetain",0) {
                      let post-retain-tctx = tctx;
                      (tctx, new-r) = std-infer-call-arg(pre-retain-tctx, r, var-name-if-var-or-lit(l), ftype.domain && rr-args-hint);
                      tctx = tctx.phi-append-dead-on-arrival(post-retain-tctx);
-                     print("call-arg 2 \{typeof-term(new-r)}\n");
+                     print("call-arg 2 \{term} \{typeof-term(new-r)}\n");
                   };
                   if not(is(l,new-l)) || not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
                } else {
@@ -343,6 +343,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 
                (tctx, let prefix, let postfix, let new-args) = std-maybe-release-after-call(tctx, function-type, r);
                if non-zero(postfix) {
+                  print("Maybe release after call \{term} : \{rt}\n");
                   if not(is(r,new-args)) { term = mk-app(l,new-args); ascript-force(term,rt); };
 
                   let tmp-id = uuid();
@@ -365,7 +366,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 
                if not(rt.is-t(c"Cons",2)) {
                   if function-type.is-t(c"MustRetainOnCall",0) && not(hint.is-t(c"MustNotRetain",0)) && not(tctx.get-or(mk-tctx()).is-blob) {
-                    (tctx, term) = maybe-retain(tctx, term);
+                     print("Must Retain after call \{term} : \{rt}\n");
+                     (tctx, term) = maybe-retain(tctx, term);
+                     print("Must Retained after call \{term} : \{typeof-term(term)}\n");
                   }
                };
             };
@@ -378,8 +381,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       _ => fail("Unexpected Term in std-infer-expr\n\{term}\n");
    };
    if used.is-unused && typeof-term(term).slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1) {
+      print("Release unused \{term} : \{typeof-term(term)}\n");
       (tctx, term) = wrap-call(tctx, c".release", term);
+      print("Released unused \{term} : \{typeof-term(term)}\n");
    }};
+   print("Term Result \{term} : \{typeof-term(term)}\n");
    (tctx, term);
 );
 

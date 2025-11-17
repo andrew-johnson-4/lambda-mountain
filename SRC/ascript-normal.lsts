@@ -1,6 +1,8 @@
 
 let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
+   print("Ascript \{t} : \{tt}\n");
    tt = tctx.with-phi(tt, t);
+   print("Ascript with phi \{t} : \{tt}\n");
    if non-zero(tt) {
       let prev-tt = typeof-term(t);
       if non-zero(prev-tt) {
@@ -14,6 +16,7 @@ let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
             tctx = tctx.phi-move(prev-tt, t);
          }
       };
+      print("Ascript force with phi \{t} : \{tt}\n");
       ascript-force(t, tt);
    };
    tctx
@@ -22,5 +25,7 @@ let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
 let ascript-force(t: AST, tt: Type): Nil = (
    add-concrete-type-instance(tt, t);
    ascript-plain(t, tt);
+   type-index-normal = type-index-normal.bind(t, ta);
+   type-index-denormal = type-index-denormal.bind(t, ta);
    types-have-changed = true;
 );
