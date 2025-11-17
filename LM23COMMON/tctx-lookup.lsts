@@ -52,7 +52,7 @@ let .lookup(trs: List<PhiContextRow>, key: CString): PhiContextRow = (
    for tr in trs { if continue {
       if tr.phi-id == key {
          default = tr;
-         continue = false;
+         if not(tr.dead-on-arrival) then continue = false;
       }
    }};
    default

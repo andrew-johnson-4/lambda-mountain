@@ -11,7 +11,7 @@ let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
             }
          };
          if tt.slot(c"Phi::Id",1).l1.simple-tag != prev-tt.slot(c"Phi::Id",1).l1.simple-tag {
-            tctx = tctx.phi-move(tt, t);
+            tctx = tctx.phi-move(prev-tt, t);
          }
       };
       ascript-force(t, tt);

@@ -12,7 +12,7 @@ let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tct
             else tctx-primary = cons( PhiContextRow(sid,st,blame,true), tctx-primary );
          } else (
             let rt = tctx-globals.phi-merge(pt.phi-tt, st, blame);
-            if not(is(pt.phi-tt,rt)) then tctx-primary = cons( PhiContextRow(sid,rt,blame,pt.dead-on-arrival), tctx-primary );
+            if not(is(pt.phi-tt,rt)) then tctx-primary = cons( PhiContextRow(sid,rt,blame,false), tctx-primary );
          );
          seen = seen.push(sid);
       };
