@@ -3,6 +3,7 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
    let rhs-tt = tctx.with-phi(typeof-term(rhs), rhs);
    let tt = rhs-tt && t0(c"LocalVariable");
    if not(hint.is-t(c"MustNotMove",0)) and not(tt.is-t(c"MustRetain",0)) {
+      print("Bind Move \{rhs-tt}\n");
       tctx = tctx.phi-move(rhs-tt, blame);
    };
    tctx = tctx.bind(key, ta, tt, def);
@@ -105,6 +106,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          else tt = tt && inner-tt.with-only-class;
          if original-tt.is-t(c"Phi::State",1) {
             (tctx, tt) = tctx.phi-initialize(tt, term);
+            print("as move \{typeof-term(t)}\n");
             if typeof-term(t).is-linear-live
             then tctx = tctx.phi-move(typeof-term(t), term);
          };
@@ -320,18 +322,16 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   let to-tt = typeof-term(r).slot(c"Cons",2).l2;
                   match r {
                      App{ right:Var{dst-var=key} } => (
+                        print("Mov move from:\{from-tt}\n");
+                        print("Mov move to-tt\{to-tt}\n");
                         let real-to-tt = tctx.lookup(dst-var).direct-type;
                         if real-to-tt.slot(c"Phi::Id",1).l1.simple-tag != to-tt.slot(c"Phi::Id",1).l1.simple-tag {
                            tctx = tctx.phi-override(real-to-tt, from-tt, term);
-                           tctx = tctx.phi-move(to-tt, term);
                         } else {
                            tctx = tctx.phi-override(to-tt, from-tt, term);
                         }
                      );
                      _ => tctx = tctx.phi-override(to-tt, from-tt, term);
-                  };
-                  if not(hint.is-t(c"MustNotMove",0)) && not(to-tt.is-t(c"MustRetain",0)) {
-                     tctx = tctx.phi-move(from-tt, term);
                   };
                };
 
