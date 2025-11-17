@@ -2,8 +2,6 @@
 declare-unop( $"cdecl::return", raw-type(Any), raw-type(Nil), (l"return "; x; l";";) );
 declare-unop( $"cdecl::return", raw-type(Nil), raw-type(Nil), (x; l";";) );
 
-# if a variable is MustRetain here, then it should be moved because it will be a fresh variable
-declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs+MustRetain+MustNotRetain+MustReleaseAfterCall+MustNotRewrite), raw-type(Nil), ( l"({"; y; l"="; x; l";({});})"; ) );
 declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs+MustNotMove+MustNotRetain+MustReleaseAfterCall+MustNotRewrite), raw-type(Nil), ( l"({"; y; l"="; x; l";({});})"; ) );
 
 # needs to be declared to prevent a special case during inference
