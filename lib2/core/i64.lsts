@@ -35,35 +35,6 @@ let cmp(l: I64, r: I64): Ord = (
    else Equal
 );
 
-let .into(i: I64, tt: Type<String>): String = (
-   let od = mk-owned-data(type(U8), 20_sz);
-   let cs_length = 0_sz;
-   let is-negative = false;
-   if i < 0_i64 {
-      is-negative = true;
-      od.push(45);
-      cs_length = cs_length + 1;
-   } else if i == 0_i64 {
-      od.push(48);
-      cs_length = cs_length + 1;
-   };
-   while i != 0_i64 {
-      od.push(48 + (abs(i % 10) as U8));
-      cs_length = cs_length + 1;
-      i = i / 10;
-   };
-   let start_i = if is-negative then 1_sz else 0_sz;
-   let end_i = cs_length - 1_sz;
-   while start_i < end_i {
-      let tmpc = od.data[start_i];
-      od.data[start_i] = od.data[end_i];
-      od.data[end_i] = tmpc;
-      start_i = start_i + 1_sz;
-      end_i = end_i - 1_sz;
-   };
-   String(0 as USize, cs_length, od)
-);
-
 let abs(i: I64): I64 = if i<0 then 0_i64 - i else i;
 
 let hash(x: I64): U64 = x as U64;
