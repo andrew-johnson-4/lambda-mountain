@@ -6,7 +6,7 @@ let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tct
          let pt = tctx-primary.lookup(sid);
          if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,pblame,pt.dead-on-arrival), tctx-primary )
          else (
-            print("Merge \{sdead-on-arrival} \{typeof-term(pblame)} x \{pt.dead-on-arrival} \{typeof-term(pt.blame)}\n");
+            print("Merge \{sdead-on-arrival} \{typeof-term(pblame)},\{tctx-secondary.lookup(sid).phi-tt} x \{pt.dead-on-arrival} \{typeof-term(pt.blame)},\{tctx-primary.lookup(pt.phi-id).phi-tt}\n");
             let rt = tctx-globals.phi-merge(pt.phi-tt, st, blame);
             if not(is(pt.phi-tt,rt)) then tctx-primary = cons( PhiContextRow(sid,rt,blame,pt.dead-on-arrival), tctx-primary );
          );
