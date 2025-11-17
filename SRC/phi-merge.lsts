@@ -4,9 +4,13 @@ let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tct
    for Tuple{ sid=phi-id, st=phi-tt, pblame=blame, sdead-on-arrival=dead-on-arrival } in tctx-secondary {
       if not(seen.contains(sid)) {
          let pt = tctx-primary.lookup(sid);
-         if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,pblame,pt.dead-on-arrival), tctx-primary )
-         else if sdead-on-arrival or pt.dead-on-arrival then () # this case exists for fresh ethereal phi ids that just need to be ignored, either phi type works, it doesn't matter
-         else (
+         if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,pblame,sdead-on-arrival), tctx-primary )
+         else if sdead-on-arrival or pt.dead-on-arrival
+         then {
+            # This case happens if an ethereal variable gets copied and merged somehow, it doesn't really matter which one you pick but we prefer the moved one
+            if not(pt.phi-tt.is-linear-live) then ()
+            else tctx-primary = cons( PhiContextRow(sid,st,blame,true), tctx-primary );
+         } else (
             let rt = tctx-globals.phi-merge(pt.phi-tt, st, blame);
             if not(is(pt.phi-tt,rt)) then tctx-primary = cons( PhiContextRow(sid,rt,blame,pt.dead-on-arrival), tctx-primary );
          );

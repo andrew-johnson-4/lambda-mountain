@@ -13,6 +13,7 @@ let .phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiConte
       if not(seen.has(pr1.phi-id)) {
          let pr2 = tctx-primary.lookup(pr1.phi-id);
          if dead-on-arrival then pr1 = PhiContextRow(pr1.phi-id, pr1.phi-tt, pr1.blame, dead-on-arrival);
+         print("Dead on Arrival: dead:\{dead-on-arrival} \{pr1.phi-id} \{pr1.phi-tt}\n");
          if not(is(pr1,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
             tctx-primary = cons( pr1, tctx-primary );
          };
