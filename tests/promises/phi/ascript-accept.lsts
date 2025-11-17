@@ -1,0 +1,7 @@
+
+import lib2/core/baremetal.lsts;
+
+type A = {};
+type phi AState = First | Second;
+
+(A as AState::First) : AState::First;

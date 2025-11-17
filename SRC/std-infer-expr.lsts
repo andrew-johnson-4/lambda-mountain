@@ -60,6 +60,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       App{asc=left:Lit{key:c":"}, right:App{inner=left:ASTNil{},right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
+         if not(can-unify(tt, typeof-term(inner)))
+         then exit-error("Ascripted value does not match declared type:\nExpected \{tt}\nFound \{typeof-term(inner)}\n", term);
          add-concrete-type-instance(tt, term);
          tctx = tctx.ascript(inner, t0(c"Nil"));
          tctx = tctx.ascript(term, tt);
