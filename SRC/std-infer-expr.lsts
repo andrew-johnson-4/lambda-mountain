@@ -360,7 +360,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
    if used.is-unused && typeof-term(term).slot(c"Phi::State",1).is-linear-live {
       if typeof-term(term).slot(c"Phi::State",1).is-t(c"MustRelease::ToRelease",1) {
          (tctx, term) = wrap-call(tctx, c".release", term);
-      } else {
+      } else if typeof-term(term).is-t(c"MustRetain",0) {
          tctx = tctx.phi-move(typeof-term(term),term);
       }
    }};
