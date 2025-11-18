@@ -1,14 +1,21 @@
 
 let .phi-append(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeContext? = (
-   tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx) ) 
+   tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,false) ) 
 );
 
-let .phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>): List<PhiContextRow> = (
+let .phi-append-dead-on-arrival(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeContext? = (
+   tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,true) ) 
+);
+
+let .phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>, dead-on-arrival: U64): List<PhiContextRow> = (
    let seen = {} : HashtableEq<CString,U64>;
    for pr1 in tctx-secondary {
       if not(seen.has(pr1.phi-id)) {
          let pr2 = tctx-primary.lookup(pr1.phi-id);
-         if not(is(pr1,pr2)) then tctx-primary = cons( pr1, tctx-primary );
+         if dead-on-arrival then pr1 = PhiContextRow(pr1.phi-id, pr1.phi-tt, pr1.blame, dead-on-arrival);
+         if not(is(pr1,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
+            tctx-primary = cons( pr1, tctx-primary );
+         };
          seen = seen.bind(pr1.phi-id, true);
       };
    };

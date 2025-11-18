@@ -1,6 +1,6 @@
 
 let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
-   tt = tctx.with-phi(tt);
+   tt = tctx.with-phi(tt, t);
    if non-zero(tt) {
       let prev-tt = typeof-term(t);
       if non-zero(prev-tt) {
@@ -11,9 +11,10 @@ let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
             }
          };
          if tt.slot(c"Phi::Id",1).l1.simple-tag != prev-tt.slot(c"Phi::Id",1).l1.simple-tag {
-            tctx = tctx.phi-move(tt, t);
+            tctx = tctx.phi-move(prev-tt, t);
          }
-      } else ascript-force(t, tt);
+      };
+      ascript-force(t, tt);
    };
    tctx
 );
@@ -21,5 +22,7 @@ let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
 let ascript-force(t: AST, tt: Type): Nil = (
    add-concrete-type-instance(tt, t);
    ascript-plain(t, tt);
+   type-index-normal = type-index-normal.bind(t, ta);
+   type-index-denormal = type-index-denormal.bind(t, ta);
    types-have-changed = true;
 );

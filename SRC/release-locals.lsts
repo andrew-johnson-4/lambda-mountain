@@ -2,11 +2,14 @@
 let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST, hint: Type): (TypeContext?, AST) = (
    let tctx-before-tctx = tctx-before.get-or(mk-tctx()).tctx;
    let tctx-after-tctx = tctx-after.get-or(mk-tctx()).tctx;
+   let tctx-before-pctx = tctx-before.get-or(mk-tctx()).pctx;
+   let tctx-after-pctx = tctx-after.get-or(mk-tctx()).pctx;
    let needs-release = [] : List<TypeContextRow>;
    let needs-mark-release = [] : List<TypeContextRow>;
+   let pid-seen = {} : HashtableEq<CString,U64>;
    while non-zero(tctx-after-tctx) && not(is(tctx-before-tctx, tctx-after-tctx)) {
       let tr = head(tctx-after-tctx);
-      let dt = tctx-after.with-phi(tr.denormalized);
+      let dt = tctx-after.with-phi(tr.denormalized, term);
       if dt.slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).is-linear-live {
          if dt.is-t(c"MustNotRetain",0)
          then needs-mark-release = cons(tr, needs-mark-release)
@@ -25,6 +28,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
          tctx-after.ascript(def, binding-type);
       };
       for nd in needs-release {
+         pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag,true);
          let do-release = mk-app(mk-var(c".release"),mk-var(nd.key));
          (tctx-after, do-release) = std-infer-expr(tctx-after, do-release, false, Used, ta);
          term = mk-cons(term, do-release); tctx-after.ascript(term, t0(c"Nil"));
@@ -37,7 +41,16 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       term = mk-cons(term, return-term); tctx-after.ascript(term,return-type);
    };
    for nd in needs-mark-release {
-      tctx-after = tctx-after.phi-move(tctx-after.with-phi(nd.denormalized), term);
+      pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag,true);
+      tctx-after = tctx-after.phi-move(tctx-after.with-phi(nd.denormalized, term), term);
+   };
+   while non-zero(tctx-after-pctx) && not(is(tctx-before-pctx, tctx-after-pctx)) {
+      let tr = head(tctx-after-pctx);
+      if tr.dead-on-arrival and not(pid-seen.has(tr.phi-id)) and tr.phi-tt.is-linear-live {
+         pid-seen = pid-seen.bind(tr.phi-id,true);
+         tctx-after = tctx-after.bind-phi(tr.phi-id, tr.phi-tt.move-linear, tr.blame);
+      };
+      tctx-after-pctx = tail(tctx-after-pctx);
    };
    tctx-before = tctx-before.phi-append(tctx-after);
    (tctx-before, term)

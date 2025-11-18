@@ -17,7 +17,8 @@ let remove-info(base: Type, rm: Type): Type = (
       TGround{} => (
          if rm.is-t(c"MustNotMove",0) and base.is-t(c"MustNotMove",0) then ta
          else if rm.is-t(c"MustNotRetain",0) and base.is-t(c"MustNotRetain",0) then ta
-         else if rm.is-t(c"MustNotMove",0) || rm.is-t(c"MustNotRetain",0) then base
+         else if rm.is-t(c"MustNotFresh",0) and base.is-t(c"MustNotFresh",0) then ta
+         else if rm.is-t(c"MustNotMove",0) || rm.is-t(c"MustNotRetain",0) || rm.is-t(c"MustNotFresh",0) then base
          else if base <: rm then ta else base
       );
       _ => base;

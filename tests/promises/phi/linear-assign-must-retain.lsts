@@ -1,0 +1,17 @@
+
+import lib2/core/baremetal.lsts;
+
+type A implies MustRetain = {};
+type phi AState = First{promise:'a} | Second;
+
+let .retain(a: A+x): x = a;
+
+let c(): Nil = (
+   let x = A as AState::First<'a>;
+   x : AState::First<'a>;
+   x = A as AState::First<'a>;
+   x : AState::First<'a>;
+   x = A as AState::Second;
+   x : AState::Second;
+   ()
+);

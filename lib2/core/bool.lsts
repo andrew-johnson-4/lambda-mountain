@@ -10,5 +10,3 @@ declare-unop( not, raw-type(Bool), raw-type(Bool), ( l"(!"; x; l")"; ) );
 declare-binop( xor, raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
 declare-binop( and, raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"&&"; y; l")"; ) );
 declare-binop( or, raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"||"; y; l")"; ) );
-
-let .into(b: Bool, tt: Type<String>): String = if b then "true" else "false";

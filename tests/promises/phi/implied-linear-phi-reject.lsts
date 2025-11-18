@@ -1,5 +1,5 @@
 
-import lib2/core/bedrock.lsts;
+import lib2/core/baremetal.lsts;
 
 type phi AState = First{promise:'a} | Second;
 type A implied phi AState::First<'a> = {};
@@ -8,6 +8,6 @@ let f(a: A+AState::First<'a>): A+AState::Second = a as AState::Second;
 let g(a: A+AState::Second): Nil = ();
 
 let c(): Nil = (
-   A;
+   let x = A;
    ()
 );

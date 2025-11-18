@@ -85,7 +85,7 @@ let .bind-direct(h: Hashtable<k,v>, key: k, val: v): Nil = (
 );
 
 let $"map::cons"(key: k, val: v, h: Hashtable<k,v>): Hashtable<k,v> = (
-   h.bind(key,val)
+   h.bind(key,val);
 );
 
 

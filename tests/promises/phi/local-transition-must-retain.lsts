@@ -1,0 +1,17 @@
+
+import lib2/core/baremetal.lsts;
+
+# MustRetain has different rules for transitions and some phi inference
+# this is due to linear variables often being "copied" instead of "moved"
+# However, transitions should *always* apply to the bound initial variable directly, not the unique reference location
+
+type A implies MustRetain = {};
+type phi AState = First | Second;
+
+let .retain(a: A+AState::First): A+AState::Second = a as AState::Second;
+let f(a: A+AState::Second): Nil = ();
+
+if true {
+   let x = A as AState::First;
+   f(x);
+};

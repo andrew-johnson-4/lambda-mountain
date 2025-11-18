@@ -1,23 +1,33 @@
 
-let .phi-fresh(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Type) = (
-   let old-phi-id = tt.slot(c"Phi::Id",1).l1.simple-tag;
-   let old-phi-state = tt.slot(c"Phi::State",1).l1;
-   if non-zero(old-phi-id) and non-zero(old-phi-state)
-   then {
-      let new-phi-id = uuid();
-      tctx = tctx.bind-phi(new-phi-id, old-phi-state, blame);
-      tt = tt.without-slot(c"Phi::Id",1) && t1(c"Phi::Id",t0(new-phi-id));
-   };
-   (tctx, tt)
-);
-
 let .phi-fresh(tctx: TypeContext?, tr: TypeContextRow): (TypeContext?, TypeContextRow) = (
    match tr {
       TypeContextRow{ key=key, nt=nt, dt=dt, blame=blame } => (
-         (tctx, nt) = tctx.phi-fresh(nt, blame);
-         (tctx, dt) = tctx.phi-fresh(dt, blame);
+         nt = tctx.with-phi(nt, blame);
+         dt = tctx.with-phi(dt, blame);
+         let phi-id = nt.slot(c"Phi::Id",1).l1.simple-tag;
+         if not(non-zero(phi-id)) then phi-id = dt.slot(c"Phi::Id",1).l1.simple-tag;
+         let phi-state = nt.slot(c"Phi::State",1).l1;
+         if not(non-zero(phi-state)) then phi-state = dt.slot(c"Phi::State",1).l1;
+         if non-zero(phi-id) and non-zero(phi-state) {
+            let new-phi-id = uuid();
+            tctx = tctx.bind-phi(new-phi-id, phi-state, blame);
+            nt = nt.without-slot(c"Phi::Id",1) && t1(c"Phi::Id",t0(new-phi-id));
+            dt = dt.without-slot(c"Phi::Id",1) && t1(c"Phi::Id",t0(new-phi-id));
+         };
          (tctx, TypeContextRow(key,nt,dt,blame))
       );
       _ => (tctx, tr);
    }
+);
+
+let .phi-fresh(tctx: TypeContext?, nt: Type, blame: AST): (TypeContext?, Type) = (
+   nt = tctx.with-phi(nt, blame);
+   let phi-id = nt.slot(c"Phi::Id",1).l1.simple-tag;
+   let phi-state = nt.slot(c"Phi::State",1).l1;
+   if non-zero(phi-id) and non-zero(phi-state) {
+      let new-phi-id = uuid();
+      tctx = tctx.bind-phi(new-phi-id, phi-state, blame);
+      nt = nt.without-slot(c"Phi::Id",1) && t1(c"Phi::Id",t0(new-phi-id));
+   };
+   (tctx, nt)
 );
