@@ -1,2 +1,2 @@
-Compilation Error: Linear Variables Must Be Used: #uuid__e0fb000000000000 AState::First<Linear<Phi::Live>> 'A(())
-In File tests/promises/phi/implied-linear-phi-reject.lsts Line 11 Column 4
+Compilation Error: Linear Variables Must Be Used: #uuid__4dc6000000000000 AState::First<Linear<Phi::Live>> 'A(())
+In File tests/promises/phi/implied-linear-phi-reject.lsts Line 11 Column 12

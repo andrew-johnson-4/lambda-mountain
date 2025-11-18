@@ -8,6 +8,6 @@ let f(a: A+AState::First<'a>): A+AState::Second = a as AState::Second;
 let g(a: A+AState::Second): Nil = ();
 
 let c(): Nil = (
-   A;
+   let x = A;
    ()
 );
