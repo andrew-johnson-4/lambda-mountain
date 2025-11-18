@@ -4,7 +4,6 @@ let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tct
    for Tuple{ sid=phi-id, st=phi-tt, pblame=blame, sdead-on-arrival=dead-on-arrival } in tctx-secondary {
       if not(seen.contains(sid)) {
          let pt = tctx-primary.lookup(sid);
-         print("Merge \{sdead-on-arrival},\{sid}x\{st} \{pt.dead-on-arrival},\{pt.phi-id}x\{pt.phi-tt}\n");
          if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,pblame,sdead-on-arrival), tctx-primary )
          else if sdead-on-arrival or pt.dead-on-arrival
          then {
