@@ -7,7 +7,6 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
-   print("Infer \{term}\n");
    if not(term.is-free-and-seen) { match term {
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
          (tctx, let check-tt) = typeof-var-raw(term, tctx, lname, true);
@@ -104,7 +103,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             (tctx, tt) = tctx.phi-initialize(tt, term);
             if typeof-term(t).is-linear-live
             then tctx = tctx.phi-move(typeof-term(t), term);
-            print("as move \{tctx.with-phi(typeof-term(t),t)}\n");
          };
          tctx = tctx.ascript(term, tt);
       );
@@ -202,7 +200,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       Var{key=key, token=token} => (
          (tctx, let vt) = typeof-var(term, tctx, key, hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
          vt = tctx.with-phi(vt, term);
-         print("typeof Var 1 \{key} : hint=\{hint}, val=\{vt}\n");
          mark-var-to-def-todo(tctx, key, ta, term);
          # TailPosition LocalVariables don't need to be retained because +1/-1 retain/release cancels itself out
          if not(hint.is-t(c"TailPosition",0) && vt.is-t(c"LocalVariable",0))
@@ -213,7 +210,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          } else {
             tctx = tctx.ascript(term, vt);
          };
-         print("Var \{key} : hint=\{hint}, val=\{tctx.with-phi(vt,term)}\n");
       );
       Lit{key=key, token=token} => (
          if hint.is-t(c"Literal",0) {
@@ -245,7 +241,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                if not(can-unify(return-type-after-alias, typeof-term(new-inner-rhs)))
                then exit-error("Return value does not match declared type:\nExpected \{return-type-after-alias}\nFound \{typeof-term(new-inner-rhs)}\n", term);
             };
-            print("Return value \{typeof-term(new-inner-rhs)}\n");
             tctx = tctx.phi-move(typeof-term(new-inner-rhs), term);
             if not(tctx.get-or(mk-tctx()).is-blob) {
                (tctx, new-inner-rhs) = release-locals(before-tctx, tctx, new-inner-rhs, misc-tt);
@@ -317,8 +312,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                if var-name-if-var-or-lit(l)==c"mov" && typeof-term(r).is-t(c"Cons",2) {
                   let from-tt = typeof-term(r).slot(c"Cons",2).l1;
                   let to-tt = typeof-term(r).slot(c"Cons",2).l2;
-                  print("Move from \{from-tt}\n");
-                  print("Move to \{to-tt}\n");
                   tctx = tctx.phi-override(to-tt, from-tt, term);
                   if from-tt.is-t(c"Phi::Id",1) and from-tt.slot(c"Phi::Id",1).l1.simple-tag != to-tt.slot(c"Phi::Id",1).l1.simple-tag {
                      tctx = tctx.phi-move(from-tt, term);
@@ -328,10 +321,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                rt = tctx.with-phi(rt, term);
                tctx = tctx.ascript(term, rt);
 
-               print("Before release after call \{term}\n");
                (tctx, let prefix, let postfix, let new-args) = std-maybe-release-after-call(tctx, function-type, r);
                if non-zero(postfix) {
-                  print("Do release after call\n");
                   if not(is(r,new-args)) { term = mk-app(l,new-args); ascript-force(term,rt); };
 
                   let tmp-id = uuid();
@@ -366,18 +357,13 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       _ => fail("Unexpected Term in std-infer-expr\n\{term}\n");
    };
-   if used.is-unused {
-      print("Unused release \{typeof-term(term)}\n");
-   };
    if used.is-unused && typeof-term(term).slot(c"Phi::State",1).is-linear-live {
-      print("Unused release \{typeof-term(term)}\n");
       if typeof-term(term).slot(c"Phi::State",1).is-t(c"MustRelease::ToRelease",1) {
          (tctx, term) = wrap-call(tctx, c".release", term);
       } else {
          tctx = tctx.phi-move(typeof-term(term),term);
       }
    }};
-   print("\{term} : \{typeof-term(term)}\n");
    (tctx, term);
 );
 
@@ -386,7 +372,6 @@ let wrap-call(tctx: TypeContext?, fname: CString, term: AST): (TypeContext?, AST
    let function-type = typeof-term(tctx.find-callable(fname, args-type, term).blame);
    let function-term = mk-var(fname); tctx = tctx.ascript(function-term, function-type);
    let result = mk-app(function-term, term);
-   print("wrap-call \{fname} \{args-type}\n");
    (tctx, let result-type) = tctx.apply-callable(fname, args-type, term);
    tctx = tctx.ascript(result, result-type);
    (tctx, result)

@@ -3,10 +3,8 @@ let typeof-var-raw(sloc: AST, tctx: TypeContext?, vname: CString, must-not-fresh
    let rows = tctx.lookups(vname);
    if non-zero(rows) then {
       let tr = head(rows);
-      print("typeof-var-raw \{vname} \{must-not-fresh} : \{tr.denormalized}\n");
       if tr.denormalized.is-t(c"MustRetain",0) && not(must-not-fresh) {
          (tctx, tr) = tctx.phi-fresh(tr);
-         print("typeof-var-raw fresh \{vname} \{must-not-fresh} : \{tr}\n");
       };
       (tctx, tr.denormalized)
    } else (tctx, ta)

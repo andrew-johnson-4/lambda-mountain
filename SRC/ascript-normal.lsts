@@ -11,7 +11,6 @@ let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
             }
          };
          if tt.slot(c"Phi::Id",1).l1.simple-tag != prev-tt.slot(c"Phi::Id",1).l1.simple-tag {
-            print("Force out \{prev-tt} because not \{tt}\n");
             tctx = tctx.phi-move(prev-tt, t);
          }
       };
