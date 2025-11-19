@@ -195,6 +195,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                mark-var-to-def(new-term, term);
                term = new-term;
             };
+            print("Glb \{term}\n");
          };
       );
       Var{key=key, token=token} => (
