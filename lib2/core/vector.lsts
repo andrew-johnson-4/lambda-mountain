@@ -18,7 +18,7 @@ let .retain(x: Vector<t>): Vector<t> = (
 );
 
 let mk-vector(ty: Type<t>, capacity: USize): Vector<t> = (
-   Vector( mk-owned-data(type(t), capacity) )
+   if capacity==0 then Vector(0 as OwnedData<t>[]) else Vector( mk-owned-data(type(t), capacity) )
 );
 
 let mk-vector(ty: Type<t>): Vector<t> = (
@@ -26,7 +26,7 @@ let mk-vector(ty: Type<t>): Vector<t> = (
 );
 
 let mk-vector(capacity: USize): Vector<t> = (
-   Vector( mk-owned-data(type(t), capacity) )
+   if capacity==0 then Vector(0 as OwnedData<t>[]) else Vector( mk-owned-data(type(t), capacity) )
 );
 
 let mk-vector(): Vector<t> = (
