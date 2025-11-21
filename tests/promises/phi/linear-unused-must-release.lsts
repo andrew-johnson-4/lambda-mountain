@@ -1,0 +1,15 @@
+
+import lib2/core/baremetal.lsts;
+
+type A implies MustRelease = {};
+
+let release-count = 0;
+
+let .release(a: A): Nil = (
+   release-count = release-count + 1;
+   mark-as-released(a);
+);
+
+assert( release-count == 0 );
+A;
+assert( release-count == 1 );
