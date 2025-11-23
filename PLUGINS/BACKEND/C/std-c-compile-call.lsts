@@ -9,7 +9,7 @@ let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor
       let r = mk-fragment();
       match fterm {
          Glb{val:Abs{lhs=lhs, rhs=rhs}} => (
-            (let callee-ctx, let caller-ctx) = std-c-compile-args(global-ctx, ctx, lhs, args);
+            (r, let callee-ctx, let caller-ctx) = std-c-compile-args(global-ctx, ctx, lhs, args, r);
             r = blob-render(callee-ctx, rhs, r);
             r.context = close(caller-ctx);
          );
