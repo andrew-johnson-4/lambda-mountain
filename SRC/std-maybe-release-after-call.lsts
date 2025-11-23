@@ -26,6 +26,7 @@ let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, p
       let args-type = typeof-term(args);  
       if param-types.is-t(c"MustReleaseAfterCall",0) and typeof-term(args).is-t(c"MustRelease",0) {
          (tctx, args-type) = tctx.phi-fresh(typeof-term(args), args);
+         (tctx, args-type) = tctx.resurrect(args-type, args);
          args-type = args-type.without-slot(c"MustNotMove",0);
       };
 
