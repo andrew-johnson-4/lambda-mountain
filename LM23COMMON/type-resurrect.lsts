@@ -1,0 +1,20 @@
+
+let .resurrect(tt: Type): Type = (
+   match tt {
+      TGround{tag:c"Linear", parameters:[TGround{tag:c"Phi::Moved",parameters:[]}..]} => (
+         t1(c"Linear", t0(c"Phi::Live"))
+      );
+      TGround{tag=tag, parameters=parameters} => (
+         ts(tag, parameters.resurrect);
+      );
+      _ => tt;
+   }
+);
+
+let .resurrect(tt: List<Type>): List<Type> = (
+   match tt {
+      [hd..tl] => cons(hd.resurrect, tl.resurrect);
+      [] => tt;
+   }
+);
+

@@ -31,6 +31,22 @@ let .is-cons(t: AST): U64 = (
    }
 );
 
+let .is-var(t: AST): U64 = (
+   match t {
+      Var{} => true;
+      _ => false;
+   }
+);
+
+let .is-var-or-ascripted-var(t: AST): U64 = (
+   match t {
+      Var{} => true;
+      App{ left:Var{key:c"as"}, right:App{ left:Var{}, right:AType{} } } => true;
+      App{ left:Lit{key:c":"}, right:App{ left:Var{}, right:AType{} } } => true;
+      _ => false;
+   }
+);
+
 let .with-implies(term: AST, implies: Vector<Type>): AST = (
    match term {
       Typedef{} => (

@@ -21,7 +21,8 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       App{ left:Abs{lhs=lhs:Var{name=key}, rhs:ASTNil{}}, rhs=right } => (
          let lt = typeof-term(lhs).without-modifiers;
-         let v = mk-fragment().set(c"expression",if lt.is-t(c"Nil",0) then SAtom(c"({})") else if std-c-is-ctype(lt) then SAtom(name) else SAtom(uuid()));
+         let vid = if lt.is-t(c"Nil",0) then SAtom(c"({})") else if std-c-is-ctype(lt) then SAtom(name) else SAtom(uuid());
+         let v = mk-fragment().set(c"expression",vid);
          let f = mk-fragment();
          std-c-fragment-context = std-c-fragment-context.bind( lhs, v );
          ctx = ctx.bind( name, lt, v );
@@ -44,7 +45,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                        + v.get(c"expression")
                        + SAtom(c" ") + post + SAtom(c";")
                );
-            }
+            };
          };
          match rhs {
             App{ left:Lit{key:c":"}, right:App{ left:ASTNil{}, right:AType{tt=tt} } } => ();
@@ -60,7 +61,8 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                };
             );
          };
-         f.context = close(ctx); f
+         f.context = close(ctx);
+         f
       );
       App{ left:Var{key:c"as"}, right:App{ inner=left, right:AType{tt=tt} } } => (
          let f = std-c-compile-expr(ctx, inner, false);

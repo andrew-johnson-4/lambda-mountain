@@ -321,26 +321,33 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                rt = tctx.with-phi(rt, term);
                tctx = tctx.ascript(term, rt);
 
-               (tctx, let prefix, let postfix, let new-args) = std-maybe-release-after-call(tctx, function-type, r);
-               if non-zero(postfix) {
-                  if not(is(r,new-args)) { term = mk-app(l,new-args); ascript-force(term,rt); };
+               if not(r.is-var-or-ascripted-var) {
+                  # if a field access is not retained and is just a variable reference then it shouldn't be released after the call
+                  # this is complicated to do in the type system atm, so we just hard code it for now
+                  # TODO: revisit and generalize this
+                  # Example:
+                  #    x.data.release
+                  (tctx, let prefix, let postfix, let new-args) = std-maybe-release-after-call(tctx, function-type, r);
+                  if non-zero(postfix) {
+                     if not(is(r,new-args)) { term = mk-app(l,new-args); ascript-force(term,rt); };
 
-                  let tmp-id = uuid();
-                  let tmp-def = mk-var(tmp-id); ascript-force(tmp-def, typeof-term(term));
-                  let tmp-var = mk-var(tmp-id); ascript-force(tmp-var, typeof-term(term));
-                  tctx = tctx.bind(tmp-id, ta, typeof-term(term), tmp-def);
-                  mark-var-to-def-todo(tctx, tmp-id, ta, tmp-var);
-                  let tmp-nil = mk-nil(); ascript-force(tmp-nil, t0(c"Nil"));
-                  let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, t0(c"Nil"));
-                  let bind = mk-app(declare, term); ascript-force(bind, t0(c"Nil"));
+                     let tmp-id = uuid();
+                     let tmp-def = mk-var(tmp-id); ascript-force(tmp-def, typeof-term(term));
+                     let tmp-var = mk-var(tmp-id); ascript-force(tmp-var, typeof-term(term));
+                     tctx = tctx.bind(tmp-id, ta, typeof-term(term), tmp-def);
+                     mark-var-to-def-todo(tctx, tmp-id, ta, tmp-var);
+                     let tmp-nil = mk-nil(); ascript-force(tmp-nil, t0(c"Nil"));
+                     let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, t0(c"Nil"));
+                     let bind = mk-app(declare, term); ascript-force(bind, t0(c"Nil"));
 
-                  let new-term = bind;
-                  if non-zero(prefix) {
-                     new-term = mk-cons(prefix, new-term); ascript-force(new-term, t0(c"Nil"));
+                     let new-term = bind;
+                     if non-zero(prefix) {
+                        new-term = mk-cons(prefix, new-term); ascript-force(new-term, t0(c"Nil"));
+                     };
+                     new-term = mk-cons(new-term, postfix); ascript-force(new-term, typeof-term(postfix));
+                     new-term = mk-cons(new-term, tmp-var); ascript-force(new-term, typeof-term(term));
+                     term = new-term;
                   };
-                  new-term = mk-cons(new-term, postfix); ascript-force(new-term, typeof-term(postfix));
-                  new-term = mk-cons(new-term, tmp-var); ascript-force(new-term, typeof-term(term));
-                  term = new-term;
                };
 
                if not(rt.is-t(c"Cons",2)) {
