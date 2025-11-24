@@ -162,12 +162,11 @@ fn regression_tests() {
       if !std::path::Path::new(&(path.clone() + ".skip")).exists() {
          let expected = std::fs::read_to_string(path.clone() + ".out").unwrap_or("".to_string());
          let expected = expected.trim().to_string();
-         let isv3 = !path.contains("lm-");
-         let actual = run_bootstrap(&path, false, isv3);
+         let actual = run_bootstrap(&path, false, true);
          let actual = actual.trim().to_string();
          if expected.starts_with("Compilation Error:") && actual.starts_with("Compilation Error:") {}
          else if expected != actual {
-            failures.push(( format!("--compile {}", isv3), path, expected, actual ));
+            failures.push(( format!("--compile {}", true), path, expected, actual ));
          }
       }
    }

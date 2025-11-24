@@ -1,3 +1,6 @@
 
-let lsts-frontend(fp: CString): Nil = lsts-parse(lsts-tokenize(fp));
+let lsts-frontend(fp: CString): Nil = (
+   if config-v3 and fp==c"lib/std/minimal.lsts" then fp = c"lib2/core/bedrock.lsts";
+   lsts-parse(lsts-tokenize(fp));
+);
 register-frontend(c".lsts", lsts-frontend);
