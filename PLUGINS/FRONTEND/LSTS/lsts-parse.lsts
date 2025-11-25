@@ -360,7 +360,9 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          };
          lsts-parse-expect(c">", tokens); tokens = tail(tokens);
       };
-      TGround ( base, close(args) );
+      if not(config-v3) and base==c"OwnedData" and args.length==1 {
+         head(args);
+      } else TGround ( base, close(args) );
    };
    while lsts-parse-head(tokens) == c"[" || lsts-parse-head(tokens)==c"?" {
       if lsts-parse-head(tokens)==c"[" {

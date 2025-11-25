@@ -33,3 +33,16 @@ let .into(t: Maybe<x>, tt: Type<String>): String = (
    then "Some(" + (t as Tag::Some).content.into(type(String)) + ")"
    else "None"
 );
+
+let .get-or(m: Maybe<x>, default: x): x = (
+   match m {
+      Some{content=content} => content;
+      None{} => default;
+   }
+);
+
+let .get-or-panic(m: Maybe<x>): x = (
+   match m {
+      Some{content=content} => content;
+   }
+);

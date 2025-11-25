@@ -14,3 +14,17 @@ assert( Some("1") == Some("1") );
 assert( Some("0") != Some("1") );
 assert( Some("1") != Some("0") );
 assert( safe-alloc-block-count == 0 );
+
+assert( Some(1_u64).get-or(2_u64) == 1 );
+assert( (None : U64?).get-or(2_u64) == 2 );
+assert( safe-alloc-block-count == 0 );
+
+#assert( Some("1").get-or("2") == "1" );
+#assert( (None : String?).get-or("2") == "2" );
+#assert( safe-alloc-block-count == 0 );
+
+assert( Some(1_u64).get-or-panic == 1 );
+assert( safe-alloc-block-count == 0 );
+
+assert( Some("1").get-or-panic == "1" );
+assert( safe-alloc-block-count == 0 );

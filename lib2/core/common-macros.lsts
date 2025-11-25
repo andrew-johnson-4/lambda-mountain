@@ -57,6 +57,15 @@ typed macro macro::while(cond: lazy, body: lazy): lazy = (
    primitive::while( cond, body as Nil )
 );
 
+deprecated macro ( rl"for-each"(item(rl"in")(iterable))(loop) ) ((
+   let uuid(iter-term) = iterable;
+   let uuid(iter-i) = 0_sz;
+   while uuid(iter-i) < uuid(iter-term).length {
+      let item = uuid(iter-term)[uuid(iter-i)];
+      loop;
+   };
+));
+
 deprecated macro ( rl"let"(x)(y) ) ( (fn(x) = ())(y) );
 
 deprecated macro ( rl"set"(lhs)(rhs) ) ( mov(rhs,lhs) );
