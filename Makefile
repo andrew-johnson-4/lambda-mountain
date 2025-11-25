@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm tests/promises/util/uuid.lsts
+	lm tests/promises/lm-util/uuid.lsts
 	gcc tmp.c
 	./a.out
 

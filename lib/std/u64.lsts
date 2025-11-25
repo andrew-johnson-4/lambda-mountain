@@ -73,7 +73,7 @@ let to-u64(s: CString): U64 = (
    i
 );
 
-let to-hex(i: U64): CString = (
+let .to-hex(i: U64): CString = (
    let buff = mk-vector(type(U8), 17);
    let rpt = 16_u64;
    while rpt > 0_u64 {

@@ -62,6 +62,7 @@ let $"[]"(base: CString, idx: U64): U8 = (
 );
 
 let .into(s: CString, tgt: Type<String>): String = intern(s);
+let .into(s: CString, tgt: Type<CString>): CString = s;
 let .into(s: String, tgt: Type<CString>): CString = untern(s);
 
 let .split(s: String, sep: String): List<String> = (

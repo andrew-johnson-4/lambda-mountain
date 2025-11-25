@@ -1,2 +1,7 @@
 
 import LM23COMMON/unit-util.lsts;
+
+assert( iuid() == 1 );
+assert( iuid() == 2 );
+assert( uuid() == c"uuid__3000000000000000" );
+assert( uuid() == c"uuid__4000000000000000" );
