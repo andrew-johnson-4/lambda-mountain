@@ -66,6 +66,15 @@ deprecated macro ( rl"for-each"(item(rl"in")(iterable))(loop) ) ((
    };
 ));
 
+deprecated macro ( rl"for-each-list"(item(rl"in")(iterable))(loop) ) ((
+   let uuid(iter-term) = iterable;
+   while non-zero(uuid(iter-term)) {
+      let item = head(uuid(iter-term));
+      uuid(iter-term) = tail(uuid(iter-term));
+      loop;
+   };
+));
+
 deprecated macro ( rl"let"(x)(y) ) ( (fn(x) = ())(y) );
 
 deprecated macro ( rl"set"(lhs)(rhs) ) ( mov(rhs,lhs) );

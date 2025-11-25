@@ -68,6 +68,6 @@ let tail(l: List<x>): List<x> = if l.has-head then open((l as Tag::LCons).tail) 
 
 let .length(l: List<x>): U64 = (
    let li = 0_u64;
-   for _ in l { li = li + 1; };
+   for _ in l { li = li + 1 };
    li
 );
