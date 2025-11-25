@@ -36,3 +36,32 @@ let deep-hash(t: List<x>): U64 = (
 let .into(l: List<x>, tt: Type<String>): String = (
    "[..TODO..List.into(String)..]"
 );
+
+let .has-head(tt: List<x>): U64 = non-zero(tt);
+
+let .nth(tt: List<x>, idx: U64): Maybe<x> = (
+   let err = false;
+   while idx > 0 && not(err) {
+      if tt.has-head() {
+         tt = tail(tt);
+         idx = idx - 1;
+      } else {
+         err = true;
+      }
+   };
+
+   if err || not(tt.has-head()) {
+      None : Maybe<x>
+   } else {
+      Some(head(tt))
+   }
+);
+
+let .reverse(l: List<x>): List<x> = (
+   let r = [] : List<x>;
+   for v in l { r = cons(v,r); };
+   r
+);
+
+let head(l: List<x>): x = if l.has-head then (l as Tag::LCons).head else fail(c"list::head is fallible");
+let tail(l: List<x>): List<x> = if l.has-head then open((l as Tag::LCons).tail) else fail(c"list::tail is fallible");
