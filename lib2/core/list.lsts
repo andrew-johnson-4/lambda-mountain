@@ -39,7 +39,7 @@ let .into(l: List<x>, tt: Type<String>): String = (
 
 let .has-head(tt: List<x>): Bool = non-zero(tt);
 
-let .nth(tt: List<x>, idx: U64): Maybe<x> = (
+let .nth(tt: List<x>, idx: USize): Maybe<x> = (
    let err = false;
    while idx > 0 && not(err) {
       if tt.has-head() {
@@ -55,6 +55,16 @@ let .nth(tt: List<x>, idx: U64): Maybe<x> = (
    } else {
       Some(head(tt))
    }
+);
+
+let $"[]"(tt: List<x>, idx: USize): x = (
+   while idx > 0 {
+      if not(tt.has-head()) {
+         fail(c"list index out of bounds");
+      };
+      tt = tail(tt);
+   };
+   head(tt)
 );
 
 let .reverse(l: List<x>): List<x> = (

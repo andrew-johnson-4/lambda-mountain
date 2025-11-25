@@ -5,6 +5,7 @@ type opaque alias CString suffix _s = C<"char">[];
 declare-unop( $".c-pointer", raw-type(CString), raw-type(C<"char">[]), x );
 
 let .length(l: CString): USize = strlen(l.c-pointer) as USize;
+let non-zero(l: CString): Bool = l.length > 0;
 
 let cmp(l: CString, r: CString): Ord = (
    let c = strcmp( l.c-pointer, r.c-pointer ) as I64;
@@ -60,4 +61,34 @@ let $"+"(l: CString, r: CString): CString = (
    strcat(buf, l as C<"char">[]);
    strcat(buf, r as C<"char">[]);
    buf as CString
+);
+
+let .has-suffix(s2: CString, s1: CString): Bool = (
+   let s1_length = s1.length;
+   let s2_length = s2.length;
+   if s1_length > s2_length then false else {
+      let i = 0_sz;
+      let return = true;
+      while i < s1_length {
+         if s1[s1_length - i - 1] != s2[s2_length - i - 1]
+         then return = false;
+         i = i + 1;
+      };
+      return
+   }
+);
+
+let .has-prefix(s2: CString, s1: CString): Bool = (
+   let s1_length = s1.length;
+   let s2_length = s2.length;
+   if s1_length > s2_length then false else {
+      let i = 0_sz;
+      let return = true;
+      while i < s1_length {
+         if s1[i] != s2[i]
+         then return = false;
+         i = i + 1;
+      };
+      return
+   }
 );
