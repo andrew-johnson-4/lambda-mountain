@@ -26,7 +26,6 @@ let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
          modifiers + result;
       );
       TAny{} => SNil();
-      TGround{tag:c"LMCString", parameters:[]} => SNil;
       TGround{tag:c"Nil", parameters:[]} => SAtom(c"void");
       TGround{tag:c"Never", parameters:[]} => SAtom(c"void");
       TGround{tag:c"U8", parameters:[]} => SAtom(c"char");
