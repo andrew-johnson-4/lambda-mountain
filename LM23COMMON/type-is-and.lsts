@@ -1,5 +1,5 @@
 
-let .is-and(tt: Type): U64 = (
+let .is-and(tt: Type): Bool = (
    match tt {
       TAnd{} => true;
       _ => false;

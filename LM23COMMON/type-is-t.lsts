@@ -1,8 +1,8 @@
 
-let .is-t(tt: Type, tt-tag: CString, tt-length: U64): U64 = (
+let .is-t(tt: Type, tt-tag: CString, tt-length: U64): Bool = (
    match tt {
       TAnd { conjugate=conjugate } => (
-         let result = false as U64;
+         let result = false;
          for c in conjugate { result = result or c.is-t(tt-tag, tt-length) };
          result
       );

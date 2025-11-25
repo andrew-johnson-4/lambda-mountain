@@ -1,8 +1,8 @@
 
-let .is-arrow(tt: Type): U64 = (
+let .is-arrow(tt: Type): Bool = (
    match tt {
       TAnd { conjugate=conjugate } => (
-         let result = false as U64;
+         let result = false;
          for c in conjugate { result = result or c.is-arrow };
          result
       );

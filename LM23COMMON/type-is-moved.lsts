@@ -1,5 +1,5 @@
 
-let .is-moved(tt: Type): U64 = (
+let .is-moved(tt: Type): Bool = (
    match tt {
       TAnd{conjugate=conjugate} => (
          let moved = false;

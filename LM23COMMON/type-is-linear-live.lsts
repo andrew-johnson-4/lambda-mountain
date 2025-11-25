@@ -1,5 +1,5 @@
 
-let .is-linear-live(tt: Type): U64 = (
+let .is-linear-live(tt: Type): Bool = (
    match tt {
       TAnd{conjugate=conjugate} => (
          let return = false;

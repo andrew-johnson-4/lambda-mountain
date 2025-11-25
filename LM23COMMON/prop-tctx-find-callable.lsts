@@ -16,7 +16,7 @@ let .maybe-find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, bl
    tctx.find-callable(fname, arg-types, blame, return-type-hint, false);
 );
 
-let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type, failable: U64): TypeContextRow? = (
+let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type, failable: Bool): TypeContextRow? = (
    # Coerce argument types into Type::Format::Denormal
    # TODO: replace with Into<Type::Format::Denormal>
    arg-types = denormalize-strong(arg-types);

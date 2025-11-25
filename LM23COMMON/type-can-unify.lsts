@@ -1,7 +1,7 @@
 
-let $"<:"(pt: Type, fpt: Type): U64 = can-unify(fpt,pt);
+let $"<:"(pt: Type, fpt: Type): Bool = can-unify(fpt,pt);
 
-let can-unify(fpt: List<Type>, pt: List<Type>): U64 = (
+let can-unify(fpt: List<Type>, pt: List<Type>): Bool = (
    if fpt.length == pt.length {
       let ok = true;
       while ok and non-zero(fpt) {
@@ -12,7 +12,7 @@ let can-unify(fpt: List<Type>, pt: List<Type>): U64 = (
    } else false
 );
 
-let can-unify(fpt: Type, pt: Type): U64 = (
+let can-unify(fpt: Type, pt: Type): Bool = (
    match Tuple(fpt, pt) {
       Tuple{ first:TAny{} } => true;
       Tuple{ first:TGround{tag:c"Any"} } => true;
@@ -24,7 +24,7 @@ let can-unify(fpt: Type, pt: Type): U64 = (
       Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => false;
       Tuple{ first:TVar{} } => true;
       Tuple{ first:TAnd{ lconjugate=conjugate }, second:TAnd{ rconjugate=conjugate } } => (
-         let result = true as U64;
+         let result = true;
          let ri = 0_u64;
          let phi-state-in = ta;
          for lc in lconjugate {
@@ -50,7 +50,7 @@ let can-unify(fpt: Type, pt: Type): U64 = (
                   if not(skip-state-check) then result = result && can-unify(phi-from, phi-state-in);
                );
                TGround{ltag=tag} => (
-                  let this-result-ok = false as U64;
+                  let this-result-ok = false;
                   let rc = rconjugate[ri];
                   let rtag = rc.simple-tag;
                   if not(non-zero(rtag)) then () else (
@@ -79,12 +79,12 @@ let can-unify(fpt: Type, pt: Type): U64 = (
          result;
       );
       Tuple{ first:TAnd{ lconjugate=conjugate }, rt=second } => (
-         let result = true as U64;
+         let result = true;
          for c in lconjugate { result = result && can-unify(c,rt) };
          result
       );
       Tuple{ lt=first, second:TAnd{ rconjugate=conjugate } } => (
-         let result = false as U64;
+         let result = false;
          for c in rconjugate { result = result || can-unify(lt,c) };
          result
       );
