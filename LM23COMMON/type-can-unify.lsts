@@ -138,7 +138,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       Tuple{
           first:TGround{ltn=tag, lps=parameters},
           second:TGround{rtn=tag, rps=parameters}
-      } => (ltn==rtn || (ltn.has-suffix(c"::") and rtn.has-prefix(ltn))) and can-unify(lps,rps);
+      } => (ltn==rtn or (ltn.has-suffix(c"::") and rtn.has-prefix(ltn))) and can-unify(lps,rps);
       _ => false;
    };
 );
