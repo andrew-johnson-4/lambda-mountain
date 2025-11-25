@@ -7,6 +7,6 @@ let iuid(): U64 = (
 );
 
 let uuid(): CString = (
-   ("uuid__" + iuid().to-hex).retain.into(type(CString));
+   c"uuid__" + iuid().to-hex.into(type(CString));
 );
 

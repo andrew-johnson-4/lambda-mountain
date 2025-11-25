@@ -59,6 +59,11 @@ let .into(cs: CString, tt: Type<String>): String = (
    String(0 as USize, cs_length, od)
 );
 
+let .into(s: String, tt: Type<CString>): CString = (
+   s.data.retain;
+   s.data.data as CString
+);
+
 let $"[:]"(s: String, begin: I64, end: I64): String = (
    let s_length = s.length as I64;
    if end == minimum-I64 then end = s_length;

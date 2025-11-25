@@ -1,10 +1,12 @@
 
-type alias CString suffix _s = C<"char">[];
+# The "LMCString" makes the CString a subtype of C<"char">[] instead of a direct alias
+type alias CString suffix _s = LMCString + C<"char">[];
 
 let .length(l: CString): USize = strlen(l) as USize;
 
 let cmp(l: CString, r: CString): Ord = (
    let c = strcmp( l, r ) as I64;
+   print("CString Str Cmp \{l}, \{r} = \{c}\n");
    if c < 0 then LessThan
    else if c > 0 then GreaterThan
    else Equal
