@@ -1,38 +1,45 @@
 
 # The "LMCString" makes the CString a subtype of C<"char">[] instead of a direct alias
-type opaque alias CString suffix _s = C<"char">[];
+type alias CString suffix _s = C<"char">[];
 
-declare-unop( $".c-pointer", raw-type(CString), raw-type(C<"char">[]), x );
-
-let .length(l: CString): USize = strlen(l.c-pointer) as USize;
+let .length(l: CString): USize = strlen(l) as USize;
 let non-zero(l: CString): Bool = l.length > 0;
 
 let cmp(l: CString, r: CString): Ord = (
-   let c = strcmp( l.c-pointer, r.c-pointer ) as I64;
+   let c = strcmp( l, r ) as I64;
    if c < 0 then LessThan
    else if c > 0 then GreaterThan
    else Equal
 );
 
+# TODO: replace this with a macro or something
+# [specialize(x = CString)]
+let $"=="(l: CString, r: CString): Bool = cmp(l, r) == Equal;
+let $"!="(l: CString, r: CString): Bool = cmp(l, r) != Equal;
+let $"<"(l: CString, r: CString): Bool  = cmp(l, r) <  Equal;
+let $"<="(l: CString, r: CString): Bool = cmp(l, r) <= Equal;
+let $">"(l: CString, r: CString): Bool  = cmp(l, r) >  Equal;
+let $">="(l: CString, r: CString): Bool = cmp(l, r) >= Equal;
+
 let fail(msg: CString): Never = (
-   fputs(msg.c-pointer, stderr);
+   fputs(msg, stderr);
    exit(1);
    () as Never
 );
 
 let fail(msg1: CString, msg2: CString): Never = (
-   fputs(msg1.c-pointer, stderr);
-   fputs(msg2.c-pointer, stderr);
+   fputs(msg1, stderr);
+   fputs(msg2, stderr);
    exit(1);
    () as Never
 );
 
 let print(msg: CString): Nil = (
-   fputs(msg.c-pointer, stdout); ()
+   fputs(msg, stdout); ()
 );
 
 let eprint(msg: CString): Nil = (
-   fputs(msg.c-pointer, stderr); ()
+   fputs(msg, stderr); ()
 );
 
 let $"[]"(l: CString, idx: USize): U8 = (
