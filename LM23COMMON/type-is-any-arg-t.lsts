@@ -1,8 +1,8 @@
 
-let .is-any-arg-t(tt: Type, t-expect: CString, p-expect: U64): U64 = (
+let .is-any-arg-t(tt: Type, t-expect: CString, p-expect: U64): Bool = (
    match tt {
       TAnd { conjugate=conjugate } => (
-         let result = false as U64;
+         let result = false;
          for c in conjugate { result = result || c.is-any-arg-t(t-expect,p-expect) };
          result
       );

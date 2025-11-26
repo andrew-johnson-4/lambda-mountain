@@ -1,10 +1,10 @@
 
-let .is-open(tt: Type): U64 = (
+let .is-open(tt: Type): Bool = (
    match tt {
       TAny {} => true;
       TVar {} => true;
       TAnd { conjugate=conjugate } => (
-         let result = false as U64;
+         let result = false;
          for c in conjugate { result = result or c.is-open };
          result
       );
@@ -12,7 +12,7 @@ let .is-open(tt: Type): U64 = (
       TGround { tag:c"Array", parameters:[_.. base-type..] } => base-type.is-open;
       TGround { parameters=parameters } => (
          let is-open = false;
-         for p in parameters { is-open = is-open or p.is-open; };
+         for list p in parameters { is-open = is-open or p.is-open; };
          is-open;
       );
    }

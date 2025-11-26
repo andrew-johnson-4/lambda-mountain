@@ -1,18 +1,18 @@
 
-let .is-moved(tt: Type): U64 = (
+let .is-moved(tt: Type): Bool = (
    match tt {
       TAnd{conjugate=conjugate} => (
          let moved = false;
          for c in conjugate {
-            moved = moved || c.is-moved;
+            moved = moved or c.is-moved;
          };
          moved
       );
       TGround{tag:c"Phi::Moved",parameters:[]} => true;
       TGround{tag=tag,parameters=parameters} => (
          let moved = false;
-         for c in parameters {
-            moved = moved || c.is-moved;
+         for list c in parameters {
+            moved = moved or c.is-moved;
          };
          moved
       );

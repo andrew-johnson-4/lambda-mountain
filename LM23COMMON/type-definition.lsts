@@ -5,7 +5,7 @@
 # TVar = 2
 # TAnd = 3
 type Type zero TAny
-        = TGround { tag:CString, parameters:List<Type>[] }
+        = TGround { tag:CString, parameters:OwnedData<List<Type>>[] }
         | TAny
         | TVar { name:CString }
         | TAnd { conjugate:Vector<Type> };

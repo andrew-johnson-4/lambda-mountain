@@ -144,7 +144,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
                tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
             };
-            if not(typeof-term(cond).is-t(c"Bool",0)) {
+            if not(typeof-term(cond).is-t(c"Bool",0) || typeof-term(cond).is-t(c"U64",0)) {
                tctx.apply-callable(c"into-branch-conditional", typeof-term(cond), cond);
             };
             let lub = if typeof-term(f).is-t(c"Never",0) then typeof-term(t)

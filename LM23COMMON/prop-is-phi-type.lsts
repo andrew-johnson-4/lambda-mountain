@@ -1,6 +1,6 @@
 
-let phi-type-index = {} : HashtableEq<(CString,U64),U64>;
+let phi-type-index = {} : HashtableEq<(CString,U64),Bool>;
 
-let .is-phi-type(tt: Type): U64 = (
+let .is-phi-type(tt: Type): Bool = (
    phi-type-index.has(tt.ground-tag-and-arity)
 );

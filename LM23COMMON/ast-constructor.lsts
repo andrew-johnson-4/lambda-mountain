@@ -24,21 +24,21 @@ let mk-typedef(loc: SourceLocation, lhs-type: Type): AST = (
              ta, ta, ta, mk-vector(type((CString,Vector<(CString,Type)>))), ta, ta )
 );
 
-let .is-cons(t: AST): U64 = (
+let .is-cons(t: AST): Bool = (
    match t {
       App{is-cons=is-cons} => is-cons;
       _ => false;
    }
 );
 
-let .is-var(t: AST): U64 = (
+let .is-var(t: AST): Bool = (
    match t {
       Var{} => true;
       _ => false;
    }
 );
 
-let .is-var-or-ascripted-var(t: AST): U64 = (
+let .is-var-or-ascripted-var(t: AST): Bool = (
    match t {
       Var{} => true;
       App{ left:Var{key:c"as"}, right:App{ left:Var{}, right:AType{} } } => true;
@@ -195,8 +195,8 @@ let mk-meta(l: AST): AST = (
 let mk-nil(): AST = ASTNil();
 let mk-eof(): AST = ASTEOF();
 
-let .is-lit(t: AST): U64 = match t { Lit{} => true; _ => false; };
-let .is-ascript(t: AST): U64 = (
+let .is-lit(t: AST): Bool = match t { Lit{} => true; _ => false; };
+let .is-ascript(t: AST): Bool = (
    match t {
       App{ left:Lit{key:c":"}, right:App{ left:Lit{key=key}, right:AType{} } } => true;
       _ => false;
@@ -242,7 +242,7 @@ let .ascript(t: AST, tt: Type): AST = (
    )
 );
 
-let .is-nil(t: AST): U64 = (
+let .is-nil(t: AST): Bool = (
    match t {
       ASTNil{} => true;
       _ => false;

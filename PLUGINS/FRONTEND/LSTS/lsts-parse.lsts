@@ -360,7 +360,9 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          };
          lsts-parse-expect(c">", tokens); tokens = tail(tokens);
       };
-      TGround ( base, close(args) );
+      if not(config-v3) and base==c"OwnedData" and args.length==1 {
+         head(args);
+      } else TGround ( base, close(args) );
    };
    while lsts-parse-head(tokens) == c"[" || lsts-parse-head(tokens)==c"?" {
       if lsts-parse-head(tokens)==c"[" {
@@ -1784,6 +1786,8 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       term = AType( term-rest.first );
    } else if lsts-parse-head(tokens)==c"for" {
       let loc = head(tokens).location; tokens = tail(tokens);
+      let list = false;
+      if lsts-parse-head(tokens)==c"list" then { tokens = tail(tokens); list = true; };
       let lhs-rest = lsts-parse-lhs(tokens);
       tokens = lhs-rest.second;
       lsts-parse-expect(c"in", tokens); tokens = tail(tokens);
@@ -1797,22 +1801,41 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
          tokens = rhs-rest.second;
       };
       lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-      term = mk-app(
-         mk-app(
-            Var( c"for-each", with-location(mk-token("for-each"),loc) ),
-            mk-cons(
+      if list {
+         term = mk-app(
+            mk-app(
+               Var( c"for-each-list", with-location(mk-token("for-each-list"),loc) ),
                mk-cons(
-                  lhs-rest.first,
-                  Var( c"in", with-location(mk-token("in"),loc) )
-               ),
-               iter-rest.first
+                  mk-cons(
+                     lhs-rest.first,
+                     Var( c"in", with-location(mk-token("in"),loc) )
+                  ),
+                  iter-rest.first
+               )
+            ),
+            mk-app(
+               Var( c"scope", with-location(mk-token("scope"),loc) ),
+               rhs
             )
-         ),
-         mk-app(
-            Var( c"scope", with-location(mk-token("scope"),loc) ),
-            rhs
-         )
-      );         
+         );
+      } else {
+         term = mk-app(
+            mk-app(
+               Var( c"for-each", with-location(mk-token("for-each"),loc) ),
+               mk-cons(
+                  mk-cons(
+                     lhs-rest.first,
+                     Var( c"in", with-location(mk-token("in"),loc) )
+                  ),
+                  iter-rest.first
+               )
+            ),
+            mk-app(
+               Var( c"scope", with-location(mk-token("scope"),loc) ),
+               rhs
+            )
+         );
+      }         
    } else if lsts-parse-head(tokens)==c"while" {
       let loc = head(tokens).location; tokens = tail(tokens);
       let c-rest = lsts-parse-small-expression(tokens);
