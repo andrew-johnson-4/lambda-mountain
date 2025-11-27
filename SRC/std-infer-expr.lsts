@@ -46,6 +46,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{szof=left:Var{key:c"scope"}, r=right} => (
          (let inner-tctx, let new-r) = std-infer-expr(tctx, r, true, Tail(), ta);
          tctx = tctx.with-pctx(inner-tctx.get-or(mk-tctx()).pctx);
+         print("Scope release locals\n");
          (tctx, new-r) = release-locals(tctx, inner-tctx, new-r, hint);
          if not(is(r,new-r)) then { r = new-r; term = mk-app(szof, r); };
          tctx = tctx.ascript(term, typeof-term(r));
@@ -139,6 +140,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                (tctx, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
                (tctx-t, let new-t) = std-infer-expr(tctx, t, false, Tail(), ta);
                (tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
+               print("If Falsy Release Locals\n");
                (tctx-f, new-f) = release-locals(tctx, tctx-f, new-f, hint);
                tctx = tctx-t;
                if not(is(cond,new-cond)) || not(is(t,new-t)) || not(is(f,new-f))
@@ -153,6 +155,13 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             else if typeof-term(f).is-t(c"Nil",0) || typeof-term(t).is-t(c"Nil",0) then t0(c"Nil")
             else { (tctx, let lub) = tctx.least-upper-bound(typeof-term(t), typeof-term(f), term); lub };
             tctx = tctx.ascript(term, lub);
+            print("IF TYPE : \{typeof-term(term)}\n");
+            print("IF TYPE WITH PHI : \{tctx.with-phi(typeof-term(term),term)}\n");
+            if is-scoped {
+               print("Scoped release locals\n");
+               (tctx, term) = release-locals(tctx, tctx-t, term, hint); # tctx-t includes both tctx-cond and tctx-t
+               (tctx, term) = release-locals(tctx, tctx-f, term, hint);
+            };
          }
       );
       ASTEOF{} => tctx = tctx.ascript(term, t0(c"Nil"));
@@ -240,6 +249,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             };
             tctx = tctx.phi-move(typeof-term(new-inner-rhs), term);
             if not(tctx.get-or(mk-tctx()).is-blob) {
+               print("Function End Release Locals\n");
                (tctx, new-inner-rhs) = release-locals(before-tctx, tctx, new-inner-rhs, misc-tt);
             };
             if not(is(inner-rhs,new-inner-rhs))
@@ -368,8 +378,12 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.phi-move(typeof-term(term),term);
       }
    }};
+   if non-zero(tctx.lookup-phi(c"uuid__3f93200000000000").phi-tt) then problem-phi-found = true;
+   if problem-phi-found then print("Finish term \{term} with problem phi state: uuid__3f93200000000000=\{tctx.lookup-phi(c\"uuid__3f93200000000000\").phi-tt}\n");
    (tctx, term);
 );
+
+let problem-phi-found = false;
 
 let wrap-call(tctx: TypeContext?, fname: CString, term: AST): (TypeContext?, AST) = (
    let args-type = typeof-term(term);
