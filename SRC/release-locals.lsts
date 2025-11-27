@@ -1,5 +1,5 @@
 
-let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST, hint: Type): (TypeContext?, AST) = (
+let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST, hint: Type, release-self: Bool): (TypeContext?, AST) = (
    tctx-after = tctx-after.phi-append-dead-on-arrival(tctx-before);
    let tctx-before-tctx = tctx-before.get-or(mk-tctx()).tctx;
    let tctx-after-tctx = tctx-after.get-or(mk-tctx()).tctx;
@@ -54,6 +54,6 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       tctx-after-pctx = tail(tctx-after-pctx);
    };
    tctx-before = tctx-before.phi-append(tctx-after);
-   print("End release locals\n");
+   if not(release-self) then (tctx-before, _) = tctx-before.resurrect(typeof-term(term), term);
    (tctx-before, term)
 );
