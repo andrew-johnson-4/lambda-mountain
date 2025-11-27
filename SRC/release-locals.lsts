@@ -1,5 +1,6 @@
 
-let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST, hint: Type): (TypeContext?, AST) = (
+let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST, hint: Type, release-self: Bool): (TypeContext?, AST) = (
+   tctx-after = tctx-after.phi-append-dead-on-arrival(tctx-before);
    let tctx-before-tctx = tctx-before.get-or(mk-tctx()).tctx;
    let tctx-after-tctx = tctx-after.get-or(mk-tctx()).tctx;
    let tctx-before-pctx = tctx-before.get-or(mk-tctx()).pctx;
@@ -23,24 +24,26 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       let rhs = term;
       let def = mk-var(return-id);
       if not(return-type.is-t(c"Nil",0)) && not(return-type.is-t(c"Never",0)) {
-         term = mk-app( mk-abs(def, mk-nil(), ta), term ); tctx-after.ascript(term, t0(c"Nil"));
+         term = mk-app( mk-abs(def, mk-nil(), ta), term ); tctx-after = tctx-after.ascript(term, t0(c"Nil"));
          (tctx-after, let binding-type) = std-bind-term(tctx-after, return-id, rhs, def, term, hint);
-         tctx-after.ascript(def, binding-type);
+         tctx-after = tctx-after.ascript(def, binding-type);
       };
       for nd in needs-release {
+         let phi-id = nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag;
          pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag,true);
          let do-release = mk-app(mk-var(c".release"),mk-var(nd.key));
          (tctx-after, do-release) = std-infer-expr(tctx-after, do-release, false, Used, ta);
-         term = mk-cons(term, do-release); tctx-after.ascript(term, t0(c"Nil"));
+         term = mk-cons(term, do-release); tctx-after = tctx-after.ascript(term, t0(c"Nil"));
       };
       let return-term = if not(return-type.is-t(c"Nil",0)) && not(return-type.is-t(c"Never",0))
       then mk-var(return-id)
       else mk-nil();
       (tctx-after, return-term) = std-infer-expr(tctx-after, return-term, false, Used, t0(c"MustNotRetain"));
       tctx-after = tctx-after.phi-move(typeof-term(return-term), term);
-      term = mk-cons(term, return-term); tctx-after.ascript(term,return-type);
+      term = mk-cons(term, return-term); tctx-after = tctx-after.ascript(term,return-type);
    };
    for nd in needs-mark-release {
+      let phi-id = nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag;
       pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag,true);
       tctx-after = tctx-after.phi-move(tctx-after.with-phi(nd.denormalized, term), term);
    };
@@ -53,5 +56,6 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       tctx-after-pctx = tail(tctx-after-pctx);
    };
    tctx-before = tctx-before.phi-append(tctx-after);
+   if not(release-self) then (tctx-before, _) = tctx-before.resurrect(typeof-term(term), term);
    (tctx-before, term)
 );
