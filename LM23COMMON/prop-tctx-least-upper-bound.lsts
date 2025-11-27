@@ -53,8 +53,6 @@ let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST):
 
    if non-zero(rt) and left.is-t(c"Phi::State",1) and right.is-t(c"Phi::State",1) {
       # Merge and bind new phi state
-      print("LUB Phi Merge Left \{left}\n");
-      print("LUB Phi Merge Right \{left}\n");
       let new-phi-state = tctx.phi-merge(left.slot(c"Phi::State",1).l1, right.slot(c"Phi::State",1).l1, blame);
       let new-phi-id = uuid();
       tctx = tctx.bind-phi(new-phi-id, new-phi-state, blame);

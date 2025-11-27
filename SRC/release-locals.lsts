@@ -31,7 +31,6 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       for nd in needs-release {
          let phi-id = nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag;
          pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag,true);
-         print(".release release \{phi-id}\n");
          let do-release = mk-app(mk-var(c".release"),mk-var(nd.key));
          (tctx-after, do-release) = std-infer-expr(tctx-after, do-release, false, Used, ta);
          term = mk-cons(term, do-release); tctx-after = tctx-after.ascript(term, t0(c"Nil"));
@@ -45,7 +44,6 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    };
    for nd in needs-mark-release {
       let phi-id = nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag;
-      print("mark release \{phi-id}\n");
       pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag,true);
       tctx-after = tctx-after.phi-move(tctx-after.with-phi(nd.denormalized, term), term);
    };

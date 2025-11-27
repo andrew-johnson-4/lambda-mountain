@@ -1,0 +1,27 @@
+
+import lib2/core/bedrock.lsts;
+
+type Type zero TAny
+        = TGround { tag:CString, parameters:OwnedData<List<Type>>[] }
+        | TAny
+        | TVar { name:CString }
+        | TAnd { conjugate:Vector<Type> };
+
+let .ground-tag-and-arity(tt: Type): (CString,U64) = (
+   match tt {
+      TGround { tag:c"Array", parameters:[_.. TAny{}..] } => (c"Array", 2_u64);
+      TGround { tag:c"Array", parameters:[_.. array-base..] } => (
+         let ga = array-base.ground-tag-and-arity;
+         ( ga.first, ga.second + 1000 )
+      );
+      TGround { tag:c"Sized" } => (c"", 9999999_u64);
+      TGround { tag=tag, parameters=parameters } => (tag, parameters.length);
+      TAny {} => (c"?", 0_u64);
+      TVar {} => (c"", 9999999_u64);
+      TAnd { conjugate=conjugate } => (
+         let result = (c"", 9999999_u64);
+         for c in conjugate { if result.second==9999999 then result = c.ground-tag-and-arity };
+         result
+      );
+   }
+);
