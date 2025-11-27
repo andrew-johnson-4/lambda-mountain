@@ -1,5 +1,6 @@
 
 let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST, hint: Type): (TypeContext?, AST) = (
+   print("Begin release locals\n");
    let tctx-before-tctx = tctx-before.get-or(mk-tctx()).tctx;
    let tctx-after-tctx = tctx-after.get-or(mk-tctx()).tctx;
    let tctx-before-pctx = tctx-before.get-or(mk-tctx()).pctx;
@@ -53,5 +54,6 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       tctx-after-pctx = tail(tctx-after-pctx);
    };
    tctx-before = tctx-before.phi-append(tctx-after);
+   print("End release locals\n");
    (tctx-before, term)
 );

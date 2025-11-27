@@ -10,6 +10,7 @@ let std-apply-macro-candidates(tctx: TypeContext?, mname: CString, margs: AST, c
    for Tuple{ctype=first, second:Abs{mlhs=lhs,rhs:App{left:Lit{key:c":"},right:App{mrhs=left}}}} in candidates {
       if not(non-zero(t)) {
          (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, mlhs);
+         tctx = tctx.phi-append(new-tctx);
          if mctx.is-some then mctx = union(mctx, Some(extract-uuids(mrhs)));
          if mctx.is-some then t = with-location-preserve(substitute(mctx.get-or-panic, mrhs), margs.location);
       }

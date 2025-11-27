@@ -7,6 +7,7 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
+   print("Infer term \{term}\n");
    if not(term.is-free-and-seen) { match term {
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
          (tctx, let check-tt) = typeof-var-raw(term, tctx, lname, true);
@@ -152,10 +153,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             else if typeof-term(f).is-t(c"Nil",0) || typeof-term(t).is-t(c"Nil",0) then t0(c"Nil")
             else { (tctx, let lub) = tctx.least-upper-bound(typeof-term(t), typeof-term(f), term); lub };
             tctx = tctx.ascript(term, lub);
-            if is-scoped {
-               (tctx, term) = release-locals(tctx, tctx-t, term, hint); # tctx-t includes both tctx-cond and tctx-t
-               (tctx, term) = release-locals(tctx, tctx-f, term, hint);
-            };
          }
       );
       ASTEOF{} => tctx = tctx.ascript(term, t0(c"Nil"));

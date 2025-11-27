@@ -76,7 +76,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
             peeped = mtype;
          };
       };
-      (let peeped-type, margs) = std-infer-peeped-arguments(tctx, margs, peep-holes);
+      (tctx, let peeped-type, margs) = std-infer-peeped-arguments(tctx, margs, peep-holes);
 
       let matched = [] : List<(Type,AST)>;
       for Tuple{mtype=first, mterm=third} in row {
@@ -114,8 +114,8 @@ let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type): (T
       TGround{tag:c"Cons", parameters:[p2.. p1..]} => (
          match t {
             App{is-cons=is-cons, left=left, right=right} => (
-               (let lt, let new-left) = std-infer-peeped-arguments(tctx, left, p1);
-               (let rt, let new-right) = std-infer-peeped-arguments(tctx, right, p2);
+               (tctx, let lt, let new-left) = std-infer-peeped-arguments(tctx, left, p1);
+               (tctx, let rt, let new-right) = std-infer-peeped-arguments(tctx, right, p2);
                if not(is(left,new-left)) || not(is(right,new-right))
                then t = mk-cons-or-app(is-cons,new-left,new-right);
                (tctx, t2(c"Cons",lt,rt), t)
