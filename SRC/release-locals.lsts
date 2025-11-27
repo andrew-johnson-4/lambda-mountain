@@ -1,6 +1,6 @@
 
 let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST, hint: Type): (TypeContext?, AST) = (
-   print("Begin release locals\n");
+   tctx-after = tctx-after.phi-append-dead-on-arrival(tctx-before);
    let tctx-before-tctx = tctx-before.get-or(mk-tctx()).tctx;
    let tctx-after-tctx = tctx-after.get-or(mk-tctx()).tctx;
    let tctx-before-pctx = tctx-before.get-or(mk-tctx()).pctx;
