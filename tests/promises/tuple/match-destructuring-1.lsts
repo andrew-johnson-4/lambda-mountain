@@ -10,11 +10,6 @@ type Type zero TAny
 let .ground-tag-and-arity(tt: Type): (CString,U64) = (
    match tt {
       TGround { tag:c"Array", parameters:[_.. TAny{}..] } => (c"Array", 2_u64);
-      TGround { tag:c"Array", parameters:[_.. array-base..] } => (
-         let ga = array-base.ground-tag-and-arity;
-         ( ga.first, ga.second + 1000 )
-      );
-      TGround { tag:c"Sized" } => (c"", 9999999_u64);
       TGround { tag=tag, parameters=parameters } => (tag, parameters.length);
       TAnd { conjugate=conjugate } => (
          let result = (c"", 9999999_u64);
