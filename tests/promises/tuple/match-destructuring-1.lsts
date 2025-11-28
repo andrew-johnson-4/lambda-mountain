@@ -3,32 +3,12 @@ import lib2/core/bedrock.lsts;
 
 type T = { tag:CString };
 
-let .ground-tag-and-arity(tt: T): (CString,U64) = (
-   let t1 = tt;
+let .ground-tag-and-arity(t1: T): (CString,U64) = (
    (scope($"if"
-      (
-         let c1 = false;
-         $"if"
-            (
-               let t2 = t1.tag;
-               t2 == c"Array"
-            )
-            (c1 = true)
-            ()
-         ;
-         c1
-      )
+      (true)
       ((c"Array", 2_u64))
       (scope($"if"
-         (
-            let c2 = false;
-            ($"if"
-              (let tag = t1.tag; branchtrue())
-              (c2 = true)
-              ()
-            );
-            c2
-         )
+         (let tag = t1.tag; branchtrue())
          ((tag, 1_u64))
          (fail(c"Pattern Match Failure"))
       ))
