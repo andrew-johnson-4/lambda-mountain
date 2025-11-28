@@ -8,7 +8,7 @@ let .ground-tag-and-arity(t1: T): (CString,U64) = (
       (true)
       ((c"Array", 2_u64))
       (scope($"if"
-         (let tag = t1.tag; branchtrue())
+         (let tag = t1.tag; true)
          ((tag, 1_u64))
          (fail(c"Pattern Match Failure"))
       ))
