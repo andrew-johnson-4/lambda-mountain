@@ -7,11 +7,7 @@ let .ground-tag-and-arity(t1: T): (CString,U64) = (
    (scope($"if"
       (true)
       ((c"A", 2_u64))
-      (scope($"if"
-         (true)
-         ((c"B", 1_u64))
-         (fail(c"Pattern Match Failure"))
-      ))
+      ((c"B", 1_u64))
    ))
 );
 
