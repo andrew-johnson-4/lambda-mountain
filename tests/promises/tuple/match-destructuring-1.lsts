@@ -16,8 +16,6 @@ let .ground-tag-and-arity(tt: Type): (CString,U64) = (
       );
       TGround { tag:c"Sized" } => (c"", 9999999_u64);
       TGround { tag=tag, parameters=parameters } => (tag, parameters.length);
-      TAny {} => (c"?", 0_u64);
-      TVar {} => (c"", 9999999_u64);
       TAnd { conjugate=conjugate } => (
          let result = (c"", 9999999_u64);
          for c in conjugate { if result.second==9999999 then result = c.ground-tag-and-arity };
