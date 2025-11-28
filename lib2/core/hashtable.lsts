@@ -39,12 +39,12 @@ let mk-hashtable(): Hashtable<k,v> = (
 
 let .realloc(h: Hashtable<k,v>, target-capacity: USize): Hashtable<k,v> = (
    let new-data = mk-sparse-owned-data(type((HashtableRowExists,k,v)), target-capacity);
-   let old_i = 0_sz;
-   while old_i < h.data.capacity {
-      let old_kv = h.data[old_i];
-      if is(old_kv.first,HashtableRowFilled)
-      then new-data[old_i] = h.data[old_i];
-      old_i = old_i + 1;
+   let old-i = 0_sz;
+   while old-i < h.data.capacity {
+      let old-kv = h.data[old-i];
+      if is(old-kv.first,HashtableRowFilled)
+      then new-data[old-i] = h.data[old-i];
+      old-i = old-i + 1;
    };
    Hashtable(new-data)
 );
@@ -68,10 +68,10 @@ let .bind(h: Hashtable<k,v>, key: k, val: v): Hashtable<k,v> = (
 
 let .bind-direct(h: Hashtable<k,v>, key: k, val: v): Nil = (
    if (h.data as USize) != 0 and h.data.capacity > 0 {
-      let key_hash = hash(key);
+      let key-hash = hash(key);
       let found = false;
       let contents = h.data;
-      let ki = (key_hash as USize) % contents.capacity;
+      let ki = (key-hash as USize) % contents.capacity;
       let kv = contents[ki];
       if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
       while not(found) and is(kv.first,HashtableRowFilled) {
@@ -90,19 +90,19 @@ let $"map::cons"(key: k, val: v, h: Hashtable<k,v>): Hashtable<k,v> = (
 
 
 let $"[]"(h: Hashtable<k,v>, key: k): Maybe<k> = (
-   let row_index = h.find-row-index-by-key(key);
-   if row_index == (-1 as USize)
+   let row-index = h.find-row-index-by-key(key);
+   if row-index == (-1 as USize)
    then (None : Maybe<v>)
-   else Some(h.data[row_index].third)
+   else Some(h.data[row-index].third)
 );
 
 let .find-row-index-by-key(h: Hashtable<k,v>, key: k): USize = (
-   let row_index = -1 as USize;
+   let row-index = -1 as USize;
    if (h.data as USize) != 0 and h.data.capacity > 0 {
-      let key_hash = hash(key);
+      let key-hash = hash(key);
       let found = false;
       let contents = h.data;
-      let ki = (key_hash as USize) % contents.capacity;
+      let ki = (key-hash as USize) % contents.capacity;
       let kv = contents[ki];
       if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
       while not(is(kv.first,HashtableRowEmpty)) and not(found) {
@@ -110,7 +110,7 @@ let .find-row-index-by-key(h: Hashtable<k,v>, key: k): USize = (
          kv = contents[ki];
          if is(kv.first,HashtableRowFilled) and kv.second==key { found = true; };
       };
-      if found then row_index = ki;
+      if found then row-index = ki;
    };
-   row_index
+   row-index
 );

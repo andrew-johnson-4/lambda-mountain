@@ -51,17 +51,17 @@ let safe-alloc-impl(nb: USize): ?[] = (
 let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
    # BEFORE CHANGING THIS: talk to alex
 
-   let new_ptr = realloc(ptr as C<"void">[], nb) as ?[];
+   let new-ptr = realloc(ptr as C<"void">[], nb) as ?[];
 
-   if new_ptr as USize == 0_sz {
+   if new-ptr as USize == 0_sz {
       fail(c"realloc fail");
    };
 
    # Zero Out Memory
-   memset(new_ptr as C<"void">[], 0, nb);
+   memset(new-ptr as C<"void">[], 0, nb);
 
-   mark-memory-as-safe(new_ptr as U8[], nb);
-   new_ptr
+   mark-memory-as-safe(new-ptr as U8[], nb);
+   new-ptr
 );
 
 ## this will fail() if len is 0

@@ -56,9 +56,9 @@ let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (
 let .push(v: Vector<t>, i: x): Vector<t> = (
    # if this vector is a view, or if it is full, then we need to reallocate
    if (v.data as USize)==0 or v.data.occupied==v.data.capacity {
-      let new_capacity = if v.length==0 then 4_sz
+      let new-capacity = if v.length==0 then 4_sz
       else (v.length >> 1_sz) + v.length; # this is mul 1.5, not 3
-      v = v.realloc(new_capacity);
+      v = v.realloc(new-capacity);
    };
    v.data.push(i);
    v
