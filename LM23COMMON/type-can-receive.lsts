@@ -1,2 +1,2 @@
 
-let can-receive(ft: Type, pt: Type): U64 = pt <: ft.range;
+let can-receive(ft: Type, pt: Type): Bool = pt <: ft.range;

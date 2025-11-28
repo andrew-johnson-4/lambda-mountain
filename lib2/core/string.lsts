@@ -29,6 +29,7 @@ let .retain(x: String): String = (
 );
 
 let .length(s: String): USize = s.end-offset - s.start-offset;
+let non-zero(s: String): Bool = s.length > 0;
 
 let cmp(l: String, r: String): Ord = (
    let l_size = l.end-offset - l.start-offset;
@@ -46,6 +47,7 @@ let cmp(l: String, r: String): Ord = (
 );
 
 let intern(cs: CString): String = cs.into(type(String));
+let intern(s: String): String = s;
 let .into(s: String, tt: Type<String>): String = s;
 let .into(cs: CString, tt: Type<String>): String = (
    let cs_length = cs.length;

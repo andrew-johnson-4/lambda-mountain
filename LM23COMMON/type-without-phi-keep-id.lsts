@@ -8,7 +8,7 @@
 let .without-phi-keep-id(tt: Type): Type = (
    match tt {
       TAnd { conjugate=conjugate } => (
-         let result = mk-vector(type(Type), 0_u64);
+         let result = mk-vector(type(Type), 0);
          for c in conjugate {
             c = c.without-phi-keep-id;
             if non-zero(c) then result = result.push(c);

@@ -2,7 +2,7 @@
 let .without-slot(tt: Type, t-tag: CString, t-arity: U64): Type = (
    match tt {
       TAnd { conjugate=conjugate } => (
-         let result = mk-vector(type(Type), 0_u64);
+         let result = mk-vector(type(Type), 0);
          for c in conjugate {
             c = c.without-slot(t-tag, t-arity);
             if non-zero(c) then result = result.push(c);

@@ -6,7 +6,7 @@
 let .without-any-phi(tt: Type): Type = (
    match tt {
       TAnd { conjugate=conjugate } => (
-         let result = mk-vector(type(Type), 0_u64);
+         let result = mk-vector(type(Type), 0);
          for c in conjugate {
             c = c.without-any-phi;
             if non-zero(c) then result = result.push(c);

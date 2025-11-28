@@ -118,3 +118,8 @@ let .buffer-into-string(v: Vector<U8>): String = (
    v.data.retain;
    String(0, v.length - 1, v.data)
 );
+
+let $"set[]"( v: Vector<t>, i: USize, val: t ): Nil = (
+   if i >= v.length then fail(c"Vector Index Out of Bounds");
+   v.data[i] = val;
+);

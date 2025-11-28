@@ -3,10 +3,10 @@ let .is-any-arg-t(tt: Type, t-expect: CString, p-expect: U64): Bool = (
    match tt {
       TAnd { conjugate=conjugate } => (
          let result = false;
-         for c in conjugate { result = result || c.is-any-arg-t(t-expect,p-expect) };
+         for c in conjugate { result = result or c.is-any-arg-t(t-expect,p-expect) };
          result
       );
-      TGround { tag:c"Cons", parameters:[l1..l2..] } => l1.is-any-arg-t(t-expect,p-expect) || l2.is-any-arg-t(t-expect,p-expect);
+      TGround { tag:c"Cons", parameters:[l1..l2..] } => l1.is-any-arg-t(t-expect,p-expect) or l2.is-any-arg-t(t-expect,p-expect);
       TGround { tag:tag, parameters:parameters } => tag==t-expect and parameters.length==p-expect;
       _ => false;
    }
