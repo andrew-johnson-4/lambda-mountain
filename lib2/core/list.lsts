@@ -2,6 +2,7 @@
 type List<x> implies MustRetain, MustRelease zero LEOF = LEOF | LCons { head: x, tail: OwnedData<List<x>>[] };
 
 let $"list::cons"(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
+let cons(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
 
 let .release(t: List<x>): Nil = (
    if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag {
@@ -41,7 +42,7 @@ let .has-head(tt: List<x>): Bool = non-zero(tt);
 
 let .nth(tt: List<x>, idx: USize): Maybe<x> = (
    let err = false;
-   while idx > 0 && not(err) {
+   while idx > 0 and not(err) {
       if tt.has-head() {
          tt = tail(tt);
          idx = idx - 1;
@@ -50,7 +51,7 @@ let .nth(tt: List<x>, idx: USize): Maybe<x> = (
       }
    };
 
-   if err || not(tt.has-head()) {
+   if err or not(tt.has-head()) {
       None : Maybe<x>
    } else {
       Some(head(tt))

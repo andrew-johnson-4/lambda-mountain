@@ -1,2 +1,2 @@
 
-let can-apply(ft: Type, pt: Type): U64 = pt <: ft.domain;
+let can-apply(ft: Type, pt: Type): Bool = pt <: ft.domain;

@@ -48,9 +48,9 @@ let $"[]"(l: CString, idx: USize): U8 = (
 
 let hash(key: CString): U64 = (
    let i = 0_sz;
-   let key_length = key.length;
+   let key-length = key.length;
    let result = 0_u64;
-   while i < key_length {
+   while i < key-length {
       result = result + key[i];
       result = result + (result << 10);
       result = result ^ (result >> 6);
@@ -61,6 +61,7 @@ let hash(key: CString): U64 = (
    result = result + (result << 15);
    result
 );
+let deep-hash(key: CString): U64 = hash(key);
 
 let $"+"(l: CString, r: CString): CString = (
    let buf = malloc(l.length + r.length + 1) as C<"char">[];
@@ -71,13 +72,13 @@ let $"+"(l: CString, r: CString): CString = (
 );
 
 let .has-suffix(s2: CString, s1: CString): Bool = (
-   let s1_length = s1.length;
-   let s2_length = s2.length;
-   if s1_length > s2_length then false else {
+   let s1-length = s1.length;
+   let s2-length = s2.length;
+   if s1-length > s2-length then false else {
       let i = 0_sz;
       let return = true;
-      while i < s1_length {
-         if s1[s1_length - i - 1] != s2[s2_length - i - 1]
+      while i < s1-length {
+         if s1[s1-length - i - 1] != s2[s2-length - i - 1]
          then return = false;
          i = i + 1;
       };
@@ -86,12 +87,12 @@ let .has-suffix(s2: CString, s1: CString): Bool = (
 );
 
 let .has-prefix(s2: CString, s1: CString): Bool = (
-   let s1_length = s1.length;
-   let s2_length = s2.length;
-   if s1_length > s2_length then false else {
+   let s1-length = s1.length;
+   let s2-length = s2.length;
+   if s1-length > s2-length then false else {
       let i = 0_sz;
       let return = true;
-      while i < s1_length {
+      while i < s1-length {
          if s1[i] != s2[i]
          then return = false;
          i = i + 1;

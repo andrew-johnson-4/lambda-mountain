@@ -152,10 +152,15 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             else if typeof-term(f).is-t(c"Nil",0) || typeof-term(t).is-t(c"Nil",0) then t0(c"Nil")
             else { (tctx, let lub) = tctx.least-upper-bound(typeof-term(t), typeof-term(f), term); lub };
             tctx = tctx.ascript(term, lub);
+            let term-phi-id = typeof-term(term).slot(c"Phi::Id",1).l1.simple-tag;
+            let t-phi-id = typeof-term(t).slot(c"Phi::Id",1).l1.simple-tag;
+            let f-phi-id = typeof-term(f).slot(c"Phi::Id",1).l1.simple-tag;
             if is-scoped {
-               (tctx, term) = release-locals(tctx, tctx-t, term, hint, false); # tctx-t includes both tctx-cond and tctx-t
-               (tctx, term) = release-locals(tctx, tctx-f, term, hint, false);
+               (tctx, term) = release-locals(tctx, tctx-t, term, hint, false ); # tctx-t includes both tctx-cond and tctx-t
+               (tctx, term) = release-locals(tctx, tctx-f, term, hint, false );
             };
+            if non-zero(term-phi-id) and term-phi-id != t-phi-id then tctx = tctx.phi-move(typeof-term(t), t);
+            if non-zero(term-phi-id) and term-phi-id != f-phi-id then tctx = tctx.phi-move(typeof-term(f), f);
          }
       );
       ASTEOF{} => tctx = tctx.ascript(term, t0(c"Nil"));

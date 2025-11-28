@@ -2,7 +2,7 @@
 let .sanitize-phi(tt: Type): Type = (
    match tt {
       TAnd { conjugate=conjugate } => (
-         let result = mk-vector(type(Type), 0_u64);
+         let result = mk-vector(type(Type), 0);
          for c in conjugate {
             match c.sanitize-phi {
                TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
