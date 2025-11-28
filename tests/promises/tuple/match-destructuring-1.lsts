@@ -4,13 +4,13 @@ import lib2/core/bedrock.lsts;
 type T = { tag:CString };
 
 let .ground-tag-and-arity(tt: T): (CString,U64) = (
-   let t1 = open(tt);
+   let t1 = tt;
    (scope($"if"
       (
          let c1 = false;
          $"if"
             (
-               let t2 = open((t1 as Tag::T).tag);
+               let t2 = t1.tag;
                t2 == c"Array"
             )
             (c1 = true)
@@ -21,17 +21,12 @@ let .ground-tag-and-arity(tt: T): (CString,U64) = (
       ((c"Array", 2_u64))
       (scope($"if"
          (
-            let t3 = t1;
             let c2 = false;
-            $"if"
-               (t3.discriminator-case-tag == (t3 as Tag::T).discriminator-case-tag)
-               ($"if"
-                 (let tag = open((t3 as Tag::T).tag); branchtrue())
-                 (c2 = true)
-                 ()
-               )
-               ()
-            ;
+            ($"if"
+              (let tag = t1.tag; branchtrue())
+              (c2 = true)
+              ()
+            );
             c2
          )
          ((tag, 1_u64))
