@@ -1,15 +1,11 @@
 
 import lib2/core/bedrock.lsts;
 
-type Type zero TAny
-        = TGround { tag:CString, parameters:OwnedData<List<Type>>[] }
-        | TAny
-        | TVar { name:CString }
-        | TAnd { conjugate:Vector<Type> };
+type T = { tag:CString };
 
-let .ground-tag-and-arity(tt: Type): (CString,U64) = (
+let .ground-tag-and-arity(tt: T): (CString,U64) = (
    match tt {
-      TGround { tag:c"Array", parameters:[_.. TAny{}..] } => (c"Array", 2_u64);
-      TGround { tag=tag, parameters=parameters } => (tag, parameters.length);
+      T { tag:c"Array" } => (c"Array", 2_u64);
+      T { tag=tag } => (tag, 1_u64);
    }
 );
