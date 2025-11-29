@@ -4,8 +4,28 @@
 # TAny = 1
 # TVar = 2
 # TAnd = 3
-type Type zero TAny
+type Type zero TAny implies MustRetain, MustRelease
         = TGround { tag:CString, parameters:OwnedData<List<Type>>[] }
         | TAny
         | TVar { name:CString }
         | TAnd { conjugate:Vector<Type> };
+
+let .release(t: Type): Nil = (
+   if t.discriminator-case-tag==(t as Tag::Ground).discriminator-case-tag {
+      (t as Tag::TGround).parameters.release;
+   };
+   if t.discriminator-case-tag==(t as Tag::And).discriminator-case-tag {
+      (t as Tag::TAnd).conjugate.release;
+   };
+   mark-as-released(t);
+);
+
+let .retain(t: Type): Type = (
+   if t.discriminator-case-tag==(t as Tag::Ground).discriminator-case-tag {
+      (t as Tag::TGround).parameters.retain;
+   };
+   if t.discriminator-case-tag==(t as Tag::And).discriminator-case-tag {
+      mark-as-released((t as Tag::TAnd).conjugate.retain);
+   };
+   t
+);
