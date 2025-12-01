@@ -1,7 +1,6 @@
 
 let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
    tt = tctx.with-phi(tt, t);
-   #print("Ascript \{t} : \{tt}\n");
    if non-zero(tt) {
       let prev-tt = typeof-term(t);
       if non-zero(prev-tt) {
