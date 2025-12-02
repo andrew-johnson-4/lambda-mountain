@@ -24,11 +24,11 @@ assert( t0(c"B") > t0(c"A") );
 assert( t0(c"B") >= t0(c"A") );
 assert( safe-alloc-block-count == 0 );
 
-#assert( t1(c"A",t0(c"T")) == t1(c"A",t0(c"T")) );
-#assert( t1(c"A",t0(c"T")) < t1(c"B",t0(c"T")) );
-#assert( t1(c"T",t0(c"A")) < t1(c"T",t0(c"B")) );
-#assert( t1(c"T",t0(c"A")) < t2(c"T",t0(c"A"),t0(c"B")) );
-#assert( safe-alloc-block-count == 0 );
+assert( t1(c"A",t0(c"T")) == t1(c"A",t0(c"T")) );
+assert( t1(c"A",t0(c"T")) < t1(c"B",t0(c"T")) );
+assert( t1(c"T",t0(c"A")) < t1(c"T",t0(c"B")) );
+assert( t1(c"T",t0(c"A")) < t2(c"T",t0(c"A"),t0(c"B")) );
+assert( safe-alloc-block-count == 0 );
 
 #assert( tv(c"A") == tv(c"A") );
 #assert( tv(c"A") <= tv(c"A") );
