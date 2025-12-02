@@ -66,18 +66,13 @@ let close(d: t): OwnedData<t>[] = (
 );
 
 let .release(od: OwnedData<t>[]): Nil = (
-   print(c"Release Owned Data\n");
    if (od as USize)!=0 {
-      print(c"Release Owned Data Non-null\n");
       od.reference-count = od.reference-count - 1;
       if od.reference-count == 0 {
-         print(c"Release Owned Data Reference Count became 0\n");
          if type(t) <: type(MustRelease) {
-            print(c"Release Owned Data Owned Is MustRelease\n");
             let dlo = 0_sz;
             let dhi = od.occupied;
             while dlo < dhi {
-               print(c"Release Owned Data Singlet\n");
                od.data[dlo].release;
                dlo = dlo + 1;
             };
@@ -85,7 +80,6 @@ let .release(od: OwnedData<t>[]): Nil = (
          safe-free(od);
       };
    };
-   print(c"Released Owned Data\n");
 );
 
 let .retain(od: OwnedData<t>[]): Nil = (
