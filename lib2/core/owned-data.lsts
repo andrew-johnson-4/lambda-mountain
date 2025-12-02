@@ -79,7 +79,7 @@ let .release(od: OwnedData<t>[]): Nil = (
          };
          safe-free(od);
       };
-   }
+   };
 );
 
 let .retain(od: OwnedData<t>[]): Nil = (

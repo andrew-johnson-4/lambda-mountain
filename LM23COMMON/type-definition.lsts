@@ -11,20 +11,20 @@ type Type zero TAny implies MustRetain, MustRelease
         | TAnd { conjugate:Vector<Type> };
 
 let .release(t: Type): Nil = (
-   if t.discriminator-case-tag==(t as Tag::Ground).discriminator-case-tag {
+   if t.discriminator-case-tag==(t as Tag::TGround).discriminator-case-tag {
       (t as Tag::TGround).parameters.release;
    };
-   if t.discriminator-case-tag==(t as Tag::And).discriminator-case-tag {
+   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
       (t as Tag::TAnd).conjugate.release;
    };
    mark-as-released(t);
 );
 
 let .retain(t: Type): Type = (
-   if t.discriminator-case-tag==(t as Tag::Ground).discriminator-case-tag {
+   if t.discriminator-case-tag==(t as Tag::TGround).discriminator-case-tag {
       (t as Tag::TGround).parameters.retain;
    };
-   if t.discriminator-case-tag==(t as Tag::And).discriminator-case-tag {
+   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
       mark-as-released((t as Tag::TAnd).conjugate.retain);
    };
    t
