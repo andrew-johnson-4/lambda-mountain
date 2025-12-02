@@ -15,7 +15,7 @@ let .release(t: Type): Nil = (
    if t.discriminator-case-tag==(t as Tag::Ground).discriminator-case-tag {
       print("Release parameters: ref-count=\{(t as Tag::TGround).parameters.reference-count}\n");
       (t as Tag::TGround).parameters.release;
-      print(c"Released parameters");
+      print(c"Released parameters\n");
    };
    if t.discriminator-case-tag==(t as Tag::And).discriminator-case-tag {
       print(c"Release and conjugate\n");
