@@ -13,11 +13,16 @@ type Type zero TAny implies MustRetain, MustRelease
 let .release(t: Type): Nil = (
    print(c"Release Type\n");
    if t.discriminator-case-tag==(t as Tag::Ground).discriminator-case-tag {
+      print("Release parameters: ref-count=\{(t as Tag::TGround).parameters.reference-count}\n");
       (t as Tag::TGround).parameters.release;
+      print(c"Released parameters");
    };
    if t.discriminator-case-tag==(t as Tag::And).discriminator-case-tag {
+      print(c"Release and conjugate\n");
       (t as Tag::TAnd).conjugate.release;
+      print(c"Released conjugate\n");
    };
+   print(c"Released Type\n");
    mark-as-released(t);
 );
 

@@ -5,10 +5,12 @@ let $"list::cons"(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
 let cons(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
 
 let .release(t: List<x>): Nil = (
+   print(c"Release List\n");
    if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag {
       if type(x) <: type(MustRelease) then (t as Tag::LCons).head.release;
       (t as Tag::LCons).tail.release;
    };
+   print(c"Released List\n");
    mark-as-released(t);
 );
 
