@@ -201,7 +201,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                term = new-term;
             };
          };
-         print("Glb \{term}\n");
       );
       Var{key=key, token=token} => (
          (tctx, let vt) = typeof-var(term, tctx, key, hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));

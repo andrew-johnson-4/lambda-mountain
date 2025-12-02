@@ -1,27 +1,28 @@
 
 import LM23COMMON/unit-type-core.lsts;
 
-#assert( ta == ta );
-#assert( safe-alloc-block-count == 0 );
+assert( ta == ta );
+assert( safe-alloc-block-count == 0 );
 
 t0(c"A");
+assert( safe-alloc-block-count == 0 );
 
-#assert( t0(c"A") == t0(c"A") );
-#assert( t0(c"A") <= t0(c"A") );
-#assert( t0(c"A") >= t0(c"A") );
-#assert( not(t0(c"A") == t0(c"B")) );
-#assert( t0(c"A") != t0(c"B") );
-#assert( t0(c"A") < t0(c"B") );
-#assert( t0(c"A") <= t0(c"B") );
-#assert( not(t0(c"A") > t0(c"B")) );
-#assert( not(t0(c"A") >= t0(c"B")) );
-#assert( not(t0(c"B") == t0(c"A")) );
-#assert( t0(c"B") != t0(c"A") );
-#assert( not(t0(c"B") < t0(c"A")) );
-#assert( not(t0(c"B") <= t0(c"A")) );
-#assert( t0(c"B") > t0(c"A") );
-#assert( t0(c"B") >= t0(c"A") );
-#assert( safe-alloc-block-count == 0 );
+assert( t0(c"A") == t0(c"A") );
+assert( t0(c"A") <= t0(c"A") );
+assert( t0(c"A") >= t0(c"A") );
+assert( not(t0(c"A") == t0(c"B")) );
+assert( t0(c"A") != t0(c"B") );
+assert( t0(c"A") < t0(c"B") );
+assert( t0(c"A") <= t0(c"B") );
+assert( not(t0(c"A") > t0(c"B")) );
+assert( not(t0(c"A") >= t0(c"B")) );
+assert( not(t0(c"B") == t0(c"A")) );
+assert( t0(c"B") != t0(c"A") );
+assert( not(t0(c"B") < t0(c"A")) );
+assert( not(t0(c"B") <= t0(c"A")) );
+assert( t0(c"B") > t0(c"A") );
+assert( t0(c"B") >= t0(c"A") );
+assert( safe-alloc-block-count == 0 );
 
 #assert( t1(c"A",t0(c"T")) == t1(c"A",t0(c"T")) );
 #assert( t1(c"A",t0(c"T")) < t1(c"B",t0(c"T")) );
