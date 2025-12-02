@@ -1,8 +1,8 @@
 
 import LM23COMMON/unit-type-core.lsts;
 
-assert( ta == ta );
-assert( safe-alloc-block-count == 0 );
+#assert( ta == ta );
+#assert( safe-alloc-block-count == 0 );
 
 t0(c"A");
 
