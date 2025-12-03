@@ -3,7 +3,7 @@ let .is-moved(tt: Type): Bool = (
    match tt {
       TAnd{conjugate=conjugate} => (
          let moved = false;
-         for c in conjugate {
+         for vector c in conjugate {
             moved = moved or c.is-moved;
          };
          moved
