@@ -10,7 +10,7 @@ let .into(tt: Type, tgt: Type<String>): String = (
          if parameters.length > 0 {
             let pc = 0_u64;
             r = r + "<";
-            for p in parameters.reverse {
+            for list p in parameters.reverse {
                if pc > 0 { r = r + ","; };
                r = r + p.into(type(String));
                pc = pc + 1;
@@ -21,7 +21,7 @@ let .into(tt: Type, tgt: Type<String>): String = (
       TAnd{conjugate=conjugate} => (
          let result = "";
          let ci = 0_u64;
-         for c in conjugate {
+         for vector c in conjugate {
             result = result + c.into(type(String));
             ci = ci + 1;
             if ci != conjugate.length then result = result + " + ";
@@ -35,7 +35,7 @@ let .pretty(tt: Type): String = (
    match tt {
       TAnd{conjugate=conjugate} => (
          let result = "";
-         for c in conjugate {
+         for vector c in conjugate {
             if non-zero(result) then (result = result + " + \n" + c.into(type(String)))
             else (result = c.into(type(String)));
          };

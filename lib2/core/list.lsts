@@ -70,7 +70,7 @@ let $"[]"(tt: List<x>, idx: USize): x = (
 
 let .reverse(l: List<x>): List<x> = (
    let r = [] : List<x>;
-   for v in l { r = cons(v,r); };
+   for list v in l { r = cons(v,r); };
    r
 );
 
@@ -79,6 +79,6 @@ let tail(l: List<x>): List<x> = if l.has-head then open((l as Tag::LCons).tail) 
 
 let .length(l: List<x>): U64 = (
    let li = 0_u64;
-   for _ in l { li = li + 1 };
+   for list _ in l { li = li + 1 };
    li
 );

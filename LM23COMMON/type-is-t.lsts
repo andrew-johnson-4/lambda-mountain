@@ -3,7 +3,7 @@ let .is-t(tt: Type, tt-tag: CString, tt-length: U64): Bool = (
    match tt {
       TAnd { conjugate=conjugate } => (
          let result = false;
-         for c in conjugate { result = result or c.is-t(tt-tag, tt-length) };
+         for vector c in conjugate { result = result or c.is-t(tt-tag, tt-length) };
          result
       );
       TGround { tag=tag, parameters=parameters } => tag == tt-tag and parameters.length == tt-length;

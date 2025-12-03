@@ -1791,6 +1791,7 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       let loc = head(tokens).location; tokens = tail(tokens);
       let list = false;
       if lsts-parse-head(tokens)==c"list" then { tokens = tail(tokens); list = true; };
+      if lsts-parse-head(tokens)==c"vector" then { tokens = tail(tokens); list = false; };
       let lhs-rest = lsts-parse-lhs(tokens);
       tokens = lhs-rest.second;
       lsts-parse-expect(c"in", tokens); tokens = tail(tokens);

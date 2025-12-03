@@ -27,7 +27,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
          let result = true;
          let ri = 0_sz;
          let phi-state-in = ta;
-         for lc in lconjugate {
+         for vector lc in lconjugate {
             if result then (match lc {
                TGround{tag:c"Any"} => ();
                TGround{tag:c"MustNotRetain"} => ();
@@ -37,7 +37,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
                TGround{tag:c"MustNotFresh"} => ();
                TGround{tag:c"Phi::Transition", parameters:[phi-to..phi-from..]} => (
                   let skip-state-check = false;
-                  for st in rconjugate { match st {
+                  for vector st in rconjugate { match st {
                      TGround{tag:c"Phi::State",parameters:[new-phi-state..]} => (
                         phi-state-in = phi-state-in && new-phi-state;
                      );
@@ -80,12 +80,12 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       );
       Tuple{ first:TAnd{ lconjugate=conjugate }, rt=second } => (
          let result = true;
-         for c in lconjugate { result = result and can-unify(c,rt) };
+         for vector c in lconjugate { result = result and can-unify(c,rt) };
          result
       );
       Tuple{ lt=first, second:TAnd{ rconjugate=conjugate } } => (
          let result = false;
-         for c in rconjugate { result = result or can-unify(lt,c) };
+         for vector c in rconjugate { result = result or can-unify(lt,c) };
          result
       );
 
