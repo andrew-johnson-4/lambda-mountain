@@ -22,15 +22,15 @@ let .location(t: String): SourceLocation = (
    let file-path = smart-token-path-index.lookup( t.data as U64, "[Unknown File]" );
    let line = 1_u64;
    let column = 1_u64;
-   let data = t.data;
-   while data < t.start-offset {
-      if data[0] == 10_u8 then {
+   let i = 0_sz;
+   while i < t.start-offset {
+      if t.data[i] == 10_u8 then {
          line = line + 1;
          column = 1;
       } else {
          column = column + 1;
       };
-      data = data + 1;
+      i = i + 1;
    };
    if file-path == "[Unknown File]"
    then SourceLocation ( file-path.into(type(CString)), 0, 0 )
