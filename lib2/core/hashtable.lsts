@@ -114,3 +114,5 @@ let .find-row-index-by-key(h: Hashtable<k,v>, key: k): USize = (
    };
    row-index
 );
+
+let .lookup(h: Hashtable<k,v>, key: k, default: v): v = h[key].get-or(default);

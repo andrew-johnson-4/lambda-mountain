@@ -33,6 +33,6 @@ let .location(t: String): SourceLocation = (
       data = data + 1_u64;
    };
    if file-path == "[Unknown File]"
-   then SourceLocation ( untern(file-path), 0, 0 )
-   else SourceLocation ( untern(file-path), line, column )
+   then SourceLocation ( file-path.into(type(CString)), 0, 0 )
+   else SourceLocation ( file-path.into(type(CString)), line, column )
 );

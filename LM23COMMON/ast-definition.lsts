@@ -6,7 +6,7 @@ type AST zero ASTEOF implies MustRetain, MustRelease
          = Meta { val: OwnedData<AST>[] }
          | ASTEOF
          | ASTNil
-         | App { is-cons: U64, left: OwnedData<AST>[], right: OwnedData<AST>[] }
+         | App { is-cons: Bool, left: OwnedData<AST>[], right: OwnedData<AST>[] }
          | Var { key: CString, token: Token }
          | Lit { key: CString, token: Token }
          | Abs { lhs: OwnedData<AST>[], rhs: OwnedData<AST>[], tt: Type }

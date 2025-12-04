@@ -3,7 +3,7 @@ let mk-app(f: AST, a: AST): AST = (
    App( close(f), close(a) )
 );
 
-let mk-cons-or-app(is-cons: U64, f: AST, a: AST): AST = (
+let mk-cons-or-app(is-cons: Bool, f: AST, a: AST): AST = (
    App( is-cons, close(f), close(a) )
 );
 
@@ -208,7 +208,7 @@ let mk-var(val: CString): AST = (
 );
 
 let mk-var(val: String): AST = (
-   Var( untern(val), mk-token(val) )
+   Var( val.into(type(CString)), mk-token(val) )
 );
 
 let mk-var(val: Token): AST = (
@@ -222,7 +222,7 @@ let mk-lit(val: CString): AST = (
 );
 
 let mk-lit(val: String): AST = (
-   Lit( untern(val), mk-token(val) )
+   Lit( val.into(type(CString)), mk-token(val) )
 );
 
 let mk-lit(val: Token): AST = (
