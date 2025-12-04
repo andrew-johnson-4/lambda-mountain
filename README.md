@@ -15,6 +15,7 @@ Despite being an assembler, LM provides
 * parameterized code and data
 * hygienic macros
 * platform agnostic standard libraries
+* *à la carte* garbage collection
 
 ### Why Such a Small Codebase?
 
