@@ -22,31 +22,31 @@ let $">="(l: String, r: CString): U64 = cmp(l, r) >= Equal();
 let cmp(x: String, y: String): Ord = (
    let r = Equal();
    if not(is( x, y )) {
-      let x-start = x.start;
-      let y-start = y.start;
-      while x-start < x.end && y-start < y.end {
+      let x-start = x.start-offset;
+      let y-start = y.start-offset;
+      while x-start < x.end-offset && y-start < y.end-offset {
          if x-start[0_u64] < y-start[0_u64] {
             r = LessThan();
-            x-start = x.end;
-            y-start = y.end;
+            x-start = x.end-offset;
+            y-start = y.end-offset;
          } else if x-start[0_u64] > y-start[0_u64] {
             r = GreaterThan();
-            x-start = x.end;
-            y-start = y.end;
+            x-start = x.end-offset;
+            y-start = y.end-offset;
          } else {
             x-start = x-start + 1_u64;
             y-start = y-start + 1_u64;
          }
       };
-      if x-start < x.end { r = GreaterThan() };
-      if y-start < y.end { r = LessThan() };
+      if x-start < x.end-offset { r = GreaterThan() };
+      if y-start < y.end-offset { r = LessThan() };
    };
    r
 );
 
 let print(io: IO::File, x: String): Nil = (
-   let start = x.start;
-   while start != x.end {
+   let start = x.start-offset;
+   while start != x.end-offset {
       fwrite(start, 1_u64, 1_u64, $"io::file::stdout"());
       start = start + 1_u64;
    };
@@ -54,15 +54,15 @@ let print(io: IO::File, x: String): Nil = (
 let print(x: String): Nil = print( $"io::file::stdout"() as IO::File, x );
 
 let eprint(io: IO::File, x: String): Nil = (
-   let start = x.start;
-   while start != x.end {
+   let start = x.start-offset;
+   while start != x.end-offset {
       fwrite(start, 1_u64, 1_u64, $"io::file::stderr"());
       start = start + 1_u64;
    };
 );
 let eprint(x: String): Nil = print( $"io::file::stderr"() as IO::File, x );
 
-let non-zero(s: String): U64 = s.start < s.end;
+let non-zero(s: String): U64 = s.start-offset < s.end-offset;
 
 let intern(s: CString): String = (
    let data-end = (s as U8[]) + s.length;
@@ -73,15 +73,15 @@ let intern(s: String): String = s;
 
 let untern(s: String): CString = (
    let r = SNil;
-   let s-start = s.start;
-   while s-start < s.end {
+   let s-start = s.start-offset;
+   while s-start < s.end-offset {
       r = r + SAtom(clone-rope(s-start[0]));
       s-start = s-start + 1_u64;
    };
    clone-rope(r);
 );
 
-let .length(x: String): U64 = x.end - x.start;
+let .length(x: String): U64 = x.end-offset - x.start-offset;
 
 let $"[:]"(x: String, low: U64, hi: U64): String = x[low as I64 : hi as I64];
 let $"[:]"(x: String, low: I64, hi: U64): String = x[low : hi as I64];
@@ -90,11 +90,11 @@ let $"[:]"(x: String, low: I64, hi: I64): String = (
    if low < 0 then low = (x.length as I64) + low;
    if hi==minimum-I64 then hi = x.length as I64
    else if hi < 0 then hi = (x.length as I64) + hi;
-   let lowp = x.start + low;
-   let hip = x.start + hi;
+   let lowp = x.start-offset + (low as ISize);
+   let hip = x.start-offset + (hi as ISize);
    if hip < lowp then fail("Index Out Of Bounds: String [:]");
-   if lowp < x.start then fail("Index Out Of Bounds: String [:]");
-   if hip > x.end then fail("Index Out Of Bounds: String [:]");
+   if lowp < x.start-offset then fail("Index Out Of Bounds: String [:]");
+   if hip > x.end-offset then fail("Index Out Of Bounds: String [:]");
    String(x.data, lowp, hip, x.data-end)
 );
 
@@ -106,9 +106,9 @@ let $"[]"(x: String, low: I64): U8 = (
 );
 
 let $"[]"(x: String, low: U64): U8 = (
-   let lowp = x.start + low;
-   if lowp < x.start then fail("Index Out Of Bounds: String []");
-   if lowp >= x.end then fail("Index Out Of Bounds: String []");
+   let lowp = x.start-offset + low;
+   if lowp < x.start-offset then fail("Index Out Of Bounds: String []");
+   if lowp >= x.end-offset then fail("Index Out Of Bounds: String []");
    lowp[0]
 );
 
@@ -173,8 +173,8 @@ let .into(s: String, tt: Type<String>): String = s;
 let deep-hash(key: String): U64 = (
    let i = 0_u64;
    let hash = 0_u64;
-   let key-start = key.start;
-   while key-start < key.end {
+   let key-start = key.start-offset;
+   while key-start < key.end-offset {
       hash = hash + key-start[0];
       hash = hash + (hash << 10);
       hash = hash ^ (hash >> 6);

@@ -7,4 +7,5 @@ type U32 implies U64, I64 implements DefaultPrintable suffix _u32;
 type I32 implies I64 implements DefaultPrintable suffix _i32;
 type U64 implements DefaultPrintable suffix _u64;
 type I64 implements DefaultPrintable suffix _i64;
+type opaque alias ISize suffix _isz = I64;
 type F64 suffix _f64;

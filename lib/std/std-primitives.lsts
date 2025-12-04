@@ -2,4 +2,4 @@
 type CString implements Collection<U8> suffix _s;
 
 type String implements Collection<U8> suffix _ss
-          = { data:U8[] , start:U8[] , end:U8[] , data-end:U8[] };
+          = { data:U8[] , start-offset:U8[] , end-offset:U8[] , data-end:U8[] };

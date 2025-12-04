@@ -2,10 +2,12 @@
 let exit-error(msg: CString, t: AST): Nil = (
    print("\{msg}\n\{t.location}\n");
    exit(1);
+   ()
 );
 
 let exit-error(msg: String, t: AST): Nil = (
    print(msg);
    print("\n\{t.location}\n");
    exit(1);
+   ()
 );
