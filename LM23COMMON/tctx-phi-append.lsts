@@ -8,7 +8,7 @@ let .phi-append-dead-on-arrival(tctx-primary: TypeContext?, tctx-secondary: Type
 );
 
 let .phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>, dead-on-arrival: U64): List<PhiContextRow> = (
-   let seen = {} : HashtableEq<CString,U64>;
+   let seen = {} : Hashtable<CString,U64>;
    for pr1 in tctx-secondary {
       if not(seen.has(pr1.phi-id)) {
          let pr2 = tctx-primary.lookup(pr1.phi-id);

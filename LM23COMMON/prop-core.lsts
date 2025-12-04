@@ -1,5 +1,5 @@
 
-let quick-prop = {} : HashtableEq<(CString,U64),List<(Type,Type)>>;
+let quick-prop = {} : Hashtable<(CString,U64),List<(Type,Type)>>;
 
 let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
    let key = pre.ground-tag-and-arity;
@@ -97,7 +97,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
    pre
 );
 
-let weaken-quick-prop-index = {} : HashtableEq<(CString,U64),List<(Type,Type)>>;
+let weaken-quick-prop-index = {} : Hashtable<(CString,U64),List<(Type,Type)>>;
 
 # core implicit weakening rules
 add-weaken-quick-prop( t1(c"Constructor",ta), t1(c"Constructor",ta), t1(c"Constructor",ta) );

@@ -89,7 +89,7 @@ let $"map::cons"(key: k, val: v, h: Hashtable<k,v>): Hashtable<k,v> = (
 );
 
 
-let $"[]"(h: Hashtable<k,v>, key: k): Maybe<k> = (
+let $"[]"(h: Hashtable<k,v>, key: k): Maybe<v> = (
    let row-index = h.find-row-index-by-key(key);
    if row-index == (-1 as USize)
    then (None : Maybe<v>)
@@ -114,3 +114,5 @@ let .find-row-index-by-key(h: Hashtable<k,v>, key: k): USize = (
    };
    row-index
 );
+
+let .lookup(h: Hashtable<k,v>, key: k, default: v): v = h[key].get-or(default);

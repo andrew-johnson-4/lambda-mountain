@@ -1,5 +1,5 @@
 
-let type-alias-index = {} : HashtableEq<Tuple<CString,U64>,Tuple<Type,Type>>;
+let type-alias-index = {} : Hashtable<Tuple<CString,U64>,Tuple<Type,Type>>;
 
 let add-type-alias(lt: Type, rt: Type): Nil = (
    type-alias-index = type-alias-index.bind( lt.ground-tag-and-arity, Tuple( lt, rt ) );
@@ -42,7 +42,7 @@ let .rewrite-type-alias(lt: List<Type>): List<Type> = (
    }
 );
 
-let opaque-type-alias-index = {} : HashtableEq<Tuple<CString,U64>,Tuple<Type,Type>>;
+let opaque-type-alias-index = {} : Hashtable<Tuple<CString,U64>,Tuple<Type,Type>>;
 
 let add-opaque-type-alias(lt: Type, rt: Type): Nil = (
    opaque-type-alias-index = opaque-type-alias-index.bind( lt.ground-tag-and-arity, Tuple( lt, rt ) );

@@ -3,7 +3,7 @@ let mk-location(): SourceLocation = (
    SourceLocation ( c"Unknown", 0, 0 )
 );
 
-let non-zero(loc: SourceLocation): U64 = (
+let non-zero(loc: SourceLocation): Bool = (
    loc.line != 0
 );
 
