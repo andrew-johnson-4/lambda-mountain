@@ -19,7 +19,7 @@ let .release(t: TypeContextRow): Nil = (
    mark-as-released(t);
 );
 
-type PhiContextRow zero NullPhiContextRow implies MustRetain, MustRelease = NullPhiContextRow | PhiContextRow { phi-id: CString, phi-tt: Type, blame: AST, dead-on-arrival: U64 };
+type PhiContextRow zero NullPhiContextRow implies MustRetain, MustRelease = NullPhiContextRow | PhiContextRow { phi-id: CString, phi-tt: Type, blame: AST, dead-on-arrival: Bool };
 let .retain(t: PhiContextRow): PhiContextRow = (
    if t.discriminator-case-tag==(t as Tag::PhiContextRow).discriminator-case-tag {
       mark-as-released((t as Tag::PhiContextRow).phi-tt.retain);
@@ -102,7 +102,7 @@ let .blame(tr: PhiContextRow): AST = (
       _ => ASTEOF;
    }
 );
-let .dead-on-arrival(tr: PhiContextRow): U64 = (
+let .dead-on-arrival(tr: PhiContextRow): Bool = (
    match tr {
       PhiContextRow{ dead-on-arrival=dead-on-arrival } => dead-on-arrival;
       _ => false;
