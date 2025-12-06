@@ -1,5 +1,6 @@
 
 let global-tctx = {} : Hashtable<CString,List<TypeContextRow>>;
+let global-pctx = [] : List<PhiContextRow>;
 
 type TypeContextRow zero NullTypeContextRow implies MustRetain, MustRelease = NullTypeContextRow | TypeContextRow { key: CString, nt: Type, dt: Type, blame: AST };
 let .retain(t: TypeContextRow): TypeContextRow = (

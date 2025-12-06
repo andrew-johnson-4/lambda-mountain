@@ -6,8 +6,9 @@ let typecheck(): Nil = (
    infer-global-context(ast-parsed-program);
    assert-no-infinite-types();
    (global-flow-tctx, ast-parsed-program) = infer-global-terms(global-flow-tctx, ast-parsed-program);
-   global-flow-tctx = global-flow-tctx.phi-move-all;
+   global-pctx = global-flow-tctx.get-or(mk-tctx()).pctx;
    (global-flow-tctx, ast-parsed-program) = std-infer-expr(global-flow-tctx, ast-parsed-program, false, Used, ta);
+   # TODO: release globals for graceful exit
    while non-zero(stack-to-specialize) { match stack-to-specialize {
       # this can't be a normal for-loop because it gets extended during iteration
       [StackToSpecialize{ key=key, ctx=ctx, result-type=result-type, term=term }.. rst] => (

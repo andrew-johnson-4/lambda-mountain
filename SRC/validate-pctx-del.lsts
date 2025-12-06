@@ -1,14 +1,14 @@
 
 let validate-pctx-release(tctx: TypeContext?): Nil = (
    let ps-seen = {} : HashtableEq<CString,U64>;
-   for Tuple{pid=phi-id, pt=phi-tt, blame=blame} in tctx.get-or(mk-tctx()).pctx {
-      if not(ps-seen.has(pid)) {
-         if pt.is-linear-live
-         then match blame {
-            Glb{} => (); # ignore globals for now, because they don't get an automatic .release
-            _ => exit-error("Linear Variables Must Be Used: #\{pid} \{pt} \{blame}", blame);
-         };
-         ps-seen = ps-seen.bind(pid,true);
-      }
+   let local-pctx = tctx.get-or(mk-tctx()).pctx;
+   while non-zero(local-pctx) and not(is(local-pctx,global-pctx)) {
+      let pr = head(local-pctx);
+      if not(ps-seen.has(pr.phi-id)) {
+         if pr.phi-tt.is-linear-live
+         then exit-error("Linear Variables Must Be Used: #\{pr.phi-id} \{pr.phi-tt} \{pr.blame}", pr.blame);
+         ps-seen = ps-seen.bind(pr.phi-id,true);
+      };
+      local-pctx = tail(local-pctx);
    };
 );
