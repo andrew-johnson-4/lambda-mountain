@@ -28,11 +28,11 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       );
       Tuple{ first:TAnd{ lconjugate=conjugate }, second:TAnd{ rconjugate=conjugate } } => (
          let result = yes;
-         let ri = 0_u64;
+         let ri = 0_sz;
          let phi-id = c"";
          let phi-state-in = ta;
          let phi-state-out = ta;
-         for lc in lconjugate {
+         for vector lc in lconjugate {
             if result.is-some then (match lc {
                TGround{tag:c"Any"} => ();
                TGround{tag:c"MustNotRetain"} => ();
@@ -41,7 +41,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
                TGround{tag:c"MustNotRewrite"} => ();
                TGround{tag:c"MustNotFresh"} => ();
                TGround{tag:c"Phi::Transition", parameters:[phi-to..phi-from..]} => (
-                  for st in rconjugate { match st {
+                  for vector st in rconjugate { match st {
                      TGround{tag:c"Phi::Id",parameters:[TGround{new-phi-id=tag}..]} => (
                         phi-id = new-phi-id;
                      );
@@ -90,12 +90,12 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       );
       Tuple{ first:TAnd{ lconjugate=conjugate }, rt=second } => (
          ctx = yes;
-         for c in lconjugate { ctx = ctx && unify-inner(c,rt,blame) };
+         for vector c in lconjugate { ctx = ctx && unify-inner(c,rt,blame) };
          ctx
       );
       Tuple{ lt=first, second:TAnd{ rconjugate=conjugate } } => (
          ctx = yes;
-         for c in rconjugate { ctx = union(ctx, unify-inner(lt,c,blame)) };
+         for vector c in rconjugate { ctx = union(ctx, unify-inner(lt,c,blame)) };
          ctx
       );
 
@@ -155,7 +155,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       Tuple{
           first:TGround{ltn=tag, lps=parameters},
           second:TGround{rtn=tag, rps=parameters}
-      } => if (ltn==rtn || (ltn.has-suffix(c"::") and rtn.has-prefix(ltn))) then { ctx = unify(lps,rps,blame) };
+      } => if (ltn==rtn or (ltn.has-suffix(c"::") and rtn.has-prefix(ltn))) then { ctx = unify(lps,rps,blame) };
       _ => ();
    };
    ctx

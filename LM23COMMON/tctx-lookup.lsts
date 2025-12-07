@@ -3,14 +3,14 @@ let .lookup(tctx: TypeContext?, key: CString): TypeContextRow = tctx.get-or(mk-t
 let .lookup(trs: List<TypeContextRow>, key: CString): TypeContextRow = (
    let default = NullTypeContextRow;
    let continue = true;
-   for tr in trs { if continue {
+   for list tr in trs { if continue {
       if tr.key == key {
          default = tr;
          continue = false;
       }
    }};
    if not(non-zero(default)) {
-      for tr in global-tctx.lookup(key, [] : List<TypeContextRow>) {
+      for list tr in global-tctx.lookup(key, [] : List<TypeContextRow>) {
          if tr.key == key {
             if non-zero(default) {
                eprint("Duplicate Global Symbol \{key}\n");
@@ -29,14 +29,14 @@ let .lookups(tctx: TypeContext?, key: CString): List<TypeContextRow> = tctx.get-
 let .lookups(trs: List<TypeContextRow>, key: CString): List<TypeContextRow> = (
    let default = [] : List<TypeContextRow>;
    let continue = true;
-   for tr in trs { if continue {
+   for list tr in trs { if continue {
       if tr.key == key {
          default = cons(tr, default);
          continue = false;
       }
    }};
    if continue {
-      for tr in global-tctx.lookup(key, [] : List<TypeContextRow>) {
+      for list tr in global-tctx.lookup(key, [] : List<TypeContextRow>) {
          if tr.key == key {
             default = cons(tr, default);
          }
@@ -49,7 +49,7 @@ let .lookup-phi(tctx: TypeContext?, key: CString): PhiContextRow = tctx.get-or(m
 let .lookup(trs: List<PhiContextRow>, key: CString): PhiContextRow = (
    let default = NullPhiContextRow;
    let continue = true;
-   for tr in trs { if continue {
+   for list tr in trs { if continue {
       if tr.phi-id == key {
          default = tr;
          if not(tr.dead-on-arrival) then continue = false;

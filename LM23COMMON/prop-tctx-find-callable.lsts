@@ -25,7 +25,7 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
    let match-set = mk-vector(type(TypeContextRow));
 
    # Find all accepting function candidates
-   for tr in tctx.lookups(fname) {
+   for list tr in tctx.lookups(fname) {
       # can-receive is an additional refinement on top of argument satisfaction
       # it is necessary for nullary or partial constructors that need a full type
       # like, None : TypeContext?
@@ -36,9 +36,9 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
 
    # Apply specialization to reduce function candidates down to one
    let result = None : TypeContextRow?;
-   for tr1 in match-set { if not(non-zero(result)) {
+   for vector tr1 in match-set { if not(non-zero(result)) {
       let all-accept = true;
-      for tr2 in match-set {
+      for vector tr2 in match-set {
          if is(tr1,tr2) then ()
          else if most-special(tr1.dt,tr2.dt)!=tr1.dt then all-accept = false;
       };
@@ -52,7 +52,7 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
    # Fail if function call is ambiguous
    if failable and not(non-zero(result)) and match-set.length > 0 {
       eprint("Unable to find unambiguous callable: \{fname} \{arg-types} return hint: \{return-type-hint}\nAt: \{blame.location}\n");
-      for tr in match-set {
+      for vector tr in match-set {
          eprint("\{tr.dt}\n");
       };
       exit(1);
@@ -61,7 +61,7 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
    # Fail if function call is ambiguous
    if failable and not(non-zero(result)) then {
       print("Unable to find appropriate callable: \{fname} \{arg-types} return hint: \{return-type-hint}\nAt: \{blame.location}\n");
-      for tr in tctx.lookups(fname) {
+      for list tr in tctx.lookups(fname) {
          print("Candidate: \{tr.dt}\n");
       };
       exit(1);
