@@ -54,7 +54,9 @@ let .enrich-strong(base: Type): Type = (
 let enrich-quick-prop(base: Type, pre: Type): Type = (
    match pre {
       TGround { tag=tag, parameters=parameters } => (
-         for list Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+         for list row in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+            let lt = row.first;
+            let rt = row.second;
             if base <: lt then (
                let post = if rt.is-open then (
                   let tctx = unify(lt, base, ASTEOF);
@@ -66,7 +68,9 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
             );
          };
          if tag==c"Array" == parameters.length==2 {
-            for list Tuple { lt=first, rt=second } in quick-prop.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
+            for list row in quick-prop.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
+               let lt = row.first;
+               let rt = row.second;
                if base <: lt then (
                   let post = if rt.is-open then (
                      let tctx = unify(lt, base, ASTEOF);
@@ -133,13 +137,17 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
    let early-base = base;
    match pre {
       TGround { tag=tag, parameters=parameters } => (
-         for list Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+         for list row in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+            let lt = row.first;
+            let rt = row.second;
             if can-unify(lt, original-base) then (
                base = remove-info(base, rt);
             );
          };
          if tag==c"Array" and parameters.length==2 {
-            for list Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
+            for list row in weaken-quick-prop-index.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
+               let lt = row.first;
+               let rt = row.second;
                if can-unify(lt, original-base) then (
                   base = remove-info(base, rt);
                );
@@ -150,7 +158,9 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             let tag-base = head(tag-parts) + c"::";
             tag-parts = tail(tag-parts);
             for list tag-part in tag-parts {
-               for list Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( (tag-base, parameters.length), ([] : List<(Type,Type)>) ) {
+               for list row in weaken-quick-prop-index.lookup( (tag-base, parameters.length), ([] : List<(Type,Type)>) ) {
+                  let lt = row.first;
+                  let rt = row.second;
                   if can-unify(lt, original-base) then (
                      base = remove-info(base, rt);
                   );
