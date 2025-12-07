@@ -8,6 +8,12 @@ assert( Some(0) != Some(1) );
 assert( Some(1) != Some(0) );
 assert( safe-alloc-block-count == 0 );
 
+assert( (None : U64?).is-none );
+assert( not((None : U64?).is-some) );
+assert( Some(0).is-some );
+assert( not(Some(0).is-none) );
+assert( safe-alloc-block-count == 0 );
+
 assert( (None : String?) == (None : String?) );
 assert( Some("0") == Some("0") );
 assert( Some("1") == Some("1") );
@@ -28,3 +34,4 @@ assert( safe-alloc-block-count == 0 );
 
 assert( Some("1").get-or-panic == "1" );
 assert( safe-alloc-block-count == 0 );
+

@@ -82,3 +82,8 @@ let .length(l: List<x>): U64 = (
    for list _ in l { li = li + 1 };
    li
 );
+
+let $"+"(hd: List<x>, tl: List<x>): List<x> = (
+   for list hdhd in hd.reverse { tl = cons(hdhd,tl); };
+   tl
+);

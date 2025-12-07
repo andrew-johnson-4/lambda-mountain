@@ -20,7 +20,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
    then exit-error("Linear value used after move in call to \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
 
    # Phi: apply transitions, like (A ~> B)
-   for pr in apply-tctx.get-or(mk-tctx()).pctx {
+   for list pr in apply-tctx.get-or(mk-tctx()).pctx {
       tctx = tctx.bind-phi(pr.phi-id, pr.phi-tt, pr.blame);
    };
 

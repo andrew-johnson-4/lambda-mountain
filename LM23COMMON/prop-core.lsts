@@ -28,16 +28,16 @@ let .enrich-strong(base: Type): Type = (
       );
       #TGround { tag=tag, parameters=parameters } => ( if not(tag.has-prefix(c"Field::") and parameters.length==1) then {
       #   let new-parameters = [] : List<Type>;
-      #   for p in parameters.reverse {
+      #   for list p in parameters.reverse {
       #      new-parameters = cons( p.enrich-strong, new-parameters );
       #   };
       #   base = ts(tag,new-parameters);
       #});
       TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type));
-         for c in conjugate {
+         for vector c in conjugate {
             match c.enrich-strong {
-               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
+               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
                TAny{} => ();
                rc => ( result = result.push(rc); () );
             }
@@ -54,7 +54,9 @@ let .enrich-strong(base: Type): Type = (
 let enrich-quick-prop(base: Type, pre: Type): Type = (
    match pre {
       TGround { tag=tag, parameters=parameters } => (
-         for Tuple { lt=first, rt=second } in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+         for list row in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+            let lt = row.first;
+            let rt = row.second;
             if base <: lt then (
                let post = if rt.is-open then (
                   let tctx = unify(lt, base, ASTEOF);
@@ -66,7 +68,9 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
             );
          };
          if tag==c"Array" == parameters.length==2 {
-            for Tuple { lt=first, rt=second } in quick-prop.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
+            for list row in quick-prop.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
+               let lt = row.first;
+               let rt = row.second;
                if base <: lt then (
                   let post = if rt.is-open then (
                      let tctx = unify(lt, base, ASTEOF);
@@ -81,9 +85,9 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
       );
       TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type));
-         for c in conjugate {
+         for vector c in conjugate {
             match enrich-quick-prop(base, c) {
-               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
+               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
                TAny{} => ();
                rc => ( result = result.push(rc); () );
             }
@@ -133,13 +137,17 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
    let early-base = base;
    match pre {
       TGround { tag=tag, parameters=parameters } => (
-         for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+         for list row in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+            let lt = row.first;
+            let rt = row.second;
             if can-unify(lt, original-base) then (
                base = remove-info(base, rt);
             );
          };
          if tag==c"Array" and parameters.length==2 {
-            for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
+            for list row in weaken-quick-prop-index.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
+               let lt = row.first;
+               let rt = row.second;
                if can-unify(lt, original-base) then (
                   base = remove-info(base, rt);
                );
@@ -149,8 +157,10 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             let tag-parts = tag.split(c"::");
             let tag-base = head(tag-parts) + c"::";
             tag-parts = tail(tag-parts);
-            for tag-part in tag-parts {
-               for Tuple { lt=first, rt=second } in weaken-quick-prop-index.lookup( (tag-base, parameters.length), ([] : List<(Type,Type)>) ) {
+            for list tag-part in tag-parts {
+               for list row in weaken-quick-prop-index.lookup( (tag-base, parameters.length), ([] : List<(Type,Type)>) ) {
+                  let lt = row.first;
+                  let rt = row.second;
                   if can-unify(lt, original-base) then (
                      base = remove-info(base, rt);
                   );
@@ -160,25 +170,25 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
          };
       );
       TAnd { conjugate=conjugate } => (
-         for c in conjugate { base = weaken-quick-prop(original-base, base, c) };
+         for vector c in conjugate { base = weaken-quick-prop(original-base, base, c) };
       );
       _ => ();
    };
    match base {
       TGround { tag=tag, parameters=parameters } => (
          let new-parameters = [] : List<Type>;
-         for p in parameters.reverse {
+         for list p in parameters.reverse {
             new-parameters = cons( p.weaken , new-parameters );
          };
          base = ts(tag,new-parameters);
       );
       TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type));
-         for c in conjugate {
+         for vector c in conjugate {
             match c {
                TGround { tag=tag, parameters=parameters } => (
                   let new-parameters = [] : List<Type>;
-                  for p in parameters.reverse {
+                  for list p in parameters.reverse {
                      new-parameters = cons( p.weaken , new-parameters );
                   };
                   result = result.push(ts(tag,new-parameters));

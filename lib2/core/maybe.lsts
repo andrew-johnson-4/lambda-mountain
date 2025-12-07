@@ -46,3 +46,11 @@ let .get-or-panic(m: Maybe<x>): x = (
       Some{content=content} => content;
    }
 );
+
+let .is-none(m: Maybe<x>): Bool = (
+   m.discriminator-case-tag == (m as Tag::None).discriminator-case-tag
+);
+
+let .is-some(m: Maybe<x>): Bool = (
+   m.discriminator-case-tag == (m as Tag::Some).discriminator-case-tag
+);

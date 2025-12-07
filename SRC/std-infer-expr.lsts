@@ -205,10 +205,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       Var{key=key, token=token} => (
          (tctx, let vt) = typeof-var(term, tctx, key, hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
          vt = tctx.with-phi(vt, term);
-         # Global variables are all moved before functions get evaluated, is there a better way that we can handle this?
-         # For example, if we mark linear variables as "global" in scope, then they don't violate the "linear variables must be used" principle
-         # Then we could wait to move them until *after* evaluating function bodies
-         if vt.is-t(c"GlobalVariable",0) and vt.is-linear-dead then (tctx, vt) = tctx.resurrect(vt, term);
          mark-var-to-def-todo(tctx, key, ta, term);
          # TailPosition LocalVariables don't need to be retained because +1/-1 retain/release cancels itself out
          if not(hint.is-t(c"TailPosition",0) && vt.is-t(c"LocalVariable",0))

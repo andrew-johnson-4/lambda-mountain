@@ -1,7 +1,7 @@
 
 let .without-phi-keep-state(tctx: TypeContext?): TypeContext? = (
    let new-trs = [] : List<TypeContextRow>;
-   for tr in tctx.get-or(mk-tctx()).tctx.reverse {
+   for list tr in tctx.get-or(mk-tctx()).tctx.reverse {
       new-trs = cons(TypeContextRow(tr.key, tr.nt.without-phi-keep-state, tr.dt.without-phi-keep-state, tr.blame), new-trs);
    };
    tctx.with-tctx(new-trs);
