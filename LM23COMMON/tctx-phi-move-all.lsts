@@ -1,6 +1,6 @@
 
 let .phi-move-all(tctx: TypeContext?): TypeContext? = (
-   let seen = {} : Hashtable<CString,U64>;
+   let seen = {} : Hashtable<CString,Bool>;
    for list pr in tctx.get-or(mk-tctx()).pctx {
       if not(seen.has(pr.phi-id)) {
          if pr.phi-tt.is-linear-live {

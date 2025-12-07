@@ -7,7 +7,6 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
-   print("Infer \{term}\n");
    if not(term.is-free-and-seen) { match term {
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
          (tctx, let check-tt) = typeof-var-raw(term, tctx, lname, true);
@@ -204,7 +203,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          };
       );
       Var{key=key, token=token} => (
-         print("Lookup \{key} hint=\{hint}\n");
          (tctx, let vt) = typeof-var(term, tctx, key, hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
          vt = tctx.with-phi(vt, term);
          mark-var-to-def-todo(tctx, key, ta, term);

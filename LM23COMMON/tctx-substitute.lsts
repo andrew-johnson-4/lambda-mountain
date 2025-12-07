@@ -9,7 +9,7 @@ let .substitute(tctx: TypeContext?, tt: List<Type>): List<Type> = (
 let .substitute(tctx: TypeContext?, tt: Type): Type = (
    match tt {
       TAnd{conjugate=conjugate} => (
-         let result = mk-vector(type(Type), 0_u64);
+         let result = mk-vector(type(Type), 0);
          for vector c in conjugate {
             match tctx.substitute(c) {
                TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };

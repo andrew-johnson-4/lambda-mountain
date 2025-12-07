@@ -116,3 +116,4 @@ let .find-row-index-by-key(h: Hashtable<k,v>, key: k): USize = (
 );
 
 let .lookup(h: Hashtable<k,v>, key: k, default: v): v = h[key].get-or(default);
+let .has(h: Hashtable<k,v>, key: k): Bool = h[key].is-some;
