@@ -1,6 +1,6 @@
 
 let global-tctx = {} : Hashtable<CString,List<TypeContextRow>>;
-let global-pctx = [] : List<PhiContextRow>;
+let tctx-currently-processing-globals = true;
 
 type TypeContextRow zero NullTypeContextRow implies MustRetain, MustRelease = NullTypeContextRow | TypeContextRow { key: CString, nt: Type, dt: Type, blame: AST };
 let .retain(t: TypeContextRow): TypeContextRow = (
@@ -20,7 +20,7 @@ let .release(t: TypeContextRow): Nil = (
    mark-as-released(t);
 );
 
-type PhiContextRow zero NullPhiContextRow implies MustRetain, MustRelease = NullPhiContextRow | PhiContextRow { phi-id: CString, phi-tt: Type, blame: AST, dead-on-arrival: Bool };
+type PhiContextRow zero NullPhiContextRow implies MustRetain, MustRelease = NullPhiContextRow | PhiContextRow { phi-id: CString, phi-tt: Type, blame: AST, dead-on-arrival: Bool, is-global: Bool };
 let .retain(t: PhiContextRow): PhiContextRow = (
    if t.discriminator-case-tag==(t as Tag::PhiContextRow).discriminator-case-tag {
       mark-as-released((t as Tag::PhiContextRow).phi-tt.retain);
@@ -106,6 +106,12 @@ let .blame(tr: PhiContextRow): AST = (
 let .dead-on-arrival(tr: PhiContextRow): Bool = (
    match tr {
       PhiContextRow{ dead-on-arrival=dead-on-arrival } => dead-on-arrival;
+      _ => false;
+   }
+);
+let .is-global(tr: PhiContextRow): Bool = (
+   match tr {
+      PhiContextRow{ is-global=is-global } => is-global;
       _ => false;
    }
 );
