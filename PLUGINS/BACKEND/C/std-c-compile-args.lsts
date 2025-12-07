@@ -14,6 +14,7 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
                         caller-ctx = open(c1.context);
                         callee-ctx = bind-vararg(callee-ctx, k, kt, c1);
                         (f, callee-ctx, caller-ctx) = std-c-compile-args(callee-ctx, caller-ctx, lhs, le, f);
+                        f = f.set(c"frame", f.get(c"frame") + c1.get(c"frame"));
                      } else {
                         (f, callee-ctx, caller-ctx) = std-c-compile-args(callee-ctx, caller-ctx, lhs-rst, rhs, f);  
                      }
@@ -24,6 +25,7 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
                      callee-ctx = callee-ctx.bind(k, kt, c1);
                      std-c-fragment-context = std-c-fragment-context.bind( left-lhs, c1 );
                      (f, callee-ctx, caller-ctx) = std-c-compile-args(callee-ctx, caller-ctx, lhs-rst, le, f);
+                     f = f.set(c"frame", f.get(c"frame") + c1.get(c"frame"));
                   }
                );
             }
@@ -61,6 +63,7 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
                      caller-ctx = open(c1.context);
                      callee-ctx = bind-vararg(callee-ctx, k, kt, c1);
                      (f, callee-ctx, caller-ctx) = std-c-compile-args(callee-ctx, caller-ctx, lhs, le, f);
+                     f = f.set(c"frame", f.get(c"frame") + c1.get(c"frame"));
                   } else {
                      fail("std-c-compile-args unexpected RHS, vararg mismatch");
                   }
