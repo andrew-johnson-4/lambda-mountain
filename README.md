@@ -13,7 +13,7 @@ Despite being an assembler, LM provides
 * self-hosting (LM is written in LM)
 * algebraic data types
 * parameterized code and data
-* hygienic macros
+* typesafe hygienic macros
 * platform agnostic standard libraries
 * *à la carte* garbage collection
 
