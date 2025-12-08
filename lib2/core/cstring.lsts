@@ -120,11 +120,8 @@ let .remove-prefix(base: CString, prefix: CString): CString? = (
       let base_length = base.length;
       let prefix_length = prefix.length;
       let buf = malloc(base_length - prefix_length + 1) as C<"char">[];
-      if buf as USize == 0_sz {
-         fail(c"CString.remove-prefix malloc fail");
-      };
       strcat(buf, (base as C<"char">[])+prefix_length);
-      buf[base_length - prefix_length] = 0;
+      buf[base_length - prefix_length] = 0 as C<"char">;
       Some(buf as CString)
    }
 );
@@ -136,10 +133,10 @@ let .remove-suffix(base: CString, suffix: CString): CString? = (
       let buf = malloc(new_length + 1) as C<"char">[];
       let si = 0_sz;
       while si < new_length {
-         buf[si] = base[si];
+         buf[si] = base[si] as C<"char">;
          si = si + 1;
       };
-      buf[si] = 0;
+      buf[si] = 0 as C<"char">;
       Some(buf as CString)
    }
 );
