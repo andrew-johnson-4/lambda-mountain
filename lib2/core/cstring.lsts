@@ -65,6 +65,7 @@ let deep-hash(key: CString): U64 = hash(key);
 
 let $"+"(l: CString, r: CString): CString = (
    let buf = malloc(l.length + r.length + 1) as C<"char">[];
+
    memset(buf.void-pointer, 0, l.length+r.length+1);
    strcat(buf, l as C<"char">[]);
    strcat(buf, r as C<"char">[]);
@@ -111,6 +112,36 @@ let .contains(base: CString, pat: CString): Bool = (
       base = tail(base);
    };
    r
+);
+
+let .remove-prefix(base: CString, prefix: CString): CString? = (
+   if not(base.has-prefix(prefix)) then None : CString?
+   else {
+      let base_length = base.length;
+      let prefix_length = prefix.length;
+      let buf = malloc(base_length - prefix_length + 1) as C<"char">[];
+      if buf as USize == 0_sz {
+         fail(c"CString.remove-prefix malloc fail");
+      };
+      strcat(buf, (base as C<"char">[])+prefix_length);
+      buf[base_length - prefix_length] = 0;
+      Some(buf as CString)
+   }
+);
+
+let .remove-suffix(base: CString, suffix: CString): CString? = (
+   if not(base.has-suffix(suffix)) then None : CString?
+   else {
+      let new_length = base.length - suffix.length;
+      let buf = malloc(new_length + 1) as C<"char">[];
+      let si = 0_sz;
+      while si < new_length {
+         buf[si] = base[si];
+         si = si + 1;
+      };
+      buf[si] = 0;
+      Some(buf as CString)
+   }
 );
 
 #let .split(s: CString, sep: CString): Vector<CString> = (

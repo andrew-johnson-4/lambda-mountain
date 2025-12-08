@@ -1,6 +1,8 @@
 
 import lib2/core/bedrock.lsts;
 
+print(c"HELLO! 10\n");
+
 assert( c"a" == c"a" );
 assert( c"a" != c"b" );
 assert( c"a" <= c"a" );
@@ -9,30 +11,54 @@ assert( c"a" >= c"a" );
 assert( c"b" >= c"a" );
 assert( c"b" > c"a" );
 
+print(c"HELLO! 9\n");
+
 assert( cmp(c"a", c"a") == Equal );
 assert( cmp(c"a", c"b") == LessThan );
 assert( cmp(c"b", c"a") == GreaterThan );
+
+print(c"HELLO! 8\n");
 
 assert( c"".length == 0 );
 assert( c"a".length == 1 );
 assert( c"ab".length == 2 );
 
+print(c"HELLO! 7\n");
+
 assert( c"abc"[0] == 97 );
 assert( c"abc"[1] == 98 );
 assert( c"abc"[2] == 99 );
 
+print(c"HELLO! 6\n");
+
 assert( c"a" + c"bc" == c"abc" );
+
+print(c"HELLO! 4\n");
 
 assert( c"abc".has-suffix(c"bc") );
 assert( not(c"abc".has-suffix(c"d")) );
+
+print(c"HELLO! 3\n");
 
 assert( head(c"abc") == 97 );
 assert( head(c"") == 0 );
 assert( tail(c"abc") == c"bc" );
 assert( tail(c"") == c"" );
 
+print(c"HELLO! 2\n");
+
 assert( c"abcd".contains(c"abcd") );
 assert( c"abcd".contains(c"abc") );
 assert( c"abcd".contains(c"bcd") );
 assert( c"abcd".contains(c"bc") );
 assert( not(c"abcd".contains(c"e")) );
+
+print(c"HELLO! 1\n");
+
+assert( c"abcd".remove-prefix(c"") == Some(c"abcd") );
+assert( c"abcd".remove-prefix(c"ab") == Some(c"cd") );
+assert( c"abcd".remove-prefix(c"cd") == (None : CString?) );
+
+#assert( c"abcd".remove-suffix(c"") == Some(c"abcd") );
+#assert( c"abcd".remove-suffix(c"cd") == Some(c"ab") );
+#assert( c"abcd".remove-suffix(c"ab") == (None : CString?) );

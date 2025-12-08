@@ -1,6 +1,6 @@
 
 type opaque alias U8 suffix _u8
-     implies C<"int">, USize, U64, I64, C<"size_t">
+     implies C<"char">, C<"int">, USize, U64, I64, C<"size_t">
      = C<"uint8_t">;
 
 declare-binop( $"!=", raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
