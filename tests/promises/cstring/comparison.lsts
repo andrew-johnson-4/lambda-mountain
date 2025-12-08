@@ -25,3 +25,14 @@ assert( c"a" + c"bc" == c"abc" );
 
 assert( c"abc".has-suffix(c"bc") );
 assert( not(c"abc".has-suffix(c"d")) );
+
+assert( head(c"abc") == 97 );
+assert( head(c"") == 0 );
+assert( tail(c"abc") == c"bc" );
+assert( tail(c"") == c"" );
+
+assert( c"abcd".contains(c"abcd") );
+assert( c"abcd".contains(c"abc") );
+assert( c"abcd".contains(c"bcd") );
+assert( c"abcd".contains(c"bc") );
+assert( not(c"abcd".contains(c"e")) );

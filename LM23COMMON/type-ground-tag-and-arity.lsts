@@ -7,7 +7,7 @@ let .ground-tag-and-arity(tt: Type): (CString,U64) = (
          ( ga.first, ga.second + 1000 )
       );
       TGround { tag:c"Sized" } => (c"", 9999999_u64);
-      TGround { tag=tag, parameters=parameters } => (tag, parameters.length);
+      TGround { tag=tag, parameters=parameters } => (tag, parameters.length as U64);
       TAny {} => (c"?", 0_u64);
       TVar {} => (c"", 9999999_u64);
       TAnd { conjugate=conjugate } => (

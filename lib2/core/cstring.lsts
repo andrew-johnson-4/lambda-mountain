@@ -100,3 +100,15 @@ let .has-prefix(s2: CString, s1: CString): Bool = (
       return
    }
 );
+
+let head(x: CString): U8 = if non-zero(x) then (x as U8[])[0] else 0;
+let tail(x: CString): CString = if non-zero(x) then ((x as U8[]) + 1) as CString else c"";
+
+let .contains(base: CString, pat: CString): Bool = (
+   let r = false;
+   while not(r) and non-zero(base) {
+      r = base.has-prefix(pat);
+      base = tail(base);
+   };
+   r
+);

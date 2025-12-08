@@ -77,8 +77,8 @@ let .reverse(l: List<x>): List<x> = (
 let head(l: List<x>): x = if l.has-head then (l as Tag::LCons).head else fail(c"list::head is fallible");
 let tail(l: List<x>): List<x> = if l.has-head then open((l as Tag::LCons).tail) else fail(c"list::tail is fallible");
 
-let .length(l: List<x>): U64 = (
-   let li = 0_u64;
+let .length(l: List<x>): USize = (
+   let li = 0_sz;
    for list _ in l { li = li + 1 };
    li
 );
