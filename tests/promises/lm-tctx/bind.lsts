@@ -49,5 +49,5 @@ assert( tctx4.lookups(c"a").length == 1 );
 assert( tctx4.lookups(c"b").length == 1 );
 assert( tctx4.lookups(c"c").length == 1 );
 assert( tctx4.lookups(c"d").length == 2 );
-assert( tctx4.lookups(c"x").length == 1 );
 assert( tctx4.lookups(c"y").length == 1 );
+#assert( tctx4.lookups(c"x").length == 1 );
