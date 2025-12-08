@@ -154,10 +154,10 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             }
          };
          if tag.contains(c"::") {
-            let tag-parts = tag.split(c"::");
+            let tag-parts = tag.split(c"::").into(Vector<CString>);
             let tag-base = head(tag-parts) + c"::";
             tag-parts = tail(tag-parts);
-            for list tag-part in tag-parts {
+            for vector tag-part in tag-parts {
                for list row in weaken-quick-prop-index.lookup( (tag-base, parameters.length), ([] : List<(Type,Type)>) ) {
                   let lt = row.first;
                   let rt = row.second;

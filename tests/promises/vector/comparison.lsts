@@ -1,0 +1,8 @@
+
+import lib2/core/bedrock.lsts;
+
+assert( mk-vector(type(U8)).reverse == mk-vector(type(U8)) );
+assert( mk-vector(type(U8)).push(1).reverse == mk-vector(type(U8)).push(1) );
+assert( mk-vector(type(U8)).push(1).push(2).reverse == mk-vector(type(U8)).push(2).push(1) );
+assert( mk-vector(type(U8)).push(1).push(2).push(3).reverse == mk-vector(type(U8)).push(3).push(2).push(1) );
+assert( safe-alloc-block-count == 0 );

@@ -112,3 +112,17 @@ let .contains(base: CString, pat: CString): Bool = (
    };
    r
 );
+
+#let .split(s: CString, sep: CString): Vector<CString> = (
+#   let r = mk-vector(type(CString));
+#   let remainder = s;
+#   while non-zero(remainder) {
+#      if remainder.has-prefix(sep) {
+#         if non-zero(s) then r = r.push(s.remove-suffix(remainder));
+#         remainder = remainder.remove-prefix(sep);
+#         s = remainder;
+#      } else remainder = tail(remainder);
+#   };
+#   if non-zero(s) then r = r.push(s);
+#   r.reverse;
+#);

@@ -87,3 +87,9 @@ let $"+"(hd: List<x>, tl: List<x>): List<x> = (
    for list hdhd in hd.reverse { tl = cons(hdhd,tl); };
    tl
 );
+
+let .into(ls: List<x>, tt: Type<Vector<x>>): Vector<x> = (
+   let dst = mk-vector(type(x));
+   for list l in ls { dst = dst.push(l); };
+   dst
+);

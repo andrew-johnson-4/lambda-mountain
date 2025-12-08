@@ -123,3 +123,14 @@ let $"set[]"( v: Vector<t>, i: USize, val: t ): Nil = (
    if i >= v.length then fail(c"Vector Index Out of Bounds");
    v.data[i] = val;
 );
+
+let .reverse(v: Vector<t>): Vector<t> = (
+   let vi = 0_sz;
+   while vi < (v.length/2) {
+      let tmp = v[vi];
+      v[vi] = v[v.length - vi - 1];
+      v[v.length - vi - 1] = tmp;
+      vi = vi + 1;
+   };
+   v
+);

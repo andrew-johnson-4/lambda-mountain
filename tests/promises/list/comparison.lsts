@@ -31,3 +31,6 @@ assert( safe-alloc-block-count == 0 );
 
 assert( [1,2] + [3,4] == [1,2,3,4] );
 assert( safe-alloc-block-count == 0 );
+
+assert( [1,2,3].into(type(Vector<U8>)) == mk-vector(type(U8)).push(1).push(2).push(3) );
+assert( safe-alloc-block-count == 0 );
