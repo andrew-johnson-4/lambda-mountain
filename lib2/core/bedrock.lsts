@@ -3,6 +3,7 @@ import lib2/core/baremetal.lsts;
 
 # Requires Phi typing
 import lib2/core/baremetal-into.lsts;
+import lib2/core/bedrock-cstring.lsts;
 import lib2/core/owned-data.lsts;
 import lib2/core/sparse-owned-data.lsts;
 import lib2/core/string.lsts;
