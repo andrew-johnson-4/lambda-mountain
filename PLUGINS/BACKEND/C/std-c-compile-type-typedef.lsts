@@ -106,7 +106,7 @@ let try-continue-compile-c-typedefs(): Nil = (
    continue-compile-c-typedefs-concrete = [] : List<(TypeContext?,Type,AST)>;
    while non-zero(continue) {
       continue-compile-c-typedefs-count = continue-compile-c-typedefs-count + 1;
-      if continue-compile-c-typedefs-count > 100
+      if continue-compile-c-typedefs-count > 200
       then (
          eprint("Unable To Resolve Circular Type Dependency During Compilation\n");
          for Tuple{base-type=second} in continue {

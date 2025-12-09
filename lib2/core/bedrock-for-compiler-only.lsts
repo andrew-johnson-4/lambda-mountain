@@ -1,0 +1,4 @@
+
+import lib/std/bedrock-for-compiler-only.lsts;
+
+let hash(tt: Type): U64 = deep-hash(tt);
