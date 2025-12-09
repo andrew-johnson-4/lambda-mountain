@@ -67,7 +67,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
                };
             );
          };
-         if tag==c"Array" == parameters.length==2 {
+         if tag==c"Array" and parameters.length==2 {
             for list row in quick-prop.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
                let lt = row.first;
                let rt = row.second;
@@ -159,7 +159,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             let ti = 1_sz;
             while ti < tag-parts.length {
                let tag-part = tag-parts[ti];
-               for list row in weaken-quick-prop-index.lookup( (tag-base, parameters.length), ([] : List<(Type,Type)>) ) {
+               for list row in weaken-quick-prop-index.lookup( (tag-base, parameters.length as U64), ([] : List<(Type,Type)>) ) {
                   let lt = row.first;
                   let rt = row.second;
                   if can-unify(lt, original-base) then (
