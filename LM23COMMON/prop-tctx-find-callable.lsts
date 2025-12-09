@@ -29,7 +29,7 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
       # can-receive is an additional refinement on top of argument satisfaction
       # it is necessary for nullary or partial constructors that need a full type
       # like, None : TypeContext?
-      if can-apply(tr.dt, arg-types) and (not(non-zero(return-type-hint)) || can-receive(tr.dt, return-type-hint)) {
+      if can-apply(tr.dt, arg-types) and (not(non-zero(return-type-hint)) or can-receive(tr.dt, return-type-hint)) {
          match-set = match-set.push(tr);
       }
    };

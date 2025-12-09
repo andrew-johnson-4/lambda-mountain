@@ -106,6 +106,8 @@ let .get-suffix(s: String, pre: String): String = (
 
 let head-string(x: CString): U8 = (x as U8[])[0_u64];
 let tail-string(x: CString): CString = ((x as U8[]) + 1_u64) as CString;
+let head(x: CString): U8 = (x as U8[])[0_u64];
+let tail(x: CString): CString = ((x as U8[]) + 1_u64) as CString;
 
 let deep-hash(key: CString): U64 = (
    let i = 0_u64;

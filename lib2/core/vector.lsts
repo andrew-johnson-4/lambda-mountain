@@ -134,3 +134,5 @@ let .reverse(v: Vector<t>): Vector<t> = (
    };
    v
 );
+
+let .into(v: Vector<t>, tt: Type<Vector<t>>): Vector<t> = v;

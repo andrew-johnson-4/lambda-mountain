@@ -11,8 +11,8 @@ let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST):
    else          match (left, right) {
       Tuple{ first:TAnd{lconjugate=conjugate}, second:TAnd{rconjugate=conjugate} } => (
          let result = mk-vector(type(Type));
-         let li = 0_u64;
-         let ri = 0_u64;
+         let li = 0_sz;
+         let ri = 0_sz;
          while li < lconjugate.length and ri < rconjugate.length {
             if lconjugate[li].is-t(c"Phi::Id",1) {
                li = li + 1;
