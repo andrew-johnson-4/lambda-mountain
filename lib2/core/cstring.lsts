@@ -61,7 +61,6 @@ let hash(key: CString): U64 = (
    result = result + (result << 15);
    result
 );
-let hash(key: CString): U64 = hash(key);
 
 let $"+"(l: CString, r: CString): CString = (
    let buf = malloc(l.length + r.length + 1) as C<"char">[];

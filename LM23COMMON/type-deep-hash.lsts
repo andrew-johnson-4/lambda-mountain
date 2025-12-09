@@ -1,4 +1,5 @@
 
+let deep-hash(tt: Type): U64 = hash(tt);
 let hash(tt: Type): U64 = (
    match tt {
       TAny{} => 0_u64;
