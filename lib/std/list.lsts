@@ -36,6 +36,12 @@ let .into(ls: List<x>, tt: Type<String>): String = (
    s
 );
 
+let .into(ls: List<x>, tt: Type<Vector<x>>): Vector<x> = (
+   let dst = mk-vector(type(x));
+   for l in ls { dst = dst.push(l); };
+   dst
+);
+
 let .unique(ls: List<x>): List<x> = (
    let rs = [] : List<x>;
    for l in ls {

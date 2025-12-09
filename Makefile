@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm tests/promises/lm-tctx/apply.lsts
+	lm tests/promises/lm-tctx/apply.lsts > out.txt
 	gcc tmp.c
 	./a.out
 

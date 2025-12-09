@@ -46,6 +46,7 @@ let $"[]"(l: CString, idx: USize): U8 = (
    (l as U8[])[idx]
 );
 
+let deep-hash(key: CString): U64 = hash(key);
 let hash(key: CString): U64 = (
    let i = 0_sz;
    let key-length = key.length;
@@ -61,10 +62,10 @@ let hash(key: CString): U64 = (
    result = result + (result << 15);
    result
 );
-let deep-hash(key: CString): U64 = hash(key);
 
 let $"+"(l: CString, r: CString): CString = (
    let buf = malloc(l.length + r.length + 1) as C<"char">[];
+
    memset(buf.void-pointer, 0, l.length+r.length+1);
    strcat(buf, l as C<"char">[]);
    strcat(buf, r as C<"char">[]);

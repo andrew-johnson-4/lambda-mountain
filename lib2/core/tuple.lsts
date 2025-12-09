@@ -20,8 +20,8 @@ let cmp(l: Tuple<x,y>, r: Tuple<x,y>): Ord = (
    cmp(l.first, r.first) && cmp(l.second, r.second)
 );
 
-let deep-hash(l: Tuple<x,y>): U64 = (
-   deep-hash(l.first) + deep-hash(l.second)
+let hash(l: Tuple<x,y>): U64 = (
+   hash(l.first) + hash(l.second)
 );
 
 let .into(l: Tuple<x,y>, tt: Type<String>): String = (
@@ -47,8 +47,8 @@ let cmp(l: Tuple<x,y,z>, r: Tuple<x,y,z>): Ord = (
    cmp(l.first, r.first) && cmp(l.second, r.second) && cmp(l.third, r.third)
 );
 
-let deep-hash(l: Tuple<x,y,z>): U64 = (
-   deep-hash(l.first) + deep-hash(l.second) + deep-hash(l.third)
+let hash(l: Tuple<x,y,z>): U64 = (
+   hash(l.first) + hash(l.second) + hash(l.third)
 );
 
 let .into(l: Tuple<x,y,z>, tt: Type<String>): String = (
@@ -77,8 +77,8 @@ let cmp(l: Tuple<w,x,y,z>, r: Tuple<w,x,y,z>): Ord = (
    cmp(l.first, r.first) && cmp(l.second, r.second) && cmp(l.third, r.third) && cmp(l.fourth, r.fourth)
 );
 
-let deep-hash(l: Tuple<w,x,y,z>): U64 = (
-   deep-hash(l.first) + deep-hash(l.second) + deep-hash(l.third) + deep-hash(l.fourth)
+let hash(l: Tuple<w,x,y,z>): U64 = (
+   hash(l.first) + hash(l.second) + hash(l.third) + hash(l.fourth)
 );
 
 let .into(l: Tuple<w,x,y,z>, tt: Type<String>): String = (

@@ -154,10 +154,11 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             }
          };
          if tag.contains(c"::") {
-            let tag-parts = tag.split(c"::");
-            let tag-base = head(tag-parts) + c"::";
-            tag-parts = tail(tag-parts);
-            for list tag-part in tag-parts {
+            let tag-parts = tag.split(c"::").into(type(Vector<CString>));
+            let tag-base = tag-parts[0] + c"::";
+            let ti = 1_sz;
+            while ti < tag-parts.length {
+               let tag-part = tag-parts[ti];
                for list row in weaken-quick-prop-index.lookup( (tag-base, parameters.length), ([] : List<(Type,Type)>) ) {
                   let lt = row.first;
                   let rt = row.second;
@@ -166,6 +167,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
                   );
                };
                tag-base = tag-base + tag-part + c"::";
+               ti = ti + 1;
             };
          };
       );
