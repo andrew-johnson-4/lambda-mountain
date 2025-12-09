@@ -21,12 +21,13 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       App{ left:Abs{lhs=lhs:Var{name=key}, rhs:ASTNil{}}, rhs=right } => (
          let lt = typeof-term(lhs).without-modifiers;
-         let vid = if lt.is-t(c"Nil",0) then SAtom(c"({})") else if std-c-is-ctype(lt) then SAtom(name.replace(c"-",c"_")) else SAtom(uuid());
+         let vid = if lt.is-t(c"Nil",0) or lt.slot(c"C",1).is-t(c"void",0) then SAtom(c"({})") else if std-c-is-ctype(lt) then SAtom(name.replace(c"-",c"_")) else SAtom(uuid());
+         print("let \{clone-rope(vid)} : \{lt}\n");
          let v = mk-fragment().set(c"expression",vid);
          let f = mk-fragment();
          std-c-fragment-context = std-c-fragment-context.bind( lhs, v );
          ctx = ctx.bind( name, lt, v );
-         if lt.is-t(c"Nil",0) {
+         if lt.is-t(c"Nil",0) or lt.slot(c"C",1).is-t(c"void",0) {
          } else if lt.is-t(c"C",0) && lt.slot(c"C",0).r1.is-t(c":Label",0) {
             f = f.set(c"expression", v.get(c"expression") + SAtom(c":"));
          } else {

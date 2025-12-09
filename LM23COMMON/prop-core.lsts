@@ -177,23 +177,23 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
       _ => ();
    };
    match base {
-      TGround { tag=tag, parameters=parameters } => (
+      TGround { tag2=tag, parameters=parameters } => (
          let new-parameters = [] : List<Type>;
          for list p in parameters.reverse {
             new-parameters = cons( p.weaken , new-parameters );
          };
-         base = ts(tag,new-parameters);
+         base = ts(tag2,new-parameters);
       );
       TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type));
          for vector c in conjugate {
             match c {
-               TGround { tag=tag, parameters=parameters } => (
+               TGround { tag3=tag, parameters=parameters } => (
                   let new-parameters = [] : List<Type>;
                   for list p in parameters.reverse {
                      new-parameters = cons( p.weaken , new-parameters );
                   };
-                  result = result.push(ts(tag,new-parameters));
+                  result = result.push(ts(tag3,new-parameters));
                );
                _ => result = result.push(c);
             }

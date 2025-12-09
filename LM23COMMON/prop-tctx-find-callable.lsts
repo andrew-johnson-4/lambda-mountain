@@ -60,9 +60,9 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
 
    # Fail if function call is ambiguous
    if failable and not(non-zero(result)) then {
-      print("Unable to find appropriate callable: \{fname} \{arg-types} return hint: \{return-type-hint}\nAt: \{blame.location}\n");
+      eprint("Unable to find appropriate callable: \{fname} \{arg-types} return hint: \{return-type-hint}\nAt: \{blame.location}\n");
       for list tr in tctx.lookups(fname) {
-         print("Candidate: \{tr.dt}\n");
+         eprint("Candidate: \{tr.dt}\n");
       };
       exit(1);
    };
