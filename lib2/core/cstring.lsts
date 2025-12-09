@@ -46,6 +46,7 @@ let $"[]"(l: CString, idx: USize): U8 = (
    (l as U8[])[idx]
 );
 
+let deep-hash(key: CString): U64 = hash(key);
 let hash(key: CString): U64 = (
    let i = 0_sz;
    let key-length = key.length;
