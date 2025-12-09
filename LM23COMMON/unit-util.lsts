@@ -1,5 +1,6 @@
 
-import lib/std/bedrock-for-compiler-only.lsts;
+import lib/std/bedrock.lsts;
+import lib/std/compiler-only.lsts;
 
 let safe-alloc-block-count = 0;
 

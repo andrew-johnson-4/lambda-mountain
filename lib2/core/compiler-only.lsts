@@ -1,0 +1,2 @@
+
+let hash(tt: Type): U64 = deep-hash(tt);
