@@ -74,22 +74,10 @@ let .find-callable-test(tctx: TypeContext?, fname: CString, arg-types: Type, bla
    let match-set = mk-vector(type(TypeContextRow));
    let result = None : TypeContextRow?;
 
-   # Fail if function needs to be in an unsafe block
-   if failable and non-zero(result) and result.get-or-panic.dt.is-t(c"Unsafe",0) and not(tctx.get-or(mk-tctx()).is-unsafe)
-   then exit-error("Call to unsafe function outside of unsafe block", blame);
-
    # Fail if function call is ambiguous
-   if failable and not(non-zero(result)) and match-set.length > 0 {
-      eprint("Unable to find unambiguous callable: \{fname} \{arg-types} return hint: \{return-type-hint}\nAt: \{blame.location}\n");
-      for vector tr in match-set {
-         eprint("\{tr.dt}\n");
-      };
-      exit(1);
-   };
-
-   # Fail if function call is ambiguous
+   # PROBLEM
    if failable and not(non-zero(result)) then {
-      eprint("Unable to find appropriate callable: \{fname} \{arg-types} return hint: \{return-type-hint}\nAt: \{blame.location}\n");
+      #eprint("Unable to find appropriate callable: \{fname} \{arg-types} return hint: \{return-type-hint}\nAt: \{blame.location}\n");
       for list tr in tctx.lookups(fname) {
          eprint("Candidate: \{tr.dt}\n");
       };
