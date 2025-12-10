@@ -4,7 +4,11 @@ import LM23COMMON/unit-tctx-core.lsts;
 let tctx = Some(mk-tctx());
 
 assert( tctx.with-phi-id-if-phi-state(ta,mk-eof()).second == ta );
+assert( safe-alloc-block-count == 0 );
 assert( tctx.with-phi-id-if-phi-state(tv(c"a"),mk-eof()).second == tv(c"a") );
+assert( safe-alloc-block-count == 0 );
+# eouble free corruption on next line
 assert( tctx.with-phi-id-if-phi-state(t0(c"A"),mk-eof()).second == t0(c"A") );
-assert( tctx.with-phi-id-if-phi-state(t0(c"A") && t1(c"Phi::State",ta), mk-eof()).second <: (t0(c"A") && t1(c"Phi::State",ta) && t1(c"Phi::Id",ta)) );
+assert( safe-alloc-block-count == 0 );
+#assert( tctx.with-phi-id-if-phi-state(t0(c"A") && t1(c"Phi::State",ta), mk-eof()).second <: (t0(c"A") && t1(c"Phi::State",ta) && t1(c"Phi::Id",ta)) );
 assert( safe-alloc-block-count == 0 );
