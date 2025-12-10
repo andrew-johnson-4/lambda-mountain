@@ -69,3 +69,57 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
 
    result
 );
+
+let .find-callable-test(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type, failable: Bool): TypeContextRow? = (
+   # Coerce argument types into Type::Format::Denormal
+   # TODO: replace with Into<Type::Format::Denormal>
+   arg-types = denormalize-strong(arg-types);
+   return-type-hint = denormalize-strong(return-type-hint).expand-implied-phi;
+
+   let match-set = mk-vector(type(TypeContextRow));
+
+   # Find all accepting function candidates
+   for list tr in tctx.lookups(fname) {
+      # can-receive is an additional refinement on top of argument satisfaction
+      # it is necessary for nullary or partial constructors that need a full type
+      # like, None : TypeContext?
+      if can-apply(tr.dt, arg-types) and (not(non-zero(return-type-hint)) or can-receive(tr.dt, return-type-hint)) {
+         match-set = match-set.push(tr);
+      }
+   };
+
+   # Apply specialization to reduce function candidates down to one
+   let result = None : TypeContextRow?;
+   for vector tr1 in match-set { if not(non-zero(result)) {
+      let all-accept = true;
+      for vector tr2 in match-set {
+         if is(tr1,tr2) then ()
+         else if most-special(tr1.dt,tr2.dt)!=tr1.dt then all-accept = false;
+      };
+      if all-accept { result = Some(tr1) };
+   }};
+
+   # Fail if function needs to be in an unsafe block
+   if failable and non-zero(result) and result.get-or-panic.dt.is-t(c"Unsafe",0) and not(tctx.get-or(mk-tctx()).is-unsafe)
+   then exit-error("Call to unsafe function outside of unsafe block", blame);
+
+   # Fail if function call is ambiguous
+   if failable and not(non-zero(result)) and match-set.length > 0 {
+      eprint("Unable to find unambiguous callable: \{fname} \{arg-types} return hint: \{return-type-hint}\nAt: \{blame.location}\n");
+      for vector tr in match-set {
+         eprint("\{tr.dt}\n");
+      };
+      exit(1);
+   };
+
+   # Fail if function call is ambiguous
+   if failable and not(non-zero(result)) then {
+      eprint("Unable to find appropriate callable: \{fname} \{arg-types} return hint: \{return-type-hint}\nAt: \{blame.location}\n");
+      for list tr in tctx.lookups(fname) {
+         eprint("Candidate: \{tr.dt}\n");
+      };
+      exit(1);
+   };
+
+   result
+);
