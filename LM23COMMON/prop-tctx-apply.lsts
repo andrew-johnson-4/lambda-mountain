@@ -21,7 +21,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
 
    # Phi: apply transitions, like (A ~> B)
    for list pr in apply-tctx.get-or(mk-tctx()).pctx {
-      tctx = tctx.bind-phi(pr.phi-id, pr.phi-tt, pr.blame);
+      tctx = tctx.bind-phi(pr.phi-id-or-zero, pr.phi-tt-or-zero, pr.blame-or-zero);
    };
 
    # Phi: move linear values, like (Linear<A> ~> Linear<Phi::Moved>)

@@ -12,13 +12,13 @@ let typeof-var-raw(sloc: AST, tctx: TypeContext?, vname: CString, must-not-fresh
 
 let defof-var(sloc: AST, tctx: TypeContext?, vname: CString): AST = (
    let row = tctx.lookups(vname);
-   if non-zero(row) then head(row).blame else ASTEOF
+   if non-zero(row) then head(row).blame-or-zero else ASTEOF
 );
 
 let defof-var(sloc: AST, tctx: TypeContext?, vname: CString, tt: Type): AST = (
    let row = tctx.lookups(vname);
    if non-zero(row)
-   then head(row).blame
+   then head(row).blame-or-zero
    else if not(non-zero(tt)) then ASTEOF
    else fail("Unknown Referenced Variable: \{vname} : \{tt} at \{sloc.location}");
 );

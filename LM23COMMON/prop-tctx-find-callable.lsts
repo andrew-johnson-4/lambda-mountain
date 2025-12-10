@@ -29,7 +29,7 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
       # can-receive is an additional refinement on top of argument satisfaction
       # it is necessary for nullary or partial constructors that need a full type
       # like, None : TypeContext?
-      if can-apply(tr.dt, arg-types) and (not(non-zero(return-type-hint)) or can-receive(tr.dt, return-type-hint)) {
+      if can-apply(tr.dt-or-zero, arg-types) and (not(non-zero(return-type-hint)) or can-receive(tr.dt-or-zero, return-type-hint)) {
          match-set = match-set.push(tr);
       }
    };
@@ -40,20 +40,20 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
       let all-accept = true;
       for vector tr2 in match-set {
          if is(tr1,tr2) then ()
-         else if most-special(tr1.dt,tr2.dt)!=tr1.dt then all-accept = false;
+         else if most-special(tr1.dt-or-zero,tr2.dt-or-zero)!=tr1.dt-or-zero then all-accept = false;
       };
       if all-accept { result = Some(tr1) };
    }};
 
    # Fail if function needs to be in an unsafe block
-   if failable and non-zero(result) and result.get-or-panic.dt.is-t(c"Unsafe",0) and not(tctx.get-or(mk-tctx()).is-unsafe)
+   if failable and non-zero(result) and result.get-or-panic.dt-or-zero.is-t(c"Unsafe",0) and not(tctx.get-or(mk-tctx()).is-unsafe)
    then exit-error("Call to unsafe function outside of unsafe block", blame);
 
    # Fail if function call is ambiguous
    if failable and not(non-zero(result)) and match-set.length > 0 {
       eprint("Unable to find unambiguous callable: \{fname} \{arg-types} return hint: \{return-type-hint}\nAt: \{blame.location}\n");
       for vector tr in match-set {
-         eprint("\{tr.dt}\n");
+         eprint("\{tr.dt-or-zero}\n");
       };
       exit(1);
    };
@@ -62,7 +62,7 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
    if failable and not(non-zero(result)) then {
       eprint("Unable to find appropriate callable: \{fname} \{arg-types} return hint: \{return-type-hint}\nAt: \{blame.location}\n");
       for list tr in tctx.lookups(fname) {
-         eprint("Candidate: \{tr.dt}\n");
+         eprint("Candidate: \{tr.dt-or-zero}\n");
       };
       exit(1);
    };

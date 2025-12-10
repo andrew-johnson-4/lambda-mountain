@@ -2,7 +2,7 @@
 let .into(tctx: Maybe<TypeContext>, tt: Type<String>): String = (
    let result = "";
    for list tr in tctx.get-or(mk-tctx()).tctx {
-      result = result + "\{tr.key} : \{tr.direct-type}\n";
+      result = result + "\{tr.key-or-zero} : \{tr.direct-type}\n";
    };
    result
 );

@@ -2,11 +2,11 @@
 let .phi-move-all(tctx: TypeContext?): TypeContext? = (
    let seen = {} : Hashtable<CString,Bool>;
    for list pr in tctx.get-or(mk-tctx()).pctx {
-      if not(seen.has(pr.phi-id)) {
-         if pr.phi-tt.is-linear-live {
-            tctx = tctx.bind-phi(pr.phi-id, pr.phi-tt.move-linear, pr.blame);
+      if not(seen.has(pr.phi-id-or-zero)) {
+         if pr.phi-tt-or-zero.is-linear-live {
+            tctx = tctx.bind-phi(pr.phi-id-or-zero, pr.phi-tt-or-zero.move-linear, pr.blame-or-zero);
          };
-         seen = seen.bind(pr.phi-id, true);
+         seen = seen.bind(pr.phi-id-or-zero, true);
       }
    };
    tctx
