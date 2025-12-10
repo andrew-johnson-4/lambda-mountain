@@ -54,19 +54,19 @@ let .release(t: TypeContext): Nil = (
 
 let mk-tctx(): TypeContext = TypeContext( [] : List<TypeContextRow>, [] : List<PhiContextRow>, false, false, c"" );
 
-let .key(tr: TypeContextRow): CString = (
+let .key-or-zero(tr: TypeContextRow): CString = (
    match tr {
       TypeContextRow{ key=key } => key;
       _ => c"";
    }
 );
-let .nt(tr: TypeContextRow): Type = (
+let .nt-or-zero(tr: TypeContextRow): Type = (
    match tr {
       TypeContextRow{ nt=nt } => nt;
       _ => ta;
    }
 );
-let .dt(tr: TypeContextRow): Type = (
+let .dt-or-zero(tr: TypeContextRow): Type = (
    match tr {
       TypeContextRow{ dt=dt } => dt;
       _ => ta;
@@ -78,38 +78,38 @@ let .direct-type(tr: TypeContextRow): Type = (
       _ => ta;
    }
 );
-let .blame(tr: TypeContextRow): AST = (
+let .blame-or-zero(tr: TypeContextRow): AST = (
    match tr {
       TypeContextRow{ blame=blame } => blame;
       _ => ASTEOF;
    }
 );
 
-let .phi-id(tr: PhiContextRow): CString = (
+let .phi-id-or-zero(tr: PhiContextRow): CString = (
    match tr {
       PhiContextRow{ phi-id=phi-id } => phi-id;
       _ => c"";
    }
 );
-let .phi-tt(tr: PhiContextRow): Type = (
+let .phi-tt-or-zero(tr: PhiContextRow): Type = (
    match tr {
       PhiContextRow{ phi-tt=phi-tt } => phi-tt;
       _ => ta;
    }
 );
-let .blame(tr: PhiContextRow): AST = (
+let .blame-or-zero(tr: PhiContextRow): AST = (
    match tr {
       PhiContextRow{ blame=blame } => blame;
       _ => ASTEOF;
    }
 );
-let .dead-on-arrival(tr: PhiContextRow): Bool = (
+let .dead-on-arrival-or-zero(tr: PhiContextRow): Bool = (
    match tr {
       PhiContextRow{ dead-on-arrival=dead-on-arrival } => dead-on-arrival;
       _ => false;
    }
 );
-let .is-global(tr: PhiContextRow): Bool = (
+let .is-global-or-zero(tr: PhiContextRow): Bool = (
    match tr {
       PhiContextRow{ is-global=is-global } => is-global;
       _ => false;

@@ -2,7 +2,7 @@
 let .normalize(tctx: TypeContext?): TypeContext? = (
    let new-trs = [] : List<TypeContextRow>;
    for list tr in tctx.get-or(mk-tctx()).tctx.reverse {
-      new-trs = cons(TypeContextRow(tr.key, tr.direct-type.normalize, tr.direct-type.normalize, tr.blame), new-trs);
+      new-trs = cons(TypeContextRow(tr.key-or-zero, tr.direct-type.normalize, tr.direct-type.normalize, tr.blame-or-zero), new-trs);
    };
    tctx.with-tctx(new-trs);
 );
