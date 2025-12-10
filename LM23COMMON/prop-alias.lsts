@@ -2,15 +2,15 @@
 let type-alias-index = {} : Hashtable<Tuple<CString,U64>,Tuple<Type,Type>>;
 
 let add-type-alias(lt: Type, rt: Type): Nil = (
-   type-alias-index = type-alias-index.bind( lt.ground-tag-and-arity, Tuple( lt, rt ) );
+   type-alias-index = type-alias-index.bind( lt.ground-tag-and-arity, ( lt, rt ) );
 );
 let .rewrite-type-alias(lt: Type): Type = (
    match lt {
-      TGround{tag:"Phi::State",parameters:[_..]} => lt;
-      TGround{tag:"Phi::Id",parameters:[_..]} => lt;
-      TGround{tag:"Phi::Transition",parameters:[_.._..]} => lt;
+      TGround{tag:c"Phi::State",parameters:[_..]} => lt;
+      TGround{tag:c"Phi::Id",parameters:[_..]} => lt;
+      TGround{tag:c"Phi::Transition",parameters:[_.._..]} => lt;
       TGround{ tag=tag, parameters=parameters } => (
-         let lt-rt = type-alias-index.lookup( lt.ground-tag-and-arity, Tuple( ta, ta ) );
+         let lt-rt = type-alias-index.lookup( lt.ground-tag-and-arity, ( ta, ta ) );
          if non-zero(lt-rt.first) {
             let tctx = unify(lt-rt.first, lt, mk-eof());
             if non-zero(tctx) { lt = tctx.substitute(lt-rt.second); };
