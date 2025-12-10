@@ -71,8 +71,6 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
 );
 
 let .find-callable-test(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type, failable: Bool): TypeContextRow? = (
-   # Coerce argument types into Type::Format::Denormal
-   # TODO: replace with Into<Type::Format::Denormal>
    arg-types = denormalize-strong(arg-types);
    return-type-hint = denormalize-strong(return-type-hint).expand-implied-phi;
 
