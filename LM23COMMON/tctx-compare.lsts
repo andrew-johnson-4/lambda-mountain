@@ -10,12 +10,12 @@ let cmp(lctx: TypeContext?, rctx: TypeContext?): Ord = (
 );
 
 let cmp(ltr: TypeContextRow, rtr: TypeContextRow): Ord = (
-   cmp(ltr.key, rtr.key) &&
-   cmp(ltr.nt, rtr.nt) &&
-   cmp(ltr.dt, rtr.dt)
+   cmp(ltr.key-or-zero, rtr.key-or-zero) &&
+   cmp(ltr.nt-or-zero, rtr.nt-or-zero) &&
+   cmp(ltr.dt-or-zero, rtr.dt-or-zero)
 );
 
 let cmp(ltr: PhiContextRow, rtr: PhiContextRow): Ord = (
-   cmp(ltr.phi-id, rtr.phi-id) &&
-   cmp(ltr.phi-tt, rtr.phi-tt)
+   cmp(ltr.phi-id-or-zero, rtr.phi-id-or-zero) &&
+   cmp(ltr.phi-tt-or-zero, rtr.phi-tt-or-zero)
 );

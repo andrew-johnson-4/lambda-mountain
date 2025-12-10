@@ -17,7 +17,7 @@ let .def(tr: TypeContextRow): AST = (
    }
 );
 
-let .into(tr: TypeContextRow, tt: Type<String>): String = "TypeContextRow{ key: \"\{tr.key}\", dt: \"\{tr.dt}\" }";
+let .into(tr: TypeContextRow, tt: Type<String>): String = "TypeContextRow{ key: \"\{tr.key-or-zero}\", dt: \"\{tr.dt-or-zero}\" }";
 
 type alias AContext = List<(CString,AST)>;
 

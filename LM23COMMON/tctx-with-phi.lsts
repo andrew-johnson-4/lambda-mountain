@@ -5,7 +5,7 @@ let .with-phi(tctx: TypeContext?, tt: Type, blame: AST): Type = (
       tt = t2(c"Cons", tctx.with-phi(ct.l1,blame), tctx.with-phi(ct.l2,blame));
    } else if tt.is-t(c"Phi::Id",1) {
       if tt.is-t(c"Phi::State",1) then tt = tt.without-slot(c"Phi::State",1);
-      let phi-state = tctx.lookup-phi(tt.slot(c"Phi::Id",1).l1.simple-tag).phi-tt;
+      let phi-state = tctx.lookup-phi(tt.slot(c"Phi::Id",1).l1.simple-tag).phi-tt-or-zero;
       if not(non-zero(phi-state)) then fail("Could not find phi state \{tt} at \{blame.location}\n");
       tt = tt && t1(c"Phi::State", phi-state);
    };

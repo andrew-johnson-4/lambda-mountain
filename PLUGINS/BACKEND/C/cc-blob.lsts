@@ -1,6 +1,6 @@
 
 let cc-blob(callee-ctx: FContext, function-name: CString, args-tt: Type, blame: AST): Fragment = (
-   let f = Some(mk-tctx()).find-callable(function-name, args-tt, blame).blame;
+   let f = Some(mk-tctx()).find-callable(function-name, args-tt, blame).blame-or-zero;
    if typeof-term(f).is-open then exit-error("STD C cc-blob is open \{function-name} (\{args-tt})\n", blame);
    match f {
       Glb{val:Abs{rhs=rhs}} => (

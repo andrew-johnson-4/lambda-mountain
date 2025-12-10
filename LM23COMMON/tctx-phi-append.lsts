@@ -10,13 +10,13 @@ let .phi-append-dead-on-arrival(tctx-primary: TypeContext?, tctx-secondary: Type
 let .phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>, dead-on-arrival: Bool): List<PhiContextRow> = (
    let seen = {} : Hashtable<CString,Bool>;
    for list pr1 in tctx-secondary {
-      if not(seen.has(pr1.phi-id)) {
-         let pr2 = tctx-primary.lookup(pr1.phi-id);
-         if dead-on-arrival then pr1 = PhiContextRow(pr1.phi-id, pr1.phi-tt, pr1.blame, dead-on-arrival, pr1.is-global);
+      if not(seen.has(pr1.phi-id-or-zero)) {
+         let pr2 = tctx-primary.lookup(pr1.phi-id-or-zero);
+         if dead-on-arrival then pr1 = PhiContextRow(pr1.phi-id-or-zero, pr1.phi-tt-or-zero, pr1.blame-or-zero, dead-on-arrival, pr1.is-global-or-zero);
          if not(is(pr1,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
             tctx-primary = cons( pr1, tctx-primary );
          };
-         seen = seen.bind(pr1.phi-id, true);
+         seen = seen.bind(pr1.phi-id-or-zero, true);
       };
    };
    tctx-primary
