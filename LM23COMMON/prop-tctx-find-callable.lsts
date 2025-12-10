@@ -69,20 +69,3 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
 
    result
 );
-
-let .find-callable-test(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type, failable: Bool): TypeContextRow? = (
-   let match-set = mk-vector(type(TypeContextRow));
-   let result = None : TypeContextRow?;
-
-   # Fail if function call is ambiguous
-   # PROBLEM
-   if failable and not(non-zero(result)) then {
-      #eprint("Unable to find appropriate callable: \{fname} \{arg-types} return hint: \{return-type-hint}\nAt: \{blame.location}\n");
-      for list tr in tctx.lookups(fname) {
-         eprint("Candidate: \{tr.dt}\n");
-      };
-      exit(1);
-   };
-
-   result
-);
