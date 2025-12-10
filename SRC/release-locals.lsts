@@ -31,7 +31,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       for nd in needs-release {
          let phi-id = nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag;
          pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag,true);
-         let do-release = mk-app(mk-var(c".release"),mk-var(nd.key));
+         let do-release = mk-app(mk-var(c".release"),mk-var(nd.key-or-zero));
          (tctx-after, do-release) = std-infer-expr(tctx-after, do-release, false, Used, ta);
          term = mk-cons(term, do-release); tctx-after = tctx-after.ascript(term, t0(c"Nil"));
       };
@@ -49,9 +49,9 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    };
    while non-zero(tctx-after-pctx) && not(is(tctx-before-pctx, tctx-after-pctx)) {
       let tr = head(tctx-after-pctx);
-      if tr.dead-on-arrival and not(pid-seen.has(tr.phi-id)) and tr.phi-tt.is-linear-live {
-         pid-seen = pid-seen.bind(tr.phi-id,true);
-         tctx-after = tctx-after.bind-phi(tr.phi-id, tr.phi-tt.move-linear, tr.blame);
+      if tr.dead-on-arrival-or-zero and not(pid-seen.has(tr.phi-id-or-zero)) and tr.phi-tt-or-zero.is-linear-live {
+         pid-seen = pid-seen.bind(tr.phi-id-or-zero,true);
+         tctx-after = tctx-after.bind-phi(tr.phi-id-or-zero, tr.phi-tt-or-zero.move-linear, tr.blame-or-zero);
       };
       tctx-after-pctx = tail(tctx-after-pctx);
    };
