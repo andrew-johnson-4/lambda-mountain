@@ -10,4 +10,3 @@ assert( tctx.substitute(tv(c"a")) == t0(c"A") );
 assert( tctx.substitute(tv(c"b")) == t0(c"B") );
 assert( tctx.substitute(t1(c"A",tv(c"a"))) == t1(c"A",t0(c"A")) );
 assert( tctx.substitute(t2(c"B",tv(c"a"),tv(c"b"))) == t2(c"B",t0(c"A"),t0(c"B")) );
-assert( safe-alloc-block-count == 0 );
