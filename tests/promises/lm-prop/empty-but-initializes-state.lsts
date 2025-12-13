@@ -6,10 +6,6 @@ import LM23COMMON/prop-normalize.lsts; #required
 import LM23COMMON/prop-tctx-normalize.lsts; # required
 import LM23COMMON/prop-expand-implied-phi.lsts; # required
 
-let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST): (TypeContext?, TypeContext?, Type, Type) = (
-   tctx.apply(fname, ft, at, blame, ta);
-);
-
 let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, return-type-hint: Type): (TypeContext?, TypeContext?, Type, Type) = (
    # Fail if arguments are not accepted by function (<:)
    if not(can-apply(ft, at)) then exit-error("Unable to apply function \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
@@ -52,6 +48,6 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
    (tctx, apply-tctx, closed-type, return-type)
 );
 
-assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",t0(c"A"),t0(c"B")), t0(c"A"), mk-eof() ).third == t2(c"Arrow",t0(c"A"),t0(c"B")) );
+assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",t0(c"A"),t0(c"B")), t0(c"A"), mk-eof(), ta ).third == t2(c"Arrow",t0(c"A"),t0(c"B")) );
 
 # TODO: find what combination of libraries imported and "apply" calling reproduces this crash
