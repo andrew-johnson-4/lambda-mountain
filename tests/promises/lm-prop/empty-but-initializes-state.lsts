@@ -7,9 +7,6 @@ import LM23COMMON/prop-tctx-normalize.lsts; # required
 import LM23COMMON/prop-expand-implied-phi.lsts; # required
 
 let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, return-type-hint: Type): (TypeContext?, TypeContext?, Type, Type) = (
-   # Fail if arguments are not accepted by function (<:)
-   if not(can-apply(ft, at)) then exit-error("Unable to apply function \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
-
    # Apply function, then normalize the unification context
    let apply-tctx = if non-zero(return-type-hint)
    then unify(ft.range, return-type-hint, blame).normalize.without-phi-keep-state
