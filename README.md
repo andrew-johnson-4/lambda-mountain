@@ -31,7 +31,7 @@ A fragment is a Key-Value Map of Strings to S-Expressions. This data structure p
 
 ### "Build Your Own Compiler" Development
 
-LM, being a high-level assembler, directly puts the programmer into the position of creating their own custom compiler.
+LM, being a high-level assembler, directly puts the programmer in the position of creating their own custom compiler.
 The problem here of course is that compilers are potentially complex and subtle.
 To make this more practical, LM leverages cutting-edge techniques to create a more foregiving and approachable experience to developing new compiler features.
 This is a problem that is somewhat unique to LM-style development, and our community is still learning how to make this more practical.
