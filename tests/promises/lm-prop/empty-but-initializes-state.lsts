@@ -24,15 +24,13 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
       tctx = tctx.bind-phi(pr.phi-id-or-zero, pr.phi-tt-or-zero, pr.blame-or-zero);
    };
 
-   # Phi: move linear values, like (Linear<A> ~> Linear<Phi::Moved>)
+#   # Phi: move linear values, like (Linear<A> ~> Linear<Phi::Moved>)
    tctx = tctx.phi-move-args(ft.domain, at, blame);
 
-   # Specialize the function type
-   let closed-type = apply-tctx.substitute(ft).without-phi-keep-state;
+   # OK
 
-   # Fail if specialized function is still open
-   if closed-type.is-open
-   then exit-error("Unification did not close all open type variables in call to \{fname}\nFunction: \{ft}\nArguments: \{at}\nReturn Hint: \{return-type-hint}\nClosed: \{closed-type}", blame);
+#   # Specialize the function type
+   let closed-type = apply-tctx.substitute(ft).without-phi-keep-state;
 
    # Specialize the return type
    let return-type = ta;
