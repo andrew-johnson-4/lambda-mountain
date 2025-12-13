@@ -7,10 +7,6 @@ import LM23COMMON/prop-normalize.lsts;
 import LM23COMMON/prop-denormalize.lsts;
 import LM23COMMON/prop-tctx-apply.lsts;
 import LM23COMMON/prop-tctx-normalize.lsts;
-import LM23COMMON/prop-tctx-find-callable.lsts;
-import LM23COMMON/prop-stack-to-specialize.lsts;
-import LM23COMMON/prop-tctx-apply-callable.lsts;
-import LM23COMMON/prop-tctx-phi-merge.lsts;
 import LM23COMMON/prop-expand-implied-phi.lsts; # required
 
 assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",t0(c"A"),t0(c"B")), t0(c"A"), mk-eof() ).third == t2(c"Arrow",t0(c"A"),t0(c"B")) );
