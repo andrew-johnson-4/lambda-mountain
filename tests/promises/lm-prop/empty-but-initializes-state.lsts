@@ -4,7 +4,6 @@ import LM23COMMON/prop-core.lsts; # required
 import LM23COMMON/prop-alias.lsts; # required
 import LM23COMMON/prop-normalize.lsts; #required
 import LM23COMMON/prop-tctx-normalize.lsts; # required
-import LM23COMMON/prop-expand-implied-phi.lsts; # required
 
 let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, return-type-hint: Type): (TypeContext?, TypeContext?, Type, Type) = (
    # Apply function, then normalize the unification context
