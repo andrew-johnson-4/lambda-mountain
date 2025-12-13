@@ -65,6 +65,9 @@ let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST):
       rt = rt && t1(c"Phi::Id",t0(new-phi-id));
    };
 
+   if left.is-t(c"Phi::State",1) or right.is-t(c"Phi::State",1) and not(rt.is-t(c"Phi::Id",1))
+   then exit-error("Least Upper Bound dropped a Phi State: \{left} x \{right} => \{rt}", blame);
+
    (tctx, rt)
 );
 
