@@ -3,9 +3,54 @@ import LM23COMMON/unit-tctx-core.lsts;
 import LM23COMMON/prop-core.lsts; # required
 import LM23COMMON/prop-alias.lsts; # required
 import LM23COMMON/prop-normalize.lsts; #required
-import LM23COMMON/prop-tctx-apply.lsts; # required
 import LM23COMMON/prop-tctx-normalize.lsts; # required
 import LM23COMMON/prop-expand-implied-phi.lsts; # required
+
+let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST): (TypeContext?, TypeContext?, Type, Type) = (
+   tctx.apply(fname, ft, at, blame, ta);
+);
+
+let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, return-type-hint: Type): (TypeContext?, TypeContext?, Type, Type) = (
+   # Fail if arguments are not accepted by function (<:)
+   if not(can-apply(ft, at)) then exit-error("Unable to apply function \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
+
+   # Apply function, then normalize the unification context
+   let apply-tctx = if non-zero(return-type-hint)
+   then unify(ft.range, return-type-hint, blame).normalize.without-phi-keep-state
+   else unify(ft.domain, at, blame).normalize.without-phi-keep-state;
+
+   # Fail if arguments are not accepted by function (unify)
+   if apply-tctx.is-none then exit-error("Unable to apply (unify) function \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
+
+   # Phi: fail if any used arguments have already been moved
+   if not(tctx.get-or(mk-tctx()).is-blob) and at.is-moved
+   then exit-error("Linear value used after move in call to \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
+
+   # Phi: apply transitions, like (A ~> B)
+   for list pr in apply-tctx.get-or(mk-tctx()).pctx {
+      tctx = tctx.bind-phi(pr.phi-id-or-zero, pr.phi-tt-or-zero, pr.blame-or-zero);
+   };
+
+   # Phi: move linear values, like (Linear<A> ~> Linear<Phi::Moved>)
+   tctx = tctx.phi-move-args(ft.domain, at, blame);
+
+   # Specialize the function type
+   let closed-type = apply-tctx.substitute(ft).without-phi-keep-state;
+
+   # Fail if specialized function is still open
+   if closed-type.is-open
+   then exit-error("Unification did not close all open type variables in call to \{fname}\nFunction: \{ft}\nArguments: \{at}\nReturn Hint: \{return-type-hint}\nClosed: \{closed-type}", blame);
+
+   # Specialize the return type
+   let return-type = apply-tctx.substitute(ft.range).without-phi-keep-state.expand-implied-phi;
+   (tctx, return-type) = tctx.with-phi-id-if-phi-state(return-type, blame);
+
+   # Propagate cons root type for Prop functions
+   # like, t0.prop0(t1,t2) : T0 && Prop0
+   if ft.is-t(c"Prop",0) then return-type = return-type && at.cons-root;
+
+   (tctx, apply-tctx, closed-type, return-type)
+);
 
 assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",t0(c"A"),t0(c"B")), t0(c"A"), mk-eof() ).third == t2(c"Arrow",t0(c"A"),t0(c"B")) );
 
