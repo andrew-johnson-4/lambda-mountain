@@ -1,11 +1,16 @@
 
 import LM23COMMON/unit-tctx-core.lsts;
 
+let f1(): TypeContext? = (
+   let ctx = Some(mk-tctx());
+   ctx = ctx.bind(c"a", ta, ta, ASTEOF);
+   ctx
+);
+
 let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, return-type-hint: Type): (TypeContext?, TypeContext?, Type, Type) = (
-   # Apply function, then normalize the unification context
    let apply-tctx = if non-zero(return-type-hint)
-   then unify(ft.range, return-type-hint, blame)
-   else unify(ft.domain, at, blame);
+   then f1()
+   else f1();
 
 #   # Specialize the function type
    let closed-type = apply-tctx.substitute(ft).without-phi-keep-state;
