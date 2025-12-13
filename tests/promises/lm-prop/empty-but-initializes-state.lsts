@@ -1,15 +1,10 @@
 
 import LM23COMMON/unit-tctx-core.lsts;
 
-let f1(): TypeContext? = (
-   let ctx = Some(mk-tctx());
-   ctx
-);
-
 let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, return-type-hint: Type): (TypeContext?, TypeContext?, Type, Type) = (
    let apply-tctx = if non-zero(return-type-hint)
-   then f1()
-   else f1();
+   then Some(mk-tctx())
+   else Some(mk-tctx());
 
 #   # Specialize the function type
    let closed-type = apply-tctx.substitute(ft);
