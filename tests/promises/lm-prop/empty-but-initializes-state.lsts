@@ -2,14 +2,12 @@
 import LM23COMMON/unit-tctx-core.lsts;
 import LM23COMMON/prop-core.lsts; # required
 import LM23COMMON/prop-alias.lsts; # required
-import LM23COMMON/prop-normalize.lsts; #required
-import LM23COMMON/prop-tctx-normalize.lsts; # required
 
 let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, return-type-hint: Type): (TypeContext?, TypeContext?, Type, Type) = (
    # Apply function, then normalize the unification context
    let apply-tctx = if non-zero(return-type-hint)
-   then unify(ft.range, return-type-hint, blame).normalize.without-phi-keep-state
-   else unify(ft.domain, at, blame).normalize.without-phi-keep-state;
+   then unify(ft.range, return-type-hint, blame)
+   else unify(ft.domain, at, blame);
 
 #   # Specialize the function type
    let closed-type = apply-tctx.substitute(ft).without-phi-keep-state;
