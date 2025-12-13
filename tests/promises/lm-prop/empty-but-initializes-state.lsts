@@ -1,0 +1,18 @@
+
+import LM23COMMON/unit-tctx-core.lsts;
+
+let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, return-type-hint: Type): (TypeContext?, TypeContext?, Type, Type) = (
+   let apply-tctx = Some(mk-tctx());
+
+#   # Specialize the function type
+   let closed-type = apply-tctx.substitute(ft);
+
+   # Specialize the return type
+   let return-type = ta;
+
+   (tctx, apply-tctx, closed-type, return-type)
+);
+
+assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",t0(c"A"),t0(c"B")), t0(c"A"), mk-eof(), ta ).third == t2(c"Arrow",t0(c"A"),t0(c"B")) );
+
+# TODO: find what combination of libraries imported and "apply" calling reproduces this crash
