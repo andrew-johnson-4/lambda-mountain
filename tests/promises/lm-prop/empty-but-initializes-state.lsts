@@ -3,7 +3,6 @@ import LM23COMMON/unit-tctx-core.lsts;
 
 let f1(): TypeContext? = (
    let ctx = Some(mk-tctx());
-   ctx = ctx.bind(c"a", ta, ta, ASTEOF);
    ctx
 );
 
