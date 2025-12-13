@@ -13,7 +13,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
    else f1();
 
 #   # Specialize the function type
-   let closed-type = apply-tctx.substitute(ft).without-phi-keep-state;
+   let closed-type = apply-tctx.substitute(ft);
 
    # Specialize the return type
    let return-type = ta;
