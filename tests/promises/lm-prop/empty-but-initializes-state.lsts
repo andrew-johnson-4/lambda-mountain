@@ -11,12 +11,7 @@ import LM23COMMON/prop-tctx-find-callable.lsts;
 import LM23COMMON/prop-stack-to-specialize.lsts;
 import LM23COMMON/prop-tctx-apply-callable.lsts;
 import LM23COMMON/prop-tctx-phi-merge.lsts;
-import LM23COMMON/prop-tctx-least-upper-bound.lsts;
-import LM23COMMON/prop-tctx-definition.lsts;
-import LM23COMMON/prop-expand-implied-phi.lsts;
-#import LM23COMMON/prop-is-phi-type.lsts;
-#import LM23COMMON/prop-phi-as-state.lsts;
-#import LM23COMMON/prop-phi-override.lsts;
+import LM23COMMON/prop-expand-implied-phi.lsts; # required
 
 assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",t0(c"A"),t0(c"B")), t0(c"A"), mk-eof() ).third == t2(c"Arrow",t0(c"A"),t0(c"B")) );
 
