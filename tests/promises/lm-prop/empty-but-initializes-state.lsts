@@ -1,7 +1,8 @@
 
 import LM23COMMON/unit-tctx-core.lsts;
 
-let .apply(tctx: TypeContext?, fname: CString, at: Type, blame: AST, return-type-hint: Type): (TypeContext?, TypeContext?, Type, Type) = (
+let apply(): (TypeContext?, TypeContext?, Type, Type) = (
+   let tctx = Some(mk-tctx());
    let ft = t2(c"Arrow",t0(c"A"),t0(c"B"));
    let apply-tctx = Some(mk-tctx());
 
@@ -14,4 +15,4 @@ let .apply(tctx: TypeContext?, fname: CString, at: Type, blame: AST, return-type
    (tctx, apply-tctx, closed-type, return-type)
 );
 
-assert( Some(mk-tctx()).apply(c"f", t0(c"A"), mk-eof(), ta ).third == t2(c"Arrow",t0(c"A"),t0(c"B")) );
+assert( apply().third == t2(c"Arrow",t0(c"A"),t0(c"B")) );
