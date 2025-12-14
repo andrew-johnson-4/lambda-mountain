@@ -1,13 +1,6 @@
 
 import LM23COMMON/unit-tctx-core.lsts;
 
-let .custom-substitute(tctx: TypeContext?, tt: List<Type>): List<Type> = (
-   match tt {
-      LCons{head=head,tail=tail} => cons( tctx.custom-substitute(head), tctx.custom-substitute(tail) );
-      _ => tt;
-   }
-);
-
 let .custom-substitute(tctx: TypeContext?, tt: Type): Type = (
    match tt {
       TAnd{conjugate=conjugate} => (
@@ -23,7 +16,7 @@ let .custom-substitute(tctx: TypeContext?, tt: Type): Type = (
          else if result.length==1 then result[0]
          else tand(result)
       );
-      TGround{tag=tag,parameters=parameters} => TGround(tag,close(tctx.custom-substitute(parameters)));
+      TGround{tag=tag,parameters=parameters} => TGround(tag,close(parameters));
       _ => tt;
    }
 );
