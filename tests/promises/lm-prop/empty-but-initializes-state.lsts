@@ -6,11 +6,6 @@ let .custom-substitute(tctx: TypeContext?, tt: Type): Type = (
       TAnd{conjugate=conjugate} => (
          let result = mk-vector(type(Type), 0);
          for vector c in conjugate {
-            match tctx.custom-substitute(c) {
-               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
-               TAny{} => ();
-               rc => ( result = result.push(rc); () );
-            }
          };
          if result.length==0 then ta
          else if result.length==1 then result[0]
