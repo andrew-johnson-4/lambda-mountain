@@ -1,4 +1,4 @@
 
 import LM23COMMON/unit-tctx-core.lsts;
 
-assert( (Some(mk-tctx()), Some(mk-tctx()), t2(c"Arrow",t0(c"A"),t0(c"B")), ta).third == t2(c"Arrow",t0(c"A"),t0(c"B")) );
+assert( (t2(c"Arrow",t0(c"A"),t0(c"B")), 1).first == t2(c"Arrow",t0(c"A"),t0(c"B")) );
