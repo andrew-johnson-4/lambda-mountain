@@ -56,6 +56,7 @@ let .release(od: SparseOwnedData<t>[]): Nil = (
 
 let .retain(od: SparseOwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
+      if od.reference-count==0 then fail(c"SparseOwnedData.retain called when reference count is zero. This object has already been freed!");
       od.reference-count = od.reference-count + 1;
    }
 );
