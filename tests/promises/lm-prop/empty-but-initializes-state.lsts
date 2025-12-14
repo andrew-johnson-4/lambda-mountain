@@ -2,18 +2,7 @@
 import LM23COMMON/unit-tctx-core.lsts;
 
 let .custom-substitute(tctx: TypeContext?, tt: Type): Type = (
-   match tt {
-      TAnd{conjugate=conjugate} => (
-         let result = mk-vector(type(Type), 0);
-         for vector c in conjugate {
-         };
-         if result.length==0 then ta
-         else if result.length==1 then result[0]
-         else tand(result)
-      );
-      TGround{tag=tag,parameters=parameters} => TGround(tag,close(parameters));
-      _ => tt;
-   }
+   TGround((tt as Tag::TGround).tag,close(open((tt as Tag::TGround).parameters)));
 );
 
 let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, return-type-hint: Type): (TypeContext?, TypeContext?, Type, Type) = (
