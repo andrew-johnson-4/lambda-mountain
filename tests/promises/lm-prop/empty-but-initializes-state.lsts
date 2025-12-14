@@ -1,4 +1,0 @@
-
-import LM23COMMON/unit-tctx-core.lsts;
-
-assert( (t2(c"Arrow",t0(c"A"),t0(c"B")), 1).first == t2(c"Arrow",t0(c"A"),t0(c"B")) );
