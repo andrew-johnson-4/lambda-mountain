@@ -1,11 +1,38 @@
 
 import LM23COMMON/unit-tctx-core.lsts;
 
+let .custom-substitute(tctx: TypeContext?, tt: List<Type>): List<Type> = (
+   match tt {
+      LCons{head=head,tail=tail} => cons( tctx.custom-substitute(head), tctx.custom-substitute(tail) );
+      _ => tt;
+   }
+);
+
+let .custom-substitute(tctx: TypeContext?, tt: Type): Type = (
+   match tt {
+      TAnd{conjugate=conjugate} => (
+         let result = mk-vector(type(Type), 0);
+         for vector c in conjugate {
+            match tctx.custom-substitute(c) {
+               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+               TAny{} => ();
+               rc => ( result = result.push(rc); () );
+            }
+         };
+         if result.length==0 then ta
+         else if result.length==1 then result[0]
+         else tand(result)
+      );
+      TGround{tag=tag,parameters=parameters} => TGround(tag,close(tctx.custom-substitute(parameters)));
+      _ => tt;
+   }
+);
+
 let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, return-type-hint: Type): (TypeContext?, TypeContext?, Type, Type) = (
    let apply-tctx = Some(mk-tctx());
 
 #   # Specialize the function type
-   let closed-type = apply-tctx.substitute(ft);
+   let closed-type = apply-tctx.custom-substitute(ft);
 
    # Specialize the return type
    let return-type = ta;
@@ -14,5 +41,3 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
 );
 
 assert( Some(mk-tctx()).apply(c"f", t2(c"Arrow",t0(c"A"),t0(c"B")), t0(c"A"), mk-eof(), ta ).third == t2(c"Arrow",t0(c"A"),t0(c"B")) );
-
-# TODO: find what combination of libraries imported and "apply" calling reproduces this crash
