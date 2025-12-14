@@ -1,15 +1,11 @@
 
 import LM23COMMON/unit-tctx-core.lsts;
 
-let .custom-substitute(tctx: TypeContext?, tt: Type): Type = (
-   TGround((tt as Tag::TGround).tag,close(open((tt as Tag::TGround).parameters)));
-);
-
 let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, return-type-hint: Type): (TypeContext?, TypeContext?, Type, Type) = (
    let apply-tctx = Some(mk-tctx());
 
 #   # Specialize the function type
-   let closed-type = apply-tctx.custom-substitute(ft);
+   let closed-type = TGround((ft as Tag::TGround).tag,close(open((ft as Tag::TGround).parameters)));
 
    # Specialize the return type
    let return-type = ta;
