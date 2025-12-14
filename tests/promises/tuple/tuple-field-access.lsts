@@ -1,0 +1,4 @@
+
+import LM23COMMON/unit-tctx-core.lsts;
+
+assert( (mk-vector(type(String)).push("A"), 1).first == mk-vector(type(String)).push("A") );
