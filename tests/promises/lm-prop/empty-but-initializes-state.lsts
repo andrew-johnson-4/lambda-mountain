@@ -1,18 +1,4 @@
 
 import LM23COMMON/unit-tctx-core.lsts;
 
-let apply(): (TypeContext?, TypeContext?, Type, Type) = (
-   let tctx = Some(mk-tctx());
-   let ft = t2(c"Arrow",t0(c"A"),t0(c"B"));
-   let apply-tctx = Some(mk-tctx());
-
-#   # Specialize the function type
-   let closed-type = TGround((ft as Tag::TGround).tag,close(open((ft as Tag::TGround).parameters)));
-
-   # Specialize the return type
-   let return-type = ta;
-
-   (tctx, apply-tctx, closed-type, return-type)
-);
-
-assert( apply().third == t2(c"Arrow",t0(c"A"),t0(c"B")) );
+assert( (Some(mk-tctx()), Some(mk-tctx()), t2(c"Arrow",t0(c"A"),t0(c"B")), ta).third == t2(c"Arrow",t0(c"A"),t0(c"B")) );
