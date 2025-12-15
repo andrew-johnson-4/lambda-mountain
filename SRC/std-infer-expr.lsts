@@ -328,6 +328,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                rt = tctx.with-phi(rt, term);
                tctx = tctx.ascript(term, rt);
 
+               let is-released-after-call = false;
                if not(r.is-var-or-ascripted-var) {
                   # if a field access is not retained and is just a variable reference then it shouldn't be released after the call
                   # this is complicated to do in the type system atm, so we just hard code it for now
@@ -336,6 +337,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   #    x.data.release
                   (tctx, let prefix, let postfix, let new-args) = std-maybe-release-after-call(tctx, function-type, r);
                   if non-zero(postfix) {
+                     is-released-after-call = true;
                      if not(is(r,new-args)) { term = mk-app(l,new-args); ascript-force(term,rt); };
 
                      let tmp-id = uuid();
@@ -345,6 +347,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      mark-var-to-def-todo(tctx, tmp-id, ta, tmp-var);
                      let tmp-nil = mk-nil(); ascript-force(tmp-nil, t0(c"Nil"));
                      let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, t0(c"Nil"));
+                     if function-type.is-t(c"MustRetainOnCall",0) && not(hint.is-t(c"MustNotRetain",0)) && not(tctx.get-or(mk-tctx()).is-blob) {
+                        (tctx, term) = maybe-retain(tctx, term);
+                     };
                      let bind = mk-app(declare, term); ascript-force(bind, t0(c"Nil"));
 
                      let new-term = bind;
@@ -356,8 +361,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      term = new-term;
                   };
                };
-
-               if not(rt.is-t(c"Cons",2)) {
+               if not(is-released-after-call) and not(rt.is-t(c"Cons",2)) {
                   if function-type.is-t(c"MustRetainOnCall",0) && not(hint.is-t(c"MustNotRetain",0)) && not(tctx.get-or(mk-tctx()).is-blob) {
                      (tctx, term) = maybe-retain(tctx, term);
                   }
