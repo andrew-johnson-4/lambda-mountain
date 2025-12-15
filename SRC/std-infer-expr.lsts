@@ -357,6 +357,16 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   };
                };
 
+               match term {
+                  App{ left:Var{key:c".first"}, right=right } => (
+                     print("should? maybe retain \{term} : \{typeof-term(term)}\n");
+                     print("should? maybe retain argument \{right} : \{typeof-term(right)}\n");
+                     print("should? maybe retain function-type: \{function-type}\n");
+                     print("should? maybe retain hint: \{hint}\n");
+                     print("should? maybe retain tctx.is-blob: \{tctx.get-or(mk-tctx()).is-blob}\n");
+                  );
+                  _ => ();
+               };
                if not(rt.is-t(c"Cons",2)) {
                   if function-type.is-t(c"MustRetainOnCall",0) && not(hint.is-t(c"MustNotRetain",0)) && not(tctx.get-or(mk-tctx()).is-blob) {
                      (tctx, term) = maybe-retain(tctx, term);

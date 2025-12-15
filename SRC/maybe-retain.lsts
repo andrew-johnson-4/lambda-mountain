@@ -1,5 +1,12 @@
 
 let maybe-retain(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
+   match term {
+      App{ left:Var{key:c".first"}, right=right } => (
+         print("maybe retain \{term} : \{typeof-term(term)}\n");
+         print("maybe retain argument \{right} : \{typeof-term(right)}\n");
+      );
+      _ => ();
+   };
    if typeof-term(term).is-t(c"MustRetain",0)
    then wrap-call(tctx, c".retain", term)
    else (tctx, term)
