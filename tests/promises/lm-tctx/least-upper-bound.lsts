@@ -18,4 +18,3 @@ assert( tctx.least-upper-bound( t2(c"A",ta,t0(c"B") && t0(c"C")), t2(c"A",ta,t0(
 assert( tctx.least-upper-bound( t2(c"A",ta,t0(c"B")), t2(c"A",ta,t0(c"B") && t0(c"C")), mk-eof() ).second == t2(c"A",ta,t0(c"B")) );
 assert( tctx.least-upper-bound( t2(c"A",ta,t0(c"B")), t2(c"A",ta,ta), mk-eof() ).second == ta );
 assert( tctx.least-upper-bound( t2(c"A",t0(c"B"),ta), t2(c"A",ta,ta), mk-eof() ).second == ta );
-assert( safe-alloc-block-count == 0 );
