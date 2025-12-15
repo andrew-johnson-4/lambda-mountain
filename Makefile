@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm tests/promises/tuple/tuple-field-access.lsts > out.txt
+	lm tests/promises/tuple/tuple-field-access.lsts
 	gcc tmp.c
 	./a.out
 

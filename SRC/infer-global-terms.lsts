@@ -28,11 +28,9 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
          mark-global-as-seen(k.key, ktd, ta);
          tctx = tctx.ascript(term, ktd);
          (tctx, _) = tctx.maybe-apply-callable(c"mov", t2(c"Cons",ktd.without-phi,ktd.without-phi), term);
-         print("Glb \{term}\n");
       );
       _ => (
          (tctx, term) = std-infer-expr(tctx, term, false, Unused, ta);
-         print("Glb \{term}\n");
       );
    };
    (tctx, term)

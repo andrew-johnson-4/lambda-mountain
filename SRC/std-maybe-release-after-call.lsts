@@ -75,7 +75,6 @@ let std-release-after-call(tctx: TypeContext?, function-type: Type, param-types:
             (tmp-var2, tmp-direct)
          };
 
-         print("Find callable in std-maybe-release?\n");
          let release-type = tctx.find-callable(c".release", args-type, args ).dt-or-zero;
          let release-var = mk-var(c".release"); ascript-force(release-var, release-type);
          (tctx, let release-return) = tctx.apply-callable(c".release", args-type, args);
