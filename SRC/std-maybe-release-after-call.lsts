@@ -2,7 +2,7 @@
 let std-maybe-release-after-call(tctx: TypeContext?, function-type: Type, args: AST): (TypeContext?, AST, AST, AST) = (
    if function-type.domain.is-any-arg-t(c"MustReleaseAfterCall",0)
    && is-paired-release(function-type.domain, typeof-term(args))
-   then std-release-after-call(tctx, function-type.domain, mk-eof(), mk-eof(), args);
+   then std-release-after-call(tctx, function-type, function-type.domain, mk-eof(), mk-eof(), args);
    else (tctx, mk-eof(), mk-eof(), args)
 );
 
@@ -13,11 +13,11 @@ let is-paired-release(pt: Type, at: Type): U64 = (
    else (pt.is-t(c"MustReleaseAfterCall",0) and at.is-t(c"MustRelease",0))
 );
 
-let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, postfix: AST, args: AST): (TypeContext?, AST, AST, AST) = (
+let std-release-after-call(tctx: TypeContext?, function-type: Type, param-types: Type, prefix: AST, postfix: AST, args: AST): (TypeContext?, AST, AST, AST) = (
    if param-types.is-t(c"Cons",2) { match args {
       App{ left=left, right=right } => (
-         (tctx, prefix, postfix, left) = std-release-after-call(tctx, param-types.slot(c"Cons",2).l1, prefix, postfix, left);
-         (tctx, prefix, postfix, right) = std-release-after-call(tctx, param-types.slot(c"Cons",2).l2, prefix, postfix, right);
+         (tctx, prefix, postfix, left) = std-release-after-call(tctx, function-type, param-types.slot(c"Cons",2).l1, prefix, postfix, left);
+         (tctx, prefix, postfix, right) = std-release-after-call(tctx, function-type, param-types.slot(c"Cons",2).l2, prefix, postfix, right);
          let new-args = mk-cons(left, right);
          ascript-force(new-args, typeof-term(args));
          (tctx, prefix, postfix, new-args)
@@ -33,6 +33,14 @@ let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, p
       let tmp-return = args;
       if param-types.is-t(c"MustReleaseAfterCall",0) and typeof-term(args).is-t(c"MustRelease",0)
       then {
+         #if function-type.is-t(c"MustRetainOnCall",0) && args-type.is-t(c"MustRetain",0) {
+         #   let retain-type = tctx.find-callable(c".retain", args-type, args ).dt-or-zero;
+         #   let retain-var = mk-var(c".retain"); ascript-force(retain-var, retain-type);
+         #   (tctx, let retain-result) = tctx.apply-callable(c".retain", args-type, args);
+         #   args = mk-app(retain-var, args); ascript-force(args, retain-result);
+         #   args-type = retain-result;
+         #};
+
          (let tmp-release, tmp-return) = if param-types.is-t(c"MustNotRewrite",0) {
             let tmp-id = uuid();
             let tmp-def = mk-var(tmp-id); ascript-force(tmp-def, args-type);
@@ -67,6 +75,7 @@ let std-release-after-call(tctx: TypeContext?, param-types: Type, prefix: AST, p
             (tmp-var2, tmp-direct)
          };
 
+         print("Find callable in std-maybe-release?\n");
          let release-type = tctx.find-callable(c".release", args-type, args ).dt-or-zero;
          let release-var = mk-var(c".release"); ascript-force(release-var, release-type);
          (tctx, let release-return) = tctx.apply-callable(c".release", args-type, args);

@@ -328,6 +328,18 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                rt = tctx.with-phi(rt, term);
                tctx = tctx.ascript(term, rt);
 
+               match term {
+                  App{ left:Var{key:c".first"}, right=right } => (
+                     print("pre should? maybe retain \{term} : \{typeof-term(term)}\n");
+                     print("pre should? maybe retain argument \{right} : \{typeof-term(right)}\n");
+                     print("pre should? maybe retain function-type: \{function-type}\n");
+                     print("pre should? maybe retain hint: \{hint}\n");
+                     print("pre should? maybe retain tctx.is-blob: \{tctx.get-or(mk-tctx()).is-blob}\n");
+                  );
+                  _ => ();
+               };
+
+               let is-released-after-call = false;
                if not(r.is-var-or-ascripted-var) {
                   # if a field access is not retained and is just a variable reference then it shouldn't be released after the call
                   # this is complicated to do in the type system atm, so we just hard code it for now
@@ -336,6 +348,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   #    x.data.release
                   (tctx, let prefix, let postfix, let new-args) = std-maybe-release-after-call(tctx, function-type, r);
                   if non-zero(postfix) {
+                     is-released-after-call = true;
                      if not(is(r,new-args)) { term = mk-app(l,new-args); ascript-force(term,rt); };
 
                      let tmp-id = uuid();
@@ -353,7 +366,17 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      };
                      new-term = mk-cons(new-term, postfix); ascript-force(new-term, typeof-term(postfix));
                      new-term = mk-cons(new-term, tmp-var); ascript-force(new-term, typeof-term(term));
+                     print("MustReleaseAfterCall rewrite pre: \{term}\n");
+                     print("MustReleaseAfterCall rewrite post: \{new-term}\n");
+                     print("MustReleaseAfterCall rewritten type: \{typeof-term(new-term)}\n");
                      term = new-term;
+                  };
+               };
+               if not(is-released-after-call) {
+                  if not(rt.is-t(c"Cons",2)) {
+                     if function-type.is-t(c"MustRetainOnCall",0) && not(hint.is-t(c"MustNotRetain",0)) && not(tctx.get-or(mk-tctx()).is-blob) {
+                        (tctx, term) = maybe-retain(tctx, term);
+                     }
                   };
                };
 
@@ -367,11 +390,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   );
                   _ => ();
                };
-               if not(rt.is-t(c"Cons",2)) {
-                  if function-type.is-t(c"MustRetainOnCall",0) && not(hint.is-t(c"MustNotRetain",0)) && not(tctx.get-or(mk-tctx()).is-blob) {
-                     (tctx, term) = maybe-retain(tctx, term);
-                  }
-               };
             };
          };
 
@@ -383,6 +401,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
    };
    if used.is-unused && typeof-term(term).slot(c"Phi::State",1).is-linear-live {
       if typeof-term(term).slot(c"Phi::State",1).l1.is-t(c"MustRelease::ToRelease",1) {
+         print("std-infer-expr release unused\n");
          (tctx, term) = wrap-call(tctx, c".release", term);
       } else if typeof-term(term).is-t(c"MustRetain",0) {
          tctx = tctx.phi-move(typeof-term(term),term);
