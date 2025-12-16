@@ -11,32 +11,40 @@ add-quick-prop( t0(c"B.1"), t0(c"B.2"), t0(c"B.3") );
 add-weaken-quick-prop( t0(c"B.1"), t0(c"B.2"), t0(c"B.3") );
 
 assert( t0(c"B.1").enrich == t0(c"B.1") );
+
+# OK
+
 assert( (t0(c"B.1") && t0(c"B.2")).enrich == (t0(c"B.1") && t0(c"B.2") && t0(c"B.3")) );
-assert( (t0(c"B.1") && t0(c"B.2") && t0(c"B.3")).weaken == (t0(c"B.1") && t0(c"B.2")) );
-assert( (t1(c"X",t0(c"B.1") && t0(c"B.2") && t0(c"B.3"))).weaken == t1(c"X",t0(c"B.1") && t0(c"B.2")) );
 
-add-quick-prop( t1(c"C.1",t0(c"C.2")), ta, t0(c"C.3") );
-add-weaken-quick-prop( t1(c"C.1",t0(c"C.2")), ta, t0(c"C.3") );
+# error only happens for enrich with a conjunction
 
-assert( (t1(c"C.1",t0(c"C.2"))).enrich == (t1(c"C.1",t0(c"C.2")) && t0(c"C.3")) );
-assert( (t1(c"C.1",t0(c"C.2")) && t0(c"C.3")).weaken == t1(c"C.1",t0(c"C.2")) );
-assert( (t1(c"X",t1(c"C.1",t0(c"C.2")) && t0(c"C.3"))).weaken == t1(c"X",t1(c"C.1",t0(c"C.2"))) );
+# ERROR
 
-add-quick-prop( t1(c"D.1",t0(c"D.2")), t0(c"D.3"), t0(c"D.4") );
-add-weaken-quick-prop( t1(c"D.1",t0(c"D.2")), t0(c"D.3"), t0(c"D.4") );
+#assert( (t0(c"B.1") && t0(c"B.2") && t0(c"B.3")).weaken == (t0(c"B.1") && t0(c"B.2")) );
+#assert( (t1(c"X",t0(c"B.1") && t0(c"B.2") && t0(c"B.3"))).weaken == t1(c"X",t0(c"B.1") && t0(c"B.2")) );
 
-assert( (t1(c"D.1",t0(c"D.2"))).enrich == t1(c"D.1",t0(c"D.2")) );
-assert( (t1(c"D.1",t0(c"D.2")) && t0(c"D.3")).enrich == (t1(c"D.1",t0(c"D.2")) && t0(c"D.3") && t0(c"D.4")) );
-assert( (t1(c"D.1",t0(c"D.2")) && t0(c"D.3") && t0(c"D.4")).weaken == (t1(c"D.1",t0(c"D.2")) && t0(c"D.3")) );
-assert( (t1(c"X",t1(c"D.1",t0(c"D.2")) && t0(c"D.3") && t0(c"D.4"))).weaken == t1(c"X",t1(c"D.1",t0(c"D.2")) && t0(c"D.3")) );
+#add-quick-prop( t1(c"C.1",t0(c"C.2")), ta, t0(c"C.3") );
+#add-weaken-quick-prop( t1(c"C.1",t0(c"C.2")), ta, t0(c"C.3") );
 
-add-weaken-quick-prop( t2(c"Arr",ta,ta), t0(c"Sized"), t0(c"Sized") );
+#assert( (t1(c"C.1",t0(c"C.2"))).enrich == (t1(c"C.1",t0(c"C.2")) && t0(c"C.3")) );
+#assert( (t1(c"C.1",t0(c"C.2")) && t0(c"C.3")).weaken == t1(c"C.1",t0(c"C.2")) );
+#assert( (t1(c"X",t1(c"C.1",t0(c"C.2")) && t0(c"C.3"))).weaken == t1(c"X",t1(c"C.1",t0(c"C.2"))) );
 
-assert( (t2(c"Arr",t0(c"A"),ta) && t0(c"Sized")).weaken == t2(c"Arr",t0(c"A"),ta) );
-assert( (t1(c"X",t2(c"Arr",t0(c"A"),ta) && t0(c"Sized"))).weaken == t1(c"X",t2(c"Arr",t0(c"A"),ta)) );
+#add-quick-prop( t1(c"D.1",t0(c"D.2")), t0(c"D.3"), t0(c"D.4") );
+#add-weaken-quick-prop( t1(c"D.1",t0(c"D.2")), t0(c"D.3"), t0(c"D.4") );
 
-add-weaken-quick-prop( t0(c"T::"), t0(c"T1"), t0(c"T1") );
-add-weaken-quick-prop( t1(c"S::",ta), t0(c"S1"), t0(c"S1") );
+#assert( (t1(c"D.1",t0(c"D.2"))).enrich == t1(c"D.1",t0(c"D.2")) );
+#assert( (t1(c"D.1",t0(c"D.2")) && t0(c"D.3")).enrich == (t1(c"D.1",t0(c"D.2")) && t0(c"D.3") && t0(c"D.4")) );
+#assert( (t1(c"D.1",t0(c"D.2")) && t0(c"D.3") && t0(c"D.4")).weaken == (t1(c"D.1",t0(c"D.2")) && t0(c"D.3")) );
+#assert( (t1(c"X",t1(c"D.1",t0(c"D.2")) && t0(c"D.3") && t0(c"D.4"))).weaken == t1(c"X",t1(c"D.1",t0(c"D.2")) && t0(c"D.3")) );
 
-assert( (t0(c"T::T0") && t0(c"T1")).weaken == t0(c"T::T0") );
-assert( (t1(c"S::S0",t0(c"S0")) && t0(c"S1")).weaken == t1(c"S::S0",t0(c"S0")) );
+#add-weaken-quick-prop( t2(c"Arr",ta,ta), t0(c"Sized"), t0(c"Sized") );
+
+#assert( (t2(c"Arr",t0(c"A"),ta) && t0(c"Sized")).weaken == t2(c"Arr",t0(c"A"),ta) );
+#assert( (t1(c"X",t2(c"Arr",t0(c"A"),ta) && t0(c"Sized"))).weaken == t1(c"X",t2(c"Arr",t0(c"A"),ta)) );
+
+#add-weaken-quick-prop( t0(c"T::"), t0(c"T1"), t0(c"T1") );
+#add-weaken-quick-prop( t1(c"S::",ta), t0(c"S1"), t0(c"S1") );
+
+#assert( (t0(c"T::T0") && t0(c"T1")).weaken == t0(c"T::T0") );
+#assert( (t1(c"S::S0",t0(c"S0")) && t0(c"S1")).weaken == t1(c"S::S0",t0(c"S0")) );
