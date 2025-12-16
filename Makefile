@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm tests/promises/lm-prop/enrich.lsts
+	lm tests/promises/lm-prop/enrich-failure-bisect.lsts
 	gcc tmp.c
 	./a.out
 
