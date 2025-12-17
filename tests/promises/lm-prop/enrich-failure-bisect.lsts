@@ -1,5 +1,107 @@
 
-import LM23COMMON/unit-prop-core.lsts;
+import LM23COMMON/unit-tctx-core.lsts;
+
+let quick-prop = {} : Hashtable<(CString,U64),List<(Type,Type)>>;
+
+let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
+   let key = pre.ground-tag-and-arity;
+   let val = quick-prop.lookup(key, ([] : List<(Type,Type)>));
+   val = cons( (pat,post), val );
+   quick-prop = quick-prop.bind( key, val );
+);
+
+let .enrich(base: Type): Type = (
+   # call twice to infer second-degree props without risk of diverging
+   base = enrich-quick-prop(base, base);
+   base = enrich-quick-prop(base, base);
+   base
+);
+
+let .enrich-strong(base: Type): Type = (
+   match base {
+      TGround { tag:c"Cons", parameters:[p2..p1..] } => (
+         base = t2(c"Cons", p1.enrich-strong, p2.enrich-strong);
+      );
+      TGround { tag:c"Arrow", parameters:[p2..p1..] } => (
+         base = t2(c"Arrow", p1.enrich-strong, p2.enrich-strong);
+      );
+      TGround { tag:c"Array", parameters:[p2..p1..] } => (
+         base = t2(c"Array", p1.enrich-strong, p2.enrich-strong);
+      );
+      #TGround { tag=tag, parameters=parameters } => ( if not(tag.has-prefix(c"Field::") and parameters.length==1) then {
+      #   let new-parameters = [] : List<Type>;
+      #   for list p in parameters.reverse {
+      #      new-parameters = cons( p.enrich-strong, new-parameters );
+      #   };
+      #   base = ts(tag,new-parameters);
+      #});
+      TAnd { conjugate=conjugate } => (
+         let result = mk-vector(type(Type));
+         for vector c in conjugate {
+            match c.enrich-strong {
+               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+               TAny{} => ();
+               rc => ( result = result.push(rc); () );
+            }
+         };
+         if result.length==0 then (base = ta)
+         else if result.length==1 then (base = result[0])
+         else (base = tand(result));
+      );
+      _ => ();
+   };
+   base.enrich
+);
+
+let enrich-quick-prop(base: Type, pre: Type): Type = (
+   match pre {
+      TGround { tag=tag, parameters=parameters } => (
+         for list row in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+            let lt = row.first;
+            let rt = row.second;
+            if base <: lt then (
+               let post = if rt.is-open then (
+                  let tctx = unify(lt, base, ASTEOF);
+                  tctx.substitute(rt);
+               ) else rt;
+               if not(pre <: post) and not(base <: post) {
+                  pre = pre && post;
+               };
+            );
+         };
+         if tag==c"Array" and parameters.length==2 {
+            for list row in quick-prop.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
+               let lt = row.first;
+               let rt = row.second;
+               if base <: lt then (
+                  let post = if rt.is-open then (
+                     let tctx = unify(lt, base, ASTEOF);
+                     tctx.substitute(rt);
+                  ) else rt;
+                  if not(pre <: post) and not(base <: post) {
+                     pre = pre && post;
+                  };
+               );
+            };
+         };
+      );
+      TAnd { conjugate=conjugate } => (
+         let result = mk-vector(type(Type));
+         for vector c in conjugate {
+            match enrich-quick-prop(base, c) {
+               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+               TAny{} => ();
+               rc => ( result = result.push(rc); () );
+            }
+         };
+         if result.length==0 then (pre = ta)
+         else if result.length==1 then (pre = result[0])
+         else (pre = tand(result));
+      );
+      _ => ();
+   };
+   pre
+);
 
 add-quick-prop( t0(c"B.1"), t0(c"B.2"), t0(c"B.3") );
 
