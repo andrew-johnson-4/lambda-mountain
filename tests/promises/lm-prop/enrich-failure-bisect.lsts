@@ -1,5 +1,144 @@
 
-import LM23COMMON/unit-type-core.lsts;
+import lib2/core/bedrock.lsts;
+
+type Type zero TAny implies MustRetain, MustRelease
+        = TGround { tag:CString, parameters:OwnedData<List<Type>>[] }
+        | TAny
+        | TVar { name:CString }
+        | TAnd { conjugate:Vector<Type> };
+
+let .release(t: Type): Nil = (
+   if t.discriminator-case-tag==(t as Tag::TGround).discriminator-case-tag {
+      (t as Tag::TGround).parameters.release;
+   };
+   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
+      (t as Tag::TAnd).conjugate.release;
+   };
+   mark-as-released(t);
+);
+
+let .retain(t: Type): Type = (
+   if t.discriminator-case-tag==(t as Tag::TGround).discriminator-case-tag {
+      (t as Tag::TGround).parameters.retain;
+   };
+   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
+      mark-as-released((t as Tag::TAnd).conjugate.retain);
+   };
+   t
+);
+
+let t0(tag: CString): Type = TGround(tag, close([] : List<Type>));
+
+let $"&&"(lt: Type, rt: Type): Type = (
+   match (lt, rt) {
+      Tuple{first:TAny{}} => rt;
+      Tuple{second:TAny{}} => lt;
+      Tuple{first:TAnd{lconjugate=conjugate},second:TAnd{rconjugate=conjugate}} => (
+         let result = mk-vector(type(Type), lconjugate.length+rconjugate.length);
+         for vector c in lconjugate { result = result.push(c) };
+         for vector c in rconjugate { result = result.push(c) };
+         result = result.sort;
+         TAnd(result)
+      );
+      Tuple{first=first,second:TAnd{rconjugate=conjugate}} => (
+         let result = mk-vector(type(Type), 1+rconjugate.length);
+         result = result.push(first);
+         for vector c in rconjugate { result = result.push(c) };
+         result = result.sort;
+         TAnd(result)
+      );
+      Tuple{first:TAnd{lconjugate=conjugate},second=second} => (
+         let result = mk-vector(type(Type), lconjugate.length+1);
+         for vector c in lconjugate { result = result.push(c) };
+         result = result.push(second);
+         result = result.sort;
+         TAnd(result)
+      );
+      Tuple{first=first,second=second} => (
+         let result = mk-vector(type(Type), 2);
+         result = result.push(first);
+         result = result.push(second);
+         result = result.sort;
+         TAnd(result)
+      );
+   };
+);
+
+let cmp(left: Type, right: Type): Ord = (
+   match left {
+      TAny{} => (match right {
+         TAny{} => Equal;
+         _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
+      });
+      TGround { ltag=tag, lparameters=parameters } => (match right {
+         TGround { rtag=tag, rparameters=parameters } => (
+            let c1 = cmp(ltag,rtag);
+            if c1!=Equal then c1 else cmp(lparameters, rparameters)
+         );
+         _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
+      });
+      TAnd{ lconjugate=conjugate } => (match right {
+         TAnd{ rconjugate=conjugate } => (
+            let result = Equal;
+            if lconjugate.length < rconjugate.length then result = LessThan()
+            else if lconjugate.length > rconjugate.length then result = GreaterThan()
+            else {
+               let ci = 0_sz;
+               while ci < lconjugate.length and result==Equal {
+                  result = result && cmp(lconjugate[ci], rconjugate[ci]);
+                  ci = ci + 1;
+               };
+            };
+            result;
+         );
+         _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
+      });
+      TVar{ left-name=name } => (match right {
+         TVar{ right-name=name } => (
+            cmp(left-name,right-name)
+         );
+         _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
+      });
+   };
+);
+
+let deep-hash(tt: Type): U64 = (
+   match tt {
+      TAny{} => 0_u64;
+      TVar{name=name} => deep-hash(name);
+      TAnd{conjugate=conjugate} => (
+         let result = 0_u64;
+         for vector c in conjugate { result = result + deep-hash(c) };
+         result
+      );
+      TGround{tag=tag,parameters=parameters} => deep-hash(tag) + deep-hash(parameters);
+   }
+);
+
+let deep-hash(ts: List<Type>): U64 = (
+   let return = 0_u64;
+   for list t0 in ts { return = return + deep-hash(t0); };
+   return;
+);
+
+let .ground-tag-and-arity(tt: Type): (CString,U64) = (
+   match tt {
+      TGround { tag:c"Array", parameters:[_.. TAny{}..] } => (c"Array", 2_u64);
+      TGround { tag:c"Array", parameters:[_.. array-base..] } => (
+         let ga = array-base.ground-tag-and-arity;
+         ( ga.first, ga.second + 1000 )
+      );
+      TGround { tag:c"Sized" } => (c"", 9999999_u64);
+      TGround { tag=tag, parameters=parameters } => (tag, parameters.length as U64);
+      TAny {} => (c"?", 0_u64);
+      TVar {} => (c"", 9999999_u64);
+      TAnd { conjugate=conjugate } => (
+         let result = (c"", 9999999_u64);
+         for vector c in conjugate { if result.second==9999999 then result = c.ground-tag-and-arity };
+         result
+      );
+   }
+);
 
 let enrich-quick-prop(): Nil = (
    let quick-prop = {} : Hashtable<(CString,U64),List<(Type,Type)>>;
