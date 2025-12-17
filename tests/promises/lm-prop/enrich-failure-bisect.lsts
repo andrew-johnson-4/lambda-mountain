@@ -41,7 +41,7 @@ let .enrich-strong(base: Type): Type = (
       );
       _ => ();
    };
-   base.enrich
+   base
 );
 
 let enrich-quick-prop(base: Type, pre: Type): Type = (
