@@ -16,26 +16,16 @@ let .enrich(base: Type): Type = (
 );
 
 let enrich-quick-prop(base: Type, pre: Type): Type = (
-   match pre {
-      TGround { tag=tag, parameters=parameters } => (
-         for list row in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
-            pre = pre && row.second;
-         };
-      );
-      TAnd { conjugate=conjugate } => (
-         let result = mk-vector(type(Type));
-         for vector c in conjugate {
-            for list row in quick-prop.lookup( c.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
-               c = c && row.second;
-            };
-            match c {
-               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
-               TAny{} => ();
-               rc => ( result = result.push(rc); () );
-            }
-         };
-      );
-      _ => ();
+   let result = mk-vector(type(Type));
+   for vector c in (pre as Tag::TAnd).conjugate {
+      for list row in quick-prop.lookup( c.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+         c = c && row.second;
+      };
+      match c {
+         TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+         TAny{} => ();
+         rc => ( result = result.push(rc); () );
+      }
    };
    pre
 );
