@@ -1,16 +1,11 @@
 
-import LM23COMMON/unit-tctx-core.lsts;
-
-let quick-prop = {} : Hashtable<(CString,U64),List<(Type,Type)>>;
-
-let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
-   let key = pre.ground-tag-and-arity;
-   let val = quick-prop.lookup(key, ([] : List<(Type,Type)>));
-   val = cons( (pat,post), val );
-   quick-prop = quick-prop.bind( key, val );
-);
+import LM23COMMON/unit-type-core.lsts;
 
 let enrich-quick-prop(): Nil = (
+   let quick-prop = {} : Hashtable<(CString,U64),List<(Type,Type)>>;
+   let val = [] : List<(Type,Type)>;
+   val = cons( (t0(c"B.2"),t0(c"B.3")), val );
+   quick-prop = quick-prop.bind( (c"B.1",0_u64), val );
    let base = t0(c"B.1") && t0(c"B.2");
    let pre = base;
    let result = mk-vector(type(Type));
@@ -25,7 +20,5 @@ let enrich-quick-prop(): Nil = (
       }
    };
 );
-
-add-quick-prop( t0(c"B.1"), t0(c"B.2"), t0(c"B.3") );
 
 enrich-quick-prop();
