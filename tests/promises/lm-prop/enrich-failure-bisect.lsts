@@ -14,7 +14,7 @@ let enrich-quick-prop(): Nil = (
    let base = t0(c"B.1") && t0(c"B.2");
    let pre = base;
    let result = mk-vector(type(Type));
-   for vector c in (pre as Tag::TAnd).conjugate {
+   for vector c in mk-vector(type(Type)).push(t0(c"B.1")).push(t0(c"B.2")) {
       for list row in quick-prop.lookup( c.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
          c = c && row.second;
       };
