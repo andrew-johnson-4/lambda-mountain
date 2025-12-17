@@ -1,23 +1,23 @@
 
 import lib2/core/bedrock.lsts;
 
-type Type zero TAny implies MustRetain, MustRelease
+type Type zero TAny #implies MustRetain, MustRelease
         = TGround { tag:CString }
         | TAnd { conjugate:Vector<Type> };
 
-let .release(t: Type): Nil = (
-   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
-      (t as Tag::TAnd).conjugate.release;
-   };
-   mark-as-released(t);
-);
+#let .release(t: Type): Nil = (
+#   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
+#      (t as Tag::TAnd).conjugate.release;
+#   };
+#   mark-as-released(t);
+#);
 
-let .retain(t: Type): Type = (
-   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
-      mark-as-released((t as Tag::TAnd).conjugate.retain);
-   };
-   t
-);
+#let .retain(t: Type): Type = (
+#   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
+#      mark-as-released((t as Tag::TAnd).conjugate.retain);
+#   };
+#   t
+#);
 
 let t0(tag: CString): Type = TGround(tag);
 
