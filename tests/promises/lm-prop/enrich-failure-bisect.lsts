@@ -2,15 +2,12 @@
 import lib2/core/bedrock.lsts;
 
 type Type zero TAny implies MustRetain, MustRelease
-        = TGround { tag:CString, parameters:OwnedData<List<Type>>[] }
+        = TGround { tag:CString }
         | TAny
         | TVar { name:CString }
         | TAnd { conjugate:Vector<Type> };
 
 let .release(t: Type): Nil = (
-   if t.discriminator-case-tag==(t as Tag::TGround).discriminator-case-tag {
-      (t as Tag::TGround).parameters.release;
-   };
    if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
       (t as Tag::TAnd).conjugate.release;
    };
@@ -18,16 +15,13 @@ let .release(t: Type): Nil = (
 );
 
 let .retain(t: Type): Type = (
-   if t.discriminator-case-tag==(t as Tag::TGround).discriminator-case-tag {
-      (t as Tag::TGround).parameters.retain;
-   };
    if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
       mark-as-released((t as Tag::TAnd).conjugate.retain);
    };
    t
 );
 
-let t0(tag: CString): Type = TGround(tag, close([] : List<Type>));
+let t0(tag: CString): Type = TGround(tag);
 
 let $"&&"(lt: Type, rt: Type): Type = (
    match (lt, rt) {
@@ -70,10 +64,9 @@ let cmp(left: Type, right: Type): Ord = (
          TAny{} => Equal;
          _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
       });
-      TGround { ltag=tag, lparameters=parameters } => (match right {
-         TGround { rtag=tag, rparameters=parameters } => (
-            let c1 = cmp(ltag,rtag);
-            if c1!=Equal then c1 else cmp(lparameters, rparameters)
+      TGround { ltag=tag } => (match right {
+         TGround { rtag=tag } => (
+            cmp(ltag,rtag);
          );
          _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
       });
@@ -111,7 +104,7 @@ let deep-hash(tt: Type): U64 = (
          for vector c in conjugate { result = result + deep-hash(c) };
          result
       );
-      TGround{tag=tag,parameters=parameters} => deep-hash(tag) + deep-hash(parameters);
+      TGround{tag=tag} => deep-hash(tag);
    }
 );
 
@@ -123,13 +116,9 @@ let deep-hash(ts: List<Type>): U64 = (
 
 let .ground-tag-and-arity(tt: Type): (CString,U64) = (
    match tt {
-      TGround { tag:c"Array", parameters:[_.. TAny{}..] } => (c"Array", 2_u64);
-      TGround { tag:c"Array", parameters:[_.. array-base..] } => (
-         let ga = array-base.ground-tag-and-arity;
-         ( ga.first, ga.second + 1000 )
-      );
+      TGround { tag:c"Array" } => (c"Array", 0_u64);
       TGround { tag:c"Sized" } => (c"", 9999999_u64);
-      TGround { tag=tag, parameters=parameters } => (tag, parameters.length as U64);
+      TGround { tag=tag } => (tag, 0_u64);
       TAny {} => (c"?", 0_u64);
       TVar {} => (c"", 9999999_u64);
       TAnd { conjugate=conjugate } => (
