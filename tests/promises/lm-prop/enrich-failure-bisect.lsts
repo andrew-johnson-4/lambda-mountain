@@ -21,12 +21,12 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
          for list row in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
             let lt = row.first;
             let rt = row.second;
-            #if base <: lt then (
-            #   let post = rt;
-            #   if not(pre <: post) and not(base <: post) {
-            #      pre = pre && post;
-            #   };
-            #);
+            if base <: lt then (
+               let post = rt;
+               if not(pre <: post) and not(base <: post) {
+                  pre = pre && post;
+               };
+            );
          };
       );
       TAnd { conjugate=conjugate } => (
@@ -38,9 +38,6 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
                rc => ( result = result.push(rc); () );
             }
          };
-         if result.length==0 then (pre = ta)
-         else if result.length==1 then (pre = result[0])
-         else (pre = tand(result));
       );
       _ => ();
    };
