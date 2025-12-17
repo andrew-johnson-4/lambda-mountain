@@ -10,12 +10,9 @@ let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
    quick-prop = quick-prop.bind( key, val );
 );
 
-let .enrich(base: Type): Type = (
-   base = enrich-quick-prop(base, base);
-   base
-);
-
-let enrich-quick-prop(base: Type, pre: Type): Type = (
+let enrich-quick-prop(): Nil = (
+   let base = t0(c"B.1") && t0(c"B.2");
+   let pre = base;
    let result = mk-vector(type(Type));
    for vector c in (pre as Tag::TAnd).conjugate {
       for list row in quick-prop.lookup( c.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
@@ -27,9 +24,8 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
          rc => ( result = result.push(rc); () );
       }
    };
-   pre
 );
 
 add-quick-prop( t0(c"B.1"), t0(c"B.2"), t0(c"B.3") );
 
-assert( (t0(c"B.1") && t0(c"B.2")).enrich == (t0(c"B.1") && t0(c"B.2") && t0(c"B.3")) );
+enrich-quick-prop();
