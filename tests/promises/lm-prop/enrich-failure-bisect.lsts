@@ -25,7 +25,10 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
       TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type));
          for vector c in conjugate {
-            match enrich-quick-prop(base, c) {
+            for list row in quick-prop.lookup( c.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+               c = c && row.second;
+            };
+            match c {
                TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
                TAny{} => ();
                rc => ( result = result.push(rc); () );
