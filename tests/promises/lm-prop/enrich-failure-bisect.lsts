@@ -19,10 +19,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
    match pre {
       TGround { tag=tag, parameters=parameters } => (
          for list row in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
-            let lt = row.first;
-            let rt = row.second;
-               let post = rt;
-                  pre = pre && post;
+            pre = pre && row.second;
          };
       );
       TAnd { conjugate=conjugate } => (
