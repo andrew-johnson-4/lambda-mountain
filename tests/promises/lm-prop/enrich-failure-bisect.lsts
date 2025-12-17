@@ -3,8 +3,6 @@ import lib2/core/bedrock.lsts;
 
 type Type zero TAny implies MustRetain, MustRelease
         = TGround { tag:CString }
-        | TAny
-        | TVar { name:CString }
         | TAnd { conjugate:Vector<Type> };
 
 let .release(t: Type): Nil = (
@@ -25,8 +23,6 @@ let t0(tag: CString): Type = TGround(tag);
 
 let $"&&"(lt: Type, rt: Type): Type = (
    match (lt, rt) {
-      Tuple{first:TAny{}} => rt;
-      Tuple{second:TAny{}} => lt;
       Tuple{first:TAnd{lconjugate=conjugate},second:TAnd{rconjugate=conjugate}} => (
          let result = mk-vector(type(Type), lconjugate.length+rconjugate.length);
          for vector c in lconjugate { result = result.push(c) };
@@ -60,10 +56,6 @@ let $"&&"(lt: Type, rt: Type): Type = (
 
 let cmp(left: Type, right: Type): Ord = (
    match left {
-      TAny{} => (match right {
-         TAny{} => Equal;
-         _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
-      });
       TGround { ltag=tag } => (match right {
          TGround { rtag=tag } => (
             cmp(ltag,rtag);
@@ -86,19 +78,11 @@ let cmp(left: Type, right: Type): Ord = (
          );
          _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
       });
-      TVar{ left-name=name } => (match right {
-         TVar{ right-name=name } => (
-            cmp(left-name,right-name)
-         );
-         _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
-      });
    };
 );
 
 let deep-hash(tt: Type): U64 = (
    match tt {
-      TAny{} => 0_u64;
-      TVar{name=name} => deep-hash(name);
       TAnd{conjugate=conjugate} => (
          let result = 0_u64;
          for vector c in conjugate { result = result + deep-hash(c) };
@@ -108,19 +92,11 @@ let deep-hash(tt: Type): U64 = (
    }
 );
 
-let deep-hash(ts: List<Type>): U64 = (
-   let return = 0_u64;
-   for list t0 in ts { return = return + deep-hash(t0); };
-   return;
-);
-
 let .ground-tag-and-arity(tt: Type): (CString,U64) = (
    match tt {
       TGround { tag:c"Array" } => (c"Array", 0_u64);
       TGround { tag:c"Sized" } => (c"", 9999999_u64);
       TGround { tag=tag } => (tag, 0_u64);
-      TAny {} => (c"?", 0_u64);
-      TVar {} => (c"", 9999999_u64);
       TAnd { conjugate=conjugate } => (
          let result = (c"", 9999999_u64);
          for vector c in conjugate { if result.second==9999999 then result = c.ground-tag-and-arity };
@@ -143,7 +119,6 @@ let enrich-quick-prop(): Nil = (
       };
       match c {
          TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
-         TAny{} => ();
          rc => ( result = result.push(rc); () );
       }
    };
