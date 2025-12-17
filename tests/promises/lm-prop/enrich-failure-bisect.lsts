@@ -15,35 +15,6 @@ let .enrich(base: Type): Type = (
    base
 );
 
-let .enrich-strong(base: Type): Type = (
-   match base {
-      TGround { tag:c"Cons", parameters:[p2..p1..] } => (
-         base = t2(c"Cons", p1.enrich-strong, p2.enrich-strong);
-      );
-      TGround { tag:c"Arrow", parameters:[p2..p1..] } => (
-         base = t2(c"Arrow", p1.enrich-strong, p2.enrich-strong);
-      );
-      TGround { tag:c"Array", parameters:[p2..p1..] } => (
-         base = t2(c"Array", p1.enrich-strong, p2.enrich-strong);
-      );
-      TAnd { conjugate=conjugate } => (
-         let result = mk-vector(type(Type));
-         for vector c in conjugate {
-            match c {
-               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
-               TAny{} => ();
-               rc => ( result = result.push(rc); () );
-            }
-         };
-         if result.length==0 then (base = ta)
-         else if result.length==1 then (base = result[0])
-         else (base = tand(result));
-      );
-      _ => ();
-   };
-   base
-);
-
 let enrich-quick-prop(base: Type, pre: Type): Type = (
    match pre {
       TGround { tag=tag, parameters=parameters } => (
@@ -60,21 +31,6 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
                };
             );
          };
-         #if tag==c"Array" and parameters.length==2 {
-         #   for list row in quick-prop.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
-         #      let lt = row.first;
-         #      let rt = row.second;
-         #      if base <: lt then (
-         #         let post = if rt.is-open then (
-         #            let tctx = unify(lt, base, ASTEOF);
-         #            tctx.substitute(rt);
-         #         ) else rt;
-         #         if not(pre <: post) and not(base <: post) {
-         #            pre = pre && post;
-         #         };
-         #      );
-         #   };
-         #};
       );
       TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type));
