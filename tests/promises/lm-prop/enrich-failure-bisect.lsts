@@ -29,7 +29,7 @@ let .enrich-strong(base: Type): Type = (
       TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type));
          for vector c in conjugate {
-            match c.enrich-strong {
+            match c {
                TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
                TAny{} => ();
                rc => ( result = result.push(rc); () );
