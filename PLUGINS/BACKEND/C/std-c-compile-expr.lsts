@@ -192,6 +192,20 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                       _ => std-c-compile-call(ctx, fname, right);
                    }
                 );
+                Var{fname=key:c".into"} => (
+                   match right {
+                      App{ lt=left, rt=right } => (
+                         let lt-tt = typeof-term(lt);
+                         let rt-tt = typeof-term(rt);
+                         if lt-tt.is-t(c"Type",1) && rt-tt <: t1(c"Type",t0(c"CString"))
+                         then (
+                            let lt-val = lt-tt.slot(c"Type",1).l1.into(type(String)).into(type(CString));
+                            mk-expression(lt-val)
+                         ) else std-c-compile-call(ctx, fname, right);
+                      );
+                      _ => std-c-compile-call(ctx, fname, right);
+                   }
+                );
                 Var{fname=key} => (
                    let return-hint = ta;
                    if fname==c"mk-hashtable" then return-hint = typeof-term(t).normalize;

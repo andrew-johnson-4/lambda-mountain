@@ -7,7 +7,7 @@ declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs+MustNotFresh+M
 # needs to be declared to prevent a special case during inference
 # this only needs to be declared if you want to support casting type information into String literals
 # EXAMPLE: print(typeof(x))
-declare-binop( $".into", type(Any), type(String), raw-type(String), () );
+declare-binop( $".into", type(Any), type(CString), raw-type(CString), () );
 
 # this operator is hard-coded in the compiler for now
 # but this definition being in the library is simplest for inference

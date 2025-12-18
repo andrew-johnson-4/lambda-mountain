@@ -123,3 +123,5 @@ let hash(key: String): U64 = (
    result = result + (result << 15);
    result
 );
+
+let .into(tt: Type<t>, dst: Type<String>): String = type(t).into(type(CString)).into(type(String));
