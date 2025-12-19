@@ -1,0 +1,6 @@
+
+import lib2/core/bedrock.lsts;
+
+type ABC = {};
+
+assert( typeof(ABC).into(type(CString)).contains(c"ABC") );
