@@ -86,14 +86,14 @@ let enrich-quick-prop(): Nil = (
       print(c"Enrich 8.0\n");
       for list row in quick-prop.lookup( c.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
          print(c"Enrich 8.1\n");
-         c = c && row.second;
+         #c = c && row.second;
          print(c"Enrich 8.2\n");
       };
       print(c"Enrich 8.3\n");
-      match c {
-         TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
-         rc => ( result = result.push(rc); () );
-      };
+      #match c {
+      #   TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+      #   rc => ( result = result.push(rc); () );
+      #};
       print(c"Enrich 8.4\n");
    };
 );
