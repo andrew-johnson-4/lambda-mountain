@@ -41,6 +41,7 @@ let .release(od: SparseOwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
       od.reference-count = od.reference-count - 1;
       if od.reference-count == 0 {
+         print(c"Release SparseOwnedData<"); print(type(t).into(type(CString))); print(c">\n");
          if type(t) <: type(MustRelease) {
             let dlo = 0_sz;
             let dhi = od.capacity;
