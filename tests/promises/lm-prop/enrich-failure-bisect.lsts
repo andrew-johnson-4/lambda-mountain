@@ -69,20 +69,32 @@ let .ground-tag-and-arity(tt: Type): (CString,U64) = (
 
 let enrich-quick-prop(): Nil = (
    let quick-prop = {} : Hashtable<(CString,U64),List<(Type,Type)>>;
+   print(c"Enrich 1.0\n");
    let val = [] : List<(Type,Type)>;
+   print(c"Enrich 2.0\n");
    val = cons( (t0(c"B.2"),t0(c"B.3")), val );
+   print(c"Enrich 3.0\n");
    quick-prop = quick-prop.bind( (c"B.1",0_u64), val );
+   print(c"Enrich 4.0\n");
    let base = t0(c"B.1") && t0(c"B.2");
+   print(c"Enrich 5.0\n");
    let pre = base;
+   print(c"Enrich 6.0\n");
    let result = mk-vector(type(Type));
+   print(c"Enrich 7.0\n");
    for vector c in mk-vector(type(Type)).push(t0(c"B.1")).push(t0(c"B.2")) {
+      print(c"Enrich 8.0\n");
       for list row in quick-prop.lookup( c.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+         print(c"Enrich 8.1\n");
          c = c && row.second;
+         print(c"Enrich 8.2\n");
       };
+      print(c"Enrich 8.3\n");
       match c {
          TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
          rc => ( result = result.push(rc); () );
-      }
+      };
+      print(c"Enrich 8.4\n");
    };
 );
 
