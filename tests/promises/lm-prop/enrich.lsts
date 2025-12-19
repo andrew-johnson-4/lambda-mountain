@@ -12,6 +12,7 @@ add-weaken-quick-prop( t0(c"B.1"), t0(c"B.2"), t0(c"B.3") );
 
 assert( t0(c"B.1").enrich == t0(c"B.1") );
 assert( (t0(c"B.1") && t0(c"B.2")).enrich == (t0(c"B.1") && t0(c"B.2") && t0(c"B.3")) );
+
 assert( (t0(c"B.1") && t0(c"B.2") && t0(c"B.3")).weaken == (t0(c"B.1") && t0(c"B.2")) );
 assert( (t1(c"X",t0(c"B.1") && t0(c"B.2") && t0(c"B.3"))).weaken == t1(c"X",t0(c"B.1") && t0(c"B.2")) );
 

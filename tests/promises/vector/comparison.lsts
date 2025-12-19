@@ -5,4 +5,12 @@ assert( mk-vector(type(U8)).reverse == mk-vector(type(U8)) );
 assert( mk-vector(type(U8)).push(1).reverse == mk-vector(type(U8)).push(1) );
 assert( mk-vector(type(U8)).push(1).push(2).reverse == mk-vector(type(U8)).push(2).push(1) );
 assert( mk-vector(type(U8)).push(1).push(2).push(3).reverse == mk-vector(type(U8)).push(3).push(2).push(1) );
+assert( mk-vector(type(U8)).push(2).push(1).push(3).sort == mk-vector(type(U8)).push(1).push(2).push(3) );
+assert( safe-alloc-block-count == 0 );
+
+assert( mk-vector(type(String)).reverse == mk-vector(type(String)) );
+assert( mk-vector(type(String)).push("1").reverse == mk-vector(type(String)).push("1") );
+assert( mk-vector(type(String)).push("1").push("2").reverse == mk-vector(type(String)).push("2").push("1") );
+assert( mk-vector(type(String)).push("1").push("2").push("3").reverse == mk-vector(type(String)).push("3").push("2").push("1") );
+assert( mk-vector(type(String)).push("2").push("1").push("3").sort == mk-vector(type(String)).push("1").push("2").push("3") );
 assert( safe-alloc-block-count == 0 );
