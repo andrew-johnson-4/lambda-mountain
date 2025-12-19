@@ -81,6 +81,8 @@ let enrich-quick-prop(): Nil = (
    let pre = base;
    print(c"Enrich 6.0\n");
    let result = mk-vector(type(Type));
+   print(c"Enrich 6.1\n");
+   mk-vector(type(Type)).push(t0(c"B.1")).push(t0(c"B.2"));
    print(c"Enrich 7.0\n");
    for vector c in mk-vector(type(Type)).push(t0(c"B.1")).push(t0(c"B.2")) {
       print(c"Enrich 8.0\n");
