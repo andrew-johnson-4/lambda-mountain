@@ -200,7 +200,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                          if lt-tt.is-t(c"Type",1) && rt-tt <: t1(c"Type",t0(c"CString")).rewrite-type-alias
                          then (
                             let lt-val = lt-tt.slot(c"Type",1).l1.into(type(String)).into(type(CString));
-                            mk-expression(SAtom(c"\"") + SAtom(lt-val) + SAtom(c"\""))
+                            mk-expression(lt-val.escape-as-cstring)
                          ) else std-c-compile-call(ctx, fname, right);
                       );
                       _ => std-c-compile-call(ctx, fname, right);

@@ -9,6 +9,8 @@ declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs+MustNotFresh+M
 # EXAMPLE: print(typeof(x))
 declare-binop( $".into", type(Any), type(CString), raw-type(CString), () );
 
+declare-unop( typeof, type(x), raw-type(Type<x>), () );
+
 # this operator is hard-coded in the compiler for now
 # but this definition being in the library is simplest for inference
 declare-binop( $"<:", type(Any), type(Any), raw-type(Bool), () );
