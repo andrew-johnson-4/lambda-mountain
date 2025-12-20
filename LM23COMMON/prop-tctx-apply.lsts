@@ -16,7 +16,8 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
    if apply-tctx.is-none then exit-error("Unable to apply (unify) function \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
 
    # Phi: fail if any used arguments have already been moved
-   if not(tctx.get-or(mk-tctx()).is-blob) and at.is-moved
+   # TODO: remove the fname!=c"destroy" hard coded workaround: if the function accepts MustRelease::Released then this error does not apply
+   if not(tctx.get-or(mk-tctx()).is-blob) and at.is-moved and fname!=c"destroy"
    then exit-error("Linear value used after move in call to \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
 
    # Phi: apply transitions, like (A ~> B)

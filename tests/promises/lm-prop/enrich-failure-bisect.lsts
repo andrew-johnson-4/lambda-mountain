@@ -19,6 +19,25 @@ let .retain(t: Type): Type = (
    t
 );
 
+let .into(tt: Type, tgt: Type<String>): String = (
+   match tt {
+      TGround{tag=tag} => (
+         let r = if tag[0] >= 97 and tag[0] <= 122 then intern("\"\{tag}\"") else intern(tag);
+         r
+      );
+      TAnd{conjugate=conjugate} => (
+         let result = "";
+         let ci = 0_u64;
+         for vector c in conjugate {
+            result = result + c.into(type(String));
+            ci = ci + 1;
+            if ci != conjugate.length then result = result + " + ";
+         };
+         result
+      );
+   }
+);
+
 let t0(tag: CString): Type = TGround(tag);
 
 let $"&&"(lt: Type, rt: Type): Type = (
@@ -63,16 +82,16 @@ let deep-hash(tt: Type): U64 = (
 
 let .ground-tag-and-arity(tt: Type): (CString,U64) = (
    match tt {
-      TGround { tag:c"Array" } => (c"Array", 0_u64);
-      TGround { tag:c"Sized" } => (c"", 9999999_u64);
       TGround { tag=tag } => (tag, 0_u64);
-      TAnd { conjugate=conjugate } => (
-         let result = (c"", 9999999_u64);
-         for vector c in conjugate { if result.second==9999999 then result = c.ground-tag-and-arity };
-         result
-      );
    }
 );
+
+# This test case exists to cover a double-free error
+# The match case with rconjugate binds a value and releases it properly
+# However, the value can persist into the second iteration of the loop if not properly zeroed out after release
+# To fix this we added a `destroy(variable)` call that just zeroes out MustRelease variables upon release
+
+# TODO: make this into a simpler more direct test case
 
 let enrich-quick-prop(): Nil = (
    let quick-prop = {} : Hashtable<(CString,U64),List<(Type,Type)>>;
@@ -81,16 +100,17 @@ let enrich-quick-prop(): Nil = (
    quick-prop = quick-prop.bind( (c"B.1",0_u64), val );
    let base = t0(c"B.1") && t0(c"B.2");
    let pre = base;
-   let result = mk-vector(type(Type));
+   let result = mk-vector(type(Type), 50);
    for vector c in mk-vector(type(Type)).push(t0(c"B.1")).push(t0(c"B.2")) {
       for list row in quick-prop.lookup( c.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
          c = c && row.second;
       };
       match c {
-         TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+         TAnd{rconjugate=conjugate} => (); # This was getting released in both the 1st and 2nd iteration of the loop
          rc => ( result = result.push(rc); () );
-      }
+      };
    };
 );
 
 enrich-quick-prop();
+

@@ -2,6 +2,8 @@
 type String suffix _ss implies MustRetain, MustRelease
           = { start-offset:USize, end-offset:USize, data:OwnedData<U8>[] };
 
+# String is NOT null terminated like a C String, it is more like a PASCAL style string
+
 let .release(x: String): Nil = (
    if mem-is-non-zero(x) {
       # normally if x is not released by the end of scope, then it will be auto-released

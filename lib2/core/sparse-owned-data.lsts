@@ -39,6 +39,7 @@ let $"set[]"(od: SparseOwnedData<t>[], idx: USize, val: t): Nil = (
 
 let .release(od: SparseOwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
+      if od.reference-count==0 then fail(c"SparseOwnedData.release called when reference count is already zero. This object has already been freed!");
       od.reference-count = od.reference-count - 1;
       if od.reference-count == 0 {
          if type(t) <: type(MustRelease) {

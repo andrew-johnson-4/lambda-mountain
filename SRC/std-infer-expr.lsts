@@ -284,7 +284,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                if typeof-term(l).is-arrow {
                   let direct-hint = hint-if-hint(l);
                   if hint.is-t(c"ReturnHint",0) then direct-hint = direct-hint && hint;
-                  let rr-args-hint = if var-name-if-var-or-lit(l)==c".retain" || var-name-if-var-or-lit(l)==c".release"
+                  let rr-args-hint = if var-name-if-var-or-lit(l)==c".retain" || var-name-if-var-or-lit(l)==c".release" || var-name-if-var-or-lit(l)==c"destroy"
                   then t0(c"MustNotRetain") else ta;
                   if var-name-if-var-or-lit(l)==c".release" then rr-args-hint = rr-args-hint && t0(c"MustNotFresh");
                   let pre-retain-tctx = tctx;
