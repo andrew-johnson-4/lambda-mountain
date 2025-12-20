@@ -86,40 +86,31 @@ let .ground-tag-and-arity(tt: Type): (CString,U64) = (
    }
 );
 
+# This test case exists to cover a double-free error
+# The match case with rconjugate binds a value and releases it properly
+# However, the value can persist into the second iteration of the loop if not properly zeroed out after release
+# To fix this we added a `destroy(variable)` call that just zeroes out MustRelease variables upon release
+
+# TODO: make this into a simpler more direct test case
+
 let enrich-quick-prop(): Nil = (
    let quick-prop = {} : Hashtable<(CString,U64),List<(Type,Type)>>;
-   print("Enrich \{1}\n");
    let val = [] : List<(Type,Type)>;
-   print("Enrich \{2}\n");
    val = cons( (t0(c"B.2"),t0(c"B.3")), val );
-   print("Enrich \{3}\n");
    quick-prop = quick-prop.bind( (c"B.1",0_u64), val );
-   print("Enrich \{4}\n");
    let base = t0(c"B.1") && t0(c"B.2");
-   print("Enrich \{5}\n");
    let pre = base;
-   print("Enrich \{6}\n");
    let result = mk-vector(type(Type), 50);
-   print("Enrich \{7}\n");
    for vector c in mk-vector(type(Type)).push(t0(c"B.1")).push(t0(c"B.2")) {
-      print("Enrich \{8}\n");
       for list row in quick-prop.lookup( c.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
-         print("Enrich \{c} x \{row.second}\n");
-         print("Enrich \{81}\n");
          c = c && row.second;
-         print("Enrich Becomes \{c}\n");
-         print("Enrich \{82}\n");
       };
-      print("Enrich \{83}\n");
       match c {
-         TAnd{rconjugate=conjugate} => (); # This is getting released, even though it holds the old value
+         TAnd{rconjugate=conjugate} => (); # This was getting released in both the 1st and 2nd iteration of the loop
          rc => ( result = result.push(rc); () );
       };
-      print("Enrich \{84}\n");
    };
-   print("Enrich END\n");
 );
 
 enrich-quick-prop();
-print("Program END\n");
 
