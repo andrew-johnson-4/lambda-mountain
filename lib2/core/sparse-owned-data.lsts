@@ -12,6 +12,7 @@ let mk-sparse-owned-data(tt: Type<t>, capacity: USize, occupied: USize): SparseO
       (sizeof(SparseOwnedData<t>) as USize) + (sizeof(t) as USize) * capacity,
       type(SparseOwnedData<t>)
    );
+   print("Allocate Sparse Owned Data \{type(t)} @ \{od as U64}\n");
    od.reference-count = 1;
    od.occupied = occupied;
    od.capacity = capacity;
@@ -43,6 +44,7 @@ let .release(od: SparseOwnedData<t>[]): Nil = (
       od.reference-count = od.reference-count - 1;
       if od.reference-count == 0 {
          print(c"Release SparseOwnedData<"); print(type(t).into(type(CString))); print(c">\n");
+         print("Release SparseOwned Data \{type(t)} @ \{od as U64}\n");
          if type(t) <: type(MustRelease) {
             let dlo = 0_sz;
             let dhi = od.capacity;
