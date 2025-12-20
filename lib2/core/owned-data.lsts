@@ -70,13 +70,13 @@ let close(d: t): OwnedData<t>[] = (
 
 let .release(od: OwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
+      if od.reference-count <= 1 and not(type(t) <: type(U8)) {
+         print(c"Release OwnedData<"); print(type(t).into(type(CString))); print(c">\n");
+         print("Release Owned Data \{type(t)} @ \{od as U64}\n");
+      };
       if od.reference-count==0 then fail(c"OwnedData.release called when reference count is already zero. This object has already been freed!");
       od.reference-count = od.reference-count - 1;
       if od.reference-count == 0 {
-         if not(type(t) <: type(U8)) {
-            print(c"Release OwnedData<"); print(type(t).into(type(CString))); print(c">\n");
-            print("Release Owned Data \{type(t)} @ \{od as U64}\n");
-         };
          if type(t) <: type(MustRelease) {
             let dlo = 0_sz;
             let dhi = od.occupied;

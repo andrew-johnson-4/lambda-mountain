@@ -84,7 +84,9 @@ let safe-free(ptr: ?[]): Nil = (
    # BEFORE CHANGING THIS: talk to alex
 
    safe-alloc-block-count = safe-alloc-block-count - 1; # TODO conditional compilation
-   free(ptr as C<"void">[]); ()
+   # TODO: remove, this is just for debugging to make sequential memory
+   #free(ptr as C<"void">[]);
+   ()
 );
 
 let open(i: x): x = i;
