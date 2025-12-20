@@ -112,7 +112,7 @@ let enrich-quick-prop(): Nil = (
       };
       print("Enrich \{83}\n");
       match c {
-         TAnd{rconjugate=conjugate} => (); #for vector rc in rconjugate { result = result.push(rc) };
+         TAnd{rconjugate=conjugate} => (); # This is getting released, even though it holds the old value
          rc => ( result = result.push(rc); () );
       };
       print("Enrich \{84}\n");
@@ -122,3 +122,4 @@ let enrich-quick-prop(): Nil = (
 
 enrich-quick-prop();
 print("Program END\n");
+
