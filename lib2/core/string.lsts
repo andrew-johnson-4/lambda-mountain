@@ -2,6 +2,8 @@
 type String suffix _ss implies MustRetain, MustRelease
           = { start-offset:USize, end-offset:USize, data:OwnedData<U8>[] };
 
+# String is NOT null terminated like a C String, it is more like a PASCAL style string
+
 let .release(x: String): Nil = (
    if mem-is-non-zero(x) {
       # normally if x is not released by the end of scope, then it will be auto-released
@@ -51,13 +53,12 @@ let intern(s: String): String = s;
 let .into(s: String, tt: Type<String>): String = s;
 let .into(cs: CString, tt: Type<String>): String = (
    let cs-length = cs.length;
-   let od = mk-owned-data(type(U8), cs-length + 1);
+   let od = mk-owned-data(type(U8), cs-length);
    let csi = 0_sz;
    while csi < cs-length {
       od.push(cs[csi] as U8);
       csi = csi + 1;
    };
-   od.data[cs-length] = 0_u8;
    # This constructor will call .retain on itself before exiting
    String(0 as USize, cs-length, od)
 );
@@ -98,10 +99,9 @@ let $"+"(l: String, r: String): String = (
    let l-length = l.length;
    let r-length = r.length;
    let cs-length = l-length + r-length;
-   let od = mk-owned-data(type(U8), cs-length + 1);
+   let od = mk-owned-data(type(U8), cs-length);
    memcpy(od.data as C<"void">[], l.data.data as C<"void">[], l-length as USize);
    memcpy((od.data + l-length) as C<"void">[], r.data.data as C<"void">[], r-length as USize);
-   od.data[cs-length] = 0_u8;
    String(0 as USize, cs-length, od) 
 );
 
