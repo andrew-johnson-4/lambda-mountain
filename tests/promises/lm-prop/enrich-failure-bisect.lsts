@@ -80,7 +80,7 @@ let enrich-quick-prop(): Nil = (
    print("Enrich 5.0\n");
    let pre = base;
    print("Enrich 6.0\n");
-   let result = mk-vector(type(Type));
+   let result = mk-vector(type(Type), 50);
    print("Enrich 7.0\n");
    for vector c in mk-vector(type(Type)).push(t0(c"B.1")).push(t0(c"B.2")) {
       print("Enrich 8.0\n");
@@ -89,12 +89,12 @@ let enrich-quick-prop(): Nil = (
          c = c && row.second;
          print("Enrich 8.2\n");
       };
-      print("Enrich 8.3\n");
+      print(c"Enrich 8.3\n");
       match c {
          TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
          rc => ( result = result.push(rc); () );
       };
-      print("Enrich 8.4\n");
+      print(c"Enrich 8.4\n");
    };
    print("Enrich END\n");
 );
