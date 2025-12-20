@@ -19,6 +19,25 @@ let .retain(t: Type): Type = (
    t
 );
 
+let .into(tt: Type, tgt: Type<String>): String = (
+   match tt {
+      TGround{tag=tag} => (
+         let r = if tag[0] >= 97 and tag[0] <= 122 then intern("\"\{tag}\"") else intern(tag);
+         r
+      );
+      TAnd{conjugate=conjugate} => (
+         let result = "";
+         let ci = 0_u64;
+         for vector c in conjugate {
+            result = result + c.into(type(String));
+            ci = ci + 1;
+            if ci != conjugate.length then result = result + " + ";
+         };
+         result
+      );
+   }
+);
+
 let t0(tag: CString): Type = TGround(tag);
 
 let $"&&"(lt: Type, rt: Type): Type = (
@@ -85,8 +104,10 @@ let enrich-quick-prop(): Nil = (
    for vector c in mk-vector(type(Type)).push(t0(c"B.1")).push(t0(c"B.2")) {
       print("Enrich \{8}\n");
       for list row in quick-prop.lookup( c.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+         print("Enrich \{c} x \{row.second}\n");
          print("Enrich \{81}\n");
          c = c && row.second;
+         print("Enrich Becomes \{c}\n");
          print("Enrich \{82}\n");
       };
       print("Enrich \{83}\n");
