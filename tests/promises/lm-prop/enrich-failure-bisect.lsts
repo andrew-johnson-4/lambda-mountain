@@ -69,32 +69,32 @@ let .ground-tag-and-arity(tt: Type): (CString,U64) = (
 
 let enrich-quick-prop(): Nil = (
    let quick-prop = {} : Hashtable<(CString,U64),List<(Type,Type)>>;
-   print("Enrich 1.0\n");
+   print("Enrich \{1}\n");
    let val = [] : List<(Type,Type)>;
-   print("Enrich 2.0\n");
+   print("Enrich \{2}\n");
    val = cons( (t0(c"B.2"),t0(c"B.3")), val );
-   print("Enrich 3.0\n");
+   print("Enrich \{3}\n");
    quick-prop = quick-prop.bind( (c"B.1",0_u64), val );
-   print("Enrich 4.0\n");
+   print("Enrich \{4}\n");
    let base = t0(c"B.1") && t0(c"B.2");
-   print("Enrich 5.0\n");
+   print("Enrich \{5}\n");
    let pre = base;
-   print("Enrich 6.0\n");
+   print("Enrich \{6}\n");
    let result = mk-vector(type(Type), 50);
-   print("Enrich 7.0\n");
+   print("Enrich \{7}\n");
    for vector c in mk-vector(type(Type)).push(t0(c"B.1")).push(t0(c"B.2")) {
-      print("Enrich 8.0\n");
+      print("Enrich \{8}\n");
       for list row in quick-prop.lookup( c.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
-         print("Enrich 8.1\n");
+         print("Enrich \{81}\n");
          c = c && row.second;
-         print("Enrich 8.2\n");
+         print("Enrich \{82}\n");
       };
-      print(c"Enrich 8.3\n");
+      print("Enrich \{83}\n");
       match c {
          TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
          rc => ( result = result.push(rc); () );
       };
-      print(c"Enrich 8.4\n");
+      print("Enrich \{84}\n");
    };
    print("Enrich END\n");
 );
