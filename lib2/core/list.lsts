@@ -105,6 +105,8 @@ let $"+"(hd: List<x>, tl: List<x>): List<x> = (
    else if not(non-zero(tl)) then hd
    else if hd_length==1 then cons(head(hd),tl)
    else {
+      # Here we use a temporary vector as a reverse iterator
+      # the .reverse list operator would be relatively expensive compared to a contiguous vector
       let hdv = hd.into(type(Vector<x>));
       let reverse-iterator-index = hd_length;
       while reverse-iterator-index > 0 {
