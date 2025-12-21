@@ -96,7 +96,9 @@ let .length(l: List<x>): USize = (
    li
 );
 
-# new allocations = hd.length + (1 if hd.length > 1) 
+# new allocations = 0         if tl.length == 0
+#                 | hd.length if hd.length <= 1
+#                 | hd.length + 1
 let $"+"(hd: List<x>, tl: List<x>): List<x> = (
    let hd_length = hd.length;
    if hd_length==0 then tl
