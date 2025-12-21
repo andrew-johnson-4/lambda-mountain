@@ -1,6 +1,12 @@
 
 import lib2/core/bedrock.lsts;
 
+([] : List<U8>) + ([] : List<U8>);
+assert( safe-alloc-block-count == 0 );
+# no allocations, only stack
+assert( safe-alloc-block-count-monotonic == 0 );
+safe-alloc-block-count-monotonic = 0;
+
 cons(2,cons(1, [] : List<U8>)) + ([] : List<U8>);
 assert( safe-alloc-block-count == 0 );
 # no new allocations other than arguments
