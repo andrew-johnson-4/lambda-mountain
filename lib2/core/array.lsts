@@ -30,6 +30,7 @@ let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
 # EXAMPLE: # if CFG.debug
 #          # endif
 let safe-alloc-block-count = 0_u64;
+let safe-alloc-block-count-monotonic = 0_u64;
 
 let safe-alloc-impl(nb: USize): ?[] = (
    # BEFORE CHANGING THIS: talk to alex
@@ -44,7 +45,10 @@ let safe-alloc-impl(nb: USize): ?[] = (
    memset(ptr as C<"void">[], 0, nb);
 
    mark-memory-as-safe(ptr as U8[], nb);
+
    safe-alloc-block-count = safe-alloc-block-count + 1; # TODO conditional compilation
+   safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1; # TODO conditional compilation
+
    ptr
 );
 
@@ -61,6 +65,9 @@ let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
    memset(new-ptr as C<"void">[], 0, nb);
 
    mark-memory-as-safe(new-ptr as U8[], nb);
+
+   safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1; # TODO conditional compilation
+
    new-ptr
 );
 
