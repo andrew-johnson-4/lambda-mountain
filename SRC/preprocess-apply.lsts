@@ -4,16 +4,16 @@ let preprocess-apply(program: AST): AST = preprocess-apply(program, false);
 let preprocess-apply(program: AST, is-lhs: U64): AST = (
    match program {
       App{ left:App{ left:Var{key:c"macro::concat",ctk=token}, right:App{ left:Var{lk=key}, right:Var{rk=key} } }, nt=right } => (
-         mk-app( mk-var(lk+rk, unique(ctk)), preprocess-apply(nt) )
+         mk-app( mk-var(lk+rk, ctk.unique), preprocess-apply(nt) )
       );
       App{ left:App{ left:Var{key:c"macro::concat",ctk=token}, right:App{ left:Var{lk=key}, right:Lit{rk=key} } }, nt=right } => (
-         mk-app( mk-var(lk+rk, unique(ctk)), preprocess-apply(nt) )
+         mk-app( mk-var(lk+rk, ctk.unique), preprocess-apply(nt) )
       );
       App{ left:App{ left:Var{key:c"macro::concat",ctk=token}, right:App{ left:Lit{lk=key}, right:Var{rk=key} } }, nt=right } => (
-         mk-app( mk-var(lk+rk, unique(ctk)), preprocess-apply(nt) )
+         mk-app( mk-var(lk+rk, ctk.unique), preprocess-apply(nt) )
       );
       App{ left:App{ left:Var{key:c"macro::concat",ctk=token}, right:App{ left:Lit{lk=key}, right:Lit{rk=key} } }, nt=right } => (
-         mk-app( mk-var(lk+rk, unique(ctk)), preprocess-apply(nt) )
+         mk-app( mk-var(lk+rk, ctk.unique), preprocess-apply(nt) )
       );
       App{ is-cons-1=is-cons,
          left:App{is-cons-2=is-cons,
@@ -26,7 +26,7 @@ let preprocess-apply(program: AST, is-lhs: U64): AST = (
          if not(tt.is-t(c"String",0)) then t = preprocess-apply(t);
          mk-cons-or-app(is-cons-1,
             mk-cons-or-app(is-cons-2,
-               mk-lit(c":",unique(ctk)),
+               mk-lit(c":",ctk.unique),
                mk-cons-or-app(is-cons-3,t,mk-atype(tt))
             ), preprocess-apply(nt,is-lhs)
          );
@@ -42,7 +42,7 @@ let preprocess-apply(program: AST, is-lhs: U64): AST = (
          tt = phi-as-state(tt).expand-implied-phi;
          mk-cons-or-app(is-cons-1,
             mk-cons-or-app(is-cons-2,
-               mk-lit(c":",unique(ctk)),
+               mk-lit(c":",ctk.unique),
                mk-cons-or-app(is-cons-3,preprocess-apply(t,is-lhs),mk-atype(tt))
             ), preprocess-apply(nt,is-lhs)
          );
@@ -50,7 +50,7 @@ let preprocess-apply(program: AST, is-lhs: U64): AST = (
       App{is-cons-2=is-cons, left:Lit{key:c":",ctk=token}, right:App{is-cons-3=is-cons,t=left:Lit{},right:AType{tt=tt}}} => (
          if not(tt.is-t(c"String",0)) then t = preprocess-apply(t);
          mk-cons-or-app(is-cons-2,
-            mk-lit(c":",unique(ctk)),
+            mk-lit(c":",ctk.unique),
             mk-cons-or-app(is-cons-3,t,mk-atype(tt))
          );
       );
@@ -58,7 +58,7 @@ let preprocess-apply(program: AST, is-lhs: U64): AST = (
          tt = phi-as-state(tt).expand-implied-phi;
          t = preprocess-apply(t);
          mk-cons-or-app(is-cons-2,
-            mk-lit(c":",unique(ctk)),
+            mk-lit(c":",ctk.unique),
             mk-cons-or-app(is-cons-3,t,mk-atype(tt))
          );
       );
@@ -68,7 +68,7 @@ let preprocess-apply(program: AST, is-lhs: U64): AST = (
             right:App{ t=left, right:AType{tt=tt} }
          }, nt=right
       } => (
-         mk-app( mk-app( mk-var(c"as",unique(atk)), mk-app(preprocess-apply(t),mk-atype(tt)) ), preprocess-apply(nt) )
+         mk-app( mk-app( mk-var(c"as",atk.unique), mk-app(preprocess-apply(t),mk-atype(tt)) ), preprocess-apply(nt) )
       );
       Lit{l=key,ltk=token} => (
          for Tuple{sfxs=first, sfxtt=second} in parse-suffixes {
@@ -90,7 +90,7 @@ let preprocess-apply(program: AST, is-lhs: U64): AST = (
          if is-macro-head(vn,1) {
             preprocess-apply-hard(vn,1,program)
          } else {
-            mk-cons-or-app(is-cons, preprocess-apply(mk-var(vn,unique(vntk))), preprocess-apply(vt))
+            mk-cons-or-app(is-cons, preprocess-apply(mk-var(vn,vntk.unique)), preprocess-apply(vt))
          }
       );
       App{ is-cons-1=is-cons, left:App{ is-cons-2=is-cons, left:Var{vn=key,vntk=token}, vt0=right }, vt1=right } => (
@@ -99,7 +99,7 @@ let preprocess-apply(program: AST, is-lhs: U64): AST = (
          } else {
             mk-cons-or-app(is-cons-1,
                preprocess-apply(mk-cons-or-app(is-cons-2,
-                  mk-var(vn,unique(vntk)), vt0
+                  mk-var(vn,vntk.unique), vt0
                ),is-lhs), preprocess-apply(vt1,is-lhs)
             )
          }
@@ -117,7 +117,7 @@ let preprocess-apply(program: AST, is-lhs: U64): AST = (
          then mk-abs(preprocess-apply(al,true),preprocess-apply(ar),tlt)
          else program
       );
-      Glb{k=key, ar=val} => mk-glb(unique(k), preprocess-apply(ar));
+      Glb{k=key, ar=val} => mk-glb(k.unique, preprocess-apply(ar));
       _ => program;
    }
 );

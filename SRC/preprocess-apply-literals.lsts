@@ -8,7 +8,7 @@ let preprocess-apply-literals(program: AST): AST = (
          program
       );
       Abs{al=lhs, ar=rhs, tlt=tt} => mk-abs(preprocess-apply-literals(al), preprocess-apply-literals(ar), tlt);
-      Glb{k=key, ar=val} => mk-glb(unique(k), preprocess-apply-literals(ar));
+      Glb{k=key, ar=val} => mk-glb(k.unique, preprocess-apply-literals(ar));
       _ => program;
    }
 );
