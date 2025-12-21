@@ -96,10 +96,20 @@ let .length(l: List<x>): USize = (
    li
 );
 
-# new allocations = hd.length
+# new allocations = hd.length + (1 if hd.length > 1) 
 let $"+"(hd: List<x>, tl: List<x>): List<x> = (
-   for list hdhd in hd.reverse { tl = cons(hdhd,tl); };
-   tl
+   let hd_length = hd.length;
+   if hd_length==0 then tl
+   else if not(non-zero(tl)) then hd
+   else if hd_length==1 then cons(head(hd),tl)
+   else {
+      let hdv = hd.into(type(Vector<x>));
+      while hd_length > 0 {
+         hd_length = hd_length - 1;
+         tl = cons(hdv[hd_length], tl);
+      };
+      tl
+   }
 );
 
 # new allocations = 1
