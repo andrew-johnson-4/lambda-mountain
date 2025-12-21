@@ -1,0 +1,6 @@
+
+import lib2/core/bedrock.lsts;
+
+assert( cons(1, [] : List<U8>).has-head );
+assert( safe-alloc-block-count == 0 );
+assert( safe-alloc-block-count-monotonic == 1 );
