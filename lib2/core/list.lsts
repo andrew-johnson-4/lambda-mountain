@@ -106,9 +106,10 @@ let $"+"(hd: List<x>, tl: List<x>): List<x> = (
    else if hd_length==1 then cons(head(hd),tl)
    else {
       let hdv = hd.into(type(Vector<x>));
-      while hd_length > 0 {
-         hd_length = hd_length - 1;
-         tl = cons(hdv[hd_length], tl);
+      let reverse-iterator-index = hd_length;
+      while reverse-iterator-index > 0 {
+         reverse-iterator-index = reverse-iterator-index - 1;
+         tl = cons(hdv[reverse-iterator-index], tl);
       };
       tl
    }
