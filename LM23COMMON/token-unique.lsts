@@ -1,0 +1,2 @@
+
+let .unique(t: Token): Token = Token( t.key, iuid(), t.location );

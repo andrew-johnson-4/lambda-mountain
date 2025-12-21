@@ -1,0 +1,16 @@
+
+let .unique(term: AST): AST = (
+   match term {
+      Var{vkey=key, token=token} => Var(vkey, token.unique);
+      Lit{lkey=key, token=token} => Lit(lkey, token.unique);
+      Seq{seq=seq} => (
+         let ret = mk-vector(type(AST), seq.length);
+         for s in seq { ret = ret.push(s.unique) };
+         Seq(ret)
+      );
+      App{is-cons=is-cons,left=left,right=right} => mk-cons-or-app(is-cons,left.unique,right.unique);
+      Abs{lhs=lhs,rhs=rhs,tt=tt} => mk-abs(lhs.unique, rhs.unique, tt);
+      Glb{gkey=key,val=val} => mk-glb(gkey, val.unique);
+      _ => term;
+   }
+);

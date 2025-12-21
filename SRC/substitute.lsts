@@ -66,19 +66,19 @@ let substitute-lhs(tctx: TypeContext?, t: AST, idx: U64): AST = (
       App{ ps=left, right:App{ left:Lit{key:c":",ctk=token}, right:App{ left:Var{v=key,vtk=token}, right:AType{vt=tt} } } } => (
          vt = substitute-macro(tctx, vt.accept-interface(idx)).expand-implied-phi.without-phi-keep-state;
          mk-app( substitute-lhs(tctx,ps,idx+1), 
-            mk-app( mk-lit(c":",unique(ctk)), mk-app(
-               mk-var(v,unique(vtk)), mk-atype(vt)
+            mk-app( mk-lit(c":",ctk.unique), mk-app(
+               mk-var(v,vtk.unique), mk-atype(vt)
             ))
          )
       );
       App{ left:Lit{key:c":",ctk=token}, right:App{ left:Var{v=key,vtk=token}, right:AType{vt=tt} } } => (
          vt = substitute-macro(tctx, vt.accept-interface(idx)).expand-implied-phi.without-phi-keep-state;
-         mk-app( mk-lit(c":",unique(ctk)), mk-app(
-            mk-var(v,unique(vtk)), mk-atype(tctx.substitute(vt.accept-interface(idx)))
+         mk-app( mk-lit(c":",ctk.unique), mk-app(
+            mk-var(v,vtk.unique), mk-atype(tctx.substitute(vt.accept-interface(idx)))
          ))
       );
-      App{ ps=left, right:Var{v=key,vtk=token} } => mk-app(substitute-lhs(tctx,ps),mk-var(v,unique(vtk)));
-      Var{v=key,vtk=token} => mk-var(v,unique(vtk));
+      App{ ps=left, right:Var{v=key,vtk=token} } => mk-app(substitute-lhs(tctx,ps),mk-var(v,vtk.unique));
+      Var{v=key,vtk=token} => mk-var(v,vtk.unique);
       ASTNil{} => t;
    }
 );
@@ -91,21 +91,21 @@ let substitute(tctx: TypeContext?, t: AST, is-return: U64): AST = (
       ASTNil{} => t;
       App{ left:Lit{key:c":",ctk=token}, right:App{ left:Var{v=key,vtk=token}, right:AType{vt=tt} } } => (
          vt = substitute-macro(tctx, vt).expand-implied-phi.without-phi-keep-state;
-         t = mk-app( mk-lit(c":",unique(ctk)), mk-app(mk-var(v,unique(vtk)), mk-atype(vt)) );
+         t = mk-app( mk-lit(c":",ctk.unique), mk-app(mk-var(v,vtk.unique), mk-atype(vt)) );
          let found = false;
          for TypeContextRow{tk=key,ta=def} in tctx.get-or(mk-tctx()).tctx {
             if not(found) && tk==v {
-               t = mk-app( mk-lit(c":",unique(ctk)), mk-app(substitute(tctx,ta), mk-atype(vt)) );
+               t = mk-app( mk-lit(c":",ctk.unique), mk-app(substitute(tctx,ta), mk-atype(vt)) );
                found = true;
             }
          }; t
       );
       App{ left:Lit{key:c":",ctk=token}, right:App{ inner-t=left, right:AType{vt=tt} } } => (
          vt = substitute-macro(tctx, vt).expand-implied-phi.without-phi-keep-state;
-         mk-app( mk-lit(c":",unique(ctk)), mk-app(substitute(tctx, inner-t), mk-atype(vt)) );
+         mk-app( mk-lit(c":",ctk.unique), mk-app(substitute(tctx, inner-t), mk-atype(vt)) );
       );
-      Lit{v=key,vtk=token} => mk-lit(v,unique(vtk));
-      Var{v=key,vtk=token} => mk-var(v,unique(vtk));
+      Lit{v=key,vtk=token} => mk-lit(v,vtk.unique);
+      Var{v=key,vtk=token} => mk-var(v,vtk.unique);
       Abs{lhs=lhs,rhs=rhs,tt=tt} => mk-abs(substitute-lhs(tctx,lhs),substitute(tctx,rhs,true),tctx.substitute(tt));
       AType{tt=tt} => mk-atype(tctx.substitute(tt).sanitize-phi);
       App{is-cons=is-cons,lt=left,rt=right} => mk-cons-or-app(is-cons,substitute(tctx,lt),substitute(tctx,rt));
@@ -125,7 +125,7 @@ let substitute(tctx: TypeContext?, t: AST, is-return: U64): AST = (
                found = true;
             }
          };
-         mk-glb(unique(k),substitute(tctx,rt))
+         mk-glb(k.unique,substitute(tctx,rt))
       );
    }
 );

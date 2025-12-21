@@ -9,3 +9,7 @@ import LM23COMMON/ast-exit-error.lsts;
 import LM23COMMON/ast-compare.lsts;
 import LM23COMMON/token-compare.lsts;
 import LM23COMMON/loc-into-string.lsts;
+import LM23COMMON/ast-formatted-location.lsts;
+import LM23COMMON/ast-into-string.lsts;
+import LM23COMMON/token-unique.lsts;
+import LM23COMMON/ast-unique.lsts;

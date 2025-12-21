@@ -1,0 +1,10 @@
+
+import LM23COMMON/unit-ast-core.lsts;
+
+assert( mk-eof().into(type(String)) == "EOF" );
+assert( mk-nil().into(type(String)) == "()" );
+assert( mk-var(c"a").into(type(String)) == "a" );
+assert( mk-lit(c"a").into(type(String)) == "'a" );
+assert( mk-var(c"a").ascript(t0(c"A")).into(type(String)) == "a : A" );
+assert( safe-alloc-block-count == 0 );
+

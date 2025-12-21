@@ -5,9 +5,7 @@ import SRC/unit-types.lsts;
 # type definitions
 import SRC/ast-definitions.lsts;
 import SRC/plus.lsts;
-import SRC/unique.lsts;
 import SRC/without-location.lsts;
 import SRC/with-location.lsts;
 import SRC/with-key.lsts;
 import SRC/var-name-if-var.lsts;
-import SRC/ast-into-string.lsts;

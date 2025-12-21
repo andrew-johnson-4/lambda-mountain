@@ -5,10 +5,10 @@ let preprocess-apply-locations(program: AST): AST = (
          let l = c"File: " + ltk.location.filename
                + c" Line: " + to-string(ltk.location.line)
                + c" Column: " + to-string(ltk.location.column);
-         mk-lit(l, with-key(unique(ltk),l))
+         mk-lit(l, with-key(ltk.unique,l))
       );
-      Lit{l=key,ltk=token} => mk-lit(l, unique(ltk));
-      Var{l=key,ltk=token} => mk-var(l, unique(ltk));
+      Lit{l=key,ltk=token} => mk-lit(l, ltk.unique);
+      Var{l=key,ltk=token} => mk-var(l, ltk.unique);
       App{is-cons=is-cons,t0=left,t1=right} => mk-cons-or-app(is-cons, preprocess-apply-locations(t0), preprocess-apply-locations(t1));
       Seq{seq=seq} => (
          program = mk-eof();
@@ -16,7 +16,7 @@ let preprocess-apply-locations(program: AST): AST = (
          program
       );
       Abs{al=lhs, ar=rhs, tlt=tt} => mk-abs(preprocess-apply-locations(al), preprocess-apply-locations(ar), tlt);
-      Glb{k=key, ar=val} => mk-glb(unique(k), preprocess-apply-locations(ar));
+      Glb{k=key, ar=val} => mk-glb(k.unique, preprocess-apply-locations(ar));
       _ => program;
    }
 );

@@ -1,0 +1,47 @@
+
+let .into(t: AST, tgt: Type<String>): String = (
+   match t {
+      ASTEOF{} => "EOF";
+      ASTNil{} => "()";
+      App{left:Lit{key:c":"},right:App{inner=left, right:AType{tt=tt}}} => (
+         inner.into(type(String)) + " : " + tt.into(type(String));
+      );
+      App{is-cons:is-cons, left=left,right=right} => (
+         if is-cons
+         then "(" + left.into(type(String)) + "," + right.into(type(String)) + ")";
+         else left.into(type(String)) + "(" + right.into(type(String)) + ")";
+      );
+      Var{vkey=key} => vkey.into(type(String));
+      Lit{lkey=key} => "'" + lkey.into(type(String));
+      Abs{lhs=lhs,rhs=rhs} => (
+         "(fn (" + lhs.ast-params-into(type(String)) + ") = " + rhs.into(type(String)) + ")";
+      );
+      Glb{gkey=key,gval=val} => (
+         "let \{gkey.key} = " + gval.into(type(String)) + ";";
+      );
+      AType{tt=tt} => tt.into(type(String));
+      Seq{seq=seq} => (
+         let ret = "";
+         for s in seq { if non-zero(ret) then ret = ret + "\n"; ret = ret + s.into(type(String)) };
+         ret
+      );
+      Typedef{lhs-type=lhs-type} => (
+         let r = "type";
+         if non-zero(lhs-type) then r = r + " " + lhs-type.into(type(String));
+         r = r + ";"; r
+      );
+      Meta{val=val} => "meta \{val}\n";
+   };
+);
+
+let .ast-params-into(t: AST, tgt: Type<String>): String = (
+   match t {
+      App{left:Lit{key:c":"},right:App{left:Var{key1=key}, right:AType{tt1=tt}}} => (
+         "\{key1}: \{tt1}"
+      );
+      App{left=left, right:App{left:Lit{key:c":"},right:App{left:Var{key2=key}, right:AType{tt2=tt}}}} => (
+         "\{left.ast-params-into(type(String))}, \{key2}: \{tt2}"
+      );
+      _ => t.into(type(String));
+   }
+);
