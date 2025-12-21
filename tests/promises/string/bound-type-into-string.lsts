@@ -1,0 +1,6 @@
+
+import lib2/core/bedrock.lsts;
+
+assert( type(U8).into(type(String)) == "U8" );
+assert( safe-alloc-block-count == 0 );
+assert( safe-alloc-block-count-monotonic == 2 );
