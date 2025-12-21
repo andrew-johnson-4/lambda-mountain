@@ -76,6 +76,17 @@ let .into(cs: CString, tt: Type<String>): String = (
 
 # new allocations = 0
 # leaked allocations = 1
+#
+# TODO: consider removing this method entirely
+# it intentionally leaks memory and could be better framed as a `with` managed resource
+#
+# Example alternative:
+# ```
+# with cs = s.into(type(CString)) {
+#    it is legal and safe to use this CString here
+#    the dangling reference is properly scoped and managed
+# }
+# ```
 let .into(s: String, tt: Type<CString>): CString = (
    s.data.retain;
    s.data.data as CString
