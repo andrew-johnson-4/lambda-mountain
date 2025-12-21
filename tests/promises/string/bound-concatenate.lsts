@@ -1,0 +1,6 @@
+
+import lib2/core/bedrock.lsts;
+
+assert( "a" + "b" == "ab" );
+assert( safe-alloc-block-count == 0 );
+assert( safe-alloc-block-count-monotonic == 4 );

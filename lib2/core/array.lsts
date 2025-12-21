@@ -28,8 +28,13 @@ let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
 
 # TODO: configure this with conditional compilation to remove if unused
 # EXAMPLE: # if CFG.debug
+#          let safe-alloc-block-count = 0_u64;
+#          let safe-alloc-block-count-monotonic = 0_u64;
 #          # endif
+# safe-alloc-block-count is an increment/decrement counter to track active malloc blocks
+# safe-alloc-block-count-monotonic is an increment-only counter to track historical malloc blocks
 let safe-alloc-block-count = 0_u64;
+let safe-alloc-block-count-monotonic = 0_u64;
 
 let safe-alloc-impl(nb: USize): ?[] = (
    # BEFORE CHANGING THIS: talk to alex
@@ -44,7 +49,11 @@ let safe-alloc-impl(nb: USize): ?[] = (
    memset(ptr as C<"void">[], 0, nb);
 
    mark-memory-as-safe(ptr as U8[], nb);
-   safe-alloc-block-count = safe-alloc-block-count + 1; # TODO conditional compilation
+
+   # TODO: wrap counter adjustments in conditional compilation
+   safe-alloc-block-count = safe-alloc-block-count + 1;
+   safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
+
    ptr
 );
 
@@ -61,6 +70,10 @@ let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
    memset(new-ptr as C<"void">[], 0, nb);
 
    mark-memory-as-safe(new-ptr as U8[], nb);
+
+   # TODO: wrap counter adjustments in conditional compilation
+   safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
+
    new-ptr
 );
 
@@ -83,7 +96,9 @@ let safe-realloc(ptr: t[], len: USize, ty: Type<t>): t[] = (
 let safe-free(ptr: ?[]): Nil = (
    # BEFORE CHANGING THIS: talk to alex
 
-   safe-alloc-block-count = safe-alloc-block-count - 1; # TODO conditional compilation
+   # TODO: wrap counter adjustments in conditional compilation
+   safe-alloc-block-count = safe-alloc-block-count - 1;
+
    free(ptr as C<"void">[]);
    ()
 );
