@@ -1,9 +1,6 @@
 
 type List<x> implies MustRetain, MustRelease zero LEOF = LEOF | LCons { head: x, tail: OwnedData<List<x>>[] };
 
-let $"list::cons"(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
-let cons(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
-
 let .release(t: List<x>): Nil = (
    if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag {
       if type(x) <: type(MustRelease) then (t as Tag::LCons).head.release;
@@ -20,6 +17,13 @@ let .retain(t: List<x>): List<x> = (
    t
 );
 
+# new allocations = 1
+let $"list::cons"(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
+
+# new allocations = 1
+let cons(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
+
+# new allocations = 0
 let cmp(l: List<x>, r: List<x>): Ord = (
    if  l.discriminator-case-tag==(l as Tag::LCons).discriminator-case-tag
    and r.discriminator-case-tag==(r as Tag::LCons).discriminator-case-tag {
@@ -28,6 +32,7 @@ let cmp(l: List<x>, r: List<x>): Ord = (
    } else cmp(l.discriminator-case-tag, r.discriminator-case-tag)
 );
 
+# new allocations = 0
 let hash(t: List<x>): U64 = (
    if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag
    then hash((t as Tag::LCons).head) + hash(open((t as Tag::LCons).tail))
@@ -38,8 +43,10 @@ let .into(l: List<x>, tt: Type<String>): String = (
    "[..TODO..List.into(String)..]"
 );
 
+# new allocations = 0
 let .has-head(tt: List<x>): Bool = non-zero(tt);
 
+# new allocations = 0
 let .nth(tt: List<x>, idx: USize): Maybe<x> = (
    let err = false;
    while idx > 0 and not(err) {
@@ -58,6 +65,7 @@ let .nth(tt: List<x>, idx: USize): Maybe<x> = (
    }
 );
 
+# new allocations = 0
 let $"[]"(tt: List<x>, idx: USize): x = (
    while idx > 0 {
       if not(tt.has-head()) {
@@ -68,28 +76,35 @@ let $"[]"(tt: List<x>, idx: USize): x = (
    head(tt)
 );
 
+# new allocations = l.length
 let .reverse(l: List<x>): List<x> = (
    let r = [] : List<x>;
    for list v in l { r = cons(v,r); };
    r
 );
 
+# new allocations = 0
 let head(l: List<x>): x = if l.has-head then (l as Tag::LCons).head else fail(c"list::head is fallible");
+
+# new allocations = 0
 let tail(l: List<x>): List<x> = if l.has-head then open((l as Tag::LCons).tail) else fail(c"list::tail is fallible");
 
+# new allocations = 0
 let .length(l: List<x>): USize = (
    let li = 0_sz;
    for list _ in l { li = li + 1 };
    li
 );
 
+# new allocations = hd.length
 let $"+"(hd: List<x>, tl: List<x>): List<x> = (
    for list hdhd in hd.reverse { tl = cons(hdhd,tl); };
    tl
 );
 
+# new allocations = 1
 let .into(ls: List<x>, tt: Type<Vector<x>>): Vector<x> = (
-   let dst = mk-vector(type(x));
+   let dst = mk-vector(type(x), ls.length);
    for list l in ls { dst = dst.push(l); };
    dst
 );
