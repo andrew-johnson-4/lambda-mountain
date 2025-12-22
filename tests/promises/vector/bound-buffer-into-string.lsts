@@ -5,8 +5,9 @@ import lib2/core/bedrock.lsts;
 # empty string shouldn't need allocation
 # but there is a phi bug preventing that implementation atm
 
-# 1 allocation for the vector into string object
-# 1 allocation for the string literal "a"
+# new allocations:
+# 1 mk-vector creates buffer then turns it into a string
+# 1 string literal "a"
 assert( mk-vector(type(U8), 1).push(97).buffer-into-string == "a" );
 assert( safe-alloc-block-count == 0 );
 assert( safe-alloc-block-count-monotonic == 2 );
