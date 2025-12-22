@@ -17,30 +17,40 @@ let .retain(x: Vector<t>): Vector<t> = (
    x
 );
 
+
+# new allocations = 0 if capacity==0
+#                 | 1
 let mk-vector(ty: Type<t>, capacity: USize): Vector<t> = (
    if capacity==0 then Vector(0 as OwnedData<t>[]) else Vector( mk-owned-data(type(t), capacity) )
 );
 
+# new allocations = 0
 let mk-vector(ty: Type<t>): Vector<t> = (
    mk-vector(type(t), 0)
 );
 
+# new allocations = 0 if capacity==0
+#                 | 1
 let mk-vector(capacity: USize): Vector<t> = (
    if capacity==0 then Vector(0 as OwnedData<t>[]) else Vector( mk-owned-data(type(t), capacity) )
 );
 
+# new allocations = 0
 let mk-vector(): Vector<t> = (
    mk-vector(type(t), 0)
 );
 
+# new allocations = 0
 let .length(v: Vector<t>): USize = (
    if (v.data as USize) == 0 then 0 else v.data.occupied
 );
 
+# new allocations = 0
 let $"[]"(v: Vector<t>, idx: USize): t = (
    v.data[idx]
 );
 
+# new allocations = 1
 let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (
    let new-data = mk-owned-data(type(t), target-capacity);
    let dlo = 0_sz;
@@ -53,6 +63,8 @@ let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (
 );
 
 # TODO: Vector<t> and i: t should have the same type variable and it should unify
+# new allocations = 1 if realloc is necessary
+#                 | 0
 let .push(v: Vector<t>, i: x): Vector<t> = (
    # if this vector is a view, or if it is full, then we need to reallocate
    if (v.data as USize)==0 or v.data.occupied==v.data.capacity {
@@ -64,6 +76,7 @@ let .push(v: Vector<t>, i: x): Vector<t> = (
    v
 );
 
+# new allocations = 0
 let cmp(x: Vector<x>, y: Vector<x>): Ord = (
    let r = Equal;
    if not(is(x, y)) {
@@ -90,6 +103,7 @@ let cmp(x: Vector<x>, y: Vector<x>): Ord = (
    r
 );
 
+# new allocations = 0
 let .sort(v: Vector<t>): Vector<t> = (
    let n = v.length;
    let i = 0_sz;
@@ -113,17 +127,21 @@ let .sort(v: Vector<t>): Vector<t> = (
    v
 );
 
+# new allocations = 1 if realloc is necessary
+#                 | 0
 let .buffer-into-string(v: Vector<U8>): String = (
    v = v.push(0);
    v.data.retain;
    String(0, v.length - 1, v.data)
 );
 
+# new allocations = 0
 let $"set[]"( v: Vector<t>, i: USize, val: t ): Nil = (
    if i >= v.length then fail(c"Vector Index Out of Bounds");
    v.data[i] = val;
 );
 
+# new allocations = 0
 let .reverse(v: Vector<t>): Vector<t> = (
    let vi = 0_sz;
    while vi < (v.length/2) {
@@ -135,4 +153,5 @@ let .reverse(v: Vector<t>): Vector<t> = (
    v
 );
 
+# new allocations = 0
 let .into(v: Vector<t>, tt: Type<Vector<t>>): Vector<t> = v;
