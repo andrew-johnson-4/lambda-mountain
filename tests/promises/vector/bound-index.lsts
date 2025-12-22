@@ -1,0 +1,7 @@
+
+import lib2/core/bedrock.lsts;
+
+assert( mk-vector(type(U8), 123).push(8)[0] == 8 );
+assert( safe-alloc-block-count == 0 );
+assert( safe-alloc-block-count-monotonic == 1 );
+safe-alloc-block-count-monotonic = 0;

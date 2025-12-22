@@ -1,6 +1,10 @@
 
 import lib2/core/bedrock.lsts;
 
+# TODO: add test for empty string
+# empty string should not require a heap allocation
+# however there is a phi bug preventing that implementation atm
+
 assert( "a" == "a" );
 assert( safe-alloc-block-count == 0 );
 assert( safe-alloc-block-count-monotonic == 2 );
