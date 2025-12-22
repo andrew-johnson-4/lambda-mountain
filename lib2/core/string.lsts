@@ -62,6 +62,8 @@ let intern(s: String): String = s;
 let .into(s: String, tt: Type<String>): String = s;
 
 # new allocations = 1
+# TODO: fix to use Vector.buffer-into-string
+# this would change the allocations used to 0 if string is empty
 let .into(cs: CString, tt: Type<String>): String = (
    let cs-length = cs.length;
    let od = mk-owned-data(type(U8), cs-length);

@@ -1,0 +1,11 @@
+
+import lib2/core/bedrock.lsts;
+
+# TODO: add test for empty string
+# empty string shouldn't need allocation
+# but there is a phi bug preventing that implementation atm
+
+assert( mk-vector(type(U8), 1).push(97).buffer-into-string == "a" );
+assert( safe-alloc-block-count == 0 );
+assert( safe-alloc-block-count-monotonic == 2 );
+safe-alloc-block-count-monotonic = 0;

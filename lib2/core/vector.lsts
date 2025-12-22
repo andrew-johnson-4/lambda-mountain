@@ -130,9 +130,8 @@ let .sort(v: Vector<t>): Vector<t> = (
 # new allocations = 1 if realloc is necessary
 #                 | 0
 let .buffer-into-string(v: Vector<U8>): String = (
-   v = v.push(0);
    v.data.retain;
-   String(0, v.length - 1, v.data)
+   String(0, v.length, v.data)
 );
 
 # new allocations = 0
