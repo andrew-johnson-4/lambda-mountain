@@ -1,0 +1,12 @@
+
+import lib2/core/bedrock.lsts;
+
+if true {
+   let v = mk-vector(type(U8), 1).push(8);
+   assert(v[0] == 8);
+   v[0] = 9;
+   assert(v[0] == 9);
+};
+assert( safe-alloc-block-count == 0 );
+assert( safe-alloc-block-count-monotonic == 1 );
+safe-alloc-block-count-monotonic = 0;
