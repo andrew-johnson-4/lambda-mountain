@@ -107,7 +107,7 @@ let cmp(x: Vector<x>, y: Vector<x>): Ord = (
 let .sort(v: Vector<t>): Vector<t> = (
    let n = v.length;
    let i = 0_sz;
-   if n>0 then while i < n - 1_sz {
+   if n > 1 then while i < n - 1_sz {
       let swapped = false;
       let j = 0_sz;
       while j < n - i - 1_sz {
