@@ -36,6 +36,15 @@ The problem here of course is that compilers are potentially complex and subtle.
 To make this more practical, LM leverages cutting-edge techniques to create a more foregiving and approachable experience to developing new compiler features.
 This is a problem that is somewhat unique to LM-style development and our community is still learning how to make this more practical.
 
+### LSTS Flavor
+
+The [LSTS](https://github.com/Lambda-Mountain-Compiler-Backend/LSTS) language that LM is developed in is a straightforward extension of C semantics.
+You can think of LSTS as just a macro that generates C code.
+
+The LSTS memory model is a restriction of the C memory model with several things such as always-on zero-initialization.
+
+The LSTS expression model is a subset of the C expression model with things that don't behave like expressions removed.
+
 ### IDE Support
 
 Currently, there is only Vim and NeoVim syntax highlighting.
