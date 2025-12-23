@@ -1,12 +1,26 @@
 
 let ta = TAny;
 
+# new allocations = 1
+#    1 from close
+#    0 from 0 length list
 let t0(tag: CString): Type = TGround(tag, close([] : List<Type>));
+
+# new allocations = 2
+#    1 from close
+#    1 from 1 length list
 let t1(tag: CString, p1: Type): Type = TGround(tag, close([p1]));
+
+# new allocations = 3
+#    1 from close
+#    2 from 2 length list
 let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, close([p2, p1]));
 
+# new allocations = 0
 let tv(name: CString): Type = TVar(name);
 
+# new allocations = 0 if either argument is ?
+#                 | 1
 let $"&&"(lt: Type, rt: Type): Type = (
    match (lt, rt) {
       Tuple{first:TAny{}} => rt;
@@ -42,7 +56,14 @@ let $"&&"(lt: Type, rt: Type): Type = (
    };
 );
 
+# new allocations = 1
 let ts(tag: CString, ps: List<Type>): Type = TGround( tag, close(ps) );
+
+# new allocations = 0
 let tand(t: Vector<Type>): Type = TAnd(t.sort);
+
+# new allocations = 1
 let tand(tt: Type): Type = TAnd(mk-vector(type(Type)).push(tt));
+
+# new allocations = 0
 let $"||"(lt: Type, rt: Type): Type = if non-zero(lt) then lt else rt;

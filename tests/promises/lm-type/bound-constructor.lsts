@@ -8,17 +8,17 @@ safe-alloc-block-count-monotonic = 0;
 
 assert( t0(c"A") == t0(c"A") );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 0 );
+assert( safe-alloc-block-count-monotonic == 2 );
 safe-alloc-block-count-monotonic = 0;
 
 assert( t1(c"A",ta) == t1(c"A",ta) );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 2 );
+assert( safe-alloc-block-count-monotonic == 4 );
 safe-alloc-block-count-monotonic = 0;
 
 assert( t2(c"A",ta,ta) == t2(c"A",ta,ta) );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 2 );
+assert( safe-alloc-block-count-monotonic == 6 );
 safe-alloc-block-count-monotonic = 0;
 
 assert( tv(c"a") == tv(c"a") );
@@ -28,7 +28,7 @@ safe-alloc-block-count-monotonic = 0;
 
 assert( (ta && t0(c"A")) == t0(c"A") );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 0 );
+assert( safe-alloc-block-count-monotonic == 2 );
 safe-alloc-block-count-monotonic = 0;
 
 assert( (tv(c"a") && ta) == tv(c"a") );
@@ -38,37 +38,37 @@ safe-alloc-block-count-monotonic = 0;
 
 assert( (tv(c"a") && t0(c"A")) == (tv(c"a") && t0(c"A")) );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 2 );
+assert( safe-alloc-block-count-monotonic == 4 );
 safe-alloc-block-count-monotonic = 0;
 
 assert( (tv(c"a") && (t0(c"A") && t0(c"B"))) == (tv(c"a") && (t0(c"A") && t0(c"B"))) );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 4 );
+assert( safe-alloc-block-count-monotonic == 8 );
 safe-alloc-block-count-monotonic = 0;
 
 assert( ((tv(c"a") && t0(c"A")) && t0(c"B")) == ((tv(c"a") && t0(c"A")) && t0(c"B")) );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 4 );
+assert( safe-alloc-block-count-monotonic == 8 );
 safe-alloc-block-count-monotonic = 0;
 
 assert( ( (tv(c"a") && t0(c"A")) && (t0(c"B") && t0(c"C")) ) == ( (tv(c"a") && t0(c"A")) && (t0(c"B") && t0(c"C")) ) );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 6 );
+assert( safe-alloc-block-count-monotonic == 12 );
 safe-alloc-block-count-monotonic = 0;
 
 assert( ts(c"A",[ta]) == ts(c"A",[ta]) );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 2 );
+assert( safe-alloc-block-count-monotonic == 4 );
 safe-alloc-block-count-monotonic = 0;
 
 assert( ts(c"A",[ta,ta]) == ts(c"A",[ta,ta]) );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 2 );
+assert( safe-alloc-block-count-monotonic == 6 );
 safe-alloc-block-count-monotonic = 0;
 
 assert( (ta || t0(c"A")) == t0(c"A") );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 0 );
+assert( safe-alloc-block-count-monotonic == 2 );
 safe-alloc-block-count-monotonic = 0;
 
 assert( (tv(c"a") || ta) == tv(c"a") );
@@ -78,10 +78,10 @@ safe-alloc-block-count-monotonic = 0;
 
 assert( (tv(c"a") || t0(c"A")) == tv(c"a") );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 0 );
+assert( safe-alloc-block-count-monotonic == 1 );
 safe-alloc-block-count-monotonic = 0;
 
 assert( tand(mk-vector(type(Type)).push(t0(c"A")).push(t0(c"B"))) == tand(mk-vector(type(Type)).push(t0(c"A")).push(t0(c"B"))) );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 2 );
+assert( safe-alloc-block-count-monotonic == 6 );
 safe-alloc-block-count-monotonic = 0;
