@@ -1,0 +1,26 @@
+
+import lib2/core/bedrock.lsts;
+
+assert( mk-hashtable(type(U8), type(U8), 0).bind(8,9).length == 1 );
+assert( safe-alloc-block-count == 0 );
+assert( safe-alloc-block-count-monotonic == 1 );
+safe-alloc-block-count-monotonic = 0;
+
+# it isn't possible to just gently push the hashtable over the resize threshold
+# without specifically knowing what the capacity threshold actually is
+# however, that threshold value doesn't belong in a promise because it may change.
+# additionally, that threshold could be non-linear etc. so it is hard to test directly
+assert( mk-hashtable(type(U8), type(U8), 100).bind(8,9).length == 1 );
+assert( safe-alloc-block-count == 0 );
+assert( safe-alloc-block-count-monotonic == 1 );
+safe-alloc-block-count-monotonic = 0;
+
+assert( mk-hashtable(type(U8), type(U8), 100).bind(8,9).bind(8,10).length == 1 );
+assert( safe-alloc-block-count == 0 );
+assert( safe-alloc-block-count-monotonic == 1 );
+safe-alloc-block-count-monotonic = 0;
+
+assert( mk-hashtable(type(U8), type(U8), 100).bind(8,9).bind(9,10).length == 2 );
+assert( safe-alloc-block-count == 0 );
+assert( safe-alloc-block-count-monotonic == 1 );
+safe-alloc-block-count-monotonic = 0;

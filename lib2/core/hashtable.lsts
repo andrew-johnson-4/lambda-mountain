@@ -19,24 +19,47 @@ let .retain(x: Hashtable<k,v>): Hashtable<k,v> = (
    x
 );
 
+# new allocations = 0 if capacity==0
+#                 | 1
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>, capacity: USize): Hashtable<k,v> = (
-   Hashtable( mk-sparse-owned-data(type((HashtableRowExists,k,v)), capacity) )
+   if capacity==0
+   then Hashtable( 0 as SparseOwnedData<(HashtableRowExists,k,v)>[] )
+   else Hashtable( mk-sparse-owned-data(type((HashtableRowExists,k,v)), capacity) )
 );
 
+# new allocations = 0
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>): Hashtable<k,v> = (
-   # Default initial hashtable size is 0 (Stack Only)
-   Hashtable( 0 as SparseOwnedData<(HashtableRowExists,k,v)>[] )
+   mk-hashtable(tyk, tyv, 0)
 );
 
+# new allocations = 0 if capacity==0
+#                 | 1
 let mk-hashtable(capacity: USize): Hashtable<k,v> = (
-   Hashtable( mk-sparse-owned-data(type((HashtableRowExists,k,v)), capacity) );
+   mk-hashtable(type(k), type(v), capacity)
 );
 
+# new allocations = 0
 let mk-hashtable(): Hashtable<k,v> = (
-   # Default initial hashtable size is 0 (Stack Only)
-   Hashtable( 0 as SparseOwnedData<(HashtableRowExists,k,v)>[] )
+   mk-hashtable(type(k), type(v), 0)
 );
 
+# new allocations = 0
+let .length(h: Hashtable<k,v>): USize = (
+   if (h.data as USize) == 0 then 0 else {
+      let count = 0_sz;
+      let old-i = 0_sz;
+      while old-i < h.data.capacity {
+         if is(h.data[old-i].first,HashtableRowFilled)
+         then count = count + 1;
+         old-i = old-i + 1;
+      };
+      count;
+   }
+);
+
+# new allocations = 1
+# Reallocates the hashtable with a new capacity, rehashing all existing entries.
+# Used internally when the hashtable needs to grow.
 let .realloc(h: Hashtable<k,v>, target-capacity: USize): Hashtable<k,v> = (
    let new-data = mk-sparse-owned-data(type((HashtableRowExists,k,v)), target-capacity);
    let old-i = 0_sz;
@@ -49,6 +72,8 @@ let .realloc(h: Hashtable<k,v>, target-capacity: USize): Hashtable<k,v> = (
    Hashtable(new-data)
 );
 
+# new allocations = 1 if realloc is necessary
+#                 | 0
 let .bind(h: Hashtable<k,v>, key: k, val: v): Hashtable<k,v> = (
    if (h.data as USize) == 0 or h.data.capacity == 0 {
       # Hashtables can be allocated on the stack as empty values
@@ -66,6 +91,7 @@ let .bind(h: Hashtable<k,v>, key: k, val: v): Hashtable<k,v> = (
    h
 );
 
+# new allocations = 0
 let .bind-direct(h: Hashtable<k,v>, key: k, val: v): Nil = (
    if (h.data as USize) != 0 and h.data.capacity > 0 {
       let key-hash = hash(key);
@@ -84,11 +110,14 @@ let .bind-direct(h: Hashtable<k,v>, key: k, val: v): Nil = (
    };
 );
 
+# new allocations = 1 if realloc is necessary
+#                 | 0
 let $"map::cons"(key: k, val: v, h: Hashtable<k,v>): Hashtable<k,v> = (
    h.bind(key,val);
 );
 
 
+# new allocations = 0
 let $"[]"(h: Hashtable<k,v>, key: k): Maybe<v> = (
    let row-index = h.find-row-index-by-key(key);
    if row-index == (-1 as USize)
@@ -96,6 +125,7 @@ let $"[]"(h: Hashtable<k,v>, key: k): Maybe<v> = (
    else Some(h.data[row-index].third)
 );
 
+# new allocations = 0
 let .find-row-index-by-key(h: Hashtable<k,v>, key: k): USize = (
    let row-index = -1 as USize;
    if (h.data as USize) != 0 and h.data.capacity > 0 {
@@ -115,5 +145,8 @@ let .find-row-index-by-key(h: Hashtable<k,v>, key: k): USize = (
    row-index
 );
 
+# new allocations = 0
 let .lookup(h: Hashtable<k,v>, key: k, default: v): v = h[key].get-or(default);
+
+# new allocations = 0
 let .has(h: Hashtable<k,v>, key: k): Bool = h[key].is-some;
