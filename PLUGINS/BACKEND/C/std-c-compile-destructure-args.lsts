@@ -5,14 +5,14 @@ let std-c-compile-destructure-args(ctx: FContext, lhs: AST, is-fragment: U64): F
          ctx = std-c-compile-destructure-args(ctx, rst, is-fragment);
          if is-fragment then { kt = denormalize(kt); }
          else { kt = kt.normalize && t0(c"LocalVariable"); };
-         let fragment = if std-c-is-ctype(kt) then mk-expression(k.replace(c"-",c"_")) else mk-expression(uuid());
+         let fragment = if std-c-is-ctype(kt) then mk-expression(k.replace(c"-",c"_").rewrite-if-reserved) else mk-expression(uuid());
          ctx = ctx.bind(k, kt, fragment);
          std-c-fragment-context = std-c-fragment-context.bind(lhs-v, fragment);
       );
       App{ left:Lit{key:c":"}, right:App{ lhs-v=left:Var{k=key}, right:AType{kt=tt} } } => (
          if is-fragment then { kt = denormalize(kt); }
          else { kt = kt.normalize && t0(c"LocalVariable"); };
-         let fragment = if std-c-is-ctype(kt) then mk-expression(k.replace(c"-",c"_")) else mk-expression(uuid());
+         let fragment = if std-c-is-ctype(kt) then mk-expression(k.replace(c"-",c"_").rewrite-if-reserved) else mk-expression(uuid());
          ctx = ctx.bind(k, kt, fragment);
          std-c-fragment-context = std-c-fragment-context.bind(lhs-v, fragment);
       );

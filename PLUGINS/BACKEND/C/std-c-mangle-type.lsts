@@ -7,18 +7,24 @@ let std-c-mangle-type(tt: Type, blame: AST): S = (
 );
 
 let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
+   let r = std-c-mangle-type-internal-internal(tt, blame);
+   if not(non-zero(r)) then r = std-c-mangle-type-internal-internal(tt.slot(c"Sized",1).l1, blame);
+   r
+);
+
+let std-c-mangle-type-internal-internal(tt: Type, blame: AST): S = (
    match tt {
       TAnd{ conjugate=conjugate } => (
          let is-c = can-unify(t1(c"C",ta), tt);
-         let modifiers = SNil();
-         let result = SNil();
+         let modifiers = SNil;
+         let result = SNil;
          for c in conjugate {
             if is-c && c.simple-tag != c"C" {} else {
                if c.simple-tag == c"C" {
-                  let rt = std-c-mangle-type-internal(c, blame);
+                  let rt = std-c-mangle-type-internal-internal(c, blame);
                   if non-zero(rt) then modifiers = modifiers + SAtom(c" ") + rt;
                } else {
-                  let rt = std-c-mangle-type-internal(c, blame);
+                  let rt = std-c-mangle-type-internal-internal(c, blame);
                   if non-zero(rt) then result = rt;
                }
             }
@@ -54,8 +60,8 @@ let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
       TGround{tag:c"Array", parameters:[_.. TAny{}..]} => SAtom(c"void*");
       TGround{tag:c"Array", parameters:[_.. array-base..]} => (
          if array-base.is-arrow
-         then std-c-mangle-type-internal(array-base, blame)
-         else ( std-c-mangle-type-internal(array-base, blame) + SAtom(c"*") );
+         then std-c-mangle-type-internal-internal(array-base, blame)
+         else ( std-c-mangle-type-internal-internal(array-base, blame) + SAtom(c"*") );
       );
       TGround{tag:c"Arrow"} => (
          (let pre, let post) = std-c-mangle-declaration-internal(tt, blame);
@@ -73,6 +79,7 @@ let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
       TGround{tag:c"C", parameters:[TGround{tag1=tag}..]} => (
          SAtom(tag1)
       );
+      TGround{tag:c"Sized", parameters:[_..]} => SNil;
       TGround{tag=tag, parameters=parameters} => (
          let r = mangle-identifier(tag);
          if parameters.length > 0 {
@@ -98,7 +105,7 @@ let std-c-mangle-type-simple(tt: Type, blame: AST): S = (
          let result = SNil();
          for c in conjugate {
             if is-c && c.simple-tag != c"C" {} else {
-               let rt = std-c-mangle-type-internal(c, blame);
+               let rt = std-c-mangle-type-internal-internal(c, blame);
                result = if non-zero(result) && non-zero(rt) then result + SAtom(c" ") + rt
                else if non-zero(result) then result
                else rt;

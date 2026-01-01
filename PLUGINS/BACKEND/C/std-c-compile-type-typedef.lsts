@@ -91,6 +91,7 @@ let is-incomplete-typedef(tt: Type, is-flexible-array-member: U64): U64 = (
       );
       TAny{} => false;
       TVar{} => false;
+      TGround{tag:"Sized",parameters:[st..]} => is-incomplete-typedef(st);
       TGround{tag:"Array",parameters:[_..base-type..]} => if is-flexible-array-member then is-incomplete-typedef(base-type) else false;
       TGround{} => complex-type-index.lookup(tt.ground-tag-and-arity,false)
                 && not(is-cstruct-hard-compiled-index.lookup(tt, false));

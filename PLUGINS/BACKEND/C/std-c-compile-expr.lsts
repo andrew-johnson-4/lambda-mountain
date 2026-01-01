@@ -1,11 +1,77 @@
 
+let .is-c-reserved-word(s: CString): Bool = (
+   match s {
+      c"int" => true;
+      c"char" => true;
+      c"float" => true;
+      c"if" => true;
+      c"else" => true;
+      c"switch" => true;
+      c"auto" => true;
+      c"register" => true;
+      c"return" => true;
+      c"sizeof" => true;
+      c"double" => true;
+      c"short" => true;
+      c"long" => true;
+      c"case" => true;
+      c"default" => true;
+      c"static" => true;
+      c"extern" => true;
+      c"typedef" => true;
+      c"void" => true;
+      c"signed" => true;
+      c"unsigned" => true;
+      c"for" => true;
+      c"while" => true;
+      c"do" => true;
+      c"const" => true;
+      c"volatile" => true;
+      c"struct" => true;
+      c"union" => true;
+      c"void" => true;
+      c"break" => true;
+      c"continue" => true;
+      c"enum" => true;
+      c"goto" => true;
+      c"_Bool" => true;
+      c"_Complex" => true;
+      c"_Imaginary" => true;
+      c"inline" => true;
+      c"restrict" => true;
+      c"_Alignas" => true;
+      c"_Alignof" => true;
+      c"_Atomic" => true;
+      c"_Generic" => true;
+      c"_Noreturn" => true;
+      c"_Static_assert" => true;
+      c"_Thread_local" => true;
+      c"bool" => true;
+      c"true" => true;
+      c"false" => true;
+      c"static_assert" => true;
+      c"alignas" => true;
+      c"alignof" => true;
+      c"thread_local" => true;
+      c"nullptr" => true;
+      c"constexpr" => true;
+      c"typeof" => true;
+      c"typeof_unqual" => true;
+      _ => false;
+   }
+);
+
+let .rewrite-if-reserved(s: CString): CString = (
+   if s.is-c-reserved-word then c"__"+s else s
+);
+
 let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
    let f = match t {
       Var{ key=key } => (
          if typeof-term(t) <: t1(c"C",t0(c"void")) {
             mk-fragment().set(c"expression",SAtom(c"({})"));
          } else if typeof-term(t).is-t(c"C-FFI",0) {
-            mk-fragment().set(c"expression",SAtom(key));
+            mk-fragment().set(c"expression",SAtom(key.replace(c"-",c"_").rewrite-if-reserved));
          } else {
             let def = var-to-def(t);
             let e = std-c-fragment-context.lookup(def, mk-fragment());
@@ -23,7 +89,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       App{ left:Abs{lhs=lhs:Var{name=key}, rhs:ASTNil{}}, rhs=right } => (
          let lt = typeof-term(lhs).without-modifiers;
-         let vid = if lt.is-t(c"Nil",0) or lt <: t1(c"C",t0(c"void")) then SAtom(c"({})") else if std-c-is-ctype(lt) then SAtom(name.replace(c"-",c"_")) else SAtom(uuid());
+         let vid = if lt.is-t(c"Nil",0) or lt <: t1(c"C",t0(c"void")) then SAtom(c"({})") else if std-c-is-ctype(lt) then SAtom(name.replace(c"-",c"_").rewrite-if-reserved) else SAtom(uuid());
          let v = mk-fragment().set(c"expression",vid);
          let f = mk-fragment();
          std-c-fragment-context = std-c-fragment-context.bind( lhs, v );
