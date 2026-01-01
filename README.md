@@ -43,7 +43,7 @@ You can think of LSTS as just a macro that generates C code.
 
 The LSTS memory model is a restriction of the C memory model with several things such as always-on zero-initialization.
 
-The LSTS expression model is a subset of the C expression model with things that don't behave like expressions removed.
+The LSTS expression model is a subset of the C expression model with things that don't behave like expressions altered to just return Nil.
 
 ### IDE Support
 
