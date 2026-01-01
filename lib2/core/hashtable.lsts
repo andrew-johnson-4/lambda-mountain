@@ -45,23 +45,23 @@ let mk-hashtable(): Hashtable<k,v> = (
 
 # new allocations = 0 if capacity==0
 #                 | 1
-let mk-hashtable-is(tyk: Type<k>, tyv: Type<v>, capacity: USize): Hashtable<k,v> = (
-   mk-hashtable(type(Sized<k>), type(Sized<v>), capacity)
+let mk-hashtable-is(tyk: Type<k>, tyv: Type<v>, capacity: USize): Hashtable<Sized<k>,v> = (
+   mk-hashtable(type(Sized<k>), type(v), capacity)
 );
 
 # new allocations = 0
-let mk-hashtable-is(tyk: Type<k>, tyv: Type<v>): Hashtable<k,v> = (
+let mk-hashtable-is(tyk: Type<k>, tyv: Type<v>): Hashtable<Sized<k>,v> = (
    mk-hashtable-is(tyk, tyv, 0)
 );
 
 # new allocations = 0 if capacity==0
 #                 | 1
-let mk-hashtable-is(capacity: USize): Hashtable<k,v> = (
+let mk-hashtable-is(capacity: USize): Hashtable<Sized<k>,v> = (
    mk-hashtable-is(type(k), type(v), capacity)
 );
 
 # new allocations = 0
-let mk-hashtable-is(): Hashtable<k,v> = (
+let mk-hashtable-is(): Hashtable<Sized<k>,v> = (
    mk-hashtable-is(type(k), type(v), 0)
 );
 

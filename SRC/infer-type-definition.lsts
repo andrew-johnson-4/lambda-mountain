@@ -84,7 +84,7 @@ let infer-type-definition(term: AST): Nil = (
          }
       }
    } else {
-      add-quick-prop(lhs-type, ta, t1(c"Sized",lhs-type));
+      add-quick-prop(lhs-type, lhs-type, t1(c"Sized",lhs-type));
       add-weaken-quick-prop(lhs-type, t1(c"Sized",ta), t1(c"Sized",lhs-type));
 
       let case-number = 0_u64;
