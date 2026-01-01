@@ -28,7 +28,7 @@ let hash(key: Sized<t>+MustNotRetain): U64 = (
    let key-length = sizeof(t);
    let result = 0_u64;
    while i < key-length {
-      result = result + (key as U8[])[i];
+      result = result + (&key as U8[])[i];
       result = result + (result << 10);
       result = result ^ (result >> 6);
       i = i + 1;
