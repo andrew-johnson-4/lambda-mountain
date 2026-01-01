@@ -1,0 +1,18 @@
+
+import lib2/core/bedrock.lsts;
+
+let s0 = "";
+let s1 = "A";
+let s2 = "A"; # legally distinct "A" literal
+let s3 = "B";
+
+let hs = mk-hashtable-is(type(String), type(CString));
+
+hs = hs.bind(s1, c"a");
+hs = hs.bind(s2, c"b");
+hs = hs.bind(s3, c"c");
+
+assert( hs.lookup(s0, c"z") == c"z" );
+assert( hs.lookup(s1, c"z") == c"a" );
+assert( hs.lookup(s2, c"z") == c"b" );
+assert( hs.lookup(s3, c"z") == c"c" );
