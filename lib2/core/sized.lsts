@@ -4,6 +4,13 @@ let is(l: Sized<t>+MustNotRetain, r: Sized<t>+MustNotRetain): Bool = (
    memcmp(&l as C<"void">[], &r as C<"void">[], sizeof(t) as USize) as U8 == 0
 );
 
+let cmp(l: Sized<t>+MustNotRetain, r: Sized<t>+MustNotRetain): Ord = (
+   let c = memcmp(&l as C<"void">[], &r as C<"void">[], sizeof(t) as USize) as I64;
+   if c < 0 then LessThan
+   else if c > 0 then GreaterThan
+   else Equal
+);
+
 # new allocations = 0
 let mem-is-non-zero(v: Sized<t>+MustNotRetain): Bool = (
    let i = 0_sz;
