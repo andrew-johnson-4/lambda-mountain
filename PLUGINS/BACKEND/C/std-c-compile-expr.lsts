@@ -5,7 +5,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          if typeof-term(t) <: t1(c"C",t0(c"void")) {
             mk-fragment().set(c"expression",SAtom(c"({})"));
          } else if typeof-term(t).is-t(c"C-FFI",0) {
-            mk-fragment().set(c"expression",SAtom(key));
+            mk-fragment().set(c"expression",SAtom(c"_"+key.replace(c"-",c"_")));
          } else {
             let def = var-to-def(t);
             let e = std-c-fragment-context.lookup(def, mk-fragment());
