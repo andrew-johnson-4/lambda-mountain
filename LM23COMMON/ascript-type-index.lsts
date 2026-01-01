@@ -4,6 +4,7 @@ let type-index-normal = mk-hashtable-is(type(AST), type(Type));
 let type-index-denormal = mk-hashtable-is(type(AST), type(Type));
 
 let typeof-term-plain(t: AST): Type = type-index-plain.lookup(t, ta);
+
 let typeof-term-normal(t: AST): Type = (
    let nt = type-index-normal.lookup(t, ta);
    if non-zero(nt) then nt
@@ -13,6 +14,7 @@ let typeof-term-normal(t: AST): Type = (
       nt
    )
 );
+
 let typeof-term(t: AST): Type = (
    let nt = type-index-denormal.lookup(t, ta);
    if non-zero(nt) then nt
@@ -22,4 +24,5 @@ let typeof-term(t: AST): Type = (
       nt
    )
 );
+
 let ascript-plain(t: AST, tt: Type): Nil = type-index-plain = type-index-plain.bind(t,tt);

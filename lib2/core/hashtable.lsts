@@ -43,6 +43,28 @@ let mk-hashtable(): Hashtable<k,v> = (
    mk-hashtable(type(k), type(v), 0)
 );
 
+# new allocations = 0 if capacity==0
+#                 | 1
+let mk-hashtable-is(tyk: Type<k>, tyv: Type<v>, capacity: USize): Hashtable<k,v> = (
+   mk-hashtable(type(Sized<k>), type(Sized<v>), capacity)
+);
+
+# new allocations = 0
+let mk-hashtable-is(tyk: Type<k>, tyv: Type<v>): Hashtable<k,v> = (
+   mk-hashtable-is(tyk, tyv, 0)
+);
+
+# new allocations = 0 if capacity==0
+#                 | 1
+let mk-hashtable-is(capacity: USize): Hashtable<k,v> = (
+   mk-hashtable-is(type(k), type(v), capacity)
+);
+
+# new allocations = 0
+let mk-hashtable-is(): Hashtable<k,v> = (
+   mk-hashtable-is(type(k), type(v), 0)
+);
+
 # new allocations = 0
 let .length(h: Hashtable<k,v>): USize = (
    if (h.data as USize) == 0 then 0 else {
