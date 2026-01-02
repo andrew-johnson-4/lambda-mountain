@@ -22,5 +22,11 @@ let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
 let ascript-force(t: AST, tt: Type): Nil = (
    add-concrete-type-instance(tt, t);
    ascript-natural(t, tt);
+
+   # these initializations are necessary to prevent stale phi types
+   # I don't remember why that is, but just try removing them and debug from there
+   type-index-normal = type-index-normal.bind(t, ta);
+   type-index-denormal = type-index-denormal.bind(t, ta);
+
    types-have-changed = true;
 );
