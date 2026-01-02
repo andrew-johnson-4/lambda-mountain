@@ -1,5 +1,4 @@
 
-let types-have-changed = true; # TODO: iterative-inference
 let typecheck(): Nil = (
    infer-global-context-prim(ast-parsed-program);
    infer-global-context-td(ast-parsed-program);

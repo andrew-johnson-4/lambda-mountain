@@ -1,15 +1,19 @@
 
-let type-index-plain = mk-hashtable-is(type(AST), type(Type));
+# These three indices are purely an optimization over the single index pattern
+# Types are ascripted into type-index-natural, then often pulled out and either normalized or denormalized
+# The second two indices are just caches for this behavior
+
+let type-index-natural = mk-hashtable-is(type(AST), type(Type));
 let type-index-normal = mk-hashtable-is(type(AST), type(Type));
 let type-index-denormal = mk-hashtable-is(type(AST), type(Type));
 
-let typeof-term-plain(t: AST): Type = type-index-plain.lookup(t, ta);
+let typeof-term-natural(t: AST): Type = type-index-natural.lookup(t, ta);
 
 let typeof-term-normal(t: AST): Type = (
    let nt = type-index-normal.lookup(t, ta);
    if non-zero(nt) then nt
    else (
-      nt = type-index-plain.lookup(t,ta).normalize;
+      nt = type-index-natural.lookup(t,ta).normalize;
       type-index-normal = type-index-normal.bind(t,nt);
       nt
    )
@@ -19,10 +23,10 @@ let typeof-term(t: AST): Type = (
    let nt = type-index-denormal.lookup(t, ta);
    if non-zero(nt) then nt
    else (
-      nt = denormalize(type-index-plain.lookup(t,ta));
+      nt = denormalize(type-index-natural.lookup(t,ta));
       type-index-denormal = type-index-denormal.bind(t,nt);
       nt
    )
 );
 
-let ascript-plain(t: AST, tt: Type): Nil = type-index-plain = type-index-plain.bind(t,tt);
+let ascript-natural(t: AST, tt: Type): Nil = type-index-natural = type-index-natural.bind(t,tt);

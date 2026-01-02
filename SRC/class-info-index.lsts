@@ -1,2 +1,0 @@
-
-let .is-class(cls: Type): U64 = cls.is-type;
