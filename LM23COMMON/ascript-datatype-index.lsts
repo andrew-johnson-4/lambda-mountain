@@ -4,6 +4,17 @@
 let datatype-index = {} : Hashtable<(CString,U64),Bool>;
 
 let .is-datatype(tt: Type): Bool = (
-   let gta = tt.ground-tag-and-arity;
-   datatype-index.has(gta)
+   match tt {
+      TAnd{conjugate=conjugate} => (
+         let found = false;
+         for vector c in conjugate {
+            found = found or c.is-datatype;
+         };
+         found
+      );
+      _ => (
+         let gta = tt.ground-tag-and-arity;
+         datatype-index.has(gta)
+      );
+   }
 );
