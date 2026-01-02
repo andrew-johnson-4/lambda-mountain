@@ -12,7 +12,7 @@ let std-apply-macro-candidates(tctx: TypeContext?, mname: CString, margs: AST, c
          (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, mlhs);
          tctx = tctx.phi-append(new-tctx);
          if mctx.is-some then mctx = union(mctx, Some(extract-uuids(mrhs)));
-         if mctx.is-some then t = with-location-preserve(substitute(mctx.get-or-panic, mrhs), margs.location);
+         if mctx.is-some then t = substitute(mctx.get-or-panic, mrhs).with-location-preserve(margs.location);
       }
    };
    (tctx, t)
