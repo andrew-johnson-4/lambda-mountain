@@ -1,0 +1,5 @@
+
+type S zero SNil = SNil
+                 | SAtom { atom: String }
+                 | SCons { left: OwnedData<S>[], right: OwnedData<S>[] }
+                 | SPointer { pointer: Nil[] };

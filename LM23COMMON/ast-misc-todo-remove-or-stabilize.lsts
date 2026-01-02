@@ -4,21 +4,6 @@ type AST implements DefaultFormattable;
 
 # constructor with a default argument
 
-let .normalized-type(tr: TypeContextRow): Type = (
-   match tr {
-      TypeContextRow{ nt=nt, dt=dt } => if non-zero(nt) then nt else dt.normalize;
-      _ => ta;
-   }
-);
-let .def(tr: TypeContextRow): AST = (
-   match tr {
-      TypeContextRow{ blame=blame } => blame;
-      _ => ASTEOF;
-   }
-);
-
-let .into(tr: TypeContextRow, tt: Type<String>): String = "TypeContextRow{ key: \"\{tr.key-or-zero}\", dt: \"\{tr.dt-or-zero}\" }";
-
 type alias AContext = List<(CString,AST)>;
 
 type ParsePartial = PME{ term:AST , remainder:List<Token> };
@@ -28,25 +13,25 @@ type ApplyResult = { function-type:Type , return-type:Type };
 type CompileMode = ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
 type IsUsed = Used | Unused | Tail | Call { function-name: CString };
-let .is-call(used: IsUsed): U64 = (
+let .is-call(used: IsUsed): Bool = (
    match used {
       Call{} => true;
       _ => false;
    }
 );
-let .is-used(used: IsUsed): U64 = (
+let .is-used(used: IsUsed): Bool = (
    match used {
       Used{} => true;
       _ => false;
    }
 );
-let .is-unused(used: IsUsed): U64 = (
+let .is-unused(used: IsUsed): Bool = (
    match used {
       Unused{} => true;
       _ => false;
    }
 );
-let .is-tail(used: IsUsed): U64 = (
+let .is-tail(used: IsUsed): Bool = (
    match used {
       Tail{} => true;
       _ => false;
@@ -60,8 +45,6 @@ let .into(used: IsUsed, ty: Type<String>): String = (
       Call{} => "Call";
    }
 );
-
-type FContext zero FCtxEOF = FCtxEOF | FCtxBind{ remainder:FContext[] , k:CString , kt:Type , kv:Fragment };
 
 type Macro = { lhs:AST, rhs:AST };
 type MacroList zero MEOF = MEOF | MSeq{ k:MacroList[], v:Macro };

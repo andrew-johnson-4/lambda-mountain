@@ -1,6 +1,5 @@
 
-# type definitions
-import SRC/fragment-definitions.lsts;
+import SRC/fragment-definition.lsts;
 
 # accessors
 import SRC/fragment-get.lsts;

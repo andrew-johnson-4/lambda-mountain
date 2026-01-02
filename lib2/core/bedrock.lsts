@@ -11,4 +11,5 @@ import lib2/core/vector.lsts;
 import lib2/core/tuple.lsts;
 import lib2/core/maybe.lsts;
 import lib2/core/list.lsts;
+import lib2/core/s.lsts;
 import lib2/core/hashtable.lsts;
