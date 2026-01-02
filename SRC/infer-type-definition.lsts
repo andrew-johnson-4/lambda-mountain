@@ -33,7 +33,6 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ()
 );
 
-let type-base-type-index = {} : HashtableEq<(CString,U64),U64>;
 let phi-parameters-index = {} : HashtableEq<(CString,U64),Type>;
 
 let phi-parameters(tag: CString, ps: U64): Type = phi-parameters-index.lookup((tag,ps),ta);
@@ -85,7 +84,7 @@ let infer-type-definition(term: AST): Nil = (
       let case-number = 0_u64;
       for Tuple{ case-tag=first, case-fields=second } in cases {
          complex-type-index = complex-type-index.bind( lhs-type.ground-tag-and-arity, 1 );
-         type-base-type-index = type-base-type-index.bind( lhs-type.ground-tag-and-arity, 1 );
+         datatype-index = datatype-index.bind( lhs-type.ground-tag-and-arity, true );
          let field-ordinal = 0_u64;
          for Tuple{ field-name=first, field-type=second } in case-fields {
             let guard = lhs-type && (if non-zero(case-tag) then t0(c"Tag::"+case-tag) else ta);

@@ -1,9 +1,9 @@
 
 # All datatypes must be registered as such here
 
-let datatype-index = {} : HashtableEq<(CString,U64),U64>;
+let datatype-index = {} : Hashtable<(CString,U64),Bool>;
 
-let .is-datatype(tt: Type): U64 = (
+let .is-datatype(tt: Type): Bool = (
    let gta = tt.ground-tag-and-arity;
    datatype-index.has(gta)
 );

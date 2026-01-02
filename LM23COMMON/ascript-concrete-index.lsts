@@ -2,24 +2,25 @@
 let concrete-type-instances-index = {} : Hashtable<(CString,U64),List<Type>>;
 
 let add-concrete-type-instance(tt: Type, blame: AST): Nil = (
+   let empty-type-list = [] : List<Type>; # this is a workaround for a phi bug that needs to be fixed 
    if not(tt.is-phi-type) then {
       tt = tt.normalize.sanitize-phi;
       let lt = tt.slot(c"Array",2);
-      if non-zero(lt) then tt = lt else tt = tt.with-only-class;
+      if non-zero(lt) then tt = lt else tt = tt.with-only-datatype;
       if non-zero(tt) { match tt {
-         TGround{tag=tag, parameters:[]} => (
-            if tt.is-type && not(does-concrete-type-instance-exist(tt)) {
-               let k = (tag,0_u64);
+         TGround{tag1=tag, parameters:[]} => (
+            if tt.is-datatype and not(does-concrete-type-instance-exist(tt)) {
+               let k = (tag1,0_u64);
                concrete-type-instances-index = concrete-type-instances-index.bind(
-                  k, cons( tt, concrete-type-instances-index.lookup(k, [] : List<Type>) )
+                  k, cons( tt, concrete-type-instances-index.lookup(k, empty-type-list) )
                );
             }
          );
-         TGround{tag=tag, ts=parameters} => (
+         TGround{tag2=tag, ts=parameters} => (
             if not(does-concrete-type-instance-exist(tt)) {
-               let k = (tag, ts.length);
+               let k = (tag2, ts.length as U64);
                concrete-type-instances-index = concrete-type-instances-index.bind(
-                  k, cons( tt, concrete-type-instances-index.lookup(k, [] : List<Type>) )
+                  k, cons( tt, concrete-type-instances-index.lookup(k, empty-type-list) )
                );
             };
             for ct in ts { add-concrete-type-instance(ct,blame) };
@@ -28,12 +29,13 @@ let add-concrete-type-instance(tt: Type, blame: AST): Nil = (
    }
 );
 
-let does-concrete-type-instance-exist(tt: Type): U64 = (
+let does-concrete-type-instance-exist(tt: Type): Bool = (
+   let empty-type-list = [] : List<Type>; # this is a workaround for a phi bug that needs to be fixed 
    match tt {
       TGround{tag=tag, ts=parameters} => (
          let exists = false;
-         let k = (tag, ts.length);
-         for vt in concrete-type-instances-index.lookup(k, [] : List<Type>) {
+         let k = (tag, ts.length as U64);
+         for vt in concrete-type-instances-index.lookup(k, empty-type-list) {
             if vt==tt then exists = true;
          };
          exists
