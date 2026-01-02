@@ -1,4 +1,7 @@
 
+# A concrete type is an instance of a type that has been realized on a term
+# It is not an "in processing" or "theoretical" type anymore, but now an actual observed term
+
 let concrete-type-instances-index = {} : Hashtable<(CString,U64),List<Type>>;
 
 let add-concrete-type-instance(tt: Type, blame: AST): Nil = (
