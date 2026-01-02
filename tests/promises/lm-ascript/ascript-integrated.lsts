@@ -1,0 +1,19 @@
+
+import LM23COMMON/unit-ascript-core.lsts;
+
+let tctx = Some(mk-tctx());
+
+let term0 = mk-var(c"a");
+let term1 = mk-var(c"a");
+let term2 = mk-var(c"a"); # legally distinct variable term
+
+tctx = tctx.ascript(term1, t0(c"A"));
+tctx = tctx.ascript(term2, t0(c"B"));
+
+assert( typeof-term-natural(term0) == ta );
+assert( typeof-term-natural(term1) == t0(c"A") );
+assert( typeof-term-natural(term2) == t0(c"B") );
+
+assert( typeof-term-normal(term0) == ta );
+assert( typeof-term-normal(term1) == t0(c"A") );
+assert( typeof-term-normal(term2) == t0(c"B") );

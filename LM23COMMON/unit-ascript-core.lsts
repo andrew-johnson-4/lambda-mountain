@@ -1,8 +1,9 @@
 
 import LM23COMMON/unit-prop-core.lsts;
 
+import LM23COMMON/ascript-types-have-changed.lsts;
 import LM23COMMON/ascript-type-index.lsts;
 import LM23COMMON/ascript-concrete-index.lsts;
 import LM23COMMON/ascript-datatype-index.lsts;
 import LM23COMMON/ascript-with-only-datatype.lsts;
-
+import LM23COMMON/ascript-ascript-integrated.lsts;
