@@ -1,5 +1,5 @@
 
-let concrete-type-instances-index = {} : HashtableEq<(CString,U64),List<Type>>;
+let concrete-type-instances-index = {} : Hashtable<(CString,U64),List<Type>>;
 
 let add-concrete-type-instance(tt: Type, blame: AST): Nil = (
    if not(tt.is-phi-type) then {

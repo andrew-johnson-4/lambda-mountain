@@ -2,3 +2,4 @@
 import LM23COMMON/unit-prop-core.lsts;
 
 import LM23COMMON/ascript-type-index.lsts;
+import LM23COMMON/ascript-concrete-index.lsts;
