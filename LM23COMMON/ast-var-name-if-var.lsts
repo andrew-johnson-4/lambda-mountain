@@ -8,16 +8,16 @@ let var-name-if-var(t: AST): CString = (
 
 let var-name-if-var-or-lit(t: AST): CString = (
    match t {
-      Var{key=key} => key;
-      Lit{key=key} => key;
+      Var{key1=key} => key1;
+      Lit{key2=key} => key2;
       _ => c"";
    }
 );
 
 let lit-name-if-lit(t: AST): CString = (
    match t {
-      Lit{key=key} => key;
-      App{ left:Lit{key:c":"}, right:App{ left:Lit{key=key}, right:AType{} } } => key;
+      Lit{key1=key} => key1;
+      App{ left:Lit{key:c":"}, right:App{ left:Lit{key2=key}, right:AType{} } } => key2;
       _ => c"";
    }
 );

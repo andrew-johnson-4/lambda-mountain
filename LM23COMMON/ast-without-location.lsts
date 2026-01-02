@@ -1,8 +1,8 @@
 
 let .without-location(term: AST): AST = (
    match term {
-      Var{key=key,token=token} => Var(key,token.without-location);
-      Lit{key=key,token=token} => Lit(key,token.without-location);
+      Var{key1=key,token=token} => Var(key1,token.without-location);
+      Lit{key2=key,token=token} => Lit(key2,token.without-location);
       App{is-cons=is-cons,left=left,right=right} => App(is-cons,close(left.without-location),close(right.without-location));
       Seq{seq=seq} => (
          let ret = mk-vector(type(AST), seq.length);
@@ -10,7 +10,7 @@ let .without-location(term: AST): AST = (
          Seq(ret)
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => Abs(close(lhs.without-location),close(rhs.without-location),tt);
-      Glb{key=key,val=val} => Glb(key,close(val.without-location));
+      Glb{key3=key,val=val} => Glb(key3,close(val.without-location));
       _ => term;
    }
 );
