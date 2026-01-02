@@ -21,8 +21,6 @@ let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
 
 let ascript-force(t: AST, tt: Type): Nil = (
    add-concrete-type-instance(tt, t);
-   ascript-plain(t, tt);
-   type-index-normal = type-index-normal.bind(t, ta);
-   type-index-denormal = type-index-denormal.bind(t, ta);
+   ascript-natural(t, tt);
    types-have-changed = true;
 );
