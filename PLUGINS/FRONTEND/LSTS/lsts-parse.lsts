@@ -216,7 +216,7 @@ let lsts-parse(tokens: List<Token>): Nil = (
             if lsts-parse-head(tokens)=="let" then (mrhs, tokens) = lsts-parse-let(tokens)
             else (mrhs, tokens) = lsts-parse-atom(tokens);
             lsts-parse-expect(c")",tokens); tokens = tail(tokens);
-            preprocess-macros = MSeq( close(preprocess-macros), Macro(without-location(mlhs), without-location(mrhs)) );
+            preprocess-macros = MSeq( close(preprocess-macros), Macro(mlhs.without-location, mrhs.without-location) );
             lsts-parse-expect(c";",tokens); tokens = tail(tokens);
          );
          [ Token{key:c"interface"}.. _] => tokens = lsts-parse-interface(tokens);
@@ -281,7 +281,7 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    (mk-glb(
       mk-token(mname),
-      mk-abs(margs, mk-app(mk-lit(c":"), mk-cons(without-location(mbody),mk-atype(mrett))), t0(c"TypedMacro"))
+      mk-abs(margs, mk-app(mk-lit(c":"), mk-cons(mbody.without-location,mk-atype(mrett))), t0(c"TypedMacro"))
    ), tokens)
 );
 
