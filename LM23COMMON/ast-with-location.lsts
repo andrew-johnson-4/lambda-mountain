@@ -1,0 +1,16 @@
+
+let .with-location(term: AST, loc: SourceLocation): AST = (
+   match term {
+      Var{key=key,token=token} => Var(key,with-location(token,loc));
+      Lit{key=key,token=token} => Lit(key,with-location(token,loc));
+      App{left=left,right=right} => App(close(left.with-location(loc)),close(right.with-location(loc)));
+      Seq{seq=seq} => (
+         let ret = mk-vector(type(AST), seq.length);
+         for s in seq { ret = ret.push(s.with-location(loc)) };
+         Seq(ret)
+      );
+      Abs{lhs=lhs,rhs=rhs,tt=tt} => Abs(close(lhs.with-location(loc)),close(rhs.with-location(loc)),tt);
+      Glb{key=key,val=val} => Glb(with-location(key,loc),close(val.with-location(loc)));
+      _ => term;
+   }
+);

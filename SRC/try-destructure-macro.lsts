@@ -11,7 +11,7 @@ let try-destructure-macro(loc: SourceLocation, lhs: AST, term: AST): AContext? =
       Tuple{
          first:App{left:Lit{key:c":Literal:"},right:Var{pv=key}},
          second:App{left:Lit{key:c":",ctk=token}, right:App{left:Lit{},right:AType{}}}
-      } => r = r.bind(pv,with-location(term,ctk.location));
+      } => r = r.bind(pv,term.with-location(ctk.location));
       Tuple{
          first:App{left:Var{},right:Var{}},
          second:App{left:Lit{tag=key}}
@@ -46,15 +46,15 @@ let try-destructure-macro(loc: SourceLocation, lhs: AST, term: AST): AContext? =
       Tuple{ first:Lit{pl=key}, second:Var{el=key} } => if pl==el then r = yes;
       Tuple{ first:Lit{pl=key}, second:Lit{el=key} } => if pl==el then r = yes;
       Tuple{ first:App{left:Lit{key:c":Literal:"}, right:Var{pv=key}}, second:Lit{el=key,eltk=token} } => (
-         if index-of-tag(el)==unknown-index-of-tag then r = r.bind(pv,with-location(term,eltk.location));
+         if index-of-tag(el)==unknown-index-of-tag then r = r.bind(pv,term.with-location(eltk.location));
       );
       Tuple{ first:App{left:Lit{key:c":Field:"}, right:Var{pv=key}}, second:Lit{el=key,eltk=token} } => (
-         if el.has-prefix(c".") then r = r.bind(pv,with-location(term,eltk.location));
+         if el.has-prefix(c".") then r = r.bind(pv,term.with-location(eltk.location));
       );
       Tuple{ first:App{left:Lit{key:c":Variable:"}, right:Var{pv=key}}, second:Var{key:c"_"} } => (
       );
       Tuple{ first:App{left:Lit{key:c":Variable:"}, right:Var{pv=key}}, second:Var{el=key,eltk=token} } => (
-         r = r.bind(pv,with-location(term,eltk.location));
+         r = r.bind(pv,term.with-location(eltk.location));
       );
       Tuple{ first:App{ left:App{ left:Lit{key:c":Tag:"}, right:Var{pv=key} }, right:Var{pt=key} }, second:Lit{el=key,eltk=token} } => (
          if index-of-tag(el)!=unknown-index-of-tag {
@@ -65,7 +65,7 @@ let try-destructure-macro(loc: SourceLocation, lhs: AST, term: AST): AContext? =
             r = r.bind(pt, mk-lit(tag-tt,with-key(eltk,tag-tt)));
          }
       );
-      Tuple{ first:Var{pv=key}, t=second } => r = r.bind(pv,with-location(term,t.location));
+      Tuple{ first:Var{pv=key}, t=second } => r = r.bind(pv,term.with-location(t.location));
       _ => ();
    }; r
 );

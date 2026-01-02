@@ -535,7 +535,7 @@ let lsts-make-maybe-var(tokens: List<Token>): Tuple<AST,List<Token>> = (
          tokens = tail(tokens);
       } else {
          (let var-name, tokens) = lsts-parse-identifier(tokens);
-         base = with-location(mk-var(var-name), loc);
+         base = mk-var(var-name).with-location(loc);
       };
       Tuple ( base, tokens )
    }
@@ -1636,7 +1636,7 @@ let lsts-make-lit(t: Token): AST = (
          };
       };
    } else if t.key.has-suffix(c"_ss") {
-      base = with-location(mk-lit(t.key.remove-suffix(c"_ss")),loc).ascript(t0(c"String") && t0(c"Literal"));
+      base = mk-lit(t.key.remove-suffix(c"_ss")).with-location(loc).ascript(t0(c"String") && t0(c"Literal"));
    };
    base
 );
