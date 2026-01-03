@@ -9,7 +9,6 @@ import SRC/unit-types.lsts;
 import SRC/unit-inference.lsts;
 import SRC/unit-fragments.lsts;
 import SRC/unit-globals.lsts;
-import SRC/unit-error.lsts;
 import SRC/unit-preprocess.lsts;
 import SRC/unit-orphans.lsts;
 
