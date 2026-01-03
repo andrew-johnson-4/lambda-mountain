@@ -1,0 +1,50 @@
+
+let .skey(t: Token): String = intern(t.key);
+type AST implements DefaultFormattable;
+
+# constructor with a default argument
+
+type alias AContext = List<(CString,AST)>;
+
+type ParsePartial = PME{ term:AST , remainder:List<Token> };
+
+type ApplyResult = { function-type:Type , return-type:Type };
+
+type CompileMode = ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
+
+type IsUsed = Used | Unused | Tail | Call { function-name: CString };
+let .is-call(used: IsUsed): Bool = (
+   match used {
+      Call{} => true;
+      _ => false;
+   }
+);
+let .is-used(used: IsUsed): Bool = (
+   match used {
+      Used{} => true;
+      _ => false;
+   }
+);
+let .is-unused(used: IsUsed): Bool = (
+   match used {
+      Unused{} => true;
+      _ => false;
+   }
+);
+let .is-tail(used: IsUsed): Bool = (
+   match used {
+      Tail{} => true;
+      _ => false;
+   }
+);
+let .into(used: IsUsed, ty: Type<String>): String = (
+   match used {
+      Used{} => "Used";
+      Unused{} => "Unused";
+      Tail{} => "Tail";
+      Call{} => "Call";
+   }
+);
+
+type Macro = { lhs:AST, rhs:AST };
+type MacroList zero MEOF = MEOF | MSeq{ k:MacroList[], v:Macro };

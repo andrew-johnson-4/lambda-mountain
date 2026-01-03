@@ -1,7 +1,6 @@
 
 # dependencies
 import SRC/unit-types.lsts;
-import SRC/unit-ast.lsts;
 import SRC/unit-error.lsts;
 
 # type definitions

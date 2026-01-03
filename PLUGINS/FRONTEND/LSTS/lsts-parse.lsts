@@ -216,7 +216,7 @@ let lsts-parse(tokens: List<Token>): Nil = (
             if lsts-parse-head(tokens)=="let" then (mrhs, tokens) = lsts-parse-let(tokens)
             else (mrhs, tokens) = lsts-parse-atom(tokens);
             lsts-parse-expect(c")",tokens); tokens = tail(tokens);
-            preprocess-macros = MSeq( close(preprocess-macros), Macro(without-location(mlhs), without-location(mrhs)) );
+            preprocess-macros = MSeq( close(preprocess-macros), Macro(mlhs.without-location, mrhs.without-location) );
             lsts-parse-expect(c";",tokens); tokens = tail(tokens);
          );
          [ Token{key:c"interface"}.. _] => tokens = lsts-parse-interface(tokens);
@@ -281,7 +281,7 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    (mk-glb(
       mk-token(mname),
-      mk-abs(margs, mk-app(mk-lit(c":"), mk-cons(without-location(mbody),mk-atype(mrett))), t0(c"TypedMacro"))
+      mk-abs(margs, mk-app(mk-lit(c":"), mk-cons(mbody.without-location,mk-atype(mrett))), t0(c"TypedMacro"))
    ), tokens)
 );
 
@@ -535,7 +535,7 @@ let lsts-make-maybe-var(tokens: List<Token>): Tuple<AST,List<Token>> = (
          tokens = tail(tokens);
       } else {
          (let var-name, tokens) = lsts-parse-identifier(tokens);
-         base = with-location(mk-var(var-name), loc);
+         base = mk-var(var-name).with-location(loc);
       };
       Tuple ( base, tokens )
    }
@@ -1636,7 +1636,7 @@ let lsts-make-lit(t: Token): AST = (
          };
       };
    } else if t.key.has-suffix(c"_ss") {
-      base = with-location(mk-lit(t.key.remove-suffix(c"_ss")),loc).ascript(t0(c"String") && t0(c"Literal"));
+      base = mk-lit(t.key.remove-suffix(c"_ss")).with-location(loc).ascript(t0(c"String") && t0(c"Literal"));
    };
    base
 );

@@ -6,7 +6,6 @@ import LM23COMMON/index.lsts;
 import SRC/unit-drivers.lsts;
 
 import SRC/unit-types.lsts;
-import SRC/unit-ast.lsts;
 import SRC/unit-inference.lsts;
 import SRC/unit-fragments.lsts;
 import SRC/unit-globals.lsts;
