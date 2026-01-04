@@ -1,4 +1,2 @@
 
 import SRC/typeof-tag.lsts;
-
-import SRC/index-globals.lsts;
