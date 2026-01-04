@@ -21,5 +21,4 @@ import LM23COMMON/tctx-with-phi-id-if-phi-state.lsts;
 import LM23COMMON/tctx-into-string.lsts;
 import LM23COMMON/tctx-phi-move-all.lsts;
 import LM23COMMON/tctx-phi-initialize.lsts;
-import LM23COMMON/tctx-resurrect.lsts;
 import LM23COMMON/tctx-substitute.lsts;
