@@ -1,0 +1,11 @@
+
+let typeof-var-raw(sloc: AST, tctx: TypeContext?, vname: CString, must-not-fresh: Bool): (TypeContext?, Type) = (
+   let rows = tctx.lookups(vname);
+   if non-zero(rows) then {
+      let tr = head(rows);
+      if tr.denormalized.is-t(c"MustRetain",0) and not(must-not-fresh) {
+         (tctx, tr) = tctx.phi-fresh(tr);
+      };
+      (tctx, tr.denormalized)
+   } else (tctx, ta)
+);

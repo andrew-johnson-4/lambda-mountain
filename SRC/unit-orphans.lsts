@@ -32,3 +32,4 @@ let .unroll-seq(t: AST): Vector<AST> = (
    }
 );
 
+let global-ctx = FCtxEOF;

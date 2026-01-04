@@ -16,6 +16,7 @@ let main-with-argv = false;
 let main-with = false;
 
 let config-path = [] : List<CString>; # TODO: getenv("HOME")+"/.lm/"
+non-zero(config-path); # TODO remove
 
 let config-platform-prefix = c"lib/";
 let config-profile-invocations = false;
@@ -24,9 +25,9 @@ let config-mode = ModeCompile;
 let config-strip-debug = false;
 let preprocess-macros = MEOF;
 let ast-parsed-program = mk-eof();
-let global-ctx = FCtxEOF;
 
 let parse-suffixes = [] : List<(CString,Type)>;
+non-zero(parse-suffixes); # TODO remove
 
 let config-v3 = true;
 
