@@ -1,0 +1,13 @@
+
+let .resurrect(tctx: TypeContext?, tt: Type, t: AST): (TypeContext?, Type) = (
+   let phi-id = tt.slot(c"Phi::Id",1).l1.simple-tag;
+   if non-zero(phi-id) {
+      tt = tctx.with-phi(tt, t);
+      let phi-state = tt.slot(c"Phi::State",1).l1;
+      phi-state = phi-state.resurrect;
+      tctx = tctx.bind-phi(phi-id, phi-state, t);
+      tt = tctx.with-phi(tt, t);
+      tctx.ascript(t, tt);
+   };
+   (tctx, tt)
+);

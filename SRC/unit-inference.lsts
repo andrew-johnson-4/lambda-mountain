@@ -1,8 +1,4 @@
 
-# dependencies
-import SRC/unit-types.lsts;
-import SRC/unit-error.lsts;
-
 # type definitions
 import SRC/inference-definitions.lsts;
 

@@ -18,3 +18,4 @@ import LM23COMMON/prop-is-phi-type.lsts;
 import LM23COMMON/prop-phi-as-state.lsts;
 import LM23COMMON/prop-phi-override.lsts;
 import LM23COMMON/prop-misc-todo-remove-or-stabilize.lsts;
+import LM23COMMON/prop-tctx-substitute.lsts;
