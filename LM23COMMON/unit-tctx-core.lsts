@@ -22,5 +22,3 @@ import LM23COMMON/tctx-into-string.lsts;
 import LM23COMMON/tctx-phi-move-all.lsts;
 import LM23COMMON/tctx-phi-initialize.lsts;
 import LM23COMMON/tctx-substitute.lsts;
-import LM23COMMON/tctx-typeof-var-raw.lsts;
-import LM23COMMON/tctx-typeof-tag.lsts;
