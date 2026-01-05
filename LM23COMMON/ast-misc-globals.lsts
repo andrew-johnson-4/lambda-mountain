@@ -1,0 +1,32 @@
+
+let assemble-header-section = SNil;
+let assemble-header-typedef-section = SNil;
+let assemble-types-section = SNil;
+let assemble-gdecl-section = SNil;
+let assemble-text-section = SNil;
+let assemble-init-section = SNil;
+let assemble-data-section = SNil;
+let assemble-profile-onexit = SNil;
+let assemble-string-initializer-section = SNil;
+let assemble-global-initializer-section = SNil;
+let assemble-final = c"";
+let assemble-argv-referenced = false;
+
+let main-with-argv = false;
+let main-with = false;
+
+let config-path = [] : List<CString>; # TODO: getenv("HOME")+"/.lm/"
+non-zero(config-path); # TODO remove
+
+let config-platform-prefix = c"lib/";
+let config-profile-invocations = false;
+let config-target = c"tmp.c";
+let config-mode = ModeCompile;
+let config-strip-debug = false;
+let preprocess-macros = MEOF;
+let ast-parsed-program = mk-eof();
+
+let parse-suffixes = [] : List<(CString,Type)>;
+non-zero(parse-suffixes); # TODO remove
+
+let config-v3 = true;

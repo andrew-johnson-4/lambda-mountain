@@ -1,13 +1,16 @@
 
 let .resurrect(tctx: TypeContext?, tt: Type, t: AST): (TypeContext?, Type) = (
+   # TODO: fix tt2, tt3 workaround which was for linear variable bug
+   # NOTE: make sure to create a promise test covering this phi/linear bug
    let phi-id = tt.slot(c"Phi::Id",1).l1.simple-tag;
    if non-zero(phi-id) {
-      tt = tctx.with-phi(tt, t);
-      let phi-state = tt.slot(c"Phi::State",1).l1;
+      let tt2 = tctx.with-phi(tt, t);
+      let phi-state = tt2.slot(c"Phi::State",1).l1;
       phi-state = phi-state.resurrect;
       tctx = tctx.bind-phi(phi-id, phi-state, t);
-      tt = tctx.with-phi(tt, t);
-      tctx.ascript(t, tt);
+      let tt3 = tctx.with-phi(tt2, t);
+      tctx.ascript(t, tt3);
+      tt = tt3;
    };
    (tctx, tt)
 );
