@@ -30,5 +30,3 @@ let parse-suffixes = [] : List<(CString,Type)>;
 non-zero(parse-suffixes); # TODO remove
 
 let config-v3 = true;
-
-let global-flow-tctx = None : TypeContext?;
