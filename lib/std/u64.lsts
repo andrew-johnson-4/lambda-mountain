@@ -46,6 +46,10 @@ let .into(i: U64, tt: Type<String>): String = (
    intern(to-string(i))
 );
 
+let .into(i: U64, tt: Type<CString>): CString = (
+   to-string(i)
+);
+
 let print(io: IO::File, x: U64): Nil = (fprintf(io, c"%lu", x); ());
 let max(x: U64, y: U64): U64 = if x>=y then x else y;
 let min(x: U64, y: U64): U64 = if x<=y then x else y;
@@ -101,3 +105,4 @@ let .to-hex(i: U64): CString = (
    buff = buff.push(0);
    buff.data as CString
 );
+
