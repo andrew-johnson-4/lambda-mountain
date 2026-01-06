@@ -10,3 +10,6 @@ import LM23COMMON/typecheck-decorate-var-to-def.lsts;
 import LM23COMMON/typecheck-release-locals.lsts;
 import LM23COMMON/typecheck-phi-merge.lsts;
 import LM23COMMON/typecheck-validate-pctx-del.lsts;
+import LM23COMMON/typecheck-typeof-var.lsts;
+import LM23COMMON/typecheck-defof-var.lsts;
+import LM23COMMON/typecheck-typeof-var.lsts;

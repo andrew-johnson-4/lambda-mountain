@@ -11,4 +11,3 @@ let defof-var(sloc: AST, tctx: TypeContext?, vname: CString, tt: Type): AST = (
    else if not(non-zero(tt)) then ASTEOF
    else fail("Unknown Referenced Variable: \{vname} : \{tt} at \{sloc.location}");
 );
-
