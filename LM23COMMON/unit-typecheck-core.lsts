@@ -16,3 +16,4 @@ import LM23COMMON/typecheck-typeof-var.lsts;
 import LM23COMMON/typecheck-maybe-retain.lsts;
 import LM23COMMON/typecheck-infer-ctx.lsts;
 import LM23COMMON/typecheck-typeof-lhs.lsts;
+import LM23COMMON/typecheck-macro-table.lsts;

@@ -4,7 +4,6 @@ import SRC/index-types.lsts;
 import SRC/index-plugins.lsts;
 import SRC/substitute.lsts;
 import SRC/validate-interfaces.lsts;
-import SRC/macro-table.lsts;
 import SRC/std-apply-macro.lsts;
 import SRC/std-apply-macro-candidates.lsts;
 import SRC/std-direct-destructure-macro.lsts;

@@ -1,18 +1,28 @@
 
-let index-macro-table = {} : HashtableEq<CString,List<(Type,Type,AST)>>;
-index-macro-table = index-macro-table.bind(c"macro::concat", [] : List<(Type,Type,AST)>);
-index-macro-table = index-macro-table.bind(c"macro::location", [] : List<(Type,Type,AST)>);
-index-macro-table = index-macro-table.bind(c"macro::variable", [] : List<(Type,Type,AST)>);
-index-macro-table = index-macro-table.bind(c"macro::underscore", [] : List<(Type,Type,AST)>);
-index-macro-table = index-macro-table.bind(c"macro::constant", [] : List<(Type,Type,AST)>);
-index-macro-table = index-macro-table.bind(c"macro::tag", [] : List<(Type,Type,AST)>);
+let index-macro-table = {} : Hashtable<CString,List<(Type,Type,AST)>>;
+
+# TODO: fix this so it can just be a normal top-level term (linear bug)
+let fuisdofj(): Nil = (
+   index-macro-table = index-macro-table.bind(c"macro::concat", [] : List<(Type,Type,AST)>);
+   index-macro-table = index-macro-table.bind(c"macro::location", [] : List<(Type,Type,AST)>);
+   index-macro-table = index-macro-table.bind(c"macro::variable", [] : List<(Type,Type,AST)>);
+   index-macro-table = index-macro-table.bind(c"macro::underscore", [] : List<(Type,Type,AST)>);
+   index-macro-table = index-macro-table.bind(c"macro::constant", [] : List<(Type,Type,AST)>);
+   index-macro-table = index-macro-table.bind(c"macro::tag", [] : List<(Type,Type,AST)>);
+);
+fuisdofj();
 
 # Meta variables can be used to match syntax patterns
-let index-macro-meta = {} : HashtableEq<CString,List<(Type,Type,AST)>>;
-index-macro-meta = index-macro-meta.bind(c"macro::variable", [] : List<(Type,Type,AST)>);
-index-macro-meta = index-macro-meta.bind(c"macro::underscore", [] : List<(Type,Type,AST)>);
-index-macro-meta = index-macro-meta.bind(c"macro::constant", [] : List<(Type,Type,AST)>);
-index-macro-meta = index-macro-meta.bind(c"macro::tag", [] : List<(Type,Type,AST)>);
+let index-macro-meta = {} : Hashtable<CString,List<(Type,Type,AST)>>;
+
+# TODO: fix this so it can just be a normal top-level term (linear bug)
+let apsdfksl(): Nil = (
+   index-macro-meta = index-macro-meta.bind(c"macro::variable", [] : List<(Type,Type,AST)>);
+   index-macro-meta = index-macro-meta.bind(c"macro::underscore", [] : List<(Type,Type,AST)>);
+   index-macro-meta = index-macro-meta.bind(c"macro::constant", [] : List<(Type,Type,AST)>);
+   index-macro-meta = index-macro-meta.bind(c"macro::tag", [] : List<(Type,Type,AST)>);
+);
+apsdfksl();
 
 let bind-new-macro(mname: CString, mterm: AST): Nil = (
    let row = index-macro-table.lookup(mname, [] : List<(Type,Type,AST)>);
