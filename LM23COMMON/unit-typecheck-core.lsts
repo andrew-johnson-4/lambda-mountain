@@ -7,3 +7,4 @@ import LM23COMMON/typecheck-infer-expr.lsts;
 import LM23COMMON/typecheck-free-and-seen.lsts;
 import LM23COMMON/typecheck-var-to-def-index.lsts;
 import LM23COMMON/typecheck-decorate-var-to-def.lsts;
+import LM23COMMON/typecheck-release-locals.lsts;

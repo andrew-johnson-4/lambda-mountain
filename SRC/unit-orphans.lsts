@@ -17,7 +17,6 @@ import SRC/without-phi.lsts;
 import SRC/validate-pctx-del.lsts;
 import SRC/with-only-phi.lsts;
 import SRC/maybe-retain.lsts;
-import SRC/release-locals.lsts;
 import SRC/without-nested-phi.lsts;
 import SRC/tctx-to-string.lsts;
 import SRC/std-maybe-release-after-call.lsts;
