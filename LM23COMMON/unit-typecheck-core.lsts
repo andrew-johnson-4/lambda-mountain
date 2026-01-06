@@ -13,3 +13,4 @@ import LM23COMMON/typecheck-validate-pctx-del.lsts;
 import LM23COMMON/typecheck-typeof-var.lsts;
 import LM23COMMON/typecheck-defof-var.lsts;
 import LM23COMMON/typecheck-typeof-var.lsts;
+import LM23COMMON/typecheck-maybe-retain.lsts;
