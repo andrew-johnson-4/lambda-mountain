@@ -4,7 +4,7 @@ let var-to-def-index = mk-hashtable-is(type(AST), type(AST));
 let var-to-def(k: AST): AST = (
    let def = var-to-def-index.lookup(k, mk-eof());
    if not(non-zero(def)) {
-      exit-error( untern("Unable to Find Symlink in Context: \{k}"), k );
+      exit-error( "Unable to Find Symlink in Context: \{k}".into(type(CString)), k );
    };
    def-to-sym(def)
 );
