@@ -5,7 +5,6 @@ import SRC/index-types.lsts;
 import SRC/index-plugins.lsts;
 import SRC/substitute.lsts;
 import SRC/validate-interfaces.lsts;
-import SRC/std-infer-expr.lsts;
 import SRC/decorate-var-to-def.lsts;
 import SRC/macro-table.lsts;
 import SRC/std-apply-macro.lsts;

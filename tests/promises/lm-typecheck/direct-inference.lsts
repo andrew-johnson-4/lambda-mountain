@@ -1,2 +1,6 @@
 
 import LM23COMMON/unit-typecheck-core.lsts;
+
+let tctx1 = Some(mk-tctx());
+let term1 = mk-eof();
+(tctx1, term1) = std-infer-expr(tctx1, term1, true, Used, ta);
