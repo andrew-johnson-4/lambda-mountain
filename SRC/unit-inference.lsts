@@ -2,9 +2,6 @@
 # type definitions
 import SRC/inference-definitions.lsts;
 
-# unification
-import SRC/reduce-plural.lsts;
-
 # corollaries
 import SRC/accept-interface.lsts;
 
