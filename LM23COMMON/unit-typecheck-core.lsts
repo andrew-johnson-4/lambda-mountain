@@ -17,3 +17,5 @@ import LM23COMMON/typecheck-maybe-retain.lsts;
 import LM23COMMON/typecheck-infer-ctx.lsts;
 import LM23COMMON/typecheck-typeof-lhs.lsts;
 import LM23COMMON/typecheck-macro-table.lsts;
+import LM23COMMON/typecheck-std-apply-macro.lsts;
+import LM23COMMON/typecheck-std-apply-macro-candidates.lsts;
