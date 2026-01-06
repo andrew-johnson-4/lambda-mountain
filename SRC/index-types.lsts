@@ -3,7 +3,6 @@ import SRC/substitute.lsts;
 import SRC/index-of-tag.lsts;
 import SRC/global-is-seen.lsts;
 
-import SRC/typeof-lhs.lsts;
 import SRC/apply.lsts;
 
 import SRC/typecheck.lsts;
