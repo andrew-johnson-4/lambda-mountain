@@ -5,3 +5,4 @@ import LM23COMMON/unit-ast-core.lsts;
 import LM23COMMON/unit-tctx-core.lsts;
 import LM23COMMON/unit-prop-core.lsts;
 import LM23COMMON/unit-ascript-core.lsts;
+import LM23COMMON/unit-typecheck-core.lsts;

@@ -5,11 +5,11 @@ let .accept-interface(tt: Type, pos: U64): Type = (
    else tt
 );
 
-let .should-accept-interface(tt: Type): U64 = (
+let .should-accept-interface(tt: Type): Bool = (
    match tt {
       TAnd{ conjugate=conjugate } => (
-         let result = true as U64;
-         for c in conjugate { result = result && c.should-accept-interface };
+         let result = true;
+         for c in conjugate { result = result and c.should-accept-interface };
          result
       );
       TGround{tag=tag} => interface-index.has(tt.ground-tag-and-arity);
