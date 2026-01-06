@@ -22,7 +22,6 @@ import SRC/release-locals.lsts;
 import SRC/without-nested-phi.lsts;
 import SRC/tctx-to-string.lsts;
 import SRC/std-maybe-release-after-call.lsts;
-import SRC/tctx-free-and-seen.lsts;
 
 let .unroll-seq(t: AST): Vector<AST> = (
    match t {
