@@ -1,0 +1,18 @@
+
+let .accept-interface(tt: Type, pos: U64): Type = (
+   if tt.should-accept-interface
+   then tt && tv( c"accept_interface_" + pos.into(type(CString)) )
+   else tt
+);
+
+let .should-accept-interface(tt: Type): Bool = (
+   match tt {
+      TAnd{ conjugate=conjugate } => (
+         let result = true;
+         for c in conjugate { result = result and c.should-accept-interface };
+         result
+      );
+      TGround{tag=tag} => interface-index.has(tt.ground-tag-and-arity);
+      _ => false;
+   }
+);

@@ -32,6 +32,10 @@ let .into(i: I64, tt: Type<String>): String = (
    String(0 as USize, cs-length, od)
 );
 
+let .into(i: U64, tt: Type<CString>): CString = (
+   i.into(type(String)).into(type(CString))
+);
+
 let .into(i: U64, tt: Type<String>): String = (
    let od = mk-owned-data(type(U8), 20_sz);
    let cs-length = 0_sz;
@@ -83,3 +87,4 @@ let .to-hex(i: U64): String = (
    };
    buff.buffer-into-string
 );
+
