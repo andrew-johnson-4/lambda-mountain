@@ -1,6 +1,6 @@
 
 let validate-pctx-release(tctx: TypeContext?): Nil = (
-   let ps-seen = {} : HashtableEq<CString,U64>;
+   let ps-seen = {} : Hashtable<CString,U64>;
    for pr in tctx.get-or(mk-tctx()).pctx {
       if not(pr.is-global-or-zero) and not(ps-seen.has(pr.phi-id-or-zero)) {
          if pr.phi-tt-or-zero.is-linear-live
