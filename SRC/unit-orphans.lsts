@@ -1,29 +1,17 @@
 
-import SRC/typeof-var.lsts;
 import SRC/bind-varargs.lsts;
 import SRC/index-types.lsts;
 import SRC/index-plugins.lsts;
 import SRC/substitute.lsts;
 import SRC/validate-interfaces.lsts;
-import SRC/std-infer-expr.lsts;
-import SRC/decorate-var-to-def.lsts;
-import SRC/macro-table.lsts;
-import SRC/std-apply-macro.lsts;
-import SRC/std-apply-macro-candidates.lsts;
 import SRC/std-direct-destructure-macro.lsts;
 import SRC/infer-global-terms.lsts;
 import SRC/infer-type-definition.lsts;
 import SRC/assert-no-infinite-types.lsts;
-import SRC/phi-merge.lsts;
 import SRC/without-phi.lsts;
-import SRC/validate-pctx-del.lsts;
 import SRC/with-only-phi.lsts;
-import SRC/maybe-retain.lsts;
-import SRC/release-locals.lsts;
 import SRC/without-nested-phi.lsts;
 import SRC/tctx-to-string.lsts;
-import SRC/std-maybe-release-after-call.lsts;
-import SRC/tctx-free-and-seen.lsts;
 
 let .unroll-seq(t: AST): Vector<AST> = (
    match t {

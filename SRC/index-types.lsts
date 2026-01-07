@@ -3,16 +3,11 @@ import SRC/substitute.lsts;
 import SRC/index-of-tag.lsts;
 import SRC/global-is-seen.lsts;
 
-import SRC/typeof-lhs.lsts;
 import SRC/apply.lsts;
-
-import SRC/typeof-var-raw.lsts;
 
 import SRC/typecheck.lsts;
 import SRC/specialize.lsts;
 import SRC/assert-well-typed.lsts;
 import SRC/assert-one-typed.lsts;
-import SRC/infer-ctx.lsts;
-import SRC/infer-tctx.lsts;
 
 import SRC/ctx-union.lsts;

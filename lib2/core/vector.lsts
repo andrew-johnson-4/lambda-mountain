@@ -154,3 +154,11 @@ let .reverse(v: Vector<t>): Vector<t> = (
 
 # new allocations = 0
 let .into(v: Vector<t>, tt: Type<Vector<t>>): Vector<t> = v;
+
+let .contains(v: Vector<t>, i: t): Bool = (
+   let result = false;
+   for vector vi in v {
+      if vi==i then result = true;
+   };
+   result
+);

@@ -1,0 +1,135 @@
+
+let std-apply-macro(tctx: Maybe<TypeContext>, t: AST, used: IsUsed): (TypeContext?, AST) = (
+   match t {
+      App{left:Var{mname=key}, margs=right} => (
+         std-apply-macro(tctx, mname, margs, used);
+      );
+   }
+);
+
+let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, true);
+let std-apply-macro-weak(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, false);
+
+let std-apply-macro-concat(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      App{ left:Var{left-key=key}, right:Var{right-key=key} } => (tctx, mk-var(left-key + right-key));
+      _ => (tctx, mk-eof());
+   }
+);
+
+let std-apply-macro-variable(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      Var{} => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+
+let std-apply-macro-underscore(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      Var{key:c"_"} => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+
+let std-apply-macro-tag(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      Lit{key=key} => (
+         if index-of-tag(key)==unknown-index-of-tag then (tctx, mk-eof()) else {
+            let tag-name    = mk-lit(to-string(index-of-tag(key)));
+            let tag-ordinal = tag-name.ascript(t0(c"Constant") && t0(c"Literal") && t0(c"U64"));
+            let tag-type    = mk-atype(t0(c"Tag::" + key));
+            (tctx, mk-cons(mk-cons(tag-name, tag-ordinal), tag-type))
+         }
+      );
+      _ => (tctx, mk-eof());
+   }
+);
+
+let std-apply-macro-constant(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      App{ left:Lit{key:c":"}, right:App{left:Lit{},right:AType{}} } => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+
+let std-apply-macro-location(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   (tctx, mk-lit(margs.location.into(type(String))).ascript(t0(c"String") && t0(c"Literal")))
+);
+
+let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed, strong: Bool): (TypeContext?, AST) = (
+   let result = mk-eof();
+   if mname==c"macro::concat" then (tctx, result) = std-apply-macro-concat(tctx, mname, margs)
+   else if mname==c"macro::location" then (tctx, result) = std-apply-macro-location(tctx, mname, margs)
+   else if mname==c"macro::variable" then (tctx, result) = std-apply-macro-variable(tctx, mname, margs)
+   else if mname==c"macro::underscore" then (tctx, result) = std-apply-macro-underscore(tctx, mname, margs)
+   else if mname==c"macro::constant" then (tctx, result) = std-apply-macro-constant(tctx, mname, margs)
+   else if mname==c"macro::tag" then (tctx, result) = std-apply-macro-tag(tctx, mname, margs)
+   else {
+      let row = index-macro-table.lookup(mname, [] : List<(Type,Type,AST)>);
+      let peep-holes = ta;
+      let peeped = ta;
+      for Tuple{mtype=first, peep=second, mterm=third} in row {
+         if non-zero(peep-holes) {
+            if peep-holes != peep then fail("Error: Macros must have the same pre-inference expectation.\n\{mname} : \{peeped}\n\{mname} : \{mtype}\n");
+         } else {
+            peep-holes = peep;
+            peeped = mtype;
+         };
+      };
+      (tctx, let peeped-type, margs) = std-infer-peeped-arguments(tctx, margs, peep-holes);
+
+      let matched = [] : List<(Type,AST)>;
+      for Tuple{mtype=first, mterm=third} in row {
+         if can-unify(mtype, peeped-type) then matched = cons( (mtype,mterm), matched );
+      }; 
+
+      let dominant-type = ta;
+      let candidates = [] : List<(Type,AST)>;
+      for Tuple{mtype=first, mterm=second} in matched {
+         if non-zero(dominant-type) {
+            if can-unify(mtype,dominant-type) && can-unify(dominant-type,mtype) {
+               candidates = cons( (mtype,mterm), candidates );
+            } else if can-unify(dominant-type,mtype) {
+               dominant-type = mtype;
+               candidates = [(mtype,mterm)];
+            } else if can-unify(mtype,dominant-type) { # existing is dominant, keep existing and ignore new
+            } else fail("Conflicting type candidates encountered during macro specialization:\n\{mname} : \{dominant-type}\n\{mname} : \{mtype}\n");
+         } else {
+            dominant-type = mtype;
+            candidates = [(mtype,mterm)];
+         }
+      };
+      (tctx, result) = std-apply-macro-candidates(tctx, mname, margs, candidates);
+   };
+   if strong && not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs}\n", margs);
+   if strong {
+      (tctx, result) = std-infer-expr(tctx, result, false, used, ta);
+      mark-free-and-seen(result);
+   };
+   (tctx, result)
+);
+
+let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type): (TypeContext?, Type, AST) = (
+   match peep {
+      TGround{tag:c"Cons", parameters:[p2.. p1..]} => (
+         match t {
+            App{is-cons=is-cons, left=left, right=right} => (
+               (tctx, let lt, let new-left) = std-infer-peeped-arguments(tctx, left, p1);
+               (tctx, let rt, let new-right) = std-infer-peeped-arguments(tctx, right, p2);
+               if not(is(left,new-left)) || not(is(right,new-right))
+               then t = mk-cons-or-app(is-cons,new-left,new-right);
+               (tctx, t2(c"Cons",lt,rt), t)
+            );
+            _ => fail("std-infer-peeped-arguments expected cons term: \{t}\n");
+         }
+      );
+      TAny{} => (tctx, ta, t);
+      TVar{} => (tctx, ta, t);
+      _ => (
+         (let protected-tctx, t) = std-infer-expr(tctx, t, false, Used(), ta);
+         mark-free-and-seen(t);
+         tctx = tctx.with-pctx( protected-tctx.get-or(mk-tctx()).pctx );
+         (tctx, typeof-term(t), t);
+      );
+   }
+);

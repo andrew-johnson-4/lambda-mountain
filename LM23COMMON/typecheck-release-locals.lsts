@@ -1,0 +1,64 @@
+
+let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST, hint: Type, release-self: Bool): (TypeContext?, AST) = (
+   tctx-after = tctx-after.phi-append-dead-on-arrival(tctx-before);
+   let tctx-before-tctx = tctx-before.get-or(mk-tctx()).tctx;
+   let tctx-after-tctx = tctx-after.get-or(mk-tctx()).tctx;
+   let tctx-before-pctx = tctx-before.get-or(mk-tctx()).pctx;
+   let tctx-after-pctx = tctx-after.get-or(mk-tctx()).pctx;
+   let needs-release = [] : List<TypeContextRow>;
+   let needs-mark-release = [] : List<TypeContextRow>;
+   let pid-seen = {} : Hashtable<CString,U64>;
+   while non-zero(tctx-after-tctx) and not(is(tctx-before-tctx, tctx-after-tctx)) {
+      let tr = head(tctx-after-tctx);
+      let dt = tctx-after.with-phi(tr.denormalized, term);
+      if dt.slot(c"Phi::State",1).l1.slot(c"MustRelease::ToRelease",1).is-linear-live {
+         if dt.is-t(c"MustNotRetain",0)
+         then needs-mark-release = cons(tr, needs-mark-release)
+         else needs-release = cons(tr, needs-release);
+      };
+      tctx-after-tctx = tail(tctx-after-tctx);
+   };
+   if non-zero(needs-release) {
+      let return-id = uuid();
+      let return-type = typeof-term(term);
+      let rhs = term;
+      let def = mk-var(return-id);
+      if not(return-type.is-t(c"Nil",0)) and not(return-type.is-t(c"Never",0)) {
+         term = mk-app( mk-abs(def, mk-nil(), ta), term ); tctx-after = tctx-after.ascript(term, t0(c"Nil"));
+         (tctx-after, let binding-type) = std-bind-term(tctx-after, return-id, rhs, def, term, hint);
+         tctx-after = tctx-after.ascript(def, binding-type);
+      };
+      for nd in needs-release {
+         let phi-id = nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag;
+         pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag,true);
+         let do-release = mk-cons(
+            mk-app(mk-var(c".release"),mk-var(nd.key-or-zero)),
+            mk-app(mk-var(c"destroy"),mk-var(nd.key-or-zero))
+         );
+         (tctx-after, do-release) = std-infer-expr(tctx-after, do-release, false, Used, ta);
+         term = mk-cons(term, do-release); tctx-after = tctx-after.ascript(term, t0(c"Nil"));
+      };
+      let return-term = if not(return-type.is-t(c"Nil",0)) and not(return-type.is-t(c"Never",0))
+      then mk-var(return-id)
+      else mk-nil();
+      (tctx-after, return-term) = std-infer-expr(tctx-after, return-term, false, Used, t0(c"MustNotRetain"));
+      tctx-after = tctx-after.phi-move(typeof-term(return-term), term);
+      term = mk-cons(term, return-term); tctx-after = tctx-after.ascript(term,return-type);
+   };
+   for nd in needs-mark-release {
+      let phi-id = nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag;
+      pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag,true);
+      tctx-after = tctx-after.phi-move(tctx-after.with-phi(nd.denormalized, term), term);
+   };
+   while non-zero(tctx-after-pctx) and not(is(tctx-before-pctx, tctx-after-pctx)) {
+      let tr = head(tctx-after-pctx);
+      if tr.dead-on-arrival-or-zero and not(pid-seen.has(tr.phi-id-or-zero)) and tr.phi-tt-or-zero.is-linear-live {
+         pid-seen = pid-seen.bind(tr.phi-id-or-zero,true);
+         tctx-after = tctx-after.bind-phi(tr.phi-id-or-zero, tr.phi-tt-or-zero.move-linear, tr.blame-or-zero);
+      };
+      tctx-after-pctx = tail(tctx-after-pctx);
+   };
+   tctx-before = tctx-before.phi-append(tctx-after);
+   if not(release-self) then (tctx-before, _) = tctx-before.resurrect(typeof-term(term), term);
+   (tctx-before, term)
+);
