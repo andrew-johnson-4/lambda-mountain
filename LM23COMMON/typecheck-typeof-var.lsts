@@ -2,7 +2,7 @@
 let typeof-var(sloc: AST, tctx: Maybe<TypeContext>, vname: CString, must-not-fresh: Bool): (TypeContext?, Type) = (
    (tctx, let found) = typeof-var-raw(sloc, tctx, vname, must-not-fresh);
    if not(non-zero(found)) {
-      exit-error(untern("Unknown Referenced Variable: \{vname}"), sloc);
+      exit-error("Unknown Referenced Variable: \{vname}".into(type(CString)), sloc);
    };
    (tctx, found)
 );
