@@ -708,6 +708,7 @@ let lsts-parse-lhs-big(tokens: List<Token>): Tuple<AST,List<Token>> = (
 let lsts-parse-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
    lsts-parse-expect(c"[", tokens); let loc = head(tokens).location; tokens = tail(tokens);
    let term = Lit( c"LEOF", with-location(mk-token("LEOF"),loc) );
+   term = mk-app( term, mk-nil() );
    if lsts-parse-head(tokens)==c"for" {
       fail("TODO List Comprehension at \{loc}")
    } else {
