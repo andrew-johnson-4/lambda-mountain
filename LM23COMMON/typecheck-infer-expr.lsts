@@ -407,7 +407,14 @@ let std-infer-call-arg(tctx: TypeContext?, term: AST, function-name: CString, hi
    if function-name==c"list::cons" { match term {
       App{k=left, m=right} => (
          (tctx, let new-k) = std-infer-expr(tctx, k, false, Call(function-name), ta);
-         (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), t1(c"List",typeof-term(new-k).normalize));
+         match m {
+            App{ constructor=left:Lit{key:c"LEOF"}, arg=right:ASTNil{} } => (
+               m = mk-app( constructor.ascript(t1(c"List",typeof-term(new-k).normalize)), arg );
+               term = mk-cons(k, m);
+            );
+            _ => ();
+         };
+         (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), ta);
          if not(is(k,new-k)) or not(is(m,new-m)) then { k = new-k; m = new-m; term = mk-cons(k, m); };
          tctx = tctx.ascript(term, t2(c"Cons",typeof-term(k),typeof-term(m)));
          (tctx, term)
