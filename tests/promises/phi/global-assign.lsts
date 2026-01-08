@@ -1,7 +1,0 @@
-
-import LM23COMMON/unit-ast-core.lsts;
-
-let index-macro-table = {} : Hashtable<CString,List<(Type,Type,AST)>>;
-
-index-macro-table = index-macro-table.bind(c"macro::concat", [] : List<(Type,Type,AST)>);
-index-macro-table = index-macro-table.bind(c"macro::location", [] : List<(Type,Type,AST)>);
