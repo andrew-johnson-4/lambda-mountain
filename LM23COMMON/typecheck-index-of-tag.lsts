@@ -1,5 +1,5 @@
 
-let tag-to-index-index = {} : HashtableEq<CString,U64>;
+let tag-to-index-index = {} : Hashtable<CString,U64>;
 
 let unknown-index-of-tag = 99999;
 

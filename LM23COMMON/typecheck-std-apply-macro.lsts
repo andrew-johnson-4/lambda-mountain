@@ -35,7 +35,7 @@ let std-apply-macro-tag(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (
    match margs {
       Lit{key=key} => (
          if index-of-tag(key)==unknown-index-of-tag then (tctx, mk-eof()) else {
-            let tag-name    = mk-lit(to-string(index-of-tag(key)));
+            let tag-name    = mk-lit(index-of-tag(key).into(type(CString)));
             let tag-ordinal = tag-name.ascript(t0(c"Constant") && t0(c"Literal") && t0(c"U64"));
             let tag-type    = mk-atype(t0(c"Tag::" + key));
             (tctx, mk-cons(mk-cons(tag-name, tag-ordinal), tag-type))
@@ -87,7 +87,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
       let candidates = [] : List<(Type,AST)>;
       for Tuple{mtype=first, mterm=second} in matched {
          if non-zero(dominant-type) {
-            if can-unify(mtype,dominant-type) && can-unify(dominant-type,mtype) {
+            if can-unify(mtype,dominant-type) and can-unify(dominant-type,mtype) {
                candidates = cons( (mtype,mterm), candidates );
             } else if can-unify(dominant-type,mtype) {
                dominant-type = mtype;
@@ -101,7 +101,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
       };
       (tctx, result) = std-apply-macro-candidates(tctx, mname, margs, candidates);
    };
-   if strong && not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs}\n", margs);
+   if strong and not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs}\n", margs);
    if strong {
       (tctx, result) = std-infer-expr(tctx, result, false, used, ta);
       mark-free-and-seen(result);
@@ -116,7 +116,7 @@ let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type): (T
             App{is-cons=is-cons, left=left, right=right} => (
                (tctx, let lt, let new-left) = std-infer-peeped-arguments(tctx, left, p1);
                (tctx, let rt, let new-right) = std-infer-peeped-arguments(tctx, right, p2);
-               if not(is(left,new-left)) || not(is(right,new-right))
+               if not(is(left,new-left)) or not(is(right,new-right))
                then t = mk-cons-or-app(is-cons,new-left,new-right);
                (tctx, t2(c"Cons",lt,rt), t)
             );

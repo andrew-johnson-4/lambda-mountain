@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm tests/promises/phi/natural-list-constructor.lsts
+	lm tests/promises/lm-typecheck/direct-inference.lsts
 	gcc tmp.c
 	./a.out
 
