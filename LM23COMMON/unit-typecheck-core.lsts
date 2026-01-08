@@ -22,3 +22,4 @@ import LM23COMMON/typecheck-std-apply-macro-candidates.lsts;
 import LM23COMMON/typecheck-std-maybe-release-after-call.lsts;
 import LM23COMMON/typecheck-index-of-tag.lsts;
 import LM23COMMON/typecheck-extract-uuids.lsts;
+import LM23COMMON/typecheck-acontext-union.lsts;
