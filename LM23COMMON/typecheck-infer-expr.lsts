@@ -82,14 +82,19 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             add-concrete-type-instance(tt, term);
             (tctx, let new-t) = std-infer-expr(tctx, t, false, Tail, tt);
             if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
-            tctx = tctx.ascript(term, typeof-term(t));
+            if typeof-term(t).is-arrow and not(tt.is-arrow) and non-zero(var-name-if-var-or-lit(t)) {
+               let ftype = tctx.find-callable( var-name-if-var-or-lit(t), t0(c"Nil"), term, tt ).direct-type;
+               tctx = tctx.ascript(term, ftype);
+            } else {
+               tctx = tctx.ascript(term, typeof-term(t));
+            };
             let direct-tctx = tctx.get-or(mk-tctx());
             if not(direct-tctx.is-blob or typeof-term(t).is-arrow) {
                # TODO: remove the special exception for "Arrows" here, which is a workaround for raw constructors
                # frontend is producing ((None : TContext?)()) instead of (None() : TContext?)
                # the return hint stuff is working, so all the hard work is done. I think only the frontend needs to change
                tt = tt.without-slot(c"ReturnHint",0);
-               if not(can-unify(tt, typeof-term(t)))
+               if not(can-unify(tt, typeof-term(term)))
                then exit-error("Ascripted value does not match declared type:\nExpected \{tt}\nFound \{typeof-term(t)}\n", term);
             };
          };
@@ -283,7 +288,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   if var-name-if-var-or-lit(l)==c".release" then rr-args-hint = rr-args-hint && t0(c"MustNotFresh");
                   let pre-retain-tctx = tctx;
                   (tctx, let new-r) = std-infer-call-arg(tctx, r, var-name-if-var-or-lit(l), rr-args-hint);
-                  let ftype = typeof-term(tctx.find-callable( var-name-if-var-or-lit(l), typeof-term(new-r), term, direct-hint ).blame-or-zero);
+                  let ftype = tctx.find-callable( var-name-if-var-or-lit(l), typeof-term(new-r), term, direct-hint ).direct-type;
+                  if typeof-term(l) == t2(c"Arrow",t0(c"Any"),t0(c"Any")) {
+                     tctx = tctx.ascript(l, ftype);
+                  };
                   if ftype.domain.is-any-arg-t(c"MustNotRetain",0) {
                      pre-retain-tctx = pre-retain-tctx.phi-append-dead-on-arrival(tctx);
                      (tctx, new-r) = std-infer-call-arg(pre-retain-tctx, r, var-name-if-var-or-lit(l), ftype.domain && rr-args-hint);
