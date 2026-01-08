@@ -224,17 +224,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          if hint.is-t(c"Literal",0) {
             tctx = tctx.ascript(term,hint);
          } else if not(non-zero(typeof-term(term))) {
-            if hint.is-t(c"List",1) and hint.is-datatype and key==c"LEOF"
-            then {
-               (tctx, let lit-tt) = tctx.apply-callable(key, t0(c"Nil"), term, hint);
-               tctx = tctx.ascript(term, lit-tt);
-            } else if hint.is-t(c"HashtableEq",2) and hint.is-datatype and key==c"HashtableEqEOF"
-            then {
-               (tctx, let lit-tt) = tctx.apply-callable(key, t0(c"Nil"), term, hint);
-               tctx = tctx.ascript(term, lit-tt);
-            } else {
-               tctx = tctx.ascript(term, t2(c"Arrow",t0(c"Any"),t0(c"Any")));
-            }
+            tctx = tctx.ascript(term, t2(c"Arrow",t0(c"Any"),t0(c"Any")));
          }
       );
       Abs{lhs=lhs, rhs=rhs:App{asc=left:Lit{key:c":"},right:App{inner-rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} => (
