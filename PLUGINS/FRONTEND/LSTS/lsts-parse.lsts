@@ -614,6 +614,9 @@ let lsts-parse-ascript(tokens: List<Token>): Tuple<AST,List<Token>> = (
          App{ constructor=left:Lit{}, right:ASTNil{} } => (
             term = mk-app(constructor.ascript(tt), mk-nil());
          );
+         Lit{key:c"LEOF"} => (
+            term = mk-app(term.ascript(tt), mk-nil());
+         );
          _ => term = term.ascript(tt);
       }
    };
