@@ -1,0 +1,17 @@
+
+import lib2/core/bedrock.lsts;
+
+# This is a subtle bug where type parameters in a function are similar but not equal
+# The rule is that at least the datatypes should be equal not just a subtype
+# This rule is used because associativity and contravariance are arbitrarily defined in function signatures
+# Trying to sort out natural subtyping relations would be problematic
+# Maybe it would be possible later as a research project, but right now it is just too much
+
+# Currently this function signature fails on the backend
+# However, ideally there would be blame at the call-site during typechecking, not codegen
+
+type T<t> = { field: t };
+
+let f(a: T<t>, b: t): Nil = ();
+
+f( T(0_u8), 0_u64 );
