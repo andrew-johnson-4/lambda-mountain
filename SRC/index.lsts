@@ -15,7 +15,6 @@ import SRC/index-preprocess.lsts;
 import SRC/index-plugins.lsts;
 
 import SRC/substitute.lsts;
-import SRC/union.lsts;
 import SRC/actx-bind.lsts;
 
 import SRC/main.lsts;

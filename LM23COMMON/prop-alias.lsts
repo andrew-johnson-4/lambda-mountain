@@ -14,6 +14,12 @@ let .rewrite-type-alias(lt: Type): Type = (
          if non-zero(lt-rt.first) {
             let tctx = unify(lt-rt.first, lt, mk-eof());
             if non-zero(tctx) { lt = tctx.substitute(lt-rt.second); };
+            match lt {
+               TGround{ inner-tag=tag, inner-parameters=parameters } => (
+                  lt = ts(inner-tag, inner-parameters.rewrite-type-alias);
+               );
+               _ => ();
+            };
          } else {
             lt = ts(tag, parameters.rewrite-type-alias);
          };

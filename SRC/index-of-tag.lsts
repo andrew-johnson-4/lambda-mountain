@@ -1,7 +1,0 @@
-
-let tag-to-index-index = {} : HashtableEq<CString,U64>;
-
-let unknown-index-of-tag = 99999;
-
-let index-of-tag(tag: CString): U64 = tag-to-index-index.lookup(tag,unknown-index-of-tag);
-let index-index-of-tag(tag: CString, index: U64): Nil = tag-to-index-index = tag-to-index-index.bind(tag,index);
