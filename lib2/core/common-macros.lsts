@@ -71,8 +71,9 @@ deprecated macro ( rl"for-each"(item(rl"in")(iterable))(loop) ) ((
 deprecated macro ( rl"for-each-list"(item(rl"in")(iterable))(loop) ) ((
    let uuid(iter-term) = iterable;
    while non-zero(uuid(iter-term)) {
-      let item = head(uuid(iter-term));
-      loop;
+      match head(uuid(iter-term)) {
+         item => loop;
+      };
       uuid(iter-term) = tail(uuid(iter-term));
    };
 ));

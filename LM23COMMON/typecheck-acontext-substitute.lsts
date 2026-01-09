@@ -1,5 +1,5 @@
 
-let substitute(ctx: AContext, v: Token): Token = (
+let substitute(ctx: List<(CString,AST)>, v: Token): Token = (
    match ctx.lookup(v.key, mk-eof()) {
       Lit{t=token} => t;
       Var{t=token} => t;
@@ -7,7 +7,7 @@ let substitute(ctx: AContext, v: Token): Token = (
    }
 );
 
-let substitute(ctx: AContext, tt: Type): Type = (
+let substitute(ctx: List<(CString,AST)>, tt: Type): Type = (
    match tt {
       TVar{v=name} => match ctx.lookup(v, mk-eof()) {
          Lit{tv=key} => t0(tv);
@@ -19,7 +19,7 @@ let substitute(ctx: AContext, tt: Type): Type = (
          TGround( tag, close(substitute(ctx,parameters)) )
       );
       TAnd{conjugate=conjugate} => (
-         let result = mk-vector(type(Type), 0_u64);
+         let result = mk-vector(type(Type), 0);
          for c in conjugate {
             match substitute(ctx,c) {
                TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
@@ -35,14 +35,14 @@ let substitute(ctx: AContext, tt: Type): Type = (
    }
 );
 
-let substitute(ctx: AContext, tt: List<Type>): List<Type> = (
+let substitute(ctx: List<(CString,AST)>, tt: List<Type>): List<Type> = (
    match tt {
       LCons{head=head,tail=tail} => cons( substitute(ctx,head), substitute(ctx,tail) );
       _ => tt;
    }
 );
 
-let substitute(ctx: AContext, term: AST): AST = (
+let substitute(ctx: List<(CString,AST)>, term: AST): AST = (
    match term {
       App{left:Var{key:c"uuid"}, right:Var{x=key}} => ctx.lookup(x,term).unique;
       Var{x=key} => ctx.lookup(x,term).unique;
