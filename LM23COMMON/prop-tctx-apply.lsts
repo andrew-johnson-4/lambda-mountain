@@ -19,8 +19,8 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
    let apply-type-variables = {} : Hashtable<CString,Type>;
    for tr in apply-tctx.get-or-panic.tctx {
       if apply-type-variables.has(tr.key-or-zero) {
-         let previous-seen-tt = apply-type-variables.lookup(tr.key-or-zero, ta).without-any-phi.unenrich;
-         let current-seen-tt = tr.direct-type.without-any-phi.unenrich;
+         let previous-seen-tt = apply-type-variables.lookup(tr.key-or-zero, ta).without-any-phi.weaken.unenrich;
+         let current-seen-tt = tr.direct-type.without-any-phi.weaken.unenrich;
          if previous-seen-tt != current-seen-tt {
             print("First type variable \{tr.key-or-zero} occurence: \{previous-seen-tt}\n");
             print("Second type variable \{tr.key-or-zero} occurence: \{current-seen-tt}\n");
