@@ -205,3 +205,83 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
    };
    base
 );
+
+
+let .unenrich(base: Type): Type = (
+   unenrich-quick-prop(base, base, base)
+);
+
+let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
+   let early-base = base;
+   match pre {
+      TGround { tag=tag, parameters=parameters } => (
+         for list row in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+            let lt = row.first;
+            let rt = row.second;
+            if can-unify(lt, original-base) then (
+               base = remove-info(base, rt);
+            );
+         };
+         if tag==c"Array" and parameters.length==2 {
+            for list row in quick-prop.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
+               let lt = row.first;
+               let rt = row.second;
+               if can-unify(lt, original-base) then (
+                  base = remove-info(base, rt);
+               );
+            }
+         };
+         if tag.contains(c"::") {
+            let tag-parts = tag.split(c"::").into(type(Vector<CString>));
+            let tag-base = tag-parts[0] + c"::";
+            let ti = 1_sz;
+            while ti < tag-parts.length {
+               let tag-part = tag-parts[ti];
+               for list row in quick-prop.lookup( (tag-base, parameters.length as U64), ([] : List<(Type,Type)>) ) {
+                  let lt = row.first;
+                  let rt = row.second;
+                  if can-unify(lt, original-base) then (
+                     base = remove-info(base, rt);
+                  );
+               };
+               tag-base = tag-base + tag-part + c"::";
+               ti = ti + 1;
+            };
+         };
+      );
+      TAnd { conjugate=conjugate } => (
+         for vector c in conjugate { base = unenrich-quick-prop(original-base, base, c) };
+      );
+      _ => ();
+   };
+   match base {
+      TGround { tag2=tag, parameters=parameters } => (
+         let new-parameters = [] : List<Type>;
+         for list p in parameters.reverse {
+            new-parameters = cons( p.unenrich , new-parameters );
+         };
+         base = ts(tag2,new-parameters);
+      );
+      TAnd { conjugate=conjugate } => (
+         let result = mk-vector(type(Type));
+         for vector c in conjugate {
+            match c {
+               TGround { tag3=tag, parameters=parameters } => (
+                  let new-parameters = [] : List<Type>;
+                  for list p in parameters.reverse {
+                     new-parameters = cons( p.unenrich , new-parameters );
+                  };
+                  result = result.push(ts(tag3,new-parameters));
+               );
+               _ => result = result.push(c);
+            }
+         };
+         base = if result.length==0 then ta
+         else   if result.length==1 then result[0]
+         else   tand(result);
+      );
+      _ => ();
+   };
+   base
+);
+

@@ -15,6 +15,22 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
    # Fail if arguments are not accepted by function (unify)
    if apply-tctx.is-none then exit-error("Unable to apply (unify) function \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
 
+   # Assert that all equal type variables also have equal datatype
+   let apply-type-variables = {} : Hashtable<CString,Type>;
+   for tr in apply-tctx.get-or-panic.tctx {
+      if apply-type-variables.has(tr.key-or-zero) {
+         let previous-seen-tt = apply-type-variables.lookup(tr.key-or-zero, ta).without-any-phi.weaken.unenrich;
+         let current-seen-tt = tr.direct-type.without-any-phi.weaken.unenrich;
+         if previous-seen-tt != current-seen-tt {
+            print("First type variable \{tr.key-or-zero} occurence: \{previous-seen-tt}\n");
+            print("Second type variable \{tr.key-or-zero} occurence: \{current-seen-tt}\n");
+            exit-error("Type variables \{tr.key-or-zero} not equal in call to \{fname}\nFunction: \{ft}\nArguments: \{at}\nReturn Hint: \{return-type-hint}\n", blame);
+         }
+      } else {
+         apply-type-variables = apply-type-variables.bind(tr.key-or-zero, tr.direct-type)
+      }
+   };
+
    # Phi: fail if any used arguments have already been moved
    # TODO: remove the fname!=c"destroy" hard coded workaround: if the function accepts MustRelease::Released then this error does not apply
    if not(tctx.get-or(mk-tctx()).is-blob) and at.is-moved and fname!=c"destroy"
