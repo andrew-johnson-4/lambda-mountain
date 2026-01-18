@@ -23,6 +23,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          if not(is(r,new-r)) then { r = new-r; term = mk-app(o-t, r); };
          tctx = tctx.ascript(o-t, t2(c"Arrow",typeof-term(r),t1(c"Type",typeof-term(r))));
          tctx = tctx.ascript(term, t1(c"Type",typeof-term(r)));
+         tctx = tctx.phi-move(typeof-term(r), term);
       );
       App{o-t=left:Var{key:c"open"}, r=right} => (
          (tctx, let new-r) = std-infer-expr(tctx, r, false, Used(), ta);

@@ -3,9 +3,10 @@ import lib2/core/bedrock.lsts;
 
 let f(ls: List<x>): Nil = (
    let v = mk-vector(type(x));
+   print("ls : \{typeof(ls).into(type(CString))}\n");
    for l in ls {
       print("l : \{typeof(l).into(type(CString))}\n");
-      v = v.push(l);
+      #v = v.push(l);
    };
 );
 
