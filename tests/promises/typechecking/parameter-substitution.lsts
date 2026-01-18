@@ -1,10 +1,14 @@
 
 import lib2/core/bedrock.lsts;
 
+print("1_u8 : \{typeof(1_u8).into(type(CString))}\n");
+print("1_u8 : \{typeof(open(1_u8)).into(type(CString))}\n");
+
 let f(ls: List<x>): Nil = (
    let v = mk-vector(type(x));
    print("ls : \{typeof(ls).into(type(CString))}\n");
    print("head(ls) : \{typeof(head(ls)).into(type(CString))}\n");
+   print("open(head(ls)) : \{typeof(open(head(ls))).into(type(CString))}\n");
    match head(ls) {
       item => print("item = head(ls) : \{typeof(item).into(type(CString))}\n");
       _ => ();
