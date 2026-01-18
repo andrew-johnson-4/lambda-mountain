@@ -103,4 +103,7 @@ let safe-free(ptr: ?[]): Nil = (
    ()
 );
 
-let open(i: x): x = i;
+let :Blob open(i: x): x = (
+   $":expression"($":expression"(i));
+   $":frame"($":frame"(i));
+);

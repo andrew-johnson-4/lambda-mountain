@@ -1,20 +1,9 @@
 
 import lib2/core/bedrock.lsts;
 
-let xs = [1_u8];
-
-print("1_u8 : \{typeof(1_u8).into(type(CString))}\n");
-print("1_u8 : \{typeof(open(1_u8)).into(type(CString))}\n");
-print("1_u8 : \{typeof(open(open(1_u8))).into(type(CString))}\n");
-
-print("head(xs) : \{typeof(head(xs)).into(type(CString))}\n");
-print("open(head(xs)) : \{typeof(open(head(xs))).into(type(CString))}\n");
-
 let f(ls: List<x>): Nil = (
    let v = mk-vector(type(x));
-   print("ls : \{typeof(ls).into(type(CString))}\n");
-   print("head(ls) : \{typeof(head(ls)).into(type(CString))}\n");
-   print("open(head(ls)) : \{typeof(open(head(ls))).into(type(CString))}\n");
+   v = v.push(open(head(ls)));
 );
 
 f([1_u8]);
