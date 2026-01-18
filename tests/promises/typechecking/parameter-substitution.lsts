@@ -1,0 +1,13 @@
+
+import lib2/core/bedrock.lsts;
+
+let f(ls: List<x>): Nil = (
+   let v = mk-vector(type(x));
+   for l in ls {
+      print("l : \{typeof(l).into(type(CString))}\n");
+      v = v.push(l);
+   };
+);
+
+f([1_u8]);
+

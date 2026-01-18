@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm tests/promises/list/bound-concatenate.lsts
+	lm tests/promises/typechecking/parameter-substitution.lsts
 	gcc tmp.c
 	./a.out
 
