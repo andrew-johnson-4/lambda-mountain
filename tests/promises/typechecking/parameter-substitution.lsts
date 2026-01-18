@@ -4,6 +4,11 @@ import lib2/core/bedrock.lsts;
 let f(ls: List<x>): Nil = (
    let v = mk-vector(type(x));
    print("ls : \{typeof(ls).into(type(CString))}\n");
+   print("head(ls) : \{typeof(head(ls)).into(type(CString))}\n");
+   match head(ls) {
+      item => print("item = head(ls) : \{typeof(item).into(type(CString))}\n");
+      _ => ();
+   };
    for l in ls {
       print("l : \{typeof(l).into(type(CString))}\n");
       #v = v.push(l);
