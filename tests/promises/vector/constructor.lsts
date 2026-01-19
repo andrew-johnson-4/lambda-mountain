@@ -1,28 +1,28 @@
 
 import lib2/core/bedrock.lsts;
 
-mk-vector(type(U64), 0);
+mk-vector(type(U8), 0);
 assert( safe-alloc-block-count == 0 );
 
-mk-vector(type(U64), 2);
+mk-vector(type(U8), 2);
 assert( safe-alloc-block-count == 0 );
 
-mk-vector(type(U64), 2).push(123);
+mk-vector(type(U8), 2).push(123);
 assert( safe-alloc-block-count == 0 );
 
-mk-vector(type(U64), 0).push(123);
+mk-vector(type(U8), 0).push(123);
 assert( safe-alloc-block-count == 0 );
 
-assert( mk-vector(type(U64), 2).push(123).push(456)[0] == 123 );
+assert( mk-vector(type(U8), 2).push(123).push(45)[0] == 123 );
 assert( safe-alloc-block-count == 0 );
 
-assert( mk-vector(type(U64), 0).push(123).push(456)[0] == 123 );
+assert( mk-vector(type(U8), 0).push(123).push(45)[0] == 123 );
 assert( safe-alloc-block-count == 0 );
 
-assert( mk-vector(type(U64), 2).push(123).push(456)[1] == 456 );
+assert( mk-vector(type(U8), 2).push(123).push(45)[1] == 45 );
 assert( safe-alloc-block-count == 0 );
 
-assert( mk-vector(type(U64), 0).push(123).push(456)[1] == 456 );
+assert( mk-vector(type(U8), 0).push(123).push(45)[1] == 45 );
 assert( safe-alloc-block-count == 0 );
 
 mk-vector(type(String), 2).push("A");

@@ -21,3 +21,4 @@ import LM23COMMON/prop-misc-todo-remove-or-stabilize.lsts;
 import LM23COMMON/prop-tctx-substitute.lsts;
 import LM23COMMON/prop-typeof-var-raw.lsts;
 import LM23COMMON/prop-typeof-tag.lsts;
+import LM23COMMON/prop-type-datatype.lsts;

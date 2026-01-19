@@ -19,12 +19,19 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
    let apply-type-variables = {} : Hashtable<CString,Type>;
    for tr in apply-tctx.get-or-panic.tctx {
       if apply-type-variables.has(tr.key-or-zero) {
-         let previous-seen-tt = apply-type-variables.lookup(tr.key-or-zero, ta).without-any-phi.weaken.unenrich;
-         let current-seen-tt = tr.direct-type.without-any-phi.weaken.unenrich;
+         let previous-seen-tt = apply-type-variables.lookup(tr.key-or-zero, ta).datatype;
+         let current-seen-tt = tr.direct-type.datatype;
          if previous-seen-tt != current-seen-tt {
-            print("First type variable \{tr.key-or-zero} occurence: \{previous-seen-tt}\n");
-            print("Second type variable \{tr.key-or-zero} occurence: \{current-seen-tt}\n");
-            exit-error("Type variables \{tr.key-or-zero} not equal in call to \{fname}\nFunction: \{ft}\nArguments: \{at}\nReturn Hint: \{return-type-hint}\n", blame);
+            if previous-seen-tt.is-t(c"Sized",1) and tr.direct-type.datatype <: previous-seen-tt.slot(c"Sized",1).l1 {
+               # no change necessary, type in context is already the erased type
+            } else if current-seen-tt.is-t(c"Sized",1) and apply-type-variables.lookup(tr.key-or-zero, ta) <: current-seen-tt.slot(c"Sized",1).l1 {
+               # type in context must be updated to the erased type
+               apply-type-variables = apply-type-variables.bind(tr.key-or-zero, current-seen-tt);
+            } else {
+               print("First type variable \{tr.key-or-zero} occurence: \{previous-seen-tt}\n");
+               print("Second type variable \{tr.key-or-zero} occurence: \{current-seen-tt}\n");
+               exit-error("Type variables \{tr.key-or-zero} not equal in call to \{fname}\nFunction: \{ft}\nArguments: \{at}\nReturn Hint: \{return-type-hint}\n", blame);
+            }
          }
       } else {
          apply-type-variables = apply-type-variables.bind(tr.key-or-zero, tr.direct-type)
