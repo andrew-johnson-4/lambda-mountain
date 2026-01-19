@@ -67,5 +67,10 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
       exit(1);
    };
 
+   # Check for half-specialization
+   # open(U8) can unify with open(U64) if it exists
+   # but open(U8) should still go for specializing open(x) rather than stopping at open(U64)
+   
+
    result
 );

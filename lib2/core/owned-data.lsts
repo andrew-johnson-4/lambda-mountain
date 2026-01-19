@@ -37,7 +37,7 @@ let $"set[]"(od: OwnedData<t>[], idx: USize, val: t): Nil = (
    od.data[idx] = val;
 );
 
-let .push(od: OwnedData<t>[], d: s): Nil = (
+let .push(od: OwnedData<t>[], d: t): Nil = (
    if (od as USize)==0
    then fail(c"OwnedData .push Into Null Pointer");
    if od.occupied >= od.capacity
