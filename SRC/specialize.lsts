@@ -1,6 +1,6 @@
 
 let specialize(key: CString, unify-ctx: TypeContext?, result-type: Type, term: AST): Nil = (
-   if key!=c"open" and not(is-special(key, result-type)) {
+   if (key!=c"open" or result-type.domain.slot(c"Array",2).l1.is-t(c"OwnedData",1)) and key!=c"mov" and not(is-special(key, result-type)) {
       mark-as-special(key, result-type);
       let special-term = substitute(unify-ctx, term);
       match special-term {
