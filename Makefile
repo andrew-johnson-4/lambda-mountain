@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm tests/promises/typechecking/parameter-substitution.lsts
+	lm tests/promises/hashtable/mk-hashtable-is.lsts
 	gcc tmp.c
 	./a.out
 
