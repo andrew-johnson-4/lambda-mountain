@@ -393,6 +393,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.phi-move(typeof-term(term),term);
       }
    }};
+   if show-alloc-count then print("Inferred \{term} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
    (tctx, term);
 );
 
