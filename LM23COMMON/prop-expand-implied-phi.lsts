@@ -23,7 +23,7 @@ let .expand-implied-phi(tt: Type): Type = (
          let ip = implied-phi-index.lookup(ga,ta);
          let ps = t1(c"Phi::State",ip);
          if non-zero(ip) and not(can-unify(ps, tt)) {
-            tt = tt && ps
+            tt = tt.extend(ps)
          }
       );
       _ => ();
