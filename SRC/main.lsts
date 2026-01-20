@@ -26,17 +26,19 @@ let print-toks-json(fp: CString): Nil = (
    print("]");
 );
 
+let show-alloc-count = false;
+
 let main(argc: C_int, argv: CString[]): Nil = (
    let argi = 1_u64;
    let input = [] : List<CString>;
    let highlight = false;
    let dump-tokens = false;
    let has-args = false;
-   let show-alloc-count = false;
    while argi < (argc as U64) {
       has-args = true;
       match argv[argi] {
          c"--typecheck" => config-mode = ModeTypecheck();
+         c"--parse" => config-mode = ModeParse();
          c"--compile" => config-mode = ModeCompile();
          c"--v2" => config-v3 = false;
          c"--v3" => config-v3 = true;
@@ -80,6 +82,9 @@ let main(argc: C_int, argv: CString[]): Nil = (
             };
             print("\n}\n");
          };
+      );
+      ModeParse{} => (
+         for fp in input.reverse { frontend(fp); };
       );
       _ => (
          for fp in input.reverse { frontend(fp); };

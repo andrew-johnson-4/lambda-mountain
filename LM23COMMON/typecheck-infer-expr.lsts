@@ -271,6 +271,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{ is-cons=is-cons, l=left, r=right } => (
          let is-macro = false;
          if is-cons {
+            if show-alloc-count then print("before cons blocks allocated: \{safe-alloc-block-count-monotonic}\n");
             let lhint = hint.slot(c"Cons",2).l1 && hint.slot(c"MustNotRetain",0) && hint.slot(c"MustNotFresh",0);
             let rhint = hint.slot(c"Cons",2).l2 && hint.slot(c"MustNotRetain",0) && hint.slot(c"MustNotFresh",0) && hint.slot(c"TailPosition",0);
             (tctx, let new-l) = std-infer-expr(tctx, l, false, if used.is-call then used else Unused, lhint);
@@ -279,10 +280,13 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             (tctx, let new-r) = std-infer-expr(tctx, r, false, if used.is-tail then used else if used.is-unused then used else Used, rhint);
             if not(is(l,new-l)) or not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-cons(new-l, new-r) };
             tctx = tctx.ascript(term, if used.is-tail then typeof-term(r) else t2(c"Cons", typeof-term(l), typeof-term(r)));
+            if show-alloc-count then print("after cons blocks allocated: \{safe-alloc-block-count-monotonic}\n");
          } else {
             let rt = ta;
             if index-macro-table.has(var-name-if-var(l)) {
+               if show-alloc-count then print("Before apply macro \{var-name-if-var(l)} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
                (tctx, term) = std-apply-macro(tctx, term, used);
+               if show-alloc-count then print("After apply macro \{var-name-if-var(l)} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
                is-macro = true;
             } else {
                (tctx, let new-l) = std-infer-expr(tctx, l, false, used, ta);
@@ -391,6 +395,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.phi-move(typeof-term(term),term);
       }
    }};
+   if show-alloc-count then print("infer \{term} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
    (tctx, term);
 );
 

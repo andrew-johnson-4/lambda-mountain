@@ -2,6 +2,8 @@ CC = clang
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
+	lm --showalloc --parse tests/promises/lm-typecheck/compilation-counting-diff1.lsts
+	lm --showalloc --parse tests/promises/lm-typecheck/compilation-counting-diff2.lsts
 	lm --showalloc --typecheck tests/promises/lm-typecheck/compilation-counting-diff1.lsts
 	lm --showalloc --typecheck tests/promises/lm-typecheck/compilation-counting-diff2.lsts
 	lm --showalloc tests/promises/lm-typecheck/compilation-counting-diff1.lsts

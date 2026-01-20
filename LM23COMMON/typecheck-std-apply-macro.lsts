@@ -65,7 +65,9 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
    else if mname==c"macro::constant" then (tctx, result) = std-apply-macro-constant(tctx, mname, margs)
    else if mname==c"macro::tag" then (tctx, result) = std-apply-macro-tag(tctx, mname, margs)
    else {
+      if show-alloc-count then print("std-apply-macro .1 \{mname} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
       let row = index-macro-table.lookup(mname, [] : List<(Type,Type,AST)>);
+      if show-alloc-count then print("std-apply-macro .2 \{mname} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
       let peep-holes = ta;
       let peeped = ta;
       for Tuple{mtype=first, peep=second, mterm=third} in row {
@@ -77,15 +79,18 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
          };
       };
       (tctx, let peeped-type, margs) = std-infer-peeped-arguments(tctx, margs, peep-holes);
+      if show-alloc-count then print("std-apply-macro .3 \{mname} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
 
       let matched = [] : List<(Type,AST)>;
       for Tuple{mtype=first, mterm=third} in row {
          if can-unify(mtype, peeped-type) then matched = cons( (mtype,mterm), matched );
       }; 
+      if show-alloc-count then print("std-apply-macro .4 \{mname} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
 
       let dominant-type = ta;
       let candidates = [] : List<(Type,AST)>;
       for Tuple{mtype=first, mterm=second} in matched {
+      if show-alloc-count then print("std-apply-macro .5.0 \{mname} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
          if non-zero(dominant-type) {
             if can-unify(mtype,dominant-type) and can-unify(dominant-type,mtype) {
                candidates = cons( (mtype,mterm), candidates );
@@ -99,13 +104,20 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
             candidates = [(mtype,mterm)];
          }
       };
+      if show-alloc-count then print("std-apply-macro .5.1 \{mname} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
       (tctx, result) = std-apply-macro-candidates(tctx, mname, margs, candidates);
+      if show-alloc-count then print("std-apply-macro .5.2 \{mname} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
    };
+   if show-alloc-count then print("std-apply-macro .5.4 \{mname} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
+
    if strong and not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs}\n", margs);
    if strong {
       (tctx, result) = std-infer-expr(tctx, result, false, used, ta);
+      if show-alloc-count then print("Inferred \{result}\n");
+      if show-alloc-count then print("std-apply-macro .6.1 \{mname} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
       mark-free-and-seen(result);
    };
+   if show-alloc-count then print("std-apply-macro .6 \{mname} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
    (tctx, result)
 );
 
