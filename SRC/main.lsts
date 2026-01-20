@@ -94,7 +94,9 @@ let main(argc: C_int, argv: CString[]): Nil = (
          };
       );
    };
-   if show-alloc-count then print("Total blocks allocated: \{safe-alloc-block-count-monotonic}\n");
+   if show-alloc-count then {
+      print("Total blocks allocated: \{safe-alloc-block-count-monotonic}\n");
+   };
 );
 
 let doby-say(): Nil = (

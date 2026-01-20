@@ -2,43 +2,37 @@
 # A concrete type is an instance of a type that has been realized on a term
 # It is not an "in processing" or "theoretical" type anymore, but now an actual observed term
 
-let concrete-type-instances-index = {} : Hashtable<(CString,U64),List<Type>>;
+let concrete-type-instances-index = {} : Hashtable<(CString,U64),Vector<Type>>;
 
 let add-concrete-type-instance(tt: Type, blame: AST): Nil = (
-   let empty-type-list = [] : List<Type>; # this is a workaround for a phi bug that needs to be fixed 
-   if not(tt.is-phi-type) then {
-      tt = tt.normalize.sanitize-phi;
-      let lt = tt.slot(c"Array",2);
-      if non-zero(lt) then tt = lt else tt = tt.with-only-datatype;
-      if non-zero(tt) { match tt {
-         TGround{tag1=tag, parameters:[]} => (
-            if tt.is-datatype and not(does-concrete-type-instance-exist(tt)) {
-               let k = (tag1,0_u64);
-               concrete-type-instances-index = concrete-type-instances-index.bind(
-                  k, cons( tt, concrete-type-instances-index.lookup(k, empty-type-list) )
-               );
-            }
-         );
-         TGround{tag2=tag, ts=parameters} => (
-            if not(does-concrete-type-instance-exist(tt)) {
-               let k = (tag2, ts.length as U64);
-               concrete-type-instances-index = concrete-type-instances-index.bind(
-                  k, cons( tt, concrete-type-instances-index.lookup(k, empty-type-list) )
-               );
-            };
-            for ct in ts { add-concrete-type-instance(ct,blame) };
-         );
-      }}
+   match tt {
+      TAnd{ conjugate=conjugate } => (
+         for vector c in conjugate {
+            add-concrete-type-instance(c, blame);
+         }
+      );
+      TGround{ tag=tag, parameters=parameters } => (
+         if tt.is-datatype then {
+            let gta = tt.ground-tag-and-arity;
+            let row = concrete-type-instances-index.lookup(gta, mk-vector(type(Type)));
+            if not(row.contains(tt)) then row = row.push(tt);
+            concrete-type-instances-index = concrete-type-instances-index.bind(gta, row);
+         };
+         for list p in parameters {
+            add-concrete-type-instance(p, blame);
+         };
+      );
+      _ => ();
    }
 );
 
 let does-concrete-type-instance-exist(tt: Type): Bool = (
-   let empty-type-list = [] : List<Type>; # this is a workaround for a phi bug that needs to be fixed 
+   let empty-type-vector = mk-vector(type(Type)); # this is a workaround for a phi bug that needs to be fixed 
    match tt {
       TGround{tag=tag, ts=parameters} => (
          let exists = false;
          let k = (tag, ts.length as U64);
-         for vt in concrete-type-instances-index.lookup(k, empty-type-list) {
+         for vt in concrete-type-instances-index.lookup(k, empty-type-vector) {
             if vt==tt then exists = true;
          };
          exists
