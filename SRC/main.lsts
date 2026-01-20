@@ -32,6 +32,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
    let highlight = false;
    let dump-tokens = false;
    let has-args = false;
+   let show-alloc-count = false;
    while argi < (argc as U64) {
       has-args = true;
       match argv[argi] {
@@ -48,6 +49,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
             highlight = false;
          );
          c"--stripdebug" => config-strip-debug = true;
+         c"--showalloc" => show-alloc-count = true;
          c"-o" => (
             argi = argi + 1;
             config-target = argv[argi];
@@ -86,7 +88,8 @@ let main(argc: C_int, argv: CString[]): Nil = (
             ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(););
          };
       );
-   }
+   };
+   if show-alloc-count then print("Total blocks allocated: \{safe-alloc-block-count-monotonic}\n");
 );
 
 let doby-say(): Nil = (

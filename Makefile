@@ -1,10 +1,11 @@
-CC = cc
+CC = clang
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm tests/promises/lm-typecheck/direct-inference.lsts
-	gcc tmp.c
-	./a.out
+	lm --showalloc --typecheck tests/promises/lm-typecheck/compilation-counting-diff1.lsts
+	lm --showalloc --typecheck tests/promises/lm-typecheck/compilation-counting-diff2.lsts
+	lm --showalloc tests/promises/lm-typecheck/compilation-counting-diff1.lsts
+	lm --showalloc tests/promises/lm-typecheck/compilation-counting-diff2.lsts
 
 build: compile-production
 	time ./production --v2 --c -o deploy1.c SRC/index.lsts
