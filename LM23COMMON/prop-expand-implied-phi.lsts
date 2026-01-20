@@ -5,12 +5,13 @@ let .expand-implied-phi(tt: Type): Type = (
    let original-tt = tt;
    if not(tt.is-t(c"Phi::State",1)) then match tt {
       TAnd{conjugate=conjugate} => (
+         tt = tand(conjugate);
          for vector c in conjugate {
             let ga = c.ground-tag-and-arity;
             let ip = implied-phi-index.lookup(ga,ta);
             let ps = t1(c"Phi::State",ip);
             if non-zero(ip) and not(can-unify(ps, tt)) {
-               tt = tt && ps
+               tt = tt.extend(ps)
             }
          }
       );
