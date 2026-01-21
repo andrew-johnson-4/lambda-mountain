@@ -101,6 +101,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
       };
       (tctx, result) = std-apply-macro-candidates(tctx, mname, margs, candidates);
    };
+
    if strong and not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs}\n", margs);
    if strong {
       (tctx, result) = std-infer-expr(tctx, result, false, used, ta);

@@ -64,7 +64,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
 
    # Propagate cons root type for Prop functions
    # like, t0.prop0(t1,t2) : T0 && Prop0
-   if ft.is-t(c"Prop",0) then return-type = return-type && at.cons-root;  
+   if ft.is-t(c"Prop",0) then return-type = return-type.extend( at.cons-root );  
 
    (tctx, apply-tctx, closed-type, return-type)
 );

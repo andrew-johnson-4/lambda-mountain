@@ -39,7 +39,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
                   let skip-state-check = false;
                   for vector st in rconjugate { match st {
                      TGround{tag:c"Phi::State",parameters:[new-phi-state..]} => (
-                        phi-state-in = phi-state-in && new-phi-state;
+                        phi-state-in = phi-state-in.extend(new-phi-state);
                      );
                      TGround{tag:c"Phi::Transition",parameters:[new-phi-to..new-phi-from..]} => (
                         result = result and can-unify(phi-to, new-phi-to) and can-unify(phi-from, new-phi-from);

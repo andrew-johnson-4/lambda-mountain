@@ -26,6 +26,16 @@ declare-unop( $"&", raw-type(t), raw-type(t[]), (l"(&"; x; l")";) );
 declare-unop( raw, raw-type(t), raw-type(t), x );
 declare-unop( raw, raw-type(base-type[]), raw-type(base-type[]+Raw), x );
 
+# TODO: configure this with conditional compilation to remove if unused
+# EXAMPLE: # if CFG.debug
+#          let safe-alloc-block-count = 0_u64;
+#          let safe-alloc-block-count-monotonic = 0_u64;
+#          # endif
+# safe-alloc-block-count is an increment/decrement counter to track active malloc blocks
+# safe-alloc-block-count-monotonic is an increment-only counter to track historical malloc blocks
+let safe-alloc-block-count = 0_u64;
+let safe-alloc-block-count-monotonic = 0_u64;
+
 let mark-memory-as-safe(ptr: t[], len: U64): Nil = (
    # BEFORE CHANGING THIS: talk to alex
 
@@ -45,6 +55,11 @@ let safe-alloc-impl(nb: U64): ?[] = (
    };
 
    mark-memory-as-safe(ptr as U8[], nb);
+
+   # TODO: wrap counter adjustments in conditional compilation
+   safe-alloc-block-count = safe-alloc-block-count + 1;
+   safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
+
    ptr
 );
 
@@ -57,6 +72,10 @@ let safe-realloc-impl(ptr: ?[], nb: U64): ?[] = (
    };
 
    mark-memory-as-safe(new_ptr as U8[], nb);
+
+   # TODO: wrap counter adjustments in conditional compilation
+   safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
+
    new_ptr
 );
 

@@ -1,8 +1,8 @@
-CC = cc
+CC = clang
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm tests/promises/vector/constructor.lsts
+	lm tests/promises/list/comparison.lsts
 	gcc tmp.c
 	./a.out
 

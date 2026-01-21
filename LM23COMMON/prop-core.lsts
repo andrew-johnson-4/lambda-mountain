@@ -63,7 +63,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
                   tctx.substitute(rt);
                ) else rt;
                if not(pre <: post) and not(base <: post) {
-                  pre = pre && post;
+                  pre = pre.extend(post);
                };
             );
          };
@@ -77,7 +77,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
                      tctx.substitute(rt);
                   ) else rt;
                   if not(pre <: post) and not(base <: post) {
-                     pre = pre && post;
+                     pre = pre.extend(post);
                   };
                );
             };

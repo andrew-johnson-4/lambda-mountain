@@ -1,0 +1,9 @@
+
+import lib2/core/bedrock.lsts;
+
+match [1,2,3] {
+   [1..xs] => match xs {
+      [2.._] => print("hello 1\n");
+   };
+   [1..2..3..] => print("hello 2\n");
+};

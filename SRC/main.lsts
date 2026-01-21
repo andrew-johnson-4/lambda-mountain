@@ -26,6 +26,8 @@ let print-toks-json(fp: CString): Nil = (
    print("]");
 );
 
+let show-alloc-count = false;
+
 let main(argc: C_int, argv: CString[]): Nil = (
    let argi = 1_u64;
    let input = [] : List<CString>;
@@ -36,6 +38,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
       has-args = true;
       match argv[argi] {
          c"--typecheck" => config-mode = ModeTypecheck();
+         c"--parse" => config-mode = ModeParse();
          c"--compile" => config-mode = ModeCompile();
          c"--v2" => config-v3 = false;
          c"--v3" => config-v3 = true;
@@ -48,6 +51,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
             highlight = false;
          );
          c"--stripdebug" => config-strip-debug = true;
+         c"--showalloc" => show-alloc-count = true;
          c"-o" => (
             argi = argi + 1;
             config-target = argv[argi];
@@ -79,6 +83,9 @@ let main(argc: C_int, argv: CString[]): Nil = (
             print("\n}\n");
          };
       );
+      ModeParse{} => (
+         for fp in input.reverse { frontend(fp); };
+      );
       _ => (
          for fp in input.reverse { frontend(fp); };
          match config-mode {
@@ -86,7 +93,10 @@ let main(argc: C_int, argv: CString[]): Nil = (
             ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(););
          };
       );
-   }
+   };
+   if show-alloc-count then {
+      print("Total blocks allocated: \{safe-alloc-block-count-monotonic}\n");
+   };
 );
 
 let doby-say(): Nil = (
