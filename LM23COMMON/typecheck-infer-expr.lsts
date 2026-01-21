@@ -282,14 +282,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          } else {
             let rt = ta;
             if index-macro-table.has(var-name-if-var(l)) {
-               if show-alloc-count then print("Before apply macro \{var-name-if-var(l)} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
                (tctx, term) = std-apply-macro(tctx, term, used);
-               if show-alloc-count then print("After apply macro \{var-name-if-var(l)} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
                is-macro = true;
             } else {
                (tctx, let new-l) = std-infer-expr(tctx, l, false, used, ta);
                if not(is(l,new-l)) then { l = new-l; term = mk-app(l,r); };
-               if show-alloc-count then print("apply function 1.0 \{var-name-if-var(l)} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
                if typeof-term(l).is-arrow {
                   let direct-hint = hint-if-hint(l);
                   if hint.is-t(c"ReturnHint",0) then direct-hint = direct-hint && hint;
@@ -311,7 +308,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   (tctx, let new-r) = std-infer-expr(tctx, r, false, Used, ta);
                   if not(is(l,new-l)) or not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
                };
-               if show-alloc-count then print("apply function 2.0 \{var-name-if-var(l)} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
 
                (tctx, let function-type, rt) = if typeof-term(l).is-arrow and non-zero(lit-name-if-lit(l)) {
                   let direct-hint = hint-if-hint(l);
@@ -328,7 +324,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                } else {
                   (tctx, ta, t2(c"Cons", typeof-term(l), typeof-term(r)))
                };
-               if show-alloc-count then print("apply function 3.0 \{var-name-if-var(l)} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
                if not(used.is-call) { rt = rt.cons-tail-or-self; };
                if var-name-if-var-or-lit(l)==c"mov" and typeof-term(r).is-t(c"Cons",2) {
                   let from-tt = typeof-term(r).slot(c"Cons",2).l1;
@@ -338,12 +333,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      tctx = tctx.phi-move(from-tt, term);
                   }
                };
-               if show-alloc-count then print("apply function 4.0 \{var-name-if-var(l)} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
 
                rt = tctx.with-phi(rt, term);
-               if show-alloc-count then print("apply function 5.0 \{var-name-if-var(l)} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
                tctx = tctx.ascript(term, rt);
-               if show-alloc-count then print("apply function 6.0 \{var-name-if-var(l)} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
 
                let is-released-after-call = false;
                if not(r.is-var-or-ascripted-var) {
@@ -378,13 +370,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      term = new-term;
                   };
                };
-               if show-alloc-count then print("apply function 7.0 \{var-name-if-var(l)} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
                if not(is-released-after-call) and not(rt.is-t(c"Cons",2)) {
                   if function-type.is-t(c"MustRetainOnCall",0) and not(hint.is-t(c"MustNotRetain",0)) and not(tctx.get-or(mk-tctx()).is-blob) {
                      (tctx, term) = maybe-retain(tctx, term);
                   }
                };
-               if show-alloc-count then print("apply function 8.0 \{var-name-if-var(l)} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
             };
          };
 
@@ -401,7 +391,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.phi-move(typeof-term(term),term);
       }
    }};
-   if show-alloc-count then print("Inferred \{term} blocks allocated: \{safe-alloc-block-count-monotonic}\n");
    (tctx, term);
 );
 
