@@ -2,8 +2,9 @@ CC = clang
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	#lm --showalloc tests/promises/lm-typecheck/compilation-counting-diff1.lsts
-	lm --showalloc tests/promises/lm-typecheck/compilation-counting-diff2.lsts > out.txt
+	lm tests/promises/list/comparison.lsts
+	gcc tmp.c
+	./a.out
 
 build: compile-production
 	time ./production --v2 --c -o deploy1.c SRC/index.lsts

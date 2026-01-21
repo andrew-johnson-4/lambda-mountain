@@ -44,8 +44,8 @@ let substitute(ctx: List<(CString,AST)>, tt: List<Type>): List<Type> = (
 
 let substitute(ctx: List<(CString,AST)>, term: AST): AST = (
    match term {
-      App{left:Var{key:c"uuid"}, right:Var{x=key}} => ctx.lookup(x,term).unique;
-      Var{x=key} => ctx.lookup(x,term).unique;
+      App{left:Var{key:c"uuid"}, right:Var{x1=key}} => ctx.lookup(x1,term).unique;
+      Var{x2=key} => ctx.lookup(x2,term).unique;
       Lit{} => term.unique;
       Seq{seq=seq} => (
          let ret = mk-vector(type(AST), seq.length);
