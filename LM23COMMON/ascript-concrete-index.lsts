@@ -13,7 +13,7 @@ let add-concrete-type-instance(tt: Type, blame: AST): Nil = (
       );
       TGround{ tag=tag, parameters=parameters } => (
          if tt.is-datatype then {
-            tt = tt.rewrite-type-alias;
+            tt = tt.rewrite-type-alias.without-any-phi;
             let gta = tt.ground-tag-and-arity;
             let row = concrete-type-instances-index.lookup(gta, mk-vector(type(Type)));
             if not(row.contains(tt)) then row = row.push(tt);
