@@ -73,7 +73,7 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
 
 let std-macro-helper-name(tt: Type): CString = (
    match tt {
-      TVar{name1=name} => if name.has-prefix(c"macro::") then name1 else c"";
+      TVar{name1=name} => if name1.has-prefix(c"macro::") then name1 else c"";
       TAnd{conjugate=conjugate} => (
          let name2 = c"";
          for c in conjugate {
