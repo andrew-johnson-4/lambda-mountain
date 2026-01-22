@@ -190,11 +190,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             _ => def-i = def-i + 1;
          }};
       );
-      Glb{key=key, val=val} => (
+      Glb{key1=key, val=val} => (
          let rough-tt = typeof-term(term);
          if rough-tt.is-arrow and not(rough-tt.is-open) and not(rough-tt.is-t(c"TypedMacro",0)) {
             let tctx-tctx = tctx.get-or(mk-tctx());
-            tctx-tctx.function-name = key.key;
+            tctx-tctx.function-name = key1.key;
             tctx = Some(tctx-tctx);
             (let inner-tctx, let new-val) = std-infer-expr(tctx, val, is-scoped, Used(), ta);
             match new-val {
@@ -206,16 +206,16 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                _ => ();
             };
             if not(is(val,new-val))  then {
-               let new-term = mk-glb(key,new-val);
+               let new-term = mk-glb(key1,new-val);
                mark-var-to-def(new-term, term);
                term = new-term;
             };
          };
       );
-      Var{key=key, token=token} => (
-         (tctx, let vt) = typeof-var(term, tctx, key, hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
+      Var{key2=key, token=token} => (
+         (tctx, let vt) = typeof-var(term, tctx, key2, hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
          vt = tctx.with-phi(vt, term);
-         mark-var-to-def-todo(tctx, key, ta, term);
+         mark-var-to-def-todo(tctx, key2, ta, term);
          # TailPosition LocalVariables don't need to be retained because +1/-1 retain/release cancels itself out
          if not(hint.is-t(c"TailPosition",0) and vt.is-t(c"LocalVariable",0))
          and not(hint.is-t(c"MustNotRetain",0))
@@ -226,13 +226,13 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             tctx = tctx.ascript(term, vt);
          };
       );
-      Lit{key=key, token=token} => (
+      Lit{key3=key, token=token} => (
          if hint.is-t(c"Literal",0) {
             tctx = tctx.ascript(term,hint);
          } else if not(non-zero(typeof-term(term))) {
-            if hint.is-t(c"HashtableEq",2) and hint.is-datatype and key==c"HashtableEqEOF"
+            if hint.is-t(c"HashtableEq",2) and hint.is-datatype and key3==c"HashtableEqEOF"
             then {
-               (tctx, let lit-tt) = tctx.apply-callable(key, t0(c"Nil"), term, hint);
+               (tctx, let lit-tt) = tctx.apply-callable(key3, t0(c"Nil"), term, hint);
                tctx = tctx.ascript(term, lit-tt);
             } else {
                tctx = tctx.ascript(term, t2(c"Arrow",t0(c"Any"),t0(c"Any")));
