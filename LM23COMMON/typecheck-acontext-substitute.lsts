@@ -10,9 +10,9 @@ let substitute(ctx: List<(CString,AST)>, v: Token): Token = (
 let substitute(ctx: List<(CString,AST)>, tt: Type): Type = (
    match tt {
       TVar{v=name} => match ctx.lookup(v, mk-eof()) {
-         Lit{tv=key} => t0(tv);
-         Var{tv=key} => t0(tv);
-         AType{tv=tt} => tv;
+         Lit{tv1=key} => t0(tv1);
+         Var{tv2=key} => t0(tv2);
+         AType{tv3=tt} => tv3;
          _ => tt;
       };
       TGround{tag=tag,parameters=parameters} => (
