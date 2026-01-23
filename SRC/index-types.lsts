@@ -2,8 +2,6 @@
 import SRC/substitute.lsts;
 import SRC/global-is-seen.lsts;
 
-import SRC/apply.lsts;
-
 import SRC/typecheck.lsts;
 import SRC/specialize.lsts;
 import SRC/assert-well-typed.lsts;
