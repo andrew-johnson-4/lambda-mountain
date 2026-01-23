@@ -1,0 +1,140 @@
+
+import lib2/core/bedrock.lsts;
+
+type alias AContext = List<(CString,AST)>;
+
+let substitute(ctx: AContext, tt: Type): Type = tt;
+
+type AST zero ASTEOF implies MustRetain, MustRelease
+         = Meta { val: OwnedData<AST>[] }
+         | ASTEOF
+         | ASTNil
+         | App { is-cons: Bool, left: OwnedData<AST>[], right: OwnedData<AST>[] }
+         | Var { key: CString, token: Token }
+         | Lit { key: CString, token: Token }
+         | Abs { lhs: OwnedData<AST>[], rhs: OwnedData<AST>[], tt: Type }
+         | AType { tt: Type }
+         | Seq { seq: Vector<AST> }
+         | Glb { key: Token , val: OwnedData<AST>[] }
+         | Typedef { location: SourceLocation, lhs-type: Type, implies: Vector<Type>, implements: Vector<Type>,
+                      size: Type, alias: Type, opaque-alias: Type, cases: Vector<(CString,Vector<(CString,Type)>)>,
+                      misc-type: Type, implied-phi: Type };
+
+let apply(ctx: AContext, term: AST): AST = (
+   match term {
+      ASTEOF{} => term;
+      ASTNil{} => term;
+      Lit{} => term;
+      AType{tt=tt} => AType(substitute(ctx,tt));
+      Var{n=key} => (
+         let nr = ctx.lookup(n, mk-eof());
+         if non-zero(nr) then nr else term;
+      );
+      App{left=left, right=right} => mk-app( apply(ctx,left), apply(ctx,right) );
+      Abs{lhs=lhs, rhs=rhs, tt=tt} => mk-abs( apply(ctx,lhs), apply(ctx,rhs), tt );
+      Seq{seq=seq} => (
+         let return = mk-eof();
+         for s in seq { return = return + apply(ctx,s) };
+         return
+      );
+      Glb{key=key, val=val} => mk-glb( substitute(ctx,key), apply(ctx,val) );
+   }
+);
+
+let .retain(t: AST): AST = (
+   if t.discriminator-case-tag==(t as Tag::Meta).discriminator-case-tag {
+      (t as Tag::Meta).val.retain;
+   };
+   if t.discriminator-case-tag==(t as Tag::App).discriminator-case-tag {
+      (t as Tag::App).left.retain;
+      (t as Tag::App).right.retain;
+   };
+   if t.discriminator-case-tag==(t as Tag::Abs).discriminator-case-tag {
+      (t as Tag::Abs).lhs.retain;
+      (t as Tag::Abs).rhs.retain;
+      mark-as-released((t as Tag::Abs).tt.retain);
+   };
+   if t.discriminator-case-tag==(t as Tag::AType).discriminator-case-tag {
+      mark-as-released((t as Tag::AType).tt.retain);
+   };
+   if t.discriminator-case-tag==(t as Tag::Seq).discriminator-case-tag {
+      mark-as-released((t as Tag::Seq).seq.retain);
+   };
+   if t.discriminator-case-tag==(t as Tag::Glb).discriminator-case-tag {
+      (t as Tag::Glb).val.retain;
+   };
+   if t.discriminator-case-tag==(t as Tag::Typedef).discriminator-case-tag {
+      mark-as-released((t as Tag::Typedef).lhs-type.retain);
+      mark-as-released((t as Tag::Typedef).implies.retain);
+      mark-as-released((t as Tag::Typedef).implements.retain);
+      mark-as-released((t as Tag::Typedef).size.retain);
+      mark-as-released((t as Tag::Typedef).alias.retain);
+      mark-as-released((t as Tag::Typedef).opaque-alias.retain);
+      mark-as-released((t as Tag::Typedef).cases.retain);
+      mark-as-released((t as Tag::Typedef).misc-type.retain);
+      mark-as-released((t as Tag::Typedef).implied-phi.retain);
+   };
+   t
+);
+
+let .release(t: AST): Nil = (
+   if t.discriminator-case-tag==(t as Tag::Meta).discriminator-case-tag {
+      (t as Tag::Meta).val.release;
+   };
+   if t.discriminator-case-tag==(t as Tag::App).discriminator-case-tag {
+      (t as Tag::App).left.release;
+      (t as Tag::App).right.release;
+   };
+   if t.discriminator-case-tag==(t as Tag::Abs).discriminator-case-tag {
+      (t as Tag::Abs).lhs.release;
+      (t as Tag::Abs).rhs.release;
+      (t as Tag::Abs).tt.release;
+   };
+   if t.discriminator-case-tag==(t as Tag::AType).discriminator-case-tag {
+      (t as Tag::AType).tt.release;
+   };
+   if t.discriminator-case-tag==(t as Tag::Seq).discriminator-case-tag {
+      (t as Tag::Seq).seq.release;
+   };
+   if t.discriminator-case-tag==(t as Tag::Glb).discriminator-case-tag {
+      (t as Tag::Glb).val.release;
+   };
+   if t.discriminator-case-tag==(t as Tag::Typedef).discriminator-case-tag {
+      (t as Tag::Typedef).lhs-type.release;
+      (t as Tag::Typedef).implies.release;
+      (t as Tag::Typedef).implements.release;
+      (t as Tag::Typedef).size.release;
+      (t as Tag::Typedef).alias.release;
+      (t as Tag::Typedef).opaque-alias.release;
+      (t as Tag::Typedef).cases.release;
+      (t as Tag::Typedef).misc-type.release;
+      (t as Tag::Typedef).implied-phi.release;
+   };
+   mark-as-released(t);
+);
+
+type Type zero TAny implies MustRetain, MustRelease
+        = TGround { tag:CString, parameters:OwnedData<List<Type>>[] }
+        | TAny
+        | TVar { name:CString }
+        | TAnd { conjugate:Vector<Type> };
+
+let .release(t: Type): Nil = (
+   if t.discriminator-case-tag==(t as Tag::TGround).discriminator-case-tag {
+      (t as Tag::TGround).parameters.release;
+   };
+   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
+      (t as Tag::TAnd).conjugate.release;
+   };
+   mark-as-released(t);
+);
+
+let .retain(t: Type): Type = (
+   if t.discriminator-case-tag==(t as Tag::TGround).discriminator-case-tag {
+      (t as Tag::TGround).parameters.retain;
+   };
+   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
+      mark-as-released((t as Tag::TAnd).conjugate.retain);
+   };
+   t
+);
