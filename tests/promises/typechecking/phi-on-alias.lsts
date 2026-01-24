@@ -3,19 +3,8 @@ import lib2/core/bedrock.lsts;
 
 type alias AContext = List<(CString,CString)>;
 
-let substitute(ctx: AContext, tt: Type): Type = tt;
+let substitute(ctx: AContext, tt: CString): CString = tt;
 
 let apply(ctx: AContext): Type = (
-   substitute(ctx,substitute(ctx,tt));
-);
-
-type Type zero TAny implies MustRetain, MustRelease
-        = TAny;
-
-let .release(t: Type): Nil = (
-   mark-as-released(t);
-);
-
-let .retain(t: Type): Type = (
-   t
+   substitute(ctx,substitute(ctx,1));
 );
