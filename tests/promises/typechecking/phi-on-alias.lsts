@@ -1,29 +1,12 @@
 
 import lib2/core/bedrock.lsts;
 
-type alias AContext = List<(CString,AST)>;
+type alias AContext = List<(CString,CString)>;
 
 let substitute(ctx: AContext, tt: Type): Type = tt;
 
-type AST zero ASTEOF implies MustRetain, MustRelease
-         = AType { tt: Type };
-
-let apply(ctx: AContext, term: AST): AST = (
-   AType(substitute(ctx,tt));
-);
-
-let .retain(t: AST): AST = (
-   if t.discriminator-case-tag==(t as Tag::AType).discriminator-case-tag {
-      mark-as-released((t as Tag::AType).tt.retain);
-   };
-   t
-);
-
-let .release(t: AST): Nil = (
-   if t.discriminator-case-tag==(t as Tag::AType).discriminator-case-tag {
-      (t as Tag::AType).tt.release;
-   };
-   mark-as-released(t);
+let apply(ctx: AContext): Type = (
+   substitute(ctx,substitute(ctx,tt));
 );
 
 type Type zero TAny implies MustRetain, MustRelease
