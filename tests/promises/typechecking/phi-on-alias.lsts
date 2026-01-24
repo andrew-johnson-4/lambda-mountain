@@ -1,10 +1,11 @@
 
 import lib2/core/bedrock.lsts;
 
-type alias AContext = List<(CString,CString)>;
+type alias AContext = List<CString>;
 
-let substitute(ctx: AContext, tt: CString): CString = tt;
-
-let apply(ctx: AContext): Type = (
-   substitute(ctx,substitute(ctx,1));
+let f(ctx: AContext): Nil = (
+   ctx; ()
 );
+
+# just referencing the aliased List leads to a GC bug
+# because no phi state is inferred for the AContext
