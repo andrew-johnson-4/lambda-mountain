@@ -9,3 +9,10 @@ let f(ctx: AContext): Nil = (
 
 # just referencing the aliased List leads to a GC bug
 # because no phi state is inferred for the AContext
+
+# can also be a problem on return values
+
+let g(ctx: AContext): AContext = ctx;
+let h(ctx: AContext): Nil = (
+   h(ctx); ()
+);
