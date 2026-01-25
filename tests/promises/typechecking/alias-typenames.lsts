@@ -1,7 +1,9 @@
 
-import LM23COMMON/unit-ast-core.lsts;
+import lib2/core/bedrock.lsts;
 
-let std-apply-macro-candidates(mname: CString, margs: AST, candidates: List<(Type,AST)>): Nil = (
+type alias AContext = List<(CString,CString)>;
+
+let std-apply-macro-candidates(mname: CString, margs: AST): Nil = (
    Some(extract-uuids(mk-eof())); ()
 );
 
