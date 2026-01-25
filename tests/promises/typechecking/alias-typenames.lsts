@@ -1,0 +1,33 @@
+
+import LM23COMMON/unit-ast-core.lsts;
+
+let .phi-append(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeContext? = tctx-primary;
+
+let std-apply-macro-candidates(tctx: TypeContext?, mname: CString, margs: AST, candidates: AContext): (TypeContext?, AST) = (
+   # candidates must be in last-most-first order
+   # Example: Source Definitions
+   # define macro candidate 1
+   # define macro candidate 2
+   # should be sent as
+   # [ candidate 2, candidate 1 ]
+   let t = mk-eof();
+   for Tuple{ctype=first, second:Abs{mlhs=lhs,rhs:App{left:Lit{key:c":"},right:App{mrhs=left}}}} in candidates {
+      if not(non-zero(t)) {
+         (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, mlhs);
+         tctx = tctx.phi-append(new-tctx);
+         if mctx.is-some then mctx = union(mctx, Some(extract-uuids(mrhs)));
+         if mctx.is-some then t = substitute(mctx.get-or-panic, mrhs).with-location-preserve(margs.location);
+      }
+   };
+   (tctx, t)
+);
+
+let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcandidate: AST): (TypeContext?, AContext?) = (
+   let mctx = (None : AContext?)();
+   (tctx, mctx)
+);
+
+let extract-uuids(term: AST): AContext = (
+   let mctx = (None : AContext?)();
+   mctx;
+);
