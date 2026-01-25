@@ -56,13 +56,9 @@ let .phi-append(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeC
 
 let std-apply-macro-candidates(tctx: TypeContext?, mname: CString, margs: AST, candidates: List<(Type,AST)>): (TypeContext?, AST) = (
    let t = mk-eof();
-   for Tuple{ctype=first, second:Abs{mlhs=lhs,rhs:App{left:Lit{key:c":"},right:App{mrhs=left}}}} in candidates {
-      if not(non-zero(t)) {
-         let mctx = (None : AContext?)();
-         if mctx.is-some then mctx = union(mctx, Some(extract-uuids(mrhs)));
-         if mctx.is-some then t = substitute(mctx.get-or-panic, mrhs).with-location-preserve(margs.location);
-      }
-   };
+   let mctx = (None : AContext?)();
+   mctx = union(mctx, Some(extract-uuids(t)));
+   t = substitute(mctx.get-or-panic, t).with-location-preserve(margs.location);
    (tctx, t)
 );
 
