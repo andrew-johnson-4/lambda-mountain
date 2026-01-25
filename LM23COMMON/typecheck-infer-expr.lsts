@@ -102,7 +102,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       App{asc=left:Var{key:c"as"}, right:App{t=left,right:AType{tt=tt}}} => (
          let original-tt = tt;
-         tt = tt.rewrite-type-alias;
+         tt = tt.rewrite-type-alias.expand-implied-phi;
          add-concrete-type-instance(tt, term);
          (tctx, let new-t) = std-infer-expr(tctx, t, false, used, tt && hint);
          if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
@@ -246,6 +246,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          let before-tctx = tctx; # make sure to capture locals as "local" scope
          tctx = infer-ctx(tctx, lhs);
          if not(inner-rhs.is-nil) {
+            return-type = return-type.rewrite-type-alias.expand-implied-phi;
             (tctx, let new-inner-rhs) = std-infer-expr(tctx, inner-rhs, false, Tail(), return-type && t0(c"TailPosition"));
             if not(direct-tctx.is-blob) {
                let return-type-after-alias = return-type.rewrite-type-alias;

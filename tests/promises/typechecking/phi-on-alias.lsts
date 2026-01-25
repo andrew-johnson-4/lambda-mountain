@@ -1,0 +1,18 @@
+
+import lib2/core/bedrock.lsts;
+
+type alias AContext = List<CString>;
+
+let f(ctx: AContext): Nil = (
+   ctx; ()
+);
+
+# just referencing the aliased List leads to a GC bug
+# because no phi state is inferred for the AContext
+
+# can also be a problem on return values
+
+let g(ctx: AContext): AContext = ctx;
+let h(ctx: AContext): Nil = (
+   h(ctx); ()
+);
