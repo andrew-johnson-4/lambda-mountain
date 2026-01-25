@@ -1,9 +1,60 @@
 
 import LM23COMMON/unit-ast-core.lsts;
 
+type TypeContextRow zero NullTypeContextRow implies MustRetain, MustRelease = NullTypeContextRow | TypeContextRow { key: CString, nt: Type, dt: Type, blame: AST };
+type PhiContextRow zero NullPhiContextRow implies MustRetain, MustRelease = NullPhiContextRow | PhiContextRow { phi-id: CString, phi-tt: Type, blame: AST, dead-on-arrival: Bool, is-global: Bool };
+type TypeContext implies MustRetain, MustRelease = { tctx:List<TypeContextRow>, pctx: List<PhiContextRow>, is-unsafe: Bool, is-blob: Bool, function-name:CString };
+
+let .retain(t: TypeContextRow): TypeContextRow = (
+   if t.discriminator-case-tag==(t as Tag::TypeContextRow).discriminator-case-tag {
+      mark-as-released((t as Tag::TypeContextRow).nt.retain);
+      mark-as-released((t as Tag::TypeContextRow).dt.retain);
+      mark-as-released((t as Tag::TypeContextRow).blame.retain);
+   };
+   t
+);
+let .release(t: TypeContextRow): Nil = (
+   if t.discriminator-case-tag==(t as Tag::TypeContextRow).discriminator-case-tag {
+      (t as Tag::TypeContextRow).nt.release;
+      (t as Tag::TypeContextRow).dt.release;
+      (t as Tag::TypeContextRow).blame.release;
+   };
+   mark-as-released(t);
+);
+
+let .retain(t: PhiContextRow): PhiContextRow = (
+   if t.discriminator-case-tag==(t as Tag::PhiContextRow).discriminator-case-tag {
+      mark-as-released((t as Tag::PhiContextRow).phi-tt.retain);
+      mark-as-released((t as Tag::PhiContextRow).blame.retain);
+   };
+   t
+);
+let .release(t: PhiContextRow): Nil = (
+   if t.discriminator-case-tag==(t as Tag::PhiContextRow).discriminator-case-tag {
+      (t as Tag::PhiContextRow).phi-tt.release;
+      (t as Tag::PhiContextRow).blame.release;
+   };
+   mark-as-released(t);
+);
+
+let .retain(t: TypeContext): TypeContext = (
+   if t.discriminator-case-tag==(t as Tag::TypeContext).discriminator-case-tag {
+       mark-as-released((t as Tag::TypeContext).tctx.retain);
+       mark-as-released((t as Tag::TypeContext).pctx.retain);
+   };
+   t
+);
+let .release(t: TypeContext): Nil = (
+   if t.discriminator-case-tag==(t as Tag::TypeContext).discriminator-case-tag {
+      (t as Tag::TypeContext).tctx.release;
+      (t as Tag::TypeContext).pctx.release;
+   };
+   mark-as-released(t);
+);
+
 let .phi-append(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeContext? = tctx-primary;
 
-let std-apply-macro-candidates(tctx: TypeContext?, mname: CString, margs: AST, candidates: AContext): (TypeContext?, AST) = (
+let std-apply-macro-candidates(tctx: TypeContext?, mname: CString, margs: AST, candidates: List<(Type,AST)>): (TypeContext?, AST) = (
    # candidates must be in last-most-first order
    # Example: Source Definitions
    # define macro candidate 1
@@ -28,6 +79,6 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
 );
 
 let extract-uuids(term: AST): AContext = (
-   let mctx = (None : AContext?)();
+   let mctx = [] : AContext;
    mctx;
 );
