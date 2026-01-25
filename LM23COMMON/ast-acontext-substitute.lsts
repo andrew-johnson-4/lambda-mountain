@@ -1,5 +1,5 @@
 
-let substitute(ctx: List<(CString,AST)>, v: Token): Token = (
+let substitute(ctx: AContext, v: Token): Token = (
    match ctx.lookup(v.key, mk-eof()) {
       Lit{t=token} => t;
       Var{t=token} => t;
@@ -7,7 +7,7 @@ let substitute(ctx: List<(CString,AST)>, v: Token): Token = (
    }
 );
 
-let substitute(ctx: List<(CString,AST)>, tt: Type): Type = (
+let substitute(ctx: AContext, tt: Type): Type = (
    match tt {
       TVar{v=name} => match ctx.lookup(v, mk-eof()) {
          Lit{tv1=key} => t0(tv1);
@@ -35,14 +35,14 @@ let substitute(ctx: List<(CString,AST)>, tt: Type): Type = (
    }
 );
 
-let substitute(ctx: List<(CString,AST)>, tt: List<Type>): List<Type> = (
+let substitute(ctx: AContext, tt: List<Type>): List<Type> = (
    match tt {
       LCons{head=head,tail=tail} => cons( substitute(ctx,head), substitute(ctx,tail) );
       _ => tt;
    }
 );
 
-let substitute(ctx: List<(CString,AST)>, term: AST): AST = (
+let substitute(ctx: AContext, term: AST): AST = (
    match term {
       App{left:Var{key:c"uuid"}, right:Var{x1=key}} => ctx.lookup(x1,term).unique;
       Var{x2=key} => ctx.lookup(x2,term).unique;
