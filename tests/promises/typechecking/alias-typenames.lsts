@@ -2,8 +2,7 @@
 import LM23COMMON/unit-ast-core.lsts;
 
 let std-apply-macro-candidates(mname: CString, margs: AST, candidates: List<(Type,AST)>): Nil = (
-   let mctx = (None : AContext?)();
-   mctx = union(mctx, Some(extract-uuids(mk-eof())));
+   Some(extract-uuids(mk-eof())); ()
 );
 
 let extract-uuids(term: AST): AContext = (
