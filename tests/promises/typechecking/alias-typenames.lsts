@@ -10,3 +10,5 @@ let f(): Nil = (
 let g(): AContext = (
    [] : AContext;
 );
+
+# This covers the case where either the aliased return type is not rewriting or implied phi on return type is not being added
