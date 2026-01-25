@@ -1,13 +1,12 @@
 
 import lib2/core/bedrock.lsts;
 
-type alias AContext = List<(CString,CString)>;
+type alias AContext = List<CString>;
 
-let std-apply-macro-candidates(mname: CString, margs: AST): Nil = (
-   Some(extract-uuids(mk-eof())); ()
+let f(): Nil = (
+   Some(g()); ()
 );
 
-let extract-uuids(term: AST): AContext = (
-   let mctx = [] : AContext;
-   mctx;
+let g(): AContext = (
+   [] : AContext;
 );
