@@ -1,11 +1,7 @@
 
 import LM23COMMON/unit-ast-core.lsts;
 
-type TypeContextRow zero NullTypeContextRow = NullTypeContextRow | TypeContextRow { key: CString, nt: Type, dt: Type, blame: AST };
-type PhiContextRow zero NullPhiContextRow = NullPhiContextRow | PhiContextRow { phi-id: CString, phi-tt: Type, blame: AST, dead-on-arrival: Bool, is-global: Bool };
-type TypeContext = { tctx:List<TypeContextRow>, pctx: List<PhiContextRow>, is-unsafe: Bool, is-blob: Bool, function-name:CString };
-
-let std-apply-macro-candidates(tctx: TypeContext?, mname: CString, margs: AST, candidates: List<(Type,AST)>): Nil = (
+let std-apply-macro-candidates(mname: CString, margs: AST, candidates: List<(Type,AST)>): Nil = (
    let mctx = (None : AContext?)();
    mctx = union(mctx, Some(extract-uuids(mk-eof())));
 );
