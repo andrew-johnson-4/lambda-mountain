@@ -1,0 +1,14 @@
+
+import lib2/core/bedrock.lsts;
+
+type alias AContext = List<CString>;
+
+let f(): Nil = (
+   Some(g()); ()
+);
+
+let g(): AContext = (
+   [] : AContext;
+);
+
+# This covers the case where either the aliased return type is not rewriting or implied phi on return type is not being added
