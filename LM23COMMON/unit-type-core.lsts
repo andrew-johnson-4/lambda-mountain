@@ -38,3 +38,4 @@ import LM23COMMON/type-as-return-hint.lsts;
 import LM23COMMON/type-resurrect.lsts;
 import LM23COMMON/type-cons-tail-or-self.lsts;
 import LM23COMMON/type-without-modifiers.lsts;
+import LM23COMMON/type-with-only-phi.lsts;
