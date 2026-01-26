@@ -23,3 +23,5 @@ import LM23COMMON/typecheck-std-maybe-release-after-call.lsts;
 import LM23COMMON/typecheck-index-of-tag.lsts;
 import LM23COMMON/typecheck-extract-uuids.lsts;
 import LM23COMMON/typecheck-std-direct-destructure-macro.lsts;
+import LM23COMMON/typecheck-tctx-substitute-lhs.lsts;
+import LM23COMMON/typecheck-tctx-substitute.lsts;
