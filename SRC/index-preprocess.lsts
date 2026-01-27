@@ -5,4 +5,3 @@ import SRC/preprocess-apply-hard.lsts;
 import SRC/preprocess-apply-literals.lsts;
 import SRC/preprocess-apply-locations.lsts;
 import SRC/preprocess-apply.lsts;
-import SRC/try-destructure-macro.lsts;

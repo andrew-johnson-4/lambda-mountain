@@ -22,3 +22,5 @@ import LM23COMMON/prop-tctx-substitute.lsts;
 import LM23COMMON/prop-typeof-var-raw.lsts;
 import LM23COMMON/prop-typeof-tag.lsts;
 import LM23COMMON/prop-type-datatype.lsts;
+import LM23COMMON/prop-is-lone-tag.lsts;
+import LM23COMMON/prop-is-suffixed.lsts;
