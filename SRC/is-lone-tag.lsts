@@ -1,5 +1,0 @@
-
-let lone-index = {} : HashtableEq<CString,U64>;
-
-let index-lone-tag(tag: CString): Nil = lone-index = lone-index.bind(tag,true);
-let is-lone-tag(tag: CString): U64 = lone-index.lookup(tag,false);
