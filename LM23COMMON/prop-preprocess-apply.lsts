@@ -1,7 +1,7 @@
 
 let preprocess-apply(program: AST): AST = preprocess-apply(program, false);
 
-let preprocess-apply(program: AST, is-lhs: U64): AST = (
+let preprocess-apply(program: AST, is-lhs: Bool): AST = (
    match program {
       App{ left:App{ left:Var{key:c"macro::concat",ctk=token}, right:App{ left:Var{lk=key}, right:Var{rk=key} } }, nt=right } => (
          mk-app( mk-var(lk+rk, ctk.unique), preprocess-apply(nt) )
@@ -73,7 +73,7 @@ let preprocess-apply(program: AST, is-lhs: U64): AST = (
       Lit{l=key,ltk=token} => (
          for Tuple{sfxs=first, sfxtt=second} in parse-suffixes {
             if l.has-suffix(sfxs) {
-               let lpfx = l.remove-suffix(sfxs);
+               let lpfx = l.remove-suffix(sfxs).get-or(c"");
                program = mk-app( mk-lit(c":",with-key(ltk,c":")), mk-app( mk-lit(lpfx,with-key(ltk,lpfx)), mk-atype(sfxtt) ) )
             }
          }; program
@@ -81,7 +81,7 @@ let preprocess-apply(program: AST, is-lhs: U64): AST = (
       Var{l=key,ltk=token} => (
          for Tuple{sfxs=first, sfxtt=second} in parse-suffixes {
             if l.has-suffix(sfxs) {
-               let lpfx = l.remove-suffix(sfxs);
+               let lpfx = l.remove-suffix(sfxs).get-or(c"");
                program = mk-app( mk-lit(c":",with-key(ltk,c":")), mk-app( mk-lit(lpfx,with-key(ltk,lpfx)), mk-atype(sfxtt) ) )
             }
          }; program

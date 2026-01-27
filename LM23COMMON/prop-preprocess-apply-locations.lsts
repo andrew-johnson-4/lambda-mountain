@@ -3,8 +3,8 @@ let preprocess-apply-locations(program: AST): AST = (
    match program {
       App{ left:Var{key:c"p"}, right:Lit{key:c":Location:",ltk=token} } => (
          let l = c"File: " + ltk.location.filename
-               + c" Line: " + to-string(ltk.location.line)
-               + c" Column: " + to-string(ltk.location.column);
+               + c" Line: " + ltk.location.line.into(type(CString))
+               + c" Column: " + ltk.location.column.into(type(CString));
          mk-lit(l, with-key(ltk.unique,l))
       );
       Lit{l=key,ltk=token} => mk-lit(l, ltk.unique);
