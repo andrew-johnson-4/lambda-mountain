@@ -5,7 +5,6 @@ import SRC/index-plugins.lsts;
 import SRC/infer-global-terms.lsts;
 import SRC/infer-type-definition.lsts;
 import SRC/assert-no-infinite-types.lsts;
-import SRC/tctx-to-string.lsts;
 
 let .unroll-seq(t: AST): Vector<AST> = (
    match t {
