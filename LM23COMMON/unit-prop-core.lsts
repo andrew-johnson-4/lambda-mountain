@@ -25,8 +25,4 @@ import LM23COMMON/prop-type-datatype.lsts;
 import LM23COMMON/prop-is-lone-tag.lsts;
 import LM23COMMON/prop-is-suffixed.lsts;
 import LM23COMMON/prop-global-is-seen.lsts;
-import LM23COMMON/prop-preprocess-apply-literals.lsts;
-import LM23COMMON/prop-preprocess-apply-hard.lsts;
-import LM23COMMON/prop-preprocess-apply.lsts;
-import LM23COMMON/prop-preprocess-apply-locations.lsts;
 import LM23COMMON/prop-is-macro-head.lsts;
