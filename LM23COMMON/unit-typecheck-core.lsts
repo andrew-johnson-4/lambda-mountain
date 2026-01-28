@@ -30,3 +30,4 @@ import LM23COMMON/typecheck-preprocess-apply-hard.lsts;
 import LM23COMMON/typecheck-preprocess-apply-literals.lsts;
 import LM23COMMON/typecheck-preprocess-apply-locations.lsts;
 import LM23COMMON/typecheck-preprocess-apply.lsts;
+import LM23COMMON/typecheck-validate-interfaces.lsts;
