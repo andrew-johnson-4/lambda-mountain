@@ -24,3 +24,5 @@ import LM23COMMON/prop-typeof-tag.lsts;
 import LM23COMMON/prop-type-datatype.lsts;
 import LM23COMMON/prop-is-lone-tag.lsts;
 import LM23COMMON/prop-is-suffixed.lsts;
+import LM23COMMON/prop-global-is-seen.lsts;
+import LM23COMMON/prop-is-macro-head.lsts;

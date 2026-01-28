@@ -27,3 +27,4 @@ import LM23COMMON/ast-acontext-apply.lsts;
 import LM23COMMON/ast-acontext-bind.lsts;
 import LM23COMMON/ast-acontext-substitute.lsts;
 import LM23COMMON/ast-acontext-union.lsts;
+import LM23COMMON/ast-substitute-uuids.lsts;
