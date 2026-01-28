@@ -3,104 +3,104 @@ let preprocess-apply(program: AST): AST = preprocess-apply(program, false);
 
 let preprocess-apply(program: AST, is-lhs: Bool): AST = (
    match program {
-      App{ left:App{ left:Var{key:c"macro::concat",ctk=token}, right:App{ left:Var{lk=key}, right:Var{rk=key} } }, nt=right } => (
-         mk-app( mk-var(lk+rk, ctk.unique), preprocess-apply(nt) )
+      App{ left:App{ left:Var{key:c"macro::concat",ctk1=token}, right:App{ left:Var{lk1=key}, right:Var{rk1=key} } }, nt1=right } => (
+         mk-app( mk-var(lk1+rk1, ctk1.unique), preprocess-apply(nt1) )
       );
-      App{ left:App{ left:Var{key:c"macro::concat",ctk=token}, right:App{ left:Var{lk=key}, right:Lit{rk=key} } }, nt=right } => (
-         mk-app( mk-var(lk+rk, ctk.unique), preprocess-apply(nt) )
+      App{ left:App{ left:Var{key:c"macro::concat",ctk2=token}, right:App{ left:Var{lk2=key}, right:Lit{rk2=key} } }, nt2=right } => (
+         mk-app( mk-var(lk2+rk2, ctk2.unique), preprocess-apply(nt2) )
       );
-      App{ left:App{ left:Var{key:c"macro::concat",ctk=token}, right:App{ left:Lit{lk=key}, right:Var{rk=key} } }, nt=right } => (
-         mk-app( mk-var(lk+rk, ctk.unique), preprocess-apply(nt) )
+      App{ left:App{ left:Var{key:c"macro::concat",ctk3=token}, right:App{ left:Lit{lk3=key}, right:Var{rk3=key} } }, nt3=right } => (
+         mk-app( mk-var(lk3+rk3, ctk3.unique), preprocess-apply(nt3) )
       );
-      App{ left:App{ left:Var{key:c"macro::concat",ctk=token}, right:App{ left:Lit{lk=key}, right:Lit{rk=key} } }, nt=right } => (
-         mk-app( mk-var(lk+rk, ctk.unique), preprocess-apply(nt) )
+      App{ left:App{ left:Var{key:c"macro::concat",ctk4=token}, right:App{ left:Lit{lk4=key}, right:Lit{rk4=key} } }, nt4=right } => (
+         mk-app( mk-var(lk4+rk4, ctk4.unique), preprocess-apply(nt4) )
       );
-      App{ is-cons-1=is-cons,
-         left:App{is-cons-2=is-cons,
-            left:Lit{key:c":",ctk=token},
-            right:App{is-cons-3=is-cons,
-               t=left:Lit{l=key,ltk=token},
-               right:AType{tt=tt}
+      App{ is-cons-14=is-cons,
+         left:App{is-cons-24=is-cons,
+            left:Lit{key:c":",ctk4=token},
+            right:App{is-cons-34=is-cons,
+               t4=left:Lit{l4=key,ltk4=token},
+               right:AType{tt4=tt}
             }
-         }, nt=right } => (
-         if not(tt.is-t(c"String",0)) then t = preprocess-apply(t);
-         mk-cons-or-app(is-cons-1,
-            mk-cons-or-app(is-cons-2,
-               mk-lit(c":",ctk.unique),
-               mk-cons-or-app(is-cons-3,t,mk-atype(tt))
-            ), preprocess-apply(nt,is-lhs)
+         }, nt4=right } => (
+         if not(tt4.is-t(c"String",0)) then t4 = preprocess-apply(t4);
+         mk-cons-or-app(is-cons-14,
+            mk-cons-or-app(is-cons-24,
+               mk-lit(c":",ctk4.unique),
+               mk-cons-or-app(is-cons-34,t4,mk-atype(tt4))
+            ), preprocess-apply(nt4,is-lhs)
          );
       );
-      App{ is-cons-1=is-cons,
-         left:App{is-cons-2=is-cons,
-            left:Lit{key:c":",ctk=token},
-            right:App{is-cons-3=is-cons,
-               t=left,
-               right:AType{tt=tt}
+      App{ is-cons-15=is-cons,
+         left:App{is-cons-25=is-cons,
+            left:Lit{key:c":",ctk5=token},
+            right:App{is-cons-35=is-cons,
+               t5=left,
+               right:AType{tt5=tt}
             }
-         }, nt=right } => (
-         tt = phi-as-state(tt).expand-implied-phi;
-         mk-cons-or-app(is-cons-1,
-            mk-cons-or-app(is-cons-2,
-               mk-lit(c":",ctk.unique),
-               mk-cons-or-app(is-cons-3,preprocess-apply(t,is-lhs),mk-atype(tt))
-            ), preprocess-apply(nt,is-lhs)
+         }, nt5=right } => (
+         tt5 = phi-as-state(tt5).expand-implied-phi;
+         mk-cons-or-app(is-cons-15,
+            mk-cons-or-app(is-cons-25,
+               mk-lit(c":",ctk5.unique),
+               mk-cons-or-app(is-cons-35,preprocess-apply(t5,is-lhs),mk-atype(tt5))
+            ), preprocess-apply(nt5,is-lhs)
          );
       );
-      App{is-cons-2=is-cons, left:Lit{key:c":",ctk=token}, right:App{is-cons-3=is-cons,t=left:Lit{},right:AType{tt=tt}}} => (
-         if not(tt.is-t(c"String",0)) then t = preprocess-apply(t);
-         mk-cons-or-app(is-cons-2,
-            mk-lit(c":",ctk.unique),
-            mk-cons-or-app(is-cons-3,t,mk-atype(tt))
+      App{is-cons-26=is-cons, left:Lit{key:c":",ctk6=token}, right:App{is-cons-36=is-cons,t6=left:Lit{},right:AType{tt6=tt}}} => (
+         if not(tt6.is-t(c"String",0)) then t6 = preprocess-apply(t6);
+         mk-cons-or-app(is-cons-26,
+            mk-lit(c":",ctk6.unique),
+            mk-cons-or-app(is-cons-36,t6,mk-atype(tt6))
          );
       );
-      App{is-cons-2=is-cons, left:Lit{key:c":",ctk=token}, right:App{is-cons-3=is-cons,t=left,right:AType{tt=tt}}} => (
-         tt = phi-as-state(tt).expand-implied-phi;
-         t = preprocess-apply(t);
-         mk-cons-or-app(is-cons-2,
-            mk-lit(c":",ctk.unique),
-            mk-cons-or-app(is-cons-3,t,mk-atype(tt))
+      App{is-cons-27=is-cons, left:Lit{key:c":",ctk7=token}, right:App{is-cons-37=is-cons,t7=left,right:AType{tt7=tt}}} => (
+         tt7 = phi-as-state(tt7).expand-implied-phi;
+         t7 = preprocess-apply(t7);
+         mk-cons-or-app(is-cons-27,
+            mk-lit(c":",ctk7.unique),
+            mk-cons-or-app(is-cons-37,t7,mk-atype(tt7))
          );
       );
       App{
          left:App{
-            left:Var{key:c"as",atk=token},
-            right:App{ t=left, right:AType{tt=tt} }
-         }, nt=right
+            left:Var{key:c"as",atk8=token},
+            right:App{ t8=left, right:AType{tt8=tt} }
+         }, nt8=right
       } => (
-         mk-app( mk-app( mk-var(c"as",atk.unique), mk-app(preprocess-apply(t),mk-atype(tt)) ), preprocess-apply(nt) )
+         mk-app( mk-app( mk-var(c"as",atk8.unique), mk-app(preprocess-apply(t8),mk-atype(tt8)) ), preprocess-apply(nt8) )
       );
-      Lit{l=key,ltk=token} => (
-         for Tuple{sfxs=first, sfxtt=second} in parse-suffixes {
-            if l.has-suffix(sfxs) {
-               let lpfx = l.remove-suffix(sfxs).get-or(c"");
-               program = mk-app( mk-lit(c":",with-key(ltk,c":")), mk-app( mk-lit(lpfx,with-key(ltk,lpfx)), mk-atype(sfxtt) ) )
+      Lit{l9=key,ltk9=token} => (
+         for Tuple{sfxs9=first, sfxtt9=second} in parse-suffixes {
+            if l9.has-suffix(sfxs9) {
+               let lpfx9 = l9.remove-suffix(sfxs9).get-or(c"");
+               program = mk-app( mk-lit(c":",with-key(ltk9,c":")), mk-app( mk-lit(lpfx9,with-key(ltk9,lpfx9)), mk-atype(sfxtt9) ) )
             }
          }; program
       );
-      Var{l=key,ltk=token} => (
-         for Tuple{sfxs=first, sfxtt=second} in parse-suffixes {
-            if l.has-suffix(sfxs) {
-               let lpfx = l.remove-suffix(sfxs).get-or(c"");
-               program = mk-app( mk-lit(c":",with-key(ltk,c":")), mk-app( mk-lit(lpfx,with-key(ltk,lpfx)), mk-atype(sfxtt) ) )
+      Var{l10=key,ltk10=token} => (
+         for Tuple{sfxs10=first, sfxtt10=second} in parse-suffixes {
+            if l10.has-suffix(sfxs10) {
+               let lpfx10 = l10.remove-suffix(sfxs10).get-or(c"");
+               program = mk-app( mk-lit(c":",with-key(ltk10,c":")), mk-app( mk-lit(lpfx10,with-key(ltk10,lpfx10)), mk-atype(sfxtt10) ) )
             }
          }; program
       );
-      App{ is-cons=is-cons, left:Var{vn=key,vntk=token}, vt=right } => (
-         if is-macro-head(vn,1) {
-            preprocess-apply-hard(vn,1,program)
+      App{ is-cons11=is-cons, left:Var{vn11=key,vntk11=token}, vt11=right } => (
+         if is-macro-head(vn11,1) {
+            preprocess-apply-hard(vn11,1,program)
          } else {
-            mk-cons-or-app(is-cons, preprocess-apply(mk-var(vn,vntk.unique)), preprocess-apply(vt))
+            mk-cons-or-app(is-cons11, preprocess-apply(mk-var(vn11,vntk11.unique)), preprocess-apply(vt11))
          }
       );
-      App{ is-cons-1=is-cons, left:App{ is-cons-2=is-cons, left:Var{vn=key,vntk=token}, vt0=right }, vt1=right } => (
-         if is-macro-head(vn,2) {
-            preprocess-apply-hard(vn,2,program)
+      App{ is-cons-112=is-cons, left:App{ is-cons-212=is-cons, left:Var{vn12=key,vntk12=token}, vt012=right }, vt112=right } => (
+         if is-macro-head(vn12,2) {
+            preprocess-apply-hard(vn12,2,program)
          } else {
-            mk-cons-or-app(is-cons-1,
-               preprocess-apply(mk-cons-or-app(is-cons-2,
-                  mk-var(vn,vntk.unique), vt0
-               ),is-lhs), preprocess-apply(vt1,is-lhs)
+            mk-cons-or-app(is-cons-112,
+               preprocess-apply(mk-cons-or-app(is-cons-212,
+                  mk-var(vn12,vntk12.unique), vt012
+               ),is-lhs), preprocess-apply(vt112,is-lhs)
             )
          }
       );
@@ -109,15 +109,15 @@ let preprocess-apply(program: AST, is-lhs: Bool): AST = (
          for s in seq { program = program + preprocess-apply(s) };
          program
       );
-      App{is-cons=is-cons, al=left, ar=right} => (
-         mk-cons-or-app( is-cons, preprocess-apply(al,is-lhs), preprocess-apply(ar,is-lhs) )
+      App{is-cons14=is-cons, al14=left, ar14=right} => (
+         mk-cons-or-app( is-cons14, preprocess-apply(al14,is-lhs), preprocess-apply(ar14,is-lhs) )
       );
-      Abs{al=lhs, ar=rhs, tlt=tt} => (
-         if not(tlt.is-t(c"TypedMacro",0))
-         then mk-abs(preprocess-apply(al,true),preprocess-apply(ar),tlt)
+      Abs{al15=lhs, ar15=rhs, tlt15=tt} => (
+         if not(tlt15.is-t(c"TypedMacro",0))
+         then mk-abs(preprocess-apply(al15,true),preprocess-apply(ar15),tlt15)
          else program
       );
-      Glb{k=key, ar=val} => mk-glb(k.unique, preprocess-apply(ar));
+      Glb{k16=key, ar16=val} => mk-glb(k16.unique, preprocess-apply(ar16));
       _ => program;
    }
 );

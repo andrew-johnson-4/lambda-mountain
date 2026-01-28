@@ -8,8 +8,8 @@ let preprocess-apply-hard(macro-name: CString, arity: U64, program: AST): AST = 
          macros = rst;
          let go = false;
          match lhs {
-            App{ left:Lit{m=key} } => if macro-name==m and arity==1 then go = true;
-            App{ left:App{ left:Lit{m=key} } } => if macro-name==m and arity==2 then go = true;
+            App{ left:Lit{m1=key} } => if macro-name==m1 and arity==1 then go = true;
+            App{ left:App{ left:Lit{m2=key} } } => if macro-name==m2 and arity==2 then go = true;
          };
          if go {
             let des = try-destructure-macro(program.location, lhs, program);

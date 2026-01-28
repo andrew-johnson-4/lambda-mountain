@@ -1,22 +1,22 @@
 
 let preprocess-apply-locations(program: AST): AST = (
    match program {
-      App{ left:Var{key:c"p"}, right:Lit{key:c":Location:",ltk=token} } => (
-         let l = c"File: " + ltk.location.filename
-               + c" Line: " + ltk.location.line.into(type(CString))
-               + c" Column: " + ltk.location.column.into(type(CString));
-         mk-lit(l, with-key(ltk.unique,l))
+      App{ left:Var{key:c"p"}, right:Lit{key:c":Location:",ltk1=token} } => (
+         let l = c"File: " + ltk1.location.filename
+               + c" Line: " + ltk1.location.line.into(type(CString))
+               + c" Column: " + ltk1.location.column.into(type(CString));
+         mk-lit(l, with-key(ltk1.unique,l))
       );
-      Lit{l=key,ltk=token} => mk-lit(l, ltk.unique);
-      Var{l=key,ltk=token} => mk-var(l, ltk.unique);
-      App{is-cons=is-cons,t0=left,t1=right} => mk-cons-or-app(is-cons, preprocess-apply-locations(t0), preprocess-apply-locations(t1));
+      Lit{l2=key,ltk2=token} => mk-lit(l2, ltk2.unique);
+      Var{l3=key,ltk3=token} => mk-var(l3, ltk3.unique);
+      App{is-cons4=is-cons,t04=left,t14=right} => mk-cons-or-app(is-cons4, preprocess-apply-locations(t04), preprocess-apply-locations(t14));
       Seq{seq=seq} => (
          program = mk-eof();
          for p in seq { program = program + preprocess-apply-locations(p) };
          program
       );
-      Abs{al=lhs, ar=rhs, tlt=tt} => mk-abs(preprocess-apply-locations(al), preprocess-apply-locations(ar), tlt);
-      Glb{k=key, ar=val} => mk-glb(k.unique, preprocess-apply-locations(ar));
+      Abs{al1=lhs, ar1=rhs, tlt1=tt} => mk-abs(preprocess-apply-locations(al1), preprocess-apply-locations(ar1), tlt1);
+      Glb{k2=key, ar2=val} => mk-glb(k2.unique, preprocess-apply-locations(ar2));
       _ => program;
    }
 );
