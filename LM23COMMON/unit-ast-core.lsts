@@ -29,3 +29,4 @@ import LM23COMMON/ast-acontext-substitute.lsts;
 import LM23COMMON/ast-acontext-union.lsts;
 import LM23COMMON/ast-substitute-uuids.lsts;
 import LM23COMMON/ast-acontext-to-string.lsts;
+import LM23COMMON/ast-unroll-seq.lsts;
