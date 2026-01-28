@@ -47,4 +47,4 @@ let .into(used: IsUsed, ty: Type<String>): String = (
 );
 
 type Macro = { lhs:AST, rhs:AST };
-type MacroList zero MEOF = MEOF | MSeq{ k:MacroList[], v:Macro };
+type MacroList zero MEOF = MEOF | MSeq{ k:OwnedData<MacroList>[], v:Macro };
