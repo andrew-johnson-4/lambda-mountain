@@ -1,9 +1,9 @@
 
 let type-ast-inserts = mk-vector(type(AST));
-let complex-type-index = {} : HashtableEq<(CString,U64),U64>;
+let complex-type-index = {} : Hashtable<(CString,U64),U64>;
 
 let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U64, case-number: U64): Nil = (
-   let mangled-field-name = to-string(case-number) + c"_" + field-name;
+   let mangled-field-name = case-number.into(type(CString)) + c"_" + field-name;
    let ctx = (None : Maybe<TypeContext>)();
    ctx = ctx.bind( c"base-type", base-type, denormalize(base-type), mk-eof() );
    ctx = ctx.bind( c"field-type", field-type, denormalize(field-type), mk-eof() );
@@ -22,7 +22,7 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ctx = ctx.bind( c"base-type", base-type, denormalize(base-type), mk-eof() );
    ctx = ctx.bind( c"field-type", field-type, denormalize(field-type), mk-eof() );
    ctx = ctx.bind( c"field-name", ta, ta, mk-lit(mangled-field-name) );
-   ctx = ctx.bind( c"primitive::field-get", ta, ta, mk-var(c"."+to-string(field-ordinal)) );
+   ctx = ctx.bind( c"primitive::field-get", ta, ta, mk-var(c"." + field-ordinal.into(type(CString))) );
    let field-ordinal-get = substitute(ctx, global-tctx.find-callable(c"primitive::field-get", base-type, blame).blame-or-zero);
 
    type-ast-inserts = type-ast-inserts.push(field-get);
@@ -33,7 +33,7 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ()
 );
 
-let phi-parameters-index = {} : HashtableEq<(CString,U64),Type>;
+let phi-parameters-index = {} : Hashtable<(CString,U64),Type>;
 
 let phi-parameters(tag: CString, ps: U64): Type = phi-parameters-index.lookup((tag,ps),ta);
 
@@ -107,12 +107,12 @@ let infer-type-definition(term: AST): Nil = (
          } else has-tag-case = true;
          has-any-case = true;
       };
-      if not(has-tag-case) && has-any-case then infer-type-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, [] : List<(CString,Type)>, term, has-tag-case);
+      if not(has-tag-case) and has-any-case then infer-type-yield-constructor(lhs-type, lhs-type.simple-tag, 0, common-fields, [] : List<(CString,Type)>, term, has-tag-case);
       if has-any-case {
          add-quick-prop(lhs-type, lhs-type, t0(c"LMStruct"));
          add-weaken-quick-prop(lhs-type, lhs-type, t0(c"LMStruct"));
       };
-      if not(has-tag-case) && has-any-case then {
+      if not(has-tag-case) and has-any-case then {
          let tag-case-number = t1(c"CaseNumber", t0(c"0"));
          add-quick-prop(lhs-type, lhs-type, tag-case-number);
          add-weaken-quick-prop(lhs-type, lhs-type, tag-case-number);
@@ -125,7 +125,7 @@ let infer-type-definition(term: AST): Nil = (
                o-case-fields = cons((field-name, field-type), o-case-fields);
             };
             let tag-guard = lhs-type && t0(c"Tag::"+case-tag);
-            let tag-case-number = t1(c"CaseNumber", t0(to-string(case-index)));
+            let tag-case-number = t1(c"CaseNumber", t0(case-index.into(type(CString))));
             add-quick-prop(tag-guard, tag-guard, tag-case-number);
             add-weaken-quick-prop(tag-guard, tag-guard, tag-case-number);
             infer-type-yield-constructor(lhs-type, case-tag, case-index, common-fields, o-case-fields, term, has-tag-case);
@@ -135,9 +135,9 @@ let infer-type-definition(term: AST): Nil = (
    };
 );
 
-let type-constructor-tag-ordinal-index = {} : HashtableEq<(CString,U64,CString),U64>;
+let type-constructor-tag-ordinal-index = {} : Hashtable<(CString,U64,CString),U64>;
 
-let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, common-fields: List<(CString,Type)>, case-fields: List<(CString,Type)>, blame: AST, has-tag-case: U64): Nil = (
+let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, common-fields: List<(CString,Type)>, case-fields: List<(CString,Type)>, blame: AST, has-tag-case: Bool): Nil = (
    (let base-tag, let base-arity) = base-type.ground-tag-and-arity;
    type-constructor-tag-ordinal-index = type-constructor-tag-ordinal-index.bind( (base-tag,base-arity,case-tag), case-number );
 
@@ -153,7 +153,7 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
       else args = par
    };
    for Tuple{field-name=first, field-type=second} in case-fields.reverse {
-      let mangled-field-name = to-string(case-number) + c"_" + field-name;
+      let mangled-field-name = case-number.into(type(CString)) + c"_" + field-name;
       let par = mk-var(mangled-field-name).ascript(field-type);
       if non-zero(args)
       then args = mk-cons(args, par)
@@ -178,7 +178,7 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
    if has-tag-case {
       body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")) );
       body = mk-cons(body, mk-lit(c".discriminator_case_tag=").ascript(t0(c"L") && t0(c"Literal")));
-      body = mk-cons(body, mk-lit(to-string(case-number)).ascript(t0(c"L") && t0(c"Literal")) );
+      body = mk-cons(body, mk-lit(case-number.into(type(CString))).ascript(t0(c"L") && t0(c"Literal")) );
       body = mk-cons(body, mk-lit(c";").ascript(t0(c"L") && t0(c"Literal")));
    };
 
@@ -193,7 +193,7 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
    };
 
    for Tuple{field-name=first, field-type=second} in case-fields.reverse {
-      let mangled-field-name = to-string(case-number) + c"_" + field-name;
+      let mangled-field-name = case-number.into(type(CString)) + c"_" + field-name;
       body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")) );
       body = mk-cons(body, mk-lit(c".").ascript(t0(c"L") && t0(c"Literal")));
       body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name).ascript(t0(c"L") && t0(c"Literal"))) );
