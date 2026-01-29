@@ -1,0 +1,8 @@
+
+let .into(ctx: AContext?, tt: Type<String>): String = (
+   let result = "";
+   for Tuple{first=first,second=second} in ctx.get-or([] : AContext) {
+      result = result + "\{first} : \{second}\n";
+   };
+   result
+);

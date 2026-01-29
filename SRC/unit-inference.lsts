@@ -4,4 +4,3 @@ import SRC/inference-definitions.lsts;
 
 # APIs
 import SRC/typecheck.lsts;
-import SRC/reify-type-variables.lsts;

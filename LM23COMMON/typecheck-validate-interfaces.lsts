@@ -1,0 +1,22 @@
+
+let validate-interfaces(): Nil = (
+   for Tuple{ base-type=first, reified-interface-type=second, blame=third } in interface-implementors {
+      (let self-type, let interface-type) = interface-self-index.lookup(reified-interface-type.ground-tag-and-arity, (ta, ta));
+      let tctx = union( unify(self-type, base-type, ASTEOF).normalize, unify(interface-type, reified-interface-type, ASTEOF).normalize );
+      for Tuple{ symbol-name=first, args-type=second, return-type=third } in
+          interface-shape-index.lookup(interface-type.ground-tag-and-arity, [] : List<(CString,Type,Type)>) {
+         args-type = denormalize(tctx.substitute(args-type).reify-type-variables);
+         return-type = tctx.substitute(return-type).reify-type-variables;
+         let function-type = typeof-var-raw( blame, (None : Maybe<TypeContext>)(), symbol-name, false );
+         (_, let apply-return-type) = (None : TypeContext?).apply-callable(symbol-name, args-type, blame);
+         if not(can-unify(return-type, denormalize(apply-return-type))) {
+            fail("Function Application Yielded Unexpected Return Value\n"
+                 "\{symbol-name}\n"
+                 "With Arguments \{args-type}\n"
+                 "At \{blame.location}\n"
+                 "Expected: \{symbol-name} : \{args-type} -> \{return-type}\n"
+                 "Received: \{apply-return-type}\n");
+         };
+      };
+   };
+);
