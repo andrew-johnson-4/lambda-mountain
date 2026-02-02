@@ -144,6 +144,19 @@ let .lookup(table: HashtableIs<k,v>, key: k, default: v): v = (
    default
 );
 
+let .as-vector(table: HashtableIs<k,v>): Vector<(k,v)> = (
+   let v = mk-vector(type((k,v)));
+   if table.capacity != 0 {
+      let old-i = 0_u64;
+      while old-i < table.capacity {
+         let old-kv = table.contents[old-i];
+         if mem-is-non-zero(old-kv) then v = v.push(old-kv);
+         old-i = old-i + 1;
+      };
+   };
+   v
+);
+
 let $"set[]"(table: HashtableEq<k,v>, key: k, value: v): HashtableEq<k,v> = table.bind(key, value);
 let $"map::cons"(key: k, value: v, tl: HashtableEq<k,v>): HashtableEq<k,v> = tl.bind(key, value);
 

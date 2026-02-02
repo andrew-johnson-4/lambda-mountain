@@ -2,7 +2,7 @@ CC = clang
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm tests/promises/lm-typecheck/direct-inference.lsts
+	lm --profile-ast LM23COMMON/unit-type-core.lsts
 	gcc tmp.c
 	./a.out
 
