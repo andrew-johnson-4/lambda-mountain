@@ -27,6 +27,7 @@ let print-toks-json(fp: CString): Nil = (
 );
 
 let show-alloc-count = false;
+let config-profile-ast = false;
 
 let main(argc: C_int, argv: CString[]): Nil = (
    let argi = 1_u64;
@@ -52,6 +53,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          );
          c"--stripdebug" => config-strip-debug = true;
          c"--showalloc" => show-alloc-count = true;
+         c"--profile-ast" => config-profile-ast = true;
          c"-o" => (
             argi = argi + 1;
             config-target = argv[argi];
@@ -96,6 +98,9 @@ let main(argc: C_int, argv: CString[]): Nil = (
    };
    if show-alloc-count then {
       print("Total blocks allocated: \{safe-alloc-block-count-monotonic}\n");
+   };
+   if config-profile-ast then {
+      profile-print-ast()
    };
 );
 

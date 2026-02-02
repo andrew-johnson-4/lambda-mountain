@@ -1,0 +1,13 @@
+
+let profile-count-ast-index = mk-hashtable-is(type(AST), type(U64));
+
+let profile-visit-ast(t: AST): Nil = (
+   profile-count-ast-index = profile-count-ast-index.bind(
+      t,
+      profile-count-ast-index.lookup(t, 0_u64) + 1
+   );
+);
+
+let profile-print-ast(): Nil = (
+   print("Top AST Count:\n");
+);

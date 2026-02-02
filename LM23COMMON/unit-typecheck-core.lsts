@@ -1,6 +1,8 @@
 
 import LM23COMMON/unit-ascript-core.lsts;
 
+import LM23COMMON/profile-count-ast.lsts;
+
 import LM23COMMON/typecheck-accept-interface.lsts;
 import LM23COMMON/typecheck-interface-index.lsts;
 import LM23COMMON/typecheck-infer-expr.lsts;
@@ -33,3 +35,4 @@ import LM23COMMON/typecheck-validate-interfaces.lsts;
 import LM23COMMON/typecheck-index-typedefs.lsts;
 import LM23COMMON/typecheck-preprocess.lsts;
 import LM23COMMON/typecheck-infer-type-definition.lsts;
+
