@@ -172,3 +172,13 @@ let .lookup(h: Hashtable<k,v>, key: k, default: v): v = h[key].get-or(default);
 
 # new allocations = 0
 let .has(h: Hashtable<k,v>, key: k): Bool = h[key].is-some;
+
+let .as-vector(table: Hashtable<Sized<k>,v>): Vector<(k,v)> = (
+   let v = mk-vector(type((k,v)));
+   v
+);
+
+let .as-vector(table: Hashtable<k,v>): Vector<(k,v)> = (
+   let v = mk-vector(type((k,v)));
+   v
+);

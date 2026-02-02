@@ -10,4 +10,11 @@ let profile-visit-ast(t: AST): Nil = (
 
 let profile-print-ast(): Nil = (
    print("Top AST Count:\n");
+   let count-ast = profile-count-ast-index.as-vector.sort;
+   let count-ast-length = min(count-ast.length, 5_sz);
+   let i = 0_sz;
+   while i < count-ast-length {
+      print("[\{count-ast[i].second}] : \{count-ast[i].first}\n");
+      i = i + 1;
+   };
 );

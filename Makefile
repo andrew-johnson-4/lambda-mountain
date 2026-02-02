@@ -2,7 +2,7 @@ CC = clang
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm --profile-ast tests/promises/lm-prop/enrich.lsts
+	lm --profile-ast tests/promises/lm-ast/constructor.lsts
 	gcc tmp.c
 	./a.out
 
