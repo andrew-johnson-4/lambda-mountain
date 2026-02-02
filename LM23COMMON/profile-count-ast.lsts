@@ -1,20 +1,36 @@
 
-let profile-count-ast-index = mk-hashtable-is(type(AST), type(U64));
+let profile-count-ast-unique-index = mk-hashtable-is(type(AST), type(U64));
+let profile-count-ast-equal-index = mk-hashtable(type(AST), type(U64));
 
-let profile-visit-ast(t: AST): Nil = (
-   profile-count-ast-index = profile-count-ast-index.bind(
+let profile-visit-ast-unique(t: AST): Nil = (
+   profile-count-ast-unique-index = profile-count-ast-unique-index.bind(
       t,
-      profile-count-ast-index.lookup(t, 0_u64) + 1
+      profile-count-ast-unique-index.lookup(t, 0_u64) + 1
+   );
+);
+
+let profile-visit-ast-equal(t: AST): Nil = (
+   profile-count-ast-equal-index = profile-count-ast-equal-index.bind(
+      t,
+      profile-count-ast-equal-index.lookup(t, 0_u64) + 1
    );
 );
 
 let profile-print-ast(): Nil = (
-   let count-ast = profile-count-ast-index.as-vector.sort;
-   print("Top AST Count: [\{count-ast.length}]\n");
-   let count-ast-length = min(count-ast.length, 25_sz);
+   let count-ast-unique = profile-count-ast-unique-index.as-vector.sort;
+   let count-ast-equal = profile-count-ast-equal-index.as-vector.sort;
+   print("Top AST Count Unique: [\{count-ast-unique.length}]\n");
+   let count-ast-unique-length = min(count-ast-unique.length, 25_sz);
    let i = 0_sz;
-   while i < count-ast-length {
-      print("[\{count-ast[i].second}] : \{count-ast[i].first}\n");
+   while i < count-ast-unique-length {
+      print("[\{count-ast-unique[i].second}] : \{count-ast-unique[i].first}\n");
+      i = i + 1;
+   };
+   print("Top AST Count Equal: [\{count-ast-equal.length}]\n");
+   let count-ast-equal-length = min(count-ast-equal.length, 25_sz);
+   i = 0_sz;
+   while i < count-ast-equal-length {
+      print("[\{count-ast-equal[i].second}] : \{count-ast-equal[i].first}\n");
       i = i + 1;
    };
 );
