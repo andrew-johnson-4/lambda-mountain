@@ -20,14 +20,14 @@ let profile-print-ast(): Nil = (
    let count-ast-unique = profile-count-ast-unique-index.as-vector.sort;
    let count-ast-equal = profile-count-ast-equal-index.as-vector.sort;
    print("Top AST Count Unique: [\{count-ast-unique.length}]\n");
-   let count-ast-unique-length = min(count-ast-unique.length, 25_sz);
+   let count-ast-unique-length = min(count-ast-unique.length, 50_sz);
    let i = 0_sz;
    while i < count-ast-unique-length {
       print("[\{count-ast-unique[i].second}] : \{count-ast-unique[i].first}\n");
       i = i + 1;
    };
    print("Top AST Count Equal: [\{count-ast-equal.length}]\n");
-   let count-ast-equal-length = min(count-ast-equal.length, 25_sz);
+   let count-ast-equal-length = min(count-ast-equal.length, 50_sz);
    i = 0_sz;
    while i < count-ast-equal-length {
       print("[\{count-ast-equal[i].second}] : \{count-ast-equal[i].first}\n");
