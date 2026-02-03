@@ -23,14 +23,16 @@ let profile-print-ast(): Nil = (
    let count-ast-unique-length = min(count-ast-unique.length, 50_sz);
    let i = 0_sz;
    while i < count-ast-unique-length {
-      print("[\{count-ast-unique[i].second}] : \{count-ast-unique[i].first}\n");
+      let idx = count-ast-unique-length - i - 1;
+      print("[\{count-ast-unique[idx].second}] : \{count-ast-unique[idx].first}\n");
       i = i + 1;
    };
    print("Top AST Count Equal: [\{count-ast-equal.length}]\n");
    let count-ast-equal-length = min(count-ast-equal.length, 50_sz);
    i = 0_sz;
    while i < count-ast-equal-length {
-      print("[\{count-ast-equal[i].second}] : \{count-ast-equal[i].first}\n");
+      let idx = count-ast-equal-length - i - 1;
+      print("[\{count-ast-equal[idx].second}] : \{count-ast-equal[idx].first}\n");
       i = i + 1;
    };
 );

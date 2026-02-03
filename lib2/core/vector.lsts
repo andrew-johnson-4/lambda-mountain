@@ -168,3 +168,11 @@ let deep-hash(ts: Vector<t>): U64 = (
    for vector t0 in ts { return = return + deep-hash(t0); };
    return;
 );
+
+let .swap-keys-for-values(kvs: Vector<(k,v)>): Vector<(v,k)> = (
+   let swapped = mk-vector(type((v,k)));
+   for vector kv in kvs {
+      swapped.push((kv.second, kv.first));
+   };
+   swapped
+);

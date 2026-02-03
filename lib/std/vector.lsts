@@ -188,6 +188,14 @@ let print(v: Vector<x>): Nil = (
    print(untern(v.into(type(String))));
 );
 
+let .swap-keys-for-values(kvs: Vector<(k,v)>): Vector<(v,k)> = (
+   let swapped = mk-vector(type((v,k)));
+   for vector kv in kvs {
+      swapped.push((kv.second, kv.first));
+   };
+   swapped
+);
+
 let .push-all(self: Vector<t>, val: Iterable<t>): Vector<t> = (
    let ln = length-or-zero(val);
    if ln != 0 {
