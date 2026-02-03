@@ -2,7 +2,7 @@ CC = clang
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	lm --profile-ast LM23COMMON/unit-type-core.lsts
+	lm --profile-ast lib2/core/bedrock.lsts
 	gcc tmp.c
 	./a.out
 
