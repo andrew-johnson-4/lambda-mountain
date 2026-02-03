@@ -191,7 +191,7 @@ let print(v: Vector<x>): Nil = (
 let .swap-keys-for-values(kvs: Vector<(k,v)>): Vector<(v,k)> = (
    let swapped = mk-vector(type((v,k)));
    for vector kv in kvs {
-      swapped.push((kv.second, kv.first));
+      swapped = swapped.push((kv.second, kv.first));
    };
    swapped
 );
