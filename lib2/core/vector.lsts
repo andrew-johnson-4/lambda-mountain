@@ -171,8 +171,9 @@ let deep-hash(ts: Vector<t>): U64 = (
 
 let .swap-keys-for-values(kvs: Vector<(k,v)>): Vector<(v,k)> = (
    let swapped = mk-vector(type((v,k)));
-   for vector kv in kvs {
-      swapped.push((kv.second, kv.first));
-   };
+   # TODO: fix linear variable bug
+   #for vector kv in kvs {
+   #   swapped.push((kv.second, kv.first));
+   #};
    swapped
 );
