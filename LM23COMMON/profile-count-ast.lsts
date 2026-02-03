@@ -1,19 +1,25 @@
 
+let config-profile-ast = false;
+
 let profile-count-ast-unique-index = mk-hashtable-is(type(AST), type(U64));
 let profile-count-ast-equal-index = mk-hashtable(type(AST), type(U64));
 
 let profile-visit-ast-unique(t: AST): Nil = (
-   profile-count-ast-unique-index = profile-count-ast-unique-index.bind(
-      t,
-      profile-count-ast-unique-index.lookup(t, 0_u64) + 1
-   );
+   if config-profile-ast then {
+      profile-count-ast-unique-index = profile-count-ast-unique-index.bind(
+         t,
+         profile-count-ast-unique-index.lookup(t, 0_u64) + 1
+      );
+   }
 );
 
 let profile-visit-ast-equal(t: AST): Nil = (
-   profile-count-ast-equal-index = profile-count-ast-equal-index.bind(
-      t,
-      profile-count-ast-equal-index.lookup(t, 0_u64) + 1
-   );
+   if config-profile-ast then {
+      profile-count-ast-equal-index = profile-count-ast-equal-index.bind(
+         t,
+         profile-count-ast-equal-index.lookup(t, 0_u64) + 1
+      );
+   }
 );
 
 let profile-print-ast(): Nil = (

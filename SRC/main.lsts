@@ -27,7 +27,6 @@ let print-toks-json(fp: CString): Nil = (
 );
 
 let show-alloc-count = false;
-let config-profile-ast = false;
 
 let main(argc: C_int, argv: CString[]): Nil = (
    let argi = 1_u64;
