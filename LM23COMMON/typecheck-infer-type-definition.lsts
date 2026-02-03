@@ -61,18 +61,18 @@ let infer-type-definition(term: AST): Nil = (
    if misc-type.is-t(c"Phi",0) {
       let common-tags-length = 0_u64;
       let common-parameters = [] : List<Type>;
-      for Tuple{ case-tag=first, case-fields=second } in cases {
-         if case-tag==c"" {
+      for Tuple{ case-tag1=first, case-fields=second } in cases {
+         if case-tag1==c"" {
             common-tags-length = case-fields.length;
-            for Tuple{field-name=first, field-type=second} in case-fields {
+            for Tuple{field-name1=first, field-type=second} in case-fields {
                common-parameters = cons(field-type, common-parameters);
             };
          } else {
             let case-parameters = common-parameters;
-            for Tuple{field-name=first, field-type=second} in case-fields {
+            for Tuple{field-name2=first, field-type=second} in case-fields {
                case-parameters = cons(field-type, case-parameters);
             };
-            let case-name = lhs-type.simple-tag+c"::"+case-tag;
+            let case-name = lhs-type.simple-tag+c"::"+case-tag1;
             phi-type-index = phi-type-index.bind((case-name, common-tags-length + case-fields.length), true);
             phi-parameters-index = phi-parameters-index.bind((case-name, common-tags-length + case-fields.length), ts(case-name,case-parameters));
          }
@@ -82,16 +82,16 @@ let infer-type-definition(term: AST): Nil = (
       add-weaken-quick-prop(lhs-type, t1(c"Sized",ta), t1(c"Sized",lhs-type));
 
       let case-number = 0_u64;
-      for Tuple{ case-tag=first, case-fields=second } in cases {
+      for Tuple{ case-tag2=first, case-fields=second } in cases {
          complex-type-index = complex-type-index.bind( lhs-type.ground-tag-and-arity, 1_u64 );
          datatype-index = datatype-index.bind( lhs-type.ground-tag-and-arity, true );
          let field-ordinal = 0_u64;
-         for Tuple{ field-name=first, field-type=second } in case-fields {
-            let guard = lhs-type && (if non-zero(case-tag) then t0(c"Tag::"+case-tag) else ta);
-            let field-wrapped-type = t1(c"Field::"+field-name, field-type);
+         for Tuple{ field-name3=first, field-type=second } in case-fields {
+            let guard = lhs-type && (if non-zero(case-tag2) then t0(c"Tag::"+case-tag2) else ta);
+            let field-wrapped-type = t1(c"Field::"+field-name3, field-type);
             add-quick-prop(lhs-type, guard, field-wrapped-type);
             add-weaken-quick-prop(lhs-type, guard, field-wrapped-type);
-            visit-field-template(field-name, guard, field-type, term, case-fields.length - field-ordinal, case-number);
+            visit-field-template(field-name3, guard, field-type, term, case-fields.length - field-ordinal, case-number);
             field-ordinal = field-ordinal + 1;
          };
          case-number = case-number + 1;
@@ -99,10 +99,10 @@ let infer-type-definition(term: AST): Nil = (
       let common-fields = [] : List<(CString,Type)>;
       let has-tag-case = false;
       let has-any-case = false;
-      for Tuple{ case-tag=first, case-fields=second } in cases {
-         if case-tag==c"" {
-            for Tuple{ field-name=first, field-type=second } in case-fields {
-               common-fields = cons((field-name, field-type), common-fields);
+      for Tuple{ case-tag3=first, case-fields=second } in cases {
+         if case-tag3==c"" {
+            for Tuple{ field-name4=first, field-type=second } in case-fields {
+               common-fields = cons((field-name4, field-type), common-fields);
             };
          } else has-tag-case = true;
          has-any-case = true;
@@ -118,17 +118,17 @@ let infer-type-definition(term: AST): Nil = (
          add-weaken-quick-prop(lhs-type, lhs-type, tag-case-number);
       };
       let case-index = 0_u64;
-      for Tuple{ case-tag=first, case-fields=second } in cases {
-         if case-tag!=c"" {
+      for Tuple{ case-tag4=first, case-fields=second } in cases {
+         if case-tag4!=c"" {
             let o-case-fields = [] : List<(CString,Type)>;
-            for Tuple{ field-name=first, field-type=second } in case-fields {
-               o-case-fields = cons((field-name, field-type), o-case-fields);
+            for Tuple{ field-name5=first, field-type=second } in case-fields {
+               o-case-fields = cons((field-name5, field-type), o-case-fields);
             };
-            let tag-guard = lhs-type && t0(c"Tag::"+case-tag);
+            let tag-guard = lhs-type && t0(c"Tag::"+case-tag4);
             let tag-case-number = t1(c"CaseNumber", t0(case-index.into(type(CString))));
             add-quick-prop(tag-guard, tag-guard, tag-case-number);
             add-weaken-quick-prop(tag-guard, tag-guard, tag-case-number);
-            infer-type-yield-constructor(lhs-type, case-tag, case-index, common-fields, o-case-fields, term, has-tag-case);
+            infer-type-yield-constructor(lhs-type, case-tag4, case-index, common-fields, o-case-fields, term, has-tag-case);
          };
          case-index = case-index + 1;
       };
@@ -145,16 +145,16 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
    # This only works for C-backend...
 
    let args = mk-eof();
-   for Tuple{field-name=first, field-type=second} in common-fields.reverse {
-      let mangled-field-name = c"0_" + field-name;
-      let par = mk-var(mangled-field-name).ascript(field-type);
+   for Tuple{field-name6=first, field-type=second} in common-fields.reverse {
+      let mangled-field-name1 = c"0_" + field-name6;
+      let par = mk-var(mangled-field-name1).ascript(field-type);
       if non-zero(args)
       then args = mk-cons(args, par)
       else args = par
    };
-   for Tuple{field-name=first, field-type=second} in case-fields.reverse {
-      let mangled-field-name = case-number.into(type(CString)) + c"_" + field-name;
-      let par = mk-var(mangled-field-name).ascript(field-type);
+   for Tuple{field-name7=first, field-type=second} in case-fields.reverse {
+      let mangled-field-name2 = case-number.into(type(CString)) + c"_" + field-name7;
+      let par = mk-var(mangled-field-name2).ascript(field-type);
       if non-zero(args)
       then args = mk-cons(args, par)
       else args = par
@@ -182,23 +182,23 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
       body = mk-cons(body, mk-lit(c";").ascript(t0(c"L") && t0(c"Literal")));
    };
 
-   for Tuple{field-name=first, field-type=second} in common-fields.reverse {
-      let mangled-field-name = c"0_" + field-name;
+   for Tuple{field-name8=first, field-type=second} in common-fields.reverse {
+      let mangled-field-name3 = c"0_" + field-name8;
       body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")) );
       body = mk-cons(body, mk-lit(c".").ascript(t0(c"L") && t0(c"Literal")));
-      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name).ascript(t0(c"L") && t0(c"Literal"))) );
+      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name3).ascript(t0(c"L") && t0(c"Literal"))) );
       body = mk-cons(body, mk-lit(c"=").ascript(t0(c"L") && t0(c"Literal")));
-      body = mk-cons(body, mk-var(mangled-field-name) );
+      body = mk-cons(body, mk-var(mangled-field-name3) );
       body = mk-cons(body, mk-lit(c";").ascript(t0(c"L") && t0(c"Literal")));
    };
 
-   for Tuple{field-name=first, field-type=second} in case-fields.reverse {
-      let mangled-field-name = case-number.into(type(CString)) + c"_" + field-name;
+   for Tuple{field-name9=first, field-type=second} in case-fields.reverse {
+      let mangled-field-name4 = case-number.into(type(CString)) + c"_" + field-name9;
       body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")) );
       body = mk-cons(body, mk-lit(c".").ascript(t0(c"L") && t0(c"Literal")));
-      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name).ascript(t0(c"L") && t0(c"Literal"))) );
+      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name4).ascript(t0(c"L") && t0(c"Literal"))) );
       body = mk-cons(body, mk-lit(c"=").ascript(t0(c"L") && t0(c"Literal")));
-      body = mk-cons(body, mk-var(mangled-field-name) );
+      body = mk-cons(body, mk-var(mangled-field-name4) );
       body = mk-cons(body, mk-lit(c";").ascript(t0(c"L") && t0(c"Literal")));
    };
 
