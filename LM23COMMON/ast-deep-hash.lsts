@@ -1,0 +1,36 @@
+
+let deep-hash(t: AST): U64 = (
+   match t {
+         = Meta { val: OwnedData<AST>[] }
+         | ASTEOF
+         | ASTNil
+         | App { is-cons: Bool, left: OwnedData<AST>[], right: OwnedData<AST>[] }
+         | Var { key: CString, token: Token }
+         | Lit { key: CString, token: Token }
+         | Abs { lhs: OwnedData<AST>[], rhs: OwnedData<AST>[], tt: Type }
+         | AType { tt: Type }
+         | Seq { seq: Vector<AST> }
+         | Glb { key: Token , val: OwnedData<AST>[] }
+         | Typedef { location: SourceLocation, lhs-type: Type, implies: Vector<Type>, implements: Vector<Type>,
+                      size: Type, alias: Type, opaque-alias: Type, cases: Vector<(CString,Vector<(CString,Type)>)>,
+                      misc-type: Type, implied-phi: Type };
+      Meta{ val=val } => deep-hash(val) + 123;
+      ASTEOF{} => 456;
+      ASTNil{} => 789;
+      App{ is-cons=is-cons, left=left, right=right } => deep-hash(is-cons) + deep-hash(left) + deep-hash(right);
+      Var{ key=key, token=token } => deep-hash(key);
+      Lit{ key=key, token=token } => deep-hash(key);
+      Abs{ lhs=lhs, rhs=rhs, tt=tt } => deep-hash(lhs) + deep-hash(rhs) + deep-hash(tt);
+      AType{ tt=tt } => deep-hash(tt);
+      Seq{ seq=seq } => deep-hash(seq);
+      Glb{ key=key, val=val } => 012 + deep-hash(val);
+      Typedef{ lhs-type=lhs-type, implies=implies, implements=implements, size=size, alias=alias, opaque-alias=opaque-alias } => 
+      deep-hash(lhs-type) + deep-hash(implies) + deep-hash(implements) + deep-hash(size) + deep-hash(alias) + deep-hash(opaque-alias);
+   }
+);
+
+let deep-hash(ts: List<AST>): U64 = (
+   let return = 0_u64;
+   for list t0 in ts { return = return + deep-hash(t0); };
+   return;
+);

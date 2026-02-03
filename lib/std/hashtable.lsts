@@ -3,6 +3,8 @@ type HashtableIs<k,v> = { occupied:U64, capacity:U64, contents:Tuple<k,v>[] };
 type HashtableEq<k,v> = HashtableEq { occupied: U64, capacity: U64, contents: Tuple<k,v>[] }
                        | HashtableEqEOF;
 
+let mk-hashtable(key: Type<k>, value: Type<v>): Hashtable<k,v> = HashtableEq(0, 0, 0 as (k,v)[]);
+
 let .lookup(table: HashtableEq<k,v>, key: k, default: v): v = (
    let capacity = (table as Tag::HashtableEq).capacity;
    if capacity > 0_u64 {
@@ -78,6 +80,20 @@ let .bind-eq(contents: Tuple<k,v>[], capacity: U64, key: k, value: v): U64 = (
    };
    contents[ki] = Tuple ( key, value );
    replacing
+);
+
+let .as-vector(table: HashtableEq<k,v>): Vector<(k,v)> = (
+   let v = mk-vector(type((k,v)));
+   let capacity = (table as Tag::HashtableEq).capacity;
+   if capacity != 0 {
+      let old-i = 0_u64;
+      while old-i < capacity {
+         let old-kv = (table as Tag::HashtableEq).contents[old-i];
+         if mem-is-non-zero(old-kv) then v = v.push(old-kv);
+         old-i = old-i + 1;
+      };
+   };
+   v
 );
 
 let non-zero(self: HashtableEq<k,v>): U64 = (
