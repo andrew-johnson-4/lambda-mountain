@@ -1,19 +1,6 @@
 
 let deep-hash(t: AST): U64 = (
    match t {
-         = Meta { val: OwnedData<AST>[] }
-         | ASTEOF
-         | ASTNil
-         | App { is-cons: Bool, left: OwnedData<AST>[], right: OwnedData<AST>[] }
-         | Var { key: CString, token: Token }
-         | Lit { key: CString, token: Token }
-         | Abs { lhs: OwnedData<AST>[], rhs: OwnedData<AST>[], tt: Type }
-         | AType { tt: Type }
-         | Seq { seq: Vector<AST> }
-         | Glb { key: Token , val: OwnedData<AST>[] }
-         | Typedef { location: SourceLocation, lhs-type: Type, implies: Vector<Type>, implements: Vector<Type>,
-                      size: Type, alias: Type, opaque-alias: Type, cases: Vector<(CString,Vector<(CString,Type)>)>,
-                      misc-type: Type, implied-phi: Type };
       Meta{ val=val } => deep-hash(val) + 123;
       ASTEOF{} => 456;
       ASTNil{} => 789;

@@ -260,3 +260,9 @@ let .contains(v: Vector<t>, i: t): U64 = (
    };
    result
 );
+
+let deep-hash(ts: Vector<t>): U64 = (
+   let return = 0_u64;
+   for vector t0 in ts { return = return + deep-hash(t0); };
+   return;
+);

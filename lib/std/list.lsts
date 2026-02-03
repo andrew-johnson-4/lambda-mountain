@@ -191,3 +191,9 @@ let .join(l: List<CString>, sep: CString): CString = (
    };
    clone-rope(r)
 );
+
+let deep-hash(ts: List<t>): U64 = (
+   let return = 0_u64;
+   for list t0 in ts { return = return + deep-hash(t0); };
+   return;
+);
