@@ -5,12 +5,12 @@ let deep-hash(t: AST): U64 = (
       ASTEOF{} => 456;
       ASTNil{} => 789;
       App{ is-cons=is-cons, left=left, right=right } => deep-hash(is-cons) + deep-hash(left) + deep-hash(right);
-      Var{ key=key, token=token } => deep-hash(key);
-      Lit{ key=key, token=token } => deep-hash(key);
+      Var{ key1=key, token=token } => deep-hash(key1);
+      Lit{ key2=key, token=token } => deep-hash(key2);
       Abs{ lhs=lhs, rhs=rhs, tt=tt } => deep-hash(lhs) + deep-hash(rhs) + deep-hash(tt);
       AType{ tt=tt } => deep-hash(tt);
       Seq{ seq=seq } => deep-hash(seq);
-      Glb{ key=key, val=val } => 012 + deep-hash(val);
+      Glb{ key3=key, val=val } => 012 + deep-hash(val);
       Typedef{ lhs-type=lhs-type, implies=implies, implements=implements, size=size, alias=alias, opaque-alias=opaque-alias } => 
       deep-hash(lhs-type) + deep-hash(implies) + deep-hash(implements) + deep-hash(size) + deep-hash(alias) + deep-hash(opaque-alias);
    }
