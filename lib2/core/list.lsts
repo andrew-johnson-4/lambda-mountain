@@ -147,3 +147,9 @@ let .lookup(ls: List<Tuple<k,v1,v2,v3>>, key: k, default: Tuple<v1,v2,v3>): Tupl
    };
    default;
 );
+
+let deep-hash(ts: List<t>): U64 = (
+   let return = 0_u64;
+   for list t0 in ts { return = return + deep-hash(t0); };
+   return;
+);

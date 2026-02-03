@@ -1,20 +1,44 @@
 
-let profile-count-ast-index = mk-hashtable-is(type(AST), type(U64));
+let config-profile-ast = false;
 
-let profile-visit-ast(t: AST): Nil = (
-   profile-count-ast-index = profile-count-ast-index.bind(
-      t,
-      profile-count-ast-index.lookup(t, 0_u64) + 1
-   );
+let profile-count-ast-unique-index = mk-hashtable-is(type(AST), type(U64));
+let profile-count-ast-equal-index = mk-hashtable(type(AST), type(U64));
+
+let profile-visit-ast-unique(t: AST): Nil = (
+   if config-profile-ast then {
+      profile-count-ast-unique-index = profile-count-ast-unique-index.bind(
+         t,
+         profile-count-ast-unique-index.lookup(t, 0_u64) + 1
+      );
+   }
+);
+
+let profile-visit-ast-equal(t: AST): Nil = (
+   if config-profile-ast then {
+      profile-count-ast-equal-index = profile-count-ast-equal-index.bind(
+         t,
+         profile-count-ast-equal-index.lookup(t, 0_u64) + 1
+      );
+   }
 );
 
 let profile-print-ast(): Nil = (
-   let count-ast = profile-count-ast-index.as-vector.sort;
-   print("Top AST Count: [\{count-ast.length}]\n");
-   let count-ast-length = min(count-ast.length, 25_sz);
+   let count-ast-unique = profile-count-ast-unique-index.as-vector.swap-keys-for-values.sort;
+   let count-ast-equal = profile-count-ast-equal-index.as-vector.swap-keys-for-values.sort;
+   print("Top AST Count Unique: [\{count-ast-unique.length}]\n");
+   let count-ast-unique-length = min(count-ast-unique.length, 50_sz);
    let i = 0_sz;
-   while i < count-ast-length {
-      print("[\{count-ast[i].second}] : \{count-ast[i].first}\n");
+   while i < count-ast-unique-length {
+      let idx = count-ast-unique.length - i - 1;
+      print("[\{count-ast-unique[idx].first}] : \{count-ast-unique[idx].second}\n");
+      i = i + 1;
+   };
+   print("Top AST Count Equal: [\{count-ast-equal.length}]\n");
+   let count-ast-equal-length = min(count-ast-equal.length, 50_sz);
+   i = 0_sz;
+   while i < count-ast-equal-length {
+      let idx = count-ast-equal.length - i - 1;
+      print("[\{count-ast-equal[idx].first}] : \{count-ast-equal[idx].second}\n");
       i = i + 1;
    };
 );

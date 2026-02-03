@@ -188,6 +188,14 @@ let print(v: Vector<x>): Nil = (
    print(untern(v.into(type(String))));
 );
 
+let .swap-keys-for-values(kvs: Vector<(k,v)>): Vector<(v,k)> = (
+   let swapped = mk-vector(type((v,k)));
+   for vector kv in kvs {
+      swapped = swapped.push((kv.second, kv.first));
+   };
+   swapped
+);
+
 let .push-all(self: Vector<t>, val: Iterable<t>): Vector<t> = (
    let ln = length-or-zero(val);
    if ln != 0 {
@@ -259,4 +267,10 @@ let .contains(v: Vector<t>, i: t): U64 = (
       if vi==i then result = true;
    };
    result
+);
+
+let deep-hash(ts: Vector<t>): U64 = (
+   let return = 0_u64;
+   for vector t0 in ts { return = return + deep-hash(t0); };
+   return;
 );
