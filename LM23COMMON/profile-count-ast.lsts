@@ -28,8 +28,9 @@ let profile-print-ast(): Nil = (
    print("Top AST Count Unique: [\{count-ast-unique.length}]\n");
    let count-ast-unique-length = min(count-ast-unique.length, 50_sz);
    let i = 0_sz;
+   let idx = 0_sz;
    while i < count-ast-unique-length {
-      let idx = count-ast-unique.length - i - 1;
+      idx = count-ast-unique.length - i - 1;
       print("[\{count-ast-unique[idx].first}] : \{count-ast-unique[idx].second}\n");
       i = i + 1;
    };
@@ -37,7 +38,7 @@ let profile-print-ast(): Nil = (
    let count-ast-equal-length = min(count-ast-equal.length, 50_sz);
    i = 0_sz;
    while i < count-ast-equal-length {
-      let idx = count-ast-equal.length - i - 1;
+      idx = count-ast-equal.length - i - 1;
       print("[\{count-ast-equal[idx].first}] : \{count-ast-equal[idx].second}\n");
       i = i + 1;
    };
