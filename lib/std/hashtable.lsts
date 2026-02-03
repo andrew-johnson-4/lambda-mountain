@@ -47,8 +47,8 @@ let .bind(table: HashtableEq<k,v>, key: k, value: v): HashtableEq<k,v> = (
    let occupied = (table as Tag::HashtableEq).occupied;
    let capacity = (table as Tag::HashtableEq).capacity;
    let contents = (table as Tag::HashtableEq).contents;
-   if occupied * 3 >= capacity {
-      let new-capacity = max( 1000_u64, occupied * 30_u64 );
+   if occupied >= capacity * 3 / 4 {
+      let new-capacity = max( 1000_u64, capacity * 2_u64 );
       let new-sizeof = sizeof(Tuple<k,v>) * new-capacity;
       let new-contents = malloc(new-sizeof) as Tuple<k,v>[]; 
       memset( new-contents, 0_u32, new-sizeof );
@@ -106,8 +106,8 @@ let non-zero(self: HashtableEq<k,v>): U64 = (
 let mk-hashtable-is(key: Type<k>, value: Type<v>): HashtableIs<k,v> = HashtableIs(0, 0, 0 as (k,v)[]);
 
 let .bind(table: HashtableIs<k,v>, key: k, value: v): HashtableIs<k,v> = (
-   if table.occupied*3 >= table.capacity {
-      let new-capacity = max(1000, table.occupied*30);
+   if table.occupied >= table.capacity * 3 / 4 {
+      let new-capacity = max(1000, table.capacity*2);
       let new-sizeof = sizeof((k,v)) * new-capacity;
       let new-contents = malloc(new-sizeof) as (k,v)[];
       memset(new-contents, 0, new-sizeof);
