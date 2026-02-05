@@ -1,7 +1,2 @@
 
-import SRC/typecheck.lsts;
-import SRC/specialize.lsts;
-import SRC/assert-well-typed.lsts;
-import SRC/assert-one-typed.lsts;
-
 import SRC/ctx-union.lsts;

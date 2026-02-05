@@ -153,3 +153,11 @@ let deep-hash(ts: List<t>): U64 = (
    for list t0 in ts { return = return + deep-hash(t0); };
    return;
 );
+
+let .contains(v: List<t>, i: t): Bool = (
+   let result = false;
+   for list vi in v {
+      if vi==i then result = true;
+   };
+   result
+);

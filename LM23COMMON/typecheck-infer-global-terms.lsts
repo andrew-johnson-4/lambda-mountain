@@ -6,7 +6,7 @@ let infer-bind-global(tctx: TypeContext?, key: CString, nt: Type, dt: Type, blam
 let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
    match term {
       Seq{seq=seq} => (
-         let def-i = 0_u64;
+         let def-i = 0_sz;
          while def-i < seq.length {
             (tctx, let rterm) = infer-global-terms(tctx, seq[def-i]);
             seq[def-i] = rterm;
