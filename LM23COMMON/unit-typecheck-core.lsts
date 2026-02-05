@@ -38,3 +38,6 @@ import LM23COMMON/typecheck-infer-type-definition.lsts;
 import LM23COMMON/typecheck-assert-no-infinite-types.lsts;
 import LM23COMMON/typecheck-assert-one-typed.lsts;
 import LM23COMMON/typecheck-assert-well-typed.lsts;
+import LM23COMMON/typecheck-specialize.lsts;
+import LM23COMMON/typecheck-infer-global-terms.lsts;
+import LM23COMMON/typecheck-typecheck.lsts;

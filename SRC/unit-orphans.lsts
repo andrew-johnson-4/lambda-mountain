@@ -2,6 +2,5 @@
 import SRC/bind-varargs.lsts;
 import SRC/index-types.lsts;
 import SRC/index-plugins.lsts;
-import SRC/infer-global-terms.lsts;
 
 let global-ctx = FCtxEOF;

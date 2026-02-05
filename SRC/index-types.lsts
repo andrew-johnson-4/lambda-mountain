@@ -1,5 +1,2 @@
 
-import SRC/typecheck.lsts;
-import SRC/specialize.lsts;
-
 import SRC/ctx-union.lsts;
