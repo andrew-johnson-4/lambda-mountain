@@ -43,7 +43,7 @@ let infer-global-context-prim(term: AST): Nil = (
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
          if k.key.has-prefix(c"primitive::") then {
-            let ft = t2(c"Arrow", typeof-lhs(lhs), return-type).without-phi-keep-state && misc-tt;
+            let ft = t2(c"Arrow", typeof-lhs(lhs), return-type.without-modifiers).without-phi-keep-state && misc-tt;
             mark-global-as-seen(k.key, ft, misc-tt);
             Some(mk-tctx()).ascript(term, ft);
             Some(mk-tctx()).ascript(frhs, ft);
@@ -74,7 +74,7 @@ let infer-global-context(term: AST): Nil = (
          if k.key.has-prefix(c"primitive::") then ()
          else if misc-tt.is-t(c"TypedMacro",0) then bind-new-macro(k.key, frhs)
          else {
-            let ft = t2(c"Arrow", typeof-lhs(lhs), return-type.rewrite-type-alias.expand-implied-phi).without-phi-keep-state && misc-tt;
+            let ft = t2(c"Arrow", typeof-lhs(lhs), return-type.rewrite-type-alias.expand-implied-phi.without-modifiers).without-phi-keep-state && misc-tt;
             mark-global-as-seen(k.key, ft, misc-tt);
             Some(mk-tctx()).ascript(term, ft);
             Some(mk-tctx()).ascript(frhs, ft);

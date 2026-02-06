@@ -15,6 +15,13 @@ let .without-modifiers(tt: Type): Type = (
          else tand(result)
       );
       TGround { tag:c"C", parameters:[TGround{tag:c"extern"}..] } => ta;
+      TGround { tag:tag, parameters:parameters } => (
+         let new-parameters = [] : List<Type>;
+         for list p in parameters.reverse {
+            new-parameters = cons(p.without-modifiers, new-parameters); 
+         };
+         ts(tag,new-parameters)
+      );
       _ => tt;
    }
 );

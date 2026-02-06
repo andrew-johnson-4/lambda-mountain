@@ -1,0 +1,19 @@
+
+import lib2/core/bedrock.lsts;
+
+# blocked on backend/frontend support/integration for local variables that are functions
+
+let n(): Nil = ();
+
+let f(): Nil = (
+   let x = n;
+   x();
+);
+
+let g(x: Nil -> Nil): Nil = (
+   x();
+);
+
+let h(): Nil = (
+   g(n);
+);

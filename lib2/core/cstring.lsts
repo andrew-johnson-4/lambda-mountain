@@ -113,3 +113,10 @@ let .contains(base: CString, pat: CString): Bool = (
    };
    r
 );
+
+let .file-extension(path: CString): CString = (
+   while head(path) != 0_u8 and head(path) != 46_u8 {
+      path = tail(path);
+   };
+   path
+);

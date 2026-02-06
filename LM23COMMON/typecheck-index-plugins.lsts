@@ -1,14 +1,7 @@
 
+let plugin-current-backend = &plugin-null-backend;
 
-let plugin-current-backend = (&plugins-backend-c-compile) : Arrow<Nil,Nil>[];
-
-import PLUGINS/BACKEND/C/index.lsts;
-import PLUGINS/BACKEND/BLOB/index.lsts;
-
-import PLUGINS/FRONTEND/LSTS/index.lsts;
-import PLUGINS/FRONTEND/C/index.lsts;
-
-let frontend-has-seen = {} : HashtableEq<CString,U64>;
+let frontend-has-seen = {} : Hashtable<CString,Bool>;
 
 let frontend(fp: CString): Nil = (
    if not(frontend-has-seen.has(fp)) {
