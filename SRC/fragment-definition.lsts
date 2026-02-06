@@ -1,4 +1,0 @@
-
-type Fragment = { term: AST, keyvals: List<Tuple<CString,S>>[], type: Type, context: FContext[], vararg: List<Fragment[]> };
-
-type FContext zero FCtxEOF = FCtxEOF | FCtxBind{ remainder:FContext[] , k:CString , kt:Type , kv:Fragment };

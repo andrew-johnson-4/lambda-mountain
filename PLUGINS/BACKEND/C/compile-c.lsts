@@ -37,3 +37,6 @@ let plugins-backend-c-compile(): Nil = (
    std-c-compile-finish();
    std-c-compile-write();
 );
+
+register-backend(c"--c",  &plugins-backend-c-compile);
+plugin-current-backend = &plugins-backend-c-compile;

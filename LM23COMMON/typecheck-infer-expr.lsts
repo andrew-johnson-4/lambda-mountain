@@ -269,7 +269,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          };
          tctx = tctx.ascript(rhs, return-type);
          let domain-tt = typeof-lhs(lhs);
-         tctx = tctx.ascript(term, t2(c"Arrow", typeof-lhs(lhs), return-type) && misc-tt);
+         tctx = tctx.ascript(term, t2(c"Arrow", typeof-lhs(lhs), return-type.without-modifiers) && misc-tt);
       );
       App{ is-cons=is-cons, l=left, r=right } => (
          let is-macro = false;

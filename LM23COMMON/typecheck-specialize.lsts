@@ -5,7 +5,7 @@ let specialize(key: CString, unify-ctx: TypeContext?, result-type: Type, term: A
       let special-term = substitute(unify-ctx, term);
       match special-term {
          Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
-            let ft = t2(c"Arrow", typeof-lhs(lhs), return-type).without-phi-keep-state && misc-tt;
+            let ft = t2(c"Arrow", typeof-lhs(lhs), return-type.without-modifiers).without-phi-keep-state && misc-tt;
             if not(global-is-seen(key, ft)) {
                infer-global-context(special-term);
                (_, special-term) = std-infer-expr(global-flow-tctx, special-term, false, Used, ta);

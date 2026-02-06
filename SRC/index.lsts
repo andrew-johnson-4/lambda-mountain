@@ -3,13 +3,16 @@ import std/minimal.lsts;
 
 import LM23COMMON/index.lsts;
 
-import SRC/unit-drivers.lsts;
-
 import SRC/unit-inference.lsts;
 import SRC/unit-fragments.lsts;
 import SRC/unit-orphans.lsts;
 
-import SRC/index-types.lsts;
-import SRC/index-plugins.lsts;
+import SRC/ctx-union.lsts;
+
+import PLUGINS/BACKEND/C/index.lsts;
+import PLUGINS/BACKEND/BLOB/index.lsts;
+
+import PLUGINS/FRONTEND/LSTS/index.lsts;
+import PLUGINS/FRONTEND/C/index.lsts;
 
 import SRC/main.lsts;

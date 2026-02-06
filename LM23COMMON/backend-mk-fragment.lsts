@@ -1,0 +1,11 @@
+
+let mk-fragment(): Fragment = (
+   Fragment (
+      mk-eof(), close([] : List<Tuple<CString,S>>),
+      ta, close(mk-fctx()), ([] : List<Fragment[]>)
+   )
+);
+
+let non-zero(f: Fragment): U64 = (
+   non-zero(open(f.keyvals))
+);

@@ -1,11 +1,6 @@
 
-import SRC/fragment-definition.lsts;
-
 # accessors
 import SRC/fragment-get.lsts;
 import SRC/fragment-set.lsts;
-import SRC/mk-fragment.lsts;
-import SRC/mk-expression.lsts;
-import SRC/mk-fctx.lsts;
 import SRC/fctx-bind.lsts;
 import SRC/fctx-lookup.lsts;

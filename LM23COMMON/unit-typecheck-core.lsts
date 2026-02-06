@@ -41,3 +41,6 @@ import LM23COMMON/typecheck-assert-well-typed.lsts;
 import LM23COMMON/typecheck-specialize.lsts;
 import LM23COMMON/typecheck-infer-global-terms.lsts;
 import LM23COMMON/typecheck-typecheck.lsts;
+import LM23COMMON/typecheck-plugins-frontends.lsts;
+import LM23COMMON/typecheck-plugins-backends.lsts;
+import LM23COMMON/typecheck-index-plugins.lsts;

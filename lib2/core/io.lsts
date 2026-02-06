@@ -2,3 +2,13 @@
 type opaque alias "IO::File" = C<"FILE">[];
 type opaque alias Never = C<"void">;
 type opaque alias Nil = C<"void">;
+
+let file-exists(fp: CString): Bool = (
+   let f = fopen(fp as C<"char">[], c"r" as C<"char">[]);
+   let exists = false;
+   if (f as U64) != 0 {
+      exists = true;
+      fclose(f); ()
+   };
+   exists
+);
