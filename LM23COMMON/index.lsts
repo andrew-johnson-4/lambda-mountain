@@ -7,3 +7,4 @@ import LM23COMMON/unit-prop-core.lsts;
 import LM23COMMON/unit-ascript-core.lsts;
 import LM23COMMON/unit-typecheck-core.lsts;
 import LM23COMMON/unit-backend-core.lsts;
+import LM23COMMON/unit-main-core.lsts;
