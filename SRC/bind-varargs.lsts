@@ -1,8 +1,0 @@
-
-let bind-vararg(ctx: FContext, k: CString, kt: Type, f: Fragment): FContext = (
-   let binding = ctx.lookup-soft(k, kt, mk-eof());
-   binding.vararg = cons( close(f), binding.vararg );
-   binding.type = kt;
-   ctx = ctx.bind(k, kt, binding);
-   ctx
-);

@@ -1,5 +1,0 @@
-
-let .bind(ctx: FContext, k: CString, kt: Type, f: Fragment): FContext = (
-   FCtxBind( close(ctx), k, denormalize(kt), f )
-);
-

@@ -1,0 +1,53 @@
+
+let .lookup(ctx: FContext, k: CString, kt: Type, sloc: AST): Fragment = (
+   ctx.lookup( k, kt, sloc, true )
+);
+
+let .lookup-soft(ctx: FContext, k: CString, kt: Type, sloc: AST): Fragment = (
+   ctx.lookup( k, kt, sloc, false )
+);
+
+# TODO: unify lookup and lookups logic, with common logical elements isolated and explanation of algorithm
+
+let .lookup(ctx: FContext, k: CString, kt: Type, sloc: AST, hard: U64): Fragment = (
+   let original-ctx = ctx;
+   let found = ta;
+   let r = mk-fragment();
+   kt = denormalize-strong(kt);
+   while non-zero(ctx) { match ctx {
+      FCtxBind { remainder=remainder, ctx-k=k, ctx-kt=kt, ctx-kv=kv } => (
+         if k==ctx-k {
+            if ctx-kt.is-arrow and not(kt.is-t(c"Any",0)) {
+               if kt==ta || can-unify( ctx-kt.domain, kt ) || can-unify(ctx-kt.domain, kt.domain) {
+                  if non-zero(found) {
+                     if can-unify(found, ctx-kt.domain) {
+                        r = ctx-kv;
+                        found = ctx-kt.domain;
+                     }
+                  } else {
+                     r = ctx-kv;
+                     found = ctx-kt.domain;
+                  }
+               };
+               ctx = remainder;
+            } else {
+               r = ctx-kv;
+               found = t0(c"LocalVariable");
+               ctx = FCtxEOF();
+            }
+         } else { ctx = remainder; }
+      );
+   }};
+   if not(non-zero(found)) && hard {
+      print("Context::lookup \{k} : \{kt}\nCandidates:\n");
+      while non-zero(original-ctx) { match original-ctx {
+         FCtxBind { remainder=remainder, ctx-k=k, ctx-kt=kt } => (
+            if k==ctx-k { print("\{k} : \{ctx-kt}\n"); };
+            original-ctx = remainder;
+         );
+      }};
+      print("Context::lookup Could Not Find Symbol at \{sloc.location}\n");
+      exit(1);
+   };
+   r
+);
