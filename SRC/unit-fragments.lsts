@@ -1,6 +1,4 @@
 
-import SRC/fragment-definition.lsts;
-
 # accessors
 import SRC/fragment-get.lsts;
 import SRC/fragment-set.lsts;
