@@ -2,10 +2,10 @@
 let mk-fragment(): Fragment = (
    Fragment (
       mk-eof(), close([] : List<Tuple<CString,S>>),
-      ta, close(mk-fctx()), ([] : List<Fragment[]>)
+      ta, close(mk-fctx()), ([] : List<OwnedData<Fragment>[]>)
    )
 );
 
-let non-zero(f: Fragment): U64 = (
+let non-zero(f: Fragment): Bool = (
    non-zero(open(f.keyvals))
 );

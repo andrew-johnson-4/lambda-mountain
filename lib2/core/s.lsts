@@ -3,3 +3,6 @@ type S zero SNil = SNil
                  | SAtom { atom: String }
                  | SCons { left: OwnedData<S>[], right: OwnedData<S>[] }
                  | SPointer { pointer: Nil[] };
+
+# TODO: remove after GC enabled, this is for compatibility of constructors
+let $"SAtom"(key: CString): S = SAtom(key.into(type(String)));
