@@ -48,7 +48,7 @@ let lsts-parse-doc-wordf(tokens: List<Token>, begin: CString, end: CString): Tup
    let text = mk-vector(type(U8), 16);
    while lsts-parse-head(tokens) != end {
       if lsts-parse-head(tokens) == c"\n" {
-         lsts-parse-expect(end, 0, tokens);
+         lsts-parse-expect(end, false, tokens);
       };
       if text.length > 0 {
          text = text.push(32_u8);
@@ -60,7 +60,7 @@ let lsts-parse-doc-wordf(tokens: List<Token>, begin: CString, end: CString): Tup
       };
       tokens = tail(tokens);
    };
-   Tuple ( text.into(type(CString)), tokens )
+   Tuple ( text.buffer-into-string.into(type(CString)), tokens )
 );
 
 let lsts-parse-doc-expr(tokens: List<Token>): Tuple<AST, List<(CString, AST)>, List<Token>> = (
@@ -168,7 +168,7 @@ let lsts-has-assign(tokens: List<Token>): U64 = (
 );
 
 let lsts-substitute-type-aliases(s: CString): CString = (
-   if s.has-suffix(c"_ss") then untern(intern(s)[:-3_i64]) else
+   if s.has-suffix(c"_ss") then intern(s)[:-3_i64].into(type(CString)) else
    s.remove-suffix(c"_u64").get-or(c"")
     .remove-suffix(c"_u32").get-or(c"")
     .remove-suffix(c"_u16").get-or(c"")
@@ -213,7 +213,7 @@ let lsts-parse(tokens: List<Token>): Nil = (
             (let mlhs, tokens) = lsts-parse-atom-without-tail(rst);
             let mrhs = ASTNil;
             lsts-parse-expect(c"(",tokens); tokens = tail(tokens);
-            if lsts-parse-head(tokens)=="let" then (mrhs, tokens) = lsts-parse-let(tokens)
+            if lsts-parse-head(tokens)==c"let" then (mrhs, tokens) = lsts-parse-let(tokens)
             else (mrhs, tokens) = lsts-parse-atom(tokens);
             lsts-parse-expect(c")",tokens); tokens = tail(tokens);
             preprocess-macros = MSeq( close(preprocess-macros), Macro(mlhs.without-location, mrhs.without-location) );
@@ -483,7 +483,7 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
          base-rest.first;         
       );
    };
-   while non-zero(tokens) and (lsts-parse-head(tokens)==c"." or lsts-parse-head(tokens)=="[") {
+   while non-zero(tokens) and (lsts-parse-head(tokens)==c"." or lsts-parse-head(tokens)==c"[") {
       match tokens {
          [Token{key:c"."}.. Token{key:c"."}.. rest] => (
             let loc = head(tokens).location;

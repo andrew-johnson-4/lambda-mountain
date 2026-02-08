@@ -1,9 +1,9 @@
 
-let interface-index = {} : Hashtable<(CString,U64),U64>;
+let interface-index = {} : Hashtable<(CString,U64),Bool>;
 
 # TODO: remove this lookup
 # ((CString,U64),U64) needed to be reified, but the compiler should infer that
-interface-index.lookup((c"",0_u64),0_u64);
+interface-index.lookup((c"",0_u64),false);
 
 let interface-shape-index = {} : Hashtable<(CString,U64),List<(CString,Type,Type)>>;
 

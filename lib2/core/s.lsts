@@ -34,3 +34,26 @@ let clone-rope-impl(s: S, out: Vector<U8>): Vector<U8> = (
    };
    out
 );
+
+let $"+"(l: S, r: S): S = (
+   if non-zero(r) then (
+      if non-zero(l)
+      then (l = SCons(close(l), close(r)))
+      else (l = r);
+   ); l
+);
+
+let $"=="(ls: S, rs: S): Bool = (
+   match (Tuple( ls, rs )) {
+      Tuple { first:SNil{}, second:SNil{} } => true;
+      Tuple { first:SAtom{ lc=atom }, second:SAtom{ rc=atom } } => lc == rc;
+      Tuple { first:SCons{ l1=left, l2=right },
+              second:SCons{ r1=left, r2=right } } => l1==r1 and l2==r2;
+      Tuple { first:SPointer{ lc=pointer },
+              second:SPointer{ rc=pointer } } => (lc as U8) == (rc as U8);
+      _ => false;
+   }
+);
+
+let $"!="(ls: S, rs: S): Bool = not(ls == rs);
+let $"||"(ls: S, rs: S): S = if non-zero(ls) then ls else rs;
