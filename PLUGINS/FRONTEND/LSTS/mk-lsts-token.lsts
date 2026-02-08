@@ -1,7 +1,7 @@
 
 let mk-lsts-token(s: String): Token = (
    let us = untern(s);
-   if us.is-digit || (us.has-prefix(c"-") && tail-string(us).is-digit) {
+   if us.is-digit or (us.has-prefix(c"-") and tail(us).is-digit) {
       let ds = us;
       let is-negative = false;
       let order = 64_u64;
@@ -9,12 +9,12 @@ let mk-lsts-token(s: String): Token = (
       else {
          if ds.has-prefix(c"-") {
             is-negative = true;
-            ds = tail-string(ds);
+            ds = tail(ds);
          };
          let magnitude = to-u64(ds);
-         if (is-negative && magnitude <= 128) || magnitude <= 255 then order = 8
-         else if (is-negative && magnitude <= 32768) || magnitude <= 65535 then order = 16
-         else if (is-negative && magnitude <= 2147483648) || magnitude <= 4294967295 then order = 32;
+         if (is-negative and magnitude <= 128) or magnitude <= 255 then order = 8
+         else if (is-negative and magnitude <= 32768) or magnitude <= 65535 then order = 16
+         else if (is-negative and magnitude <= 2147483648) or magnitude <= 4294967295 then order = 32;
       };
       match (is-negative, order) {
          Tuple{ first:0_u64, second:8_u64 } => us = us + c"_u8";
@@ -28,32 +28,32 @@ let mk-lsts-token(s: String): Token = (
       };
    };
    if s.has-prefix("r/") {
-      us = us.remove-prefix(c"r/")
-             .remove-suffix(c"/")
+      us = us.remove-prefix(c"r/").get-or(c"")
+             .remove-suffix(c"/").get-or(c"")
              .replace(c"\\/", c"/")
              + c"_rgx";
    };
    if s.has-prefix("\"") {
-      us = us.remove-prefix(c"\"")
-             .remove-suffix(c"\"")
+      us = us.remove-prefix(c"\"").get-or(c"")
+             .remove-suffix(c"\"").get-or(c"")
              .replace(c"\\\"", c"\"")
              + c"_ss";
    };
    if s.has-prefix("c\"") {
-      us = us.remove-prefix(c"c\"")
-             .remove-suffix(c"\"")
+      us = us.remove-prefix(c"c\"").get-or(c"")
+             .remove-suffix(c"\"").get-or(c"")
              .replace(c"\\\"", c"\"")
              + c"_s";
    };
    if s.has-prefix("l\"") {
-      us = us.remove-prefix(c"l\"")
-             .remove-suffix(c"\"")
+      us = us.remove-prefix(c"l\"").get-or(c"")
+             .remove-suffix(c"\"").get-or(c"")
              .replace(c"\\\"", c"\"")
              + c"_l";
    };
    if s.has-prefix("rl\"") {
-      us = us.remove-prefix(c"rl\"")
-             .remove-suffix(c"\"")
+      us = us.remove-prefix(c"rl\"").get-or(c"")
+             .remove-suffix(c"\"").get-or(c"")
              .replace(c"\\\"", c"\"")
              + c"_rl";
    };
