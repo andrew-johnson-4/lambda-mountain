@@ -76,6 +76,21 @@ let .push(v: Vector<t>, i: t): Vector<t> = (
    v
 );
 
+# Note: this *reduces* the size of the vector, so it *never* resizes
+# There is no need to return the original vector because it never gets modified
+let .pop(v: Vector<t>): t = (
+   if v.length == 0 {
+      fail("Tried to pop from empty Vector.");
+   };
+   v.data.pop
+);
+
+# TODO: remove after dumping lib1
+let .pop-backwards-compatible(v: Vector<t>): (t, Vector<t>) = (
+   let e = v.pop();
+   (e, v)
+);
+
 # new allocations = 0
 let cmp(x: Vector<x>, y: Vector<x>): Ord = (
    let r = Equal;

@@ -107,6 +107,8 @@ let .pop-front(v: Vector<t>): Tuple<t, Vector<t>> = (
     Tuple ( x, v )
 );
 
+let .pop-backwards-compatible(v: Vector<t>): Tuple<t, Vector<t>> = v.pop;
+
 ## INPUT VECTOR GETS POISONED
 let .pop(v: Vector<t>): Tuple<t, Vector<t>> = (
    if v.length() == 0 {

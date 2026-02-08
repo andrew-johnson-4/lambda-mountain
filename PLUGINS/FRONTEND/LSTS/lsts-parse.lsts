@@ -1184,7 +1184,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
          };
          let f = mk-nil();
          if lsts-parse-head(tokens)==c";" and lsts-parse-head(tail(tokens))==c"else" then tokens = tail(tokens);
-         if lsts-parse-head(tokens) == "else" {
+         if lsts-parse-head(tokens) == c"else" {
             lsts-parse-expect(c"else", tokens); tokens = tail(tokens);
             f = if lsts-parse-head(tokens) == c"{" {
                lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
@@ -1406,7 +1406,7 @@ let lsts-parse-match2-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
    };
    let prefixes = mk-vector(type(AST));
    let suffixes = mk-vector(type(AST));
-   let starti = 0_u64;
+   let starti = 0_sz;
    let endi = presufs.length - 1;
    while starti < endi and presufs[starti].is-constant or presufs[starti].is-assign-lit {
       prefixes = prefixes.push(presufs[starti]);
@@ -1424,7 +1424,7 @@ let lsts-parse-match2-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
       lhs = mk-app(mk-var(c"macro::lhs-prefix"), mk-cons(p, lhs));
    };
    while suffixes.length > 0 {
-      (let p, suffixes) = suffixes.pop();
+      (let p, suffixes) = suffixes.pop-backwards-compatible();
       lhs = mk-app(mk-var(c"macro::lhs-suffix"), mk-cons(p, lhs));
    };
    if lsts-parse-head(tokens)==c"where" {
@@ -1522,7 +1522,7 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
          let i = 0_u64;
          for lhs in lefts {
-            let fieldstr = c"." + to-string(i+1);
+            let fieldstr = c"." + (i+1).into(type(CString));
             let rexpr = mk-app(
                Var( fieldstr, with-location(mk-token(fieldstr),loc) ),
                rhs-tmp

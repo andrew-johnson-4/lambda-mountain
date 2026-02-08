@@ -142,7 +142,14 @@ let $"+"(l: String, r: String): String = (
 
 # new allocations = 0
 let fail(msg: String): Never = (
-   fwrite((msg.data.data + msg.start-offset) as C<"void">[], sizeof(USize) as USize, msg.length, stderr);
+   fwrite((msg.data.data + msg.start-offset) as C<"void">[], sizeof(U8) as USize, msg.length, stderr);
+   exit(1) as Never;
+);
+
+let fail(msg: String, loc: String): Never = (
+   fwrite((msg.data.data + msg.start-offset) as C<"void">[], sizeof(U8) as USize, msg.length, stderr);
+   fwrite(c" at " as C<"void">[], sizeof(U8) as USize, c" at ".length, stderr);
+   fwrite((loc.data.data + loc.start-offset) as C<"void">[], sizeof(U8) as USize, loc.length, stderr);
    exit(1) as Never;
 );
 
