@@ -2,7 +2,7 @@ CC = clang
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	time lm tests/promises/lm-backend/backend.lsts
+	time lm tests/promises/lm-main/main.lsts
 	gcc tmp.c
 	./a.out
 
