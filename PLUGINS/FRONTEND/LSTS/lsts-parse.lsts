@@ -2020,7 +2020,7 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
          lsts-parse-head(tokens) == c"as" {
       let loc = head(tokens).location;
       match tokens {
-         [Token{key:"."}.. rest] => (
+         [Token{key:c"."}.. rest] => (
             tokens = rest;
             lsts-parse-expect( c"[Identifier]", lsts-is-ident-head(lsts-parse-head(tokens)), tokens );
             let method = c"." + head(tokens).key; tokens = tail(tokens);
@@ -2043,7 +2043,7 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
                base
             );
          );
-         [Token{key:"as"}.. rest] => (
+         [Token{key:c"as"}.. rest] => (
             tokens = rest;
             let type-rest = lsts-parse-type(tokens); 
             tokens = type-rest.second;
@@ -2052,7 +2052,7 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
                mk-cons(base, mk-atype(phi-as-state(type-rest.first)))
             );
          );
-         [Token{key:"["}.. rest] => (
+         [Token{key:c"["}.. rest] => (
             tokens = rest;
             let term1 = if lsts-parse-head(tokens)==c":" {
                Lit( c"0_i64", with-location(mk-token("0_i64"),loc) )
@@ -2085,7 +2085,7 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
             };
             lsts-parse-expect( c"]", tokens ); tokens = tail(tokens);
          );
-         [Token{key:"("}.. rest] => (
+         [Token{key:c"("}.. rest] => (
             tokens = rest;
             let args = if lsts-parse-head(tokens) == c")" {
                mk-nil();

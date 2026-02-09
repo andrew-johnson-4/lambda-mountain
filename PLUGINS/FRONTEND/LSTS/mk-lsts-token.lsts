@@ -1,6 +1,6 @@
 
 let mk-lsts-token(s: String): Token = (
-   let us = untern(s);
+   let us = s.into(type(CString));
    if us.is-digit or (us.has-prefix(c"-") and tail(us).is-digit) {
       let ds = us;
       let is-negative = false;
@@ -16,7 +16,7 @@ let mk-lsts-token(s: String): Token = (
          else if (is-negative and magnitude <= 32768) or magnitude <= 65535 then order = 16
          else if (is-negative and magnitude <= 2147483648) or magnitude <= 4294967295 then order = 32;
       };
-      match (is-negative, order) {
+      match (is-negative as U64, order) {
          Tuple{ first:0_u64, second:8_u64 } => us = us + c"_u8";
          Tuple{ first:1_u64, second:8_u64 } => us = us + c"_i8";
          Tuple{ first:0_u64, second:16_u64 } => us = us + c"_u16";

@@ -120,3 +120,29 @@ let .file-extension(path: CString): CString = (
    };
    path
 );
+
+let .is-digit(base: CString): Bool = (
+   if non-zero(base) {
+      let r = true;
+      while head(base) != 0_u8 and r {
+         r = 48_u8 <= head(base) and head(base) <= 57_u8;
+         base = tail(base);
+      };
+      r
+   } else false
+);
+
+# TODO: optimize, this is really inefficient
+let .replace(base: CString, pat: CString, n: CString): CString = (
+   let r = SNil;
+   while head(base)!=0 {
+      if base.has-prefix(pat) {
+         base = base.remove-prefix(pat);
+         r = r + SAtom(n);
+      } else {
+         r = r + SAtom(clone-rope(head(base)));
+         base = tail(base);
+      }
+   };
+   clone-rope(r);
+);
