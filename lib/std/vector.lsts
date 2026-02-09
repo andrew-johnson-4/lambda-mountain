@@ -107,6 +107,8 @@ let .pop-front(v: Vector<t>): Tuple<t, Vector<t>> = (
     Tuple ( x, v )
 );
 
+let .pop-backwards-compatible(v: Vector<t>): Tuple<t, Vector<t>> = v.pop;
+
 ## INPUT VECTOR GETS POISONED
 let .pop(v: Vector<t>): Tuple<t, Vector<t>> = (
    if v.length() == 0 {
@@ -274,3 +276,7 @@ let deep-hash(ts: Vector<t>): U64 = (
    for vector t0 in ts { return = return + deep-hash(t0); };
    return;
 );
+
+# ignore, don't port to lib2
+# for compatibility in lmcommon
+let .buffer-into-string(c: Vector<U8>): Vector<U8> = c;

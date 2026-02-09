@@ -12,3 +12,27 @@ let file-exists(fp: CString): Bool = (
    };
    exists
 );
+
+let read-binary-file-to(out: Vector<U8>, path: CString): Vector<U8> = (
+   let fp = fopen(path as C<"char">[], c"rb");
+   if (fp as U64) == 0_u64 {
+      fail("Unable to read from file: \{path}");
+   };
+   let buffer = mk-vector(type(U8), 1024 as USize);
+   let bytes-read = 1_sz;
+   while bytes-read > 0 {
+      bytes-read = fread(buffer.data.data as C<"void">[], 1 as USize, 1024 as USize, fp);
+      let bi = 0_sz;
+      while bi < (bytes-read as USize) {
+         out = out.push(buffer.data.data[bi]);
+         bi = bi + 1;
+      };
+   };
+   fclose(fp);
+   out
+);
+
+let read-file(fp: CString): CString = (
+   let v = read-binary-file-to(mk-vector(type(U8)), fp);
+   v.buffer-into-string.into(type(CString))
+);

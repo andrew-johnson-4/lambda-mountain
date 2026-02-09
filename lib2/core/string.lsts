@@ -94,6 +94,10 @@ let .into(s: String, tt: Type<CString>): CString = (
    s.data.data as CString
 );
 
+let $"[:]"(x: String, low: U64, hi: U64): String = x[low as I64 : hi as I64];
+let $"[:]"(x: String, low: I64, hi: U64): String = x[low : hi as I64];
+let $"[:]"(x: String, low: U64, hi: I64): String = x[low as I64 : hi];
+
 # new allocations = 0
 let $"[:]"(s: String, begin: I64, end: I64): String = (
    let s-length = s.length as I64;
@@ -138,7 +142,14 @@ let $"+"(l: String, r: String): String = (
 
 # new allocations = 0
 let fail(msg: String): Never = (
-   fwrite((msg.data.data + msg.start-offset) as C<"void">[], sizeof(USize) as USize, msg.length, stderr);
+   fwrite((msg.data.data + msg.start-offset) as C<"void">[], sizeof(U8) as USize, msg.length, stderr);
+   exit(1) as Never;
+);
+
+let fail(msg: String, loc: String): Never = (
+   fwrite((msg.data.data + msg.start-offset) as C<"void">[], sizeof(U8) as USize, msg.length, stderr);
+   fwrite(c" at " as C<"void">[], sizeof(U8) as USize, c" at ".length, stderr);
+   fwrite((loc.data.data + loc.start-offset) as C<"void">[], sizeof(U8) as USize, loc.length, stderr);
    exit(1) as Never;
 );
 
@@ -161,3 +172,25 @@ let hash(key: String): U64 = (
 
 # new allocations = 1
 let .into(tt: Type<t>, dst: Type<String>): String = type(t).into(type(CString)).into(type(String));
+
+let .has-suffix(base: String, sfx: String): Bool = (
+   base.length >= sfx.length and
+   base[ (base.length - sfx.length) as I64 : base.length as I64 ] == sfx
+);
+
+let .remove-suffix(base: String, sfx: String): String = (
+   if base.has-suffix(sfx)
+   then base[ 0_i64 : (base.length - sfx.length) as I64 ]
+   else base
+);
+
+let .has-prefix(base: String, pfx: String): Bool = (
+   base.length >= pfx.length and
+   base[ 0_i64 : pfx.length as I64 ] == pfx
+);
+
+let .remove-prefix(base: String, pfx: String): String = (
+   if base.has-prefix(pfx)
+   then base[ pfx.length as I64 : minimum-I64 ]
+   else base
+);

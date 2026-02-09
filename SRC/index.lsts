@@ -4,7 +4,4 @@ import std/minimal.lsts;
 import LM23COMMON/index.lsts;
 
 import PLUGINS/BACKEND/C/index.lsts;
-import PLUGINS/BACKEND/BLOB/index.lsts;
-
-import PLUGINS/FRONTEND/LSTS/index.lsts;
 import PLUGINS/FRONTEND/C/index.lsts;

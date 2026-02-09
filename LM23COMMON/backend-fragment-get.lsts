@@ -3,7 +3,7 @@ let .get(e: Fragment, k: CString): S = (
    let r = SNil();
    let found = false;
    for kv in open(e.keyvals) {
-      if not(found) && kv.first==k { r = kv.second; found = true; };
+      if not(found) and kv.first==k { r = kv.second; found = true; };
    };
    r
 );

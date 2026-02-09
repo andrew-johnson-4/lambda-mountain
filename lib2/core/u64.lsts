@@ -36,3 +36,25 @@ let cmp(l: U64, r: U64): Ord = (
 );
 
 let hash(x: U64): U64 = x as U64;
+
+let to-u64(s: CString): U64 = (
+   let i = 0_u64;
+   while head(s) != 0 {
+      i = i * 10;
+      match head(s) {
+         48_u8 => i = i + 0_u64;
+         49_u8 => i = i + 1_u64;
+         50_u8 => i = i + 2_u64;
+         51_u8 => i = i + 3_u64;
+         52_u8 => i = i + 4_u64;
+         53_u8 => i = i + 5_u64;
+         54_u8 => i = i + 6_u64;
+         55_u8 => i = i + 7_u64;
+         56_u8 => i = i + 8_u64;
+         57_u8 => i = i + 9_u64;
+         _ => ();
+      };
+      s = tail(s);
+   };
+   i
+);

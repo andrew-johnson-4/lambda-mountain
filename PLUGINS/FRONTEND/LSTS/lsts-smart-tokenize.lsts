@@ -97,11 +97,11 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
       );
 
       #rest => fail("Unexpected Character during LSTS Tokenization: "
-      #             "'\{rest[0_u64]}' "
+      #             "'\{rest[0_sz]}' "
       #             "in File \{rest.file-name-of-token}, "
       #             "Line \{rest.line-of-token}, "
       #             "Column \{rest.column-of-token}.");
-      rest => ( fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0_u64])}"); );
+      rest => ( fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0_sz])}"); );
    }; };
 
    let internal-tokens = [] : List<Token>;

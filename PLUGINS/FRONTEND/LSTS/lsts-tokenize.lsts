@@ -1,40 +1,40 @@
 
 let lsts-tokenize(fp: CString): List<Token> = lsts-tokenize-string(fp, read-file(fp));
 
-let lsts-is-reserved-word(text: CString): U64 = (
-   text == c"if" ||
-   text == c"then" ||
-   text == c"else" ||
-   text == c"let" ||
-   text == c"while" ||
-   text == c"for" ||
-   text == c"type" ||
-   text == c"interface" ||
-   text == c"raw" ||
+let lsts-is-reserved-word(text: CString): Bool = (
+   text == c"if" or
+   text == c"then" or
+   text == c"else" or
+   text == c"let" or
+   text == c"while" or
+   text == c"for" or
+   text == c"type" or
+   text == c"interface" or
+   text == c"raw" or
    text == c"match"
 );
 
-let lsts-is-ident-head(text: CString): U64 = (
-   ( head-string(text) >= 48 && head-string(text) <= 57 ) ||   # 0-9
-   ( head-string(text) >= 97 && head-string(text) <= 122 ) ||  # a-z
-   ( head-string(text) == 95 ) ||  # _
-   ( head-string(text) == 36 )     # $
+let lsts-is-ident-head(text: CString): Bool = (
+   ( head(text) >= 48 and head(text) <= 57 ) or   # 0-9
+   ( head(text) >= 97 and head(text) <= 122 ) or  # a-z
+   ( head(text) == 95 ) or  # _
+   ( head(text) == 36 )     # $
 );
 
-let lsts-is-ident-body(text: CString): U64 = (
-   ( head-string(text) >= 48 && head-string(text) <= 57 ) ||   # 0-9
-   ( head-string(text) >= 97 && head-string(text) <= 122 ) ||  # a-z
-   ( head-string(text) >= 65 && head-string(text) <= 90 ) ||   # A-Z
-   ( head-string(text) == 95 ) ||  # _
-   ( head-string(text) == 45 ) ||  # -
-   ( head-string(text) == 36 )     # $
+let lsts-is-ident-body(text: CString): Bool = (
+   ( head(text) >= 48 and head(text) <= 57 ) or   # 0-9
+   ( head(text) >= 97 and head(text) <= 122 ) or  # a-z
+   ( head(text) >= 65 and head(text) <= 90 ) or   # A-Z
+   ( head(text) == 95 ) or  # _
+   ( head(text) == 45 ) or  # -
+   ( head(text) == 36 )     # $
 );
 
-let lsts-is-lit-head(text: CString): U64 = (
-   ( head-string(text) >= 48 && head-string(text) <= 57 ) ||   # 0-9
-   ( head-string(text) >= 65 && head-string(text) <= 90 )      # A-Z
+let lsts-is-lit-head(text: CString): Bool = (
+   ( head(text) >= 48 and head(text) <= 57 ) or   # 0-9
+   ( head(text) >= 65 and head(text) <= 90 )      # A-Z
 );
 
-let lsts-is-enum-head(text: CString): U64 = (
-   ( head-string(text) >= 65 && head-string(text) <= 90 )      # A-Z
+let lsts-is-enum-head(text: CString): Bool = (
+   ( head(text) >= 65 and head(text) <= 90 )      # A-Z
 );

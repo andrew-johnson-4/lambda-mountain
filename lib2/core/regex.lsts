@@ -1,0 +1,83 @@
+
+type Regex suffix _rgx;
+
+let :Blob .rm_so(t: C<"regmatch_t">): U64 = (
+   $":frame"( $":frame"(t) );
+   $":expression"( l"("; $":expression"(t); l".rm_so)"; );
+);
+let :Blob .rm_eo(t: C<"regmatch_t">): U64 = (
+   $":frame"( $":frame"(t) );
+   $":expression"( l"("; $":expression"(t); l".rm_eo)"; );
+);
+
+let .has-prefix(text: String, rgx: Regex): Bool = (
+   # TODO: fix this mess. The preprocessor is unpacking these erroneously
+   # macros 2.0 doesn't have this problem, but this code still needs to be updated after swapping
+   let a1 = &rgx as C<"regex_t">[];
+   let a2 = text.data.data as C<"char">[];
+   let a3 = 0 as C<"size_t">;
+   let a4 = 0 as C<"regmatch_t">[];
+   let a5 = 0 as C<"int">;
+   let status = regexec(
+      a1,
+      a2,
+      a3,
+      a4,
+      a5
+   );
+   (status as U64) == 0
+);
+
+let $"=="(text: CString, rgx: Regex): Bool = (
+   let matches = () : C<"regmatch_t">[1];
+   let a1 = &rgx as C<"regex_t">[];
+   let a2 = text as C<"char">[];
+   let a3 = 1 as C<"size_t">;
+   let a4 = matches as C<"regmatch_t">[];
+   let a5 = 0 as C<"int">;
+   let status = regexec(
+      a1,
+      a2,
+      a3,
+      a4,
+      a5
+   );
+   (status as U64)==0 and matches[0].rm_so==0 and matches[0].rm_eo==text.length
+);
+
+# TODO remove (this method name is a misnomer), correct name is ".get-prefix"
+let .remove-prefix(text: String, rgx: Regex): String = (
+   let matches = () : C<"regmatch_t">[1];
+   let a1 = &rgx as C<"regex_t">[];
+   let a2 = text.data.data as C<"char">[];
+   let a3 = 1 as C<"size_t">;
+   let a4 = matches as C<"regmatch_t">[];
+   let a5 = 0 as C<"int">;
+   let status = regexec(
+      a1,
+      a2,
+      a3,
+      a4,
+      a5
+   );
+   if matches[0].rm_so != 0 then fail(".remove-prefix regex did not match the prefix");
+   text[0_i64 : matches[0].rm_eo as I64]
+);
+
+let .get-prefix(text: String, rgx: Regex): String = (
+   let matches = () : C<"regmatch_t">[1];
+   let a1 = &rgx as C<"regex_t">[];
+   let a2 = text.data.data as C<"char">[];
+   let a3 = 1 as C<"size_t">;
+   let a4 = matches as C<"regmatch_t">[];
+   let a5 = 0 as C<"int">;
+   let status = regexec(
+      a1,
+      a2,
+      a3,
+      a4,
+      a5
+   );
+   if matches[0].rm_so != 0 then fail(".get-prefix regex did not match the prefix");
+   text[0_i64 : matches[0].rm_eo as I64]
+);

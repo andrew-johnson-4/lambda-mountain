@@ -88,3 +88,9 @@ let .to-hex(i: U64): String = (
    buff.buffer-into-string
 );
 
+let clone-rope(s: U8): CString = (
+   let x = safe-alloc(2, type(U8));
+   x[0] = s;
+   x[1] = 0_u8;
+   x as CString;
+);

@@ -13,6 +13,7 @@ import lib2/core/maybe.lsts;
 import lib2/core/list.lsts;
 import lib2/core/s.lsts;
 import lib2/core/hashtable.lsts;
+import lib2/core/regex.lsts;
 
 # TODO: remove after V3 release
 let deep-hash(x: t): U64 = hash(x);

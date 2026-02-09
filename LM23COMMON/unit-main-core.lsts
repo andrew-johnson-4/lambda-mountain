@@ -18,9 +18,9 @@ let print-toks-json(fp: CString): Nil = (
       print("{\n \"key\":\"");
       print(tok.key);
       print("\",\n \"line\": ");
-      print(tok.location.line);
+      print("\{tok.location.line}");
       print(",\n \"column\": ");
-      print(tok.location.column);
+      print("\{tok.location.column}");
       print("\n}");
    };
    print("]");
@@ -29,12 +29,12 @@ let print-toks-json(fp: CString): Nil = (
 let show-alloc-count = false;
 
 let main(argc: C_int, argv: CString[]): Nil = (
-   let argi = 1_u64;
+   let argi = 1_sz;
    let input = [] : List<CString>;
    let highlight = false;
    let dump-tokens = false;
    let has-args = false;
-   while argi < (argc as U64) {
+   while argi < (argc as USize) {
       has-args = true;
       match argv[argi] {
          c"--typecheck" => config-mode = ModeTypecheck();

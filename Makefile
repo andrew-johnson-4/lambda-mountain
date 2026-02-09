@@ -2,7 +2,7 @@ CC = clang
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	time lm tests/promises/lm-typecheck/direct-inference.lsts
+	time lm tests/promises/lm-main/main.lsts
 	gcc tmp.c
 	./a.out
 
