@@ -131,18 +131,3 @@ let .is-digit(base: CString): Bool = (
       r
    } else false
 );
-
-# TODO: optimize, this is really inefficient
-let .replace(base: CString, pat: CString, n: CString): CString = (
-   let r = SNil;
-   while head(base)!=0 {
-      if base.has-prefix(pat) {
-         base = base.remove-prefix(pat).get-or(c"");
-         r = r + SAtom(n);
-      } else {
-         r = r + SAtom(clone-rope(head(base)));
-         base = tail(base);
-      }
-   };
-   clone-rope(r);
-);
