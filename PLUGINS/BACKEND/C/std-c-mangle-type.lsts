@@ -18,7 +18,7 @@ let std-c-mangle-type-internal-internal(tt: Type, blame: AST): S = (
          let is-c = can-unify(t1(c"C",ta), tt);
          let modifiers = SNil;
          let result = SNil;
-         for c in conjugate {
+         for vector c in conjugate {
             if is-c && c.simple-tag != c"C" {} else {
                if c.simple-tag == c"C" {
                   let rt = std-c-mangle-type-internal-internal(c, blame);
@@ -85,7 +85,7 @@ let std-c-mangle-type-internal-internal(tt: Type, blame: AST): S = (
          if parameters.length > 0 {
             r = r + mangle-identifier(c"<");
             let pi = 0;
-            for p in parameters {
+            for list p in parameters {
                if pi > 0 then r = r + mangle-identifier(c",");
                r = r + std-c-mangle-type-simple(p, blame);
                pi = pi + 1;
@@ -103,7 +103,7 @@ let std-c-mangle-type-simple(tt: Type, blame: AST): S = (
       TAnd{ conjugate=conjugate } => (
          let is-c = can-unify(t1(c"C",ta), tt);
          let result = SNil();
-         for c in conjugate {
+         for vector c in conjugate {
             if is-c && c.simple-tag != c"C" {} else {
                let rt = std-c-mangle-type-internal-internal(c, blame);
                result = if non-zero(result) && non-zero(rt) then result + SAtom(c" ") + rt
@@ -120,7 +120,7 @@ let std-c-mangle-type-simple(tt: Type, blame: AST): S = (
          if parameters.length > 0 {
             r = r + mangle-identifier(c"<");
             let pi = 0;
-            for p in parameters {
+            for list p in parameters {
                if pi > 0 then r = r + mangle-identifier(c",");
                r = r + std-c-mangle-type-simple(p, blame);
                pi = pi + 1;
