@@ -10,9 +10,9 @@ let substitute-normalized(tctx: Maybe<TypeContext>, tt: Type): Type = (
    match tt {
       TAnd{conjugate=conjugate} => (
          let result = mk-vector(type(Type), 0);
-         for c in conjugate {
+         for vector c in conjugate {
             match substitute-normalized(tctx,c) {
-               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
+               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
                TAny{} => ();
                rc => ( result = result.push(rc); () );
             }
@@ -43,9 +43,9 @@ let substitute-macro(tctx: Maybe<TypeContext>, tt: Type): Type = (
    match tt {
       TAnd{conjugate=conjugate} => (
          let result = mk-vector(type(Type), 0);
-         for c in conjugate {
+         for vector c in conjugate {
             match substitute-macro(tctx,c) {
-               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
+               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
                TAny{} => ();
                rc => ( result = result.push(rc); () );
             }

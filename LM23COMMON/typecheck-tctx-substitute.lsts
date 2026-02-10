@@ -9,7 +9,7 @@ let substitute(tctx: TypeContext?, t: AST, is-return: Bool): AST = (
          vt1 = substitute-macro(tctx, vt1).expand-implied-phi.without-phi-keep-state;
          t = mk-app( mk-lit(c":",ctk.unique), mk-app(mk-var(v1,vtk1.unique), mk-atype(vt1)) );
          let found = false;
-         for TypeContextRow{tk1=key,ta=def} in tctx.get-or(mk-tctx()).tctx {
+         for list TypeContextRow{tk1=key,ta=def} in tctx.get-or(mk-tctx()).tctx {
             if not(found) and tk1==v1 {
                t = mk-app( mk-lit(c":",ctk.unique), mk-app(substitute(tctx,ta), mk-atype(vt1)) );
                found = true;
@@ -27,12 +27,12 @@ let substitute(tctx: TypeContext?, t: AST, is-return: Bool): AST = (
       App{is-cons=is-cons,lt=left,rt=right} => mk-cons-or-app(is-cons,substitute(tctx,lt),substitute(tctx,rt));
       Seq{seq=seq} => (
          t = mk-eof();
-         for s in seq { t = t + substitute(tctx,s); };
+         for vector s in seq { t = t + substitute(tctx,s); };
          t
       );
       Glb{k=key, rt=val} => (
          let found = false;
-         for TypeContextRow{tk2=key,ta=def} in tctx.get-or(mk-tctx()).tctx {
+         for list TypeContextRow{tk2=key,ta=def} in tctx.get-or(mk-tctx()).tctx {
             if not(found) and k.key==tk2 {
                match ta {
                   Var{tvtk=token} => k = tvtk;

@@ -19,7 +19,7 @@ let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContex
          }
       } => (
          let vs = ctx.lookup-soft(vsk, ta, mk-eof());
-         for vi in vs.vararg {
+         for list vi in vs.vararg {
             std-c-fragment-context = std-c-fragment-context.bind(lhs-t, vi);
             let inner-ctx = ctx.bind(lhs, vs.type, vi);
             r = r + blob-render-simple(inner-ctx, context-key, iter).second;

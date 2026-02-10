@@ -1,7 +1,7 @@
 
 let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>, blame: AST): List<PhiContextRow> = (
    let seen = mk-vector(type(CString));
-   for Tuple{ sid=phi-id-or-zero, st=phi-tt-or-zero, pblame=blame-or-zero, sdead-on-arrival=dead-on-arrival-or-zero, sis-global=is-global-or-zero } in tctx-secondary {
+   for list Tuple{ sid=phi-id-or-zero, st=phi-tt-or-zero, pblame=blame-or-zero, sdead-on-arrival=dead-on-arrival-or-zero, sis-global=is-global-or-zero } in tctx-secondary {
       if not(seen.contains(sid)) {
          let pt = tctx-primary.lookup(sid);
          if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,pblame,sdead-on-arrival,sis-global), tctx-primary )

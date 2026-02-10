@@ -12,7 +12,7 @@ let preprocess-apply-locations(program: AST): AST = (
       App{is-cons4=is-cons,t04=left,t14=right} => mk-cons-or-app(is-cons4, preprocess-apply-locations(t04), preprocess-apply-locations(t14));
       Seq{seq=seq} => (
          program = mk-eof();
-         for p in seq { program = program + preprocess-apply-locations(p) };
+         for vector p in seq { program = program + preprocess-apply-locations(p) };
          program
       );
       Abs{al1=lhs, ar1=rhs, tlt1=tt} => mk-abs(preprocess-apply-locations(al1), preprocess-apply-locations(ar1), tlt1);

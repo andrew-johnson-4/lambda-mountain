@@ -1,9 +1,9 @@
 
 let validate-interfaces(): Nil = (
-   for Tuple{ base-type=first, reified-interface-type=second, blame=third } in interface-implementors {
+   for list Tuple{ base-type=first, reified-interface-type=second, blame=third } in interface-implementors {
       (let self-type, let interface-type) = interface-self-index.lookup(reified-interface-type.ground-tag-and-arity, (ta, ta));
       let tctx = union( unify(self-type, base-type, ASTEOF).normalize, unify(interface-type, reified-interface-type, ASTEOF).normalize );
-      for Tuple{ symbol-name=first, args-type=second, return-type=third } in
+      for list Tuple{ symbol-name=first, args-type=second, return-type=third } in
           interface-shape-index.lookup(interface-type.ground-tag-and-arity, [] : List<(CString,Type,Type)>) {
          args-type = denormalize(tctx.substitute(args-type).reify-type-variables);
          return-type = tctx.substitute(return-type).reify-type-variables;

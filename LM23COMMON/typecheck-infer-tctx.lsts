@@ -1,9 +1,9 @@
 
 let infer-tctx(tctx: TypeContext?, tt: Type): TypeContext? = (
    match tt {
-      TAnd{conjugate=conjugate} => for c in conjugate { tctx = infer-tctx(tctx,c) };
+      TAnd{conjugate=conjugate} => for vector c in conjugate { tctx = infer-tctx(tctx,c) };
       TVar{name=name} => tctx = tctx.bind(name,t0(c"Constant"),t0(c"Constant"),mk-eof());
-      TGround{parameters=parameters} => for p in parameters { tctx = infer-tctx(tctx, p) };
+      TGround{parameters=parameters} => for list p in parameters { tctx = infer-tctx(tctx, p) };
       TAny{} => ();
    }; tctx
 );

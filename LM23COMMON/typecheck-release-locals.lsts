@@ -28,7 +28,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
          (tctx-after, let binding-type) = std-bind-term(tctx-after, return-id, rhs, def, term, hint);
          tctx-after = tctx-after.ascript(def, binding-type);
       };
-      for nd in needs-release {
+      for list nd in needs-release {
          pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag,true);
          let do-release = mk-cons(
             mk-app(mk-var(c".release"),mk-var(nd.key-or-zero)),
@@ -44,7 +44,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       tctx-after = tctx-after.phi-move(typeof-term(return-term), term);
       term = mk-cons(term, return-term); tctx-after = tctx-after.ascript(term,return-type);
    };
-   for nd in needs-mark-release {
+   for list nd in needs-mark-release {
       pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-tag,true);
       tctx-after = tctx-after.phi-move(tctx-after.with-phi(nd.denormalized, term), term);
    };

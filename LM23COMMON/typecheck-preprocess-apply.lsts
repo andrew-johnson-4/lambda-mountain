@@ -71,7 +71,7 @@ let preprocess-apply(program: AST, is-lhs: Bool): AST = (
          mk-app( mk-app( mk-var(c"as",atk8.unique), mk-app(preprocess-apply(t8),mk-atype(tt8)) ), preprocess-apply(nt8) )
       );
       Lit{l9=key,ltk9=token} => (
-         for Tuple{sfxs9=first, sfxtt9=second} in parse-suffixes {
+         for list Tuple{sfxs9=first, sfxtt9=second} in parse-suffixes {
             if l9.has-suffix(sfxs9) {
                let lpfx9 = l9.remove-suffix(sfxs9).get-or(c"");
                program = mk-app( mk-lit(c":",with-key(ltk9,c":")), mk-app( mk-lit(lpfx9,with-key(ltk9,lpfx9)), mk-atype(sfxtt9) ) )
@@ -79,7 +79,7 @@ let preprocess-apply(program: AST, is-lhs: Bool): AST = (
          }; program
       );
       Var{l10=key,ltk10=token} => (
-         for Tuple{sfxs10=first, sfxtt10=second} in parse-suffixes {
+         for list Tuple{sfxs10=first, sfxtt10=second} in parse-suffixes {
             if l10.has-suffix(sfxs10) {
                let lpfx10 = l10.remove-suffix(sfxs10).get-or(c"");
                program = mk-app( mk-lit(c":",with-key(ltk10,c":")), mk-app( mk-lit(lpfx10,with-key(ltk10,lpfx10)), mk-atype(sfxtt10) ) )
@@ -106,7 +106,7 @@ let preprocess-apply(program: AST, is-lhs: Bool): AST = (
       );
       Seq{seq=seq} => (
          program = mk-eof();
-         for s in seq { program = program + preprocess-apply(s) };
+         for vector s in seq { program = program + preprocess-apply(s) };
          program
       );
       App{is-cons14=is-cons, al14=left, ar14=right} => (

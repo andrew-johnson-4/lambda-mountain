@@ -47,13 +47,13 @@ let infer-type-definition(term: AST): Nil = (
    let opaque-alias = (term as Tag::Typedef).opaque-alias;
    let cases = (term as Tag::Typedef).cases;
    let misc-type = (term as Tag::Typedef).misc-type;
-   for rhs-type in implies {
+   for vector rhs-type in implies {
       add-quick-prop(lhs-type, lhs-type, rhs-type);
       add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
    };
    if non-zero(alias) then add-type-alias(lhs-type, alias);
    if non-zero(opaque-alias) then add-opaque-type-alias(lhs-type, opaque-alias);
-   for rhs-type in implements {
+   for vector rhs-type in implements {
       add-quick-prop(lhs-type, lhs-type, rhs-type);
       add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
       interface-implementors = cons( (lhs-type, rhs-type, term), interface-implementors );
@@ -61,15 +61,15 @@ let infer-type-definition(term: AST): Nil = (
    if misc-type.is-t(c"Phi",0) {
       let common-tags-length = 0_u64;
       let common-parameters = [] : List<Type>;
-      for Tuple{ case-tag1=first, case-fields=second } in cases {
+      for vector Tuple{ case-tag1=first, case-fields=second } in cases {
          if case-tag1==c"" {
             common-tags-length = case-fields.length;
-            for Tuple{field-name1=first, field-type=second} in case-fields {
+            for vector Tuple{field-name1=first, field-type=second} in case-fields {
                common-parameters = cons(field-type, common-parameters);
             };
          } else {
             let case-parameters = common-parameters;
-            for Tuple{field-name2=first, field-type=second} in case-fields {
+            for vector Tuple{field-name2=first, field-type=second} in case-fields {
                case-parameters = cons(field-type, case-parameters);
             };
             let case-name = lhs-type.simple-tag+c"::"+case-tag1;
@@ -82,11 +82,11 @@ let infer-type-definition(term: AST): Nil = (
       add-weaken-quick-prop(lhs-type, t1(c"Sized",ta), t1(c"Sized",lhs-type));
 
       let case-number = 0_u64;
-      for Tuple{ case-tag2=first, case-fields=second } in cases {
+      for vector Tuple{ case-tag2=first, case-fields=second } in cases {
          complex-type-index = complex-type-index.bind( lhs-type.ground-tag-and-arity, 1_u64 );
          datatype-index = datatype-index.bind( lhs-type.ground-tag-and-arity, true );
          let field-ordinal = 0_u64;
-         for Tuple{ field-name3=first, field-type=second } in case-fields {
+         for vector Tuple{ field-name3=first, field-type=second } in case-fields {
             let guard = lhs-type && (if non-zero(case-tag2) then t0(c"Tag::"+case-tag2) else ta);
             let field-wrapped-type = t1(c"Field::"+field-name3, field-type);
             add-quick-prop(lhs-type, guard, field-wrapped-type);
@@ -99,9 +99,9 @@ let infer-type-definition(term: AST): Nil = (
       let common-fields = [] : List<(CString,Type)>;
       let has-tag-case = false;
       let has-any-case = false;
-      for Tuple{ case-tag3=first, case-fields=second } in cases {
+      for vector Tuple{ case-tag3=first, case-fields=second } in cases {
          if case-tag3==c"" {
-            for Tuple{ field-name4=first, field-type=second } in case-fields {
+            for vector Tuple{ field-name4=first, field-type=second } in case-fields {
                common-fields = cons((field-name4, field-type), common-fields);
             };
          } else has-tag-case = true;
@@ -118,10 +118,10 @@ let infer-type-definition(term: AST): Nil = (
          add-weaken-quick-prop(lhs-type, lhs-type, tag-case-number);
       };
       let case-index = 0_u64;
-      for Tuple{ case-tag4=first, case-fields=second } in cases {
+      for vector Tuple{ case-tag4=first, case-fields=second } in cases {
          if case-tag4!=c"" {
             let o-case-fields = [] : List<(CString,Type)>;
-            for Tuple{ field-name5=first, field-type=second } in case-fields {
+            for vector Tuple{ field-name5=first, field-type=second } in case-fields {
                o-case-fields = cons((field-name5, field-type), o-case-fields);
             };
             let tag-guard = lhs-type && t0(c"Tag::"+case-tag4);
@@ -145,14 +145,14 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
    # This only works for C-backend...
 
    let args = mk-eof();
-   for Tuple{field-name6=first, field-type=second} in common-fields.reverse {
+   for list Tuple{field-name6=first, field-type=second} in common-fields.reverse {
       let mangled-field-name1 = c"0_" + field-name6;
       let par = mk-var(mangled-field-name1).ascript(field-type);
       if non-zero(args)
       then args = mk-cons(args, par)
       else args = par
    };
-   for Tuple{field-name7=first, field-type=second} in case-fields.reverse {
+   for list Tuple{field-name7=first, field-type=second} in case-fields.reverse {
       let mangled-field-name2 = case-number.into(type(CString)) + c"_" + field-name7;
       let par = mk-var(mangled-field-name2).ascript(field-type);
       if non-zero(args)
@@ -182,7 +182,7 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
       body = mk-cons(body, mk-lit(c";").ascript(t0(c"L") && t0(c"Literal")));
    };
 
-   for Tuple{field-name8=first, field-type=second} in common-fields.reverse {
+   for list Tuple{field-name8=first, field-type=second} in common-fields.reverse {
       let mangled-field-name3 = c"0_" + field-name8;
       body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")) );
       body = mk-cons(body, mk-lit(c".").ascript(t0(c"L") && t0(c"Literal")));
@@ -192,7 +192,7 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
       body = mk-cons(body, mk-lit(c";").ascript(t0(c"L") && t0(c"Literal")));
    };
 
-   for Tuple{field-name9=first, field-type=second} in case-fields.reverse {
+   for list Tuple{field-name9=first, field-type=second} in case-fields.reverse {
       let mangled-field-name4 = case-number.into(type(CString)) + c"_" + field-name9;
       body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")) );
       body = mk-cons(body, mk-lit(c".").ascript(t0(c"L") && t0(c"Literal")));

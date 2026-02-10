@@ -22,6 +22,6 @@ let assert-well-typed(term: AST): Nil = (
       Var{} => assert-one-typed(term);
       Abs{lhs=lhs, rhs=rhs, tt=tt} => (assert-well-typed(rhs); assert-one-typed(term));
       App{left=left, right=right} => (assert-well-typed(left); assert-well-typed(right); assert-one-typed(term));
-      Seq{seq=seq} => for s in seq { assert-well-typed(s) };
+      Seq{seq=seq} => for vector s in seq { assert-well-typed(s) };
    }
 );

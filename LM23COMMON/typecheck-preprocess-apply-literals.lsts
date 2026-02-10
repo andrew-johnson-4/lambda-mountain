@@ -4,7 +4,7 @@ let preprocess-apply-literals(program: AST): AST = (
       App{is-cons=is-cons,t0=left,t1=right} => mk-cons-or-app(is-cons,preprocess-apply-literals(t0),preprocess-apply-literals(t1));
       Seq{seqs=seq} => (
          program = mk-eof();
-         for p in seqs { program = program + preprocess-apply-literals(p) };
+         for vector p in seqs { program = program + preprocess-apply-literals(p) };
          program
       );
       Abs{al1=lhs, ar1=rhs, tlt1=tt} => mk-abs(preprocess-apply-literals(al1), preprocess-apply-literals(ar1), tlt1);

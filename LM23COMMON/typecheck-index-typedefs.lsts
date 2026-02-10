@@ -1,10 +1,10 @@
 
 let index-typedefs(program: AST): Nil = (
-   for def in program.unroll-seq { match def {
+   for vector def in program.unroll-seq { match def {
       Typedef{} => (
          let cases = (def as Tag::Typedef).cases;
          let has-cases = false;
-         for case-fields in cases {
+         for vector case-fields in cases {
             if non-zero(case-fields.first) {
                has-cases = true;
                index-index-of-tag(case-fields.first, 0);

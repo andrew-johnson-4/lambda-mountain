@@ -68,7 +68,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
       let row = index-macro-table.lookup(mname, [] : List<(Type,Type,AST)>);
       let peep-holes = ta;
       let peeped = ta;
-      for Tuple{mtype=first, peep=second, mterm=third} in row {
+      for list Tuple{mtype=first, peep=second, mterm=third} in row {
          if non-zero(peep-holes) {
             if peep-holes != peep then fail("Error: Macros must have the same pre-inference expectation.\n\{mname} : \{peeped}\n\{mname} : \{mtype}\n");
          } else {
@@ -79,13 +79,13 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
       (tctx, let peeped-type, margs) = std-infer-peeped-arguments(tctx, margs, peep-holes);
 
       let matched = [] : List<(Type,AST)>;
-      for Tuple{mtype=first, mterm=third} in row {
+      for list Tuple{mtype=first, mterm=third} in row {
          if can-unify(mtype, peeped-type) then matched = cons( (mtype,mterm), matched );
       }; 
 
       let dominant-type = ta;
       let candidates = [] : List<(Type,AST)>;
-      for Tuple{mtype=first, mterm=second} in matched {
+      for list Tuple{mtype=first, mterm=second} in matched {
          if non-zero(dominant-type) {
             if can-unify(mtype,dominant-type) and can-unify(dominant-type,mtype) {
                candidates = cons( (mtype,mterm), candidates );
