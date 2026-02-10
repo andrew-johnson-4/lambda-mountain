@@ -13,7 +13,7 @@ let apply(ctx: AContext, term: AST): AST = (
       Abs{lhs=lhs, rhs=rhs, tt=tt} => mk-abs( apply(ctx,lhs), apply(ctx,rhs), tt );
       Seq{seq=seq} => (
          let return = mk-eof();
-         for s in seq { return = return + apply(ctx,s) };
+         for vector s in seq { return = return + apply(ctx,s) };
          return
       );
       Glb{key=key, val=val} => mk-glb( substitute(ctx,key), apply(ctx,val) );

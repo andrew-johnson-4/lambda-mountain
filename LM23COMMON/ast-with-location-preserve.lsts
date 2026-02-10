@@ -6,7 +6,7 @@ let .with-location-preserve(term: AST, loc: SourceLocation): AST = (
       App{is-cons=is-cons,left=left,right=right} => mk-cons-or-app(is-cons,left.with-location-preserve(loc),right.with-location-preserve(loc));
       Seq{seq=seq} => (
          let ret = mk-vector(type(AST), seq.length);
-         for s in seq { ret = ret.push(s.with-location-preserve(loc)) };
+         for vector s in seq { ret = ret.push(s.with-location-preserve(loc)) };
          Seq(ret)
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => Abs(close(lhs.with-location-preserve(loc)),close(rhs.with-location-preserve(loc)),tt);

@@ -7,7 +7,7 @@ let std-apply-macro-candidates(tctx: TypeContext?, mname: CString, margs: AST, c
    # should be sent as
    # [ candidate 2, candidate 1 ]
    let t = mk-eof();
-   for Tuple{ctype=first, second:Abs{mlhs=lhs,rhs:App{left:Lit{key:c":"},right:App{mrhs=left}}}} in candidates {
+   for list Tuple{ctype=first, second:Abs{mlhs=lhs,rhs:App{left:Lit{key:c":"},right:App{mrhs=left}}}} in candidates {
       if not(non-zero(t)) {
          (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, mlhs);
          tctx = tctx.phi-append(new-tctx);
@@ -76,7 +76,7 @@ let std-macro-helper-name(tt: Type): CString = (
       TVar{name1=name} => if name1.has-prefix(c"macro::") then name1 else c"";
       TAnd{conjugate=conjugate} => (
          let name2 = c"";
-         for c in conjugate {
+         for vector c in conjugate {
             if not(non-zero(name2)) then name2 = std-macro-helper-name(c);
          };
          name2

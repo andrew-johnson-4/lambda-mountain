@@ -1,6 +1,6 @@
 
 let plugins-backend-blob-compile(): Nil = (
-   for p in ast-parsed-program.unroll-seq { match p {
+   for vector p in ast-parsed-program.unroll-seq { match p {
       Glb{ k=key, rhs=val:Abs{} } => (
          let fragment = mk-fragment();
          fragment.term = rhs;
@@ -9,7 +9,7 @@ let plugins-backend-blob-compile(): Nil = (
       _ => ();
    }};
    let blob = SNil;
-   for p in ast-parsed-program.unroll-seq { match p {
+   for vector p in ast-parsed-program.unroll-seq { match p {
       Glb{} => ();
       Meta{} => ();
       expr => blob = blob + blob-render-simple(global-ctx, c"expression", expr).second;

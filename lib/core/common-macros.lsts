@@ -283,24 +283,23 @@ deprecated macro ( rl"while"(cond)(body) )
       ( $"primitive::while"( body as Nil, into-branch-conditional(cond) ) );
 
 deprecated macro ( rl"for-each"(item(rl"in")(iterable))(loop) ) ((
-   let uuid(iter-term) = iterable.unsafe-iter;
-   let uuid(continue-iter) = true;
-   while uuid(continue-iter) {
-      $"match"( (&(uuid(iter-term))).next )
-      (
-         ();
-         (Some(item); loop());
-         (None(); uuid(continue-iter) = false);
-      );
-   }
+   let uuid(iter-term) = iterable;
+   let uuid(iter-i) = 0_sz;
+   while uuid(iter-i) < uuid(iter-term).length {
+      match uuid(iter-term)[uuid(iter-i)] {
+         item => loop;
+      };
+      uuid(iter-i) = uuid(iter-i) + 1;
+   };
 ));
 
 deprecated macro ( rl"for-each-list"(item(rl"in")(iterable))(loop) ) ((
    let uuid(iter-term) = iterable;
    while non-zero(uuid(iter-term)) {
-      let item = head(uuid(iter-term));
+      match head(uuid(iter-term)) {
+         item => loop;
+      };
       uuid(iter-term) = tail(uuid(iter-term));
-      loop;
    };
 ));
 

@@ -17,7 +17,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
 
    # Assert that all equal type variables also have equal datatype
    let apply-type-variables = {} : Hashtable<CString,Type>;
-   for tr in apply-tctx.get-or-panic.tctx {
+   for list tr in apply-tctx.get-or-panic.tctx {
       if apply-type-variables.has(tr.key-or-zero) {
          let previous-seen-tt = apply-type-variables.lookup(tr.key-or-zero, ta).datatype;
          let current-seen-tt = tr.direct-type.datatype;

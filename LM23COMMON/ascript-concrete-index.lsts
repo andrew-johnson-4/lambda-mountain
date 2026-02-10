@@ -33,7 +33,7 @@ let does-concrete-type-instance-exist(tt: Type): Bool = (
       TGround{tag=tag, ts=parameters} => (
          let exists = false;
          let k = (tag, ts.length as U64);
-         for vt in concrete-type-instances-index.lookup(k, empty-type-vector) {
+         for vector vt in concrete-type-instances-index.lookup(k, empty-type-vector) {
             if vt==tt then exists = true;
          };
          exists

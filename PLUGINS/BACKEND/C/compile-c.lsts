@@ -1,6 +1,6 @@
 
 let plugins-backend-c-compile(): Nil = (
-   for program-term in ast-parsed-program.unroll-seq { match program-term {
+   for vector program-term in ast-parsed-program.unroll-seq { match program-term {
       Glb{ key=key, rhs=val } => (
          if key.key==c"main" then assemble-argv-referenced = true;
          let fragment = mk-fragment();
@@ -28,7 +28,7 @@ let plugins-backend-c-compile(): Nil = (
       );
       _ => ();
    }};
-   for program-term in ast-parsed-program.unroll-seq { match program-term {
+   for vector program-term in ast-parsed-program.unroll-seq { match program-term {
       Typedef{} => std-c-compile-type-typedef(program-term);
       _ => ();
    }};

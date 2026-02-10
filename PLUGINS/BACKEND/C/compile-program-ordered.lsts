@@ -1,6 +1,6 @@
 
 let compile-program-ordered(global-ctx: FContext, program: AST): Nil = (
-   for g in program.unroll-seq { match g {
+   for vector g in program.unroll-seq { match g {
       Glb{ key=key, val=val } => (
          if not(typeof-term(def-to-sym(g)).is-open)
          || not(typeof-term(val).is-open) then {

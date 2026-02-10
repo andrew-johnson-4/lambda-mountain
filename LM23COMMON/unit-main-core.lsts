@@ -9,7 +9,7 @@ let print-toks-json(fp: CString): Nil = (
    print(fp);
    print("\":[");
    let first = true;
-   for tok in toks {
+   for list tok in toks {
       if first {
          first = false;
       } else {
@@ -73,7 +73,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          } else {
             print("{");
             let first-outer = true;
-            for fp in input {
+            for list fp in input {
                if first-outer {
                   first-outer = false;
                } else {
@@ -85,10 +85,10 @@ let main(argc: C_int, argv: CString[]): Nil = (
          };
       );
       ModeParse{} => (
-         for fp in input.reverse { frontend(fp); };
+         for list fp in input.reverse { frontend(fp); };
       );
       _ => (
-         for fp in input.reverse { frontend(fp); };
+         for list fp in input.reverse { frontend(fp); };
          match config-mode {
             ModeTypecheck{} => (preprocess(); typecheck(););
             ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(););

@@ -40,7 +40,7 @@ let mangle-identifier(kt: Type): S = (
          let r = mangle-identifier(tag);
          if parameters.length > 0 then r = r + mangle-identifier(c"<");
          let c-has-prev = false;
-         for c in parameters {
+         for list c in parameters {
             if c-has-prev { r = r + mangle-identifier(c",") };
             r = r + mangle-identifier(c);
             c-has-prev = true;
@@ -50,7 +50,7 @@ let mangle-identifier(kt: Type): S = (
       );
       TAnd{conjugate=conjugate} => (
          let r = SNil;
-         for c in conjugate { r = r + mangle-identifier(c); };
+         for vector c in conjugate { r = r + mangle-identifier(c); };
          r
       );
    }

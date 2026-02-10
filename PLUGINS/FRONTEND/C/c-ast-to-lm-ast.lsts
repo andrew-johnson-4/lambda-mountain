@@ -7,7 +7,7 @@ let std-c-declare(t: CTerm): Nil = (
       CBinaryOp{op:c"Declaration",spec=arg1,arg2:CMaybe{value:Some{content:CList{inits=value}}}} => (
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          return-type = return-type && t0(c"C-FFI");
-         for init in inits { match init {
+         for list init in inits { match init {
             CBinaryOp{op:c"=", arg1:CIdentifier{name=value}, value=arg2} => (
                ast-parsed-program = ast-parsed-program + Glb(
                   mk-token(name), close(App( false,
@@ -98,7 +98,7 @@ let std-c-declare(t: CTerm): Nil = (
 
 let std-c-nametypes-of-params-list(params: List<CTerm>, is-vararg: Bool): List<(CString,Type)> = (
    let nametypes = [] : List<(CString,Type)>;
-   for p in params { match p {
+   for list p in params { match p {
       CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CIdentifier{name=value}} => (
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          nametypes = cons((name.into(type(CString)), return-type), nametypes);
@@ -138,7 +138,7 @@ let std-c-nametypes-of-params-list(params: List<CTerm>, is-vararg: Bool): List<(
 let std-c-sig-of-params-list(params: List<CTerm>, is-vararg: Bool): AST = (
    let nametypes = std-c-nametypes-of-params-list(params, is-vararg);
    let return = mk-eof();
-   for Tuple{n=first, tt=second} in std-c-nametypes-of-params-list(params, is-vararg) {
+   for list Tuple{n=first, tt=second} in std-c-nametypes-of-params-list(params, is-vararg) {
       let pe = mk-var(n).ascript(tt);
       if non-zero(return) {
          return = mk-cons( return, pe );
@@ -152,7 +152,7 @@ let std-c-sig-of-params-list(params: List<CTerm>, is-vararg: Bool): AST = (
 let std-c-paramstype-of-params-list(params: List<CTerm>, is-vararg: Bool): Type = (
    let nametypes = std-c-nametypes-of-params-list(params, is-vararg);
    let return = ta;
-   for Tuple{n=first, tt=second} in std-c-nametypes-of-params-list(params, is-vararg) {
+   for list Tuple{n=first, tt=second} in std-c-nametypes-of-params-list(params, is-vararg) {
       if non-zero(return) {
          return = t2(c"Cons", return, tt);
       } else {
@@ -279,7 +279,7 @@ let std-c-fragment-of-struct-definition-body(body: CTerm): CString = (
       CIdentifier{value=value} => value.into(type(CString));
       CList{decls=value} => (
          let inner = c"";
-         for sd in decls {
+         for list sd in decls {
             inner = inner + std-c-fragment-of-struct-definition-body(sd);
          }; inner
       );
@@ -342,7 +342,7 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
 let std-c-type-of-specifiers(specifiers: List<CTerm>): Tuple<Type,Type> = (
    let return-type = ta;
    let misc-type = ta;
-   for ct in specifiers {
+   for list ct in specifiers {
       (let rt, let mt) = std-c-type-of-specifiers(ct);
       return-type = return-type && rt;
       misc-type = misc-type && mt;
@@ -405,7 +405,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
    match t {
       CCompound{terms=terms} => (
          let inner = mk-nil();
-         for it in terms {
+         for list it in terms {
             inner = App( true, close(inner), close(std-c-expr-of-statement(it)) );
          };
          App( false, close(Var(c"c::compound", mk-token(c"c::compound"))), close(inner) )
@@ -464,7 +464,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
       CBinaryOp{op:c"Declaration", spec=arg1, arg2:CMaybe{value:Some{content:CList{decls=value}}} } => (
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          let expr = mk-eof();
-         for decl in decls {match decl {
+         for list decl in decls {match decl {
             CIdentifier{name=value} => (
                let d = App(
                   close(App(
