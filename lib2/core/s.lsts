@@ -50,7 +50,7 @@ let $"=="(ls: S, rs: S): Bool = (
       Tuple { first:SCons{ l1=left, l2=right },
               second:SCons{ r1=left, r2=right } } => l1==r1 and l2==r2;
       Tuple { first:SPointer{ lc=pointer },
-              second:SPointer{ rc=pointer } } => (lc as U8) == (rc as U8);
+              second:SPointer{ rc=pointer } } => (lc as U64) == (rc as U64);
       _ => false;
    }
 );

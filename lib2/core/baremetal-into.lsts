@@ -94,3 +94,44 @@ let clone-rope(s: U8): CString = (
    x[1] = 0_u8;
    x as CString;
 );
+
+# TODO: optimize, this is really inefficient
+let .replace(base: CString, pat: CString, n: CString): CString = (
+   let r = SNil;
+   while head(base)!=0 {
+      if base.has-prefix(pat) {
+         base = base.remove-prefix(pat).get-or(c"");
+         r = r + SAtom(n);
+      } else {
+         r = r + SAtom(clone-rope(head(base)));
+         base = tail(base);
+      }
+   };
+   clone-rope(r);
+);
+
+let read-binary-file-to(out: Vector<U8>, path: CString): Vector<U8> = (
+   let fp = fopen(path as C<"char">[], c"rb");
+   if (fp as U64) == 0_u64 {
+      # Cannot use format strings here because this file is used in "baremetal" package that doesn't use GC
+      # TODO: add support for format strings inside of CStrings
+      fail(c"Unable to read from file: " + path);
+   };
+   let buffer = mk-vector(type(U8), 1024 as USize);
+   let bytes-read = 1_sz;
+   while bytes-read > 0 {
+      bytes-read = fread(buffer.data.data as C<"void">[], 1 as USize, 1024 as USize, fp);
+      let bi = 0_sz;
+      while bi < (bytes-read as USize) {
+         out = out.push(buffer.data.data[bi]);
+         bi = bi + 1;
+      };
+   };
+   fclose(fp);
+   out
+);
+
+let read-file(fp: CString): CString = (
+   let v = read-binary-file-to(mk-vector(type(U8)), fp);
+   v.buffer-into-string.into(type(CString))
+);
