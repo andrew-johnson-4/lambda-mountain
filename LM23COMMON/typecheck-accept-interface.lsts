@@ -9,7 +9,7 @@ let .should-accept-interface(tt: Type): Bool = (
    match tt {
       TAnd{ conjugate=conjugate } => (
          let result = true;
-         for c in conjugate { result = result and c.should-accept-interface };
+         for vector c in conjugate { result = result and c.should-accept-interface };
          result
       );
       TGround{tag=tag} => interface-index.has(tt.ground-tag-and-arity);
