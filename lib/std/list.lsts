@@ -25,7 +25,7 @@ let cmp(ls: List<x>, rs: List<x>): Ord = (
 let .into(ls: List<x>, tt: Type<String>): String = (
    let s = "[";
    let si = 0_u64;
-   for l in ls {
+   for list l in ls {
       if si > 0_u64 {
          s = s + ",";
       };
@@ -38,13 +38,13 @@ let .into(ls: List<x>, tt: Type<String>): String = (
 
 let .into(ls: List<x>, tt: Type<Vector<x>>): Vector<x> = (
    let dst = mk-vector(type(x));
-   for l in ls { dst = dst.push(l); };
+   for list l in ls { dst = dst.push(l); };
    dst
 );
 
 let .unique(ls: List<x>): List<x> = (
    let rs = [] : List<x>;
-   for l in ls {
+   for list l in ls {
       if not(rs.contains(l)) {
          rs = cons(l, rs);
       }
@@ -114,21 +114,21 @@ let .unsafe-iter(li: List<x>): ListIter<x> = (
 
 let .lookup(ls: List<Tuple<k,v>>, key: k, default: v): v = (
    let found = false;
-   for Tuple{lkey=first, rval=second} in ls {
+   for list Tuple{lkey=first, rval=second} in ls {
       if not(found) && key==lkey { default=rval; found=true; }
    };
    default;
 );
 let .lookup(ls: List<Tuple<k,v1,v2>>, key: k, default: Tuple<v1,v2>): Tuple<v1,v2> = (
    let found = false;
-   for Tuple{lkey=first, val1=second, val2=third} in ls {
+   for list Tuple{lkey=first, val1=second, val2=third} in ls {
       if not(found) && key==lkey { default=Tuple(val1,val2); found=true; }
    };
    default;
 );
 let .lookup(ls: List<Tuple<k,v1,v2,v3>>, key: k, default: Tuple<v1,v2,v3>): Tuple<v1,v2,v3> = (
    let found = false;
-   for Tuple{lkey=first, val1=second, val2=third, val3=fourth} in ls {
+   for list Tuple{lkey=first, val1=second, val2=third, val3=fourth} in ls {
       if not(found) && key==lkey { default=Tuple(val1,val2,val3); found=true; }
    };
    default;
@@ -141,26 +141,26 @@ let tail(l: List<x>): List<x> = if l.has-head then open((l as Tag::LCons).tail) 
 let .has-head(l: List<x>): U64 = non-zero(l);
 
 let $"+"(hd: List<x>, tl: List<x>): List<x> = (
-   for hdhd in hd.reverse { tl = cons(hdhd,tl); };
+   for list hdhd in hd.reverse { tl = cons(hdhd,tl); };
    tl
 );
 
 let .length(l: List<x>): U64 = (
    let li = 0_u64;
-   for _ in l { li = li + 1; };
+   for list _ in l { li = li + 1; };
    li
 );
 
 let .reverse(l: List<x>): List<x> = (
    let r = [] : List<x>;
-   for v in l { r = cons(v,r); };
+   for list v in l { r = cons(v,r); };
    r
 );
 
 let print(l: List<x>): Nil = (
    print(c"[");
    let li = 0_u64;
-   for v in l {
+   for list v in l {
       if li>0 then print(c",");
       print(v);
       li = li + 1;
@@ -178,13 +178,13 @@ let $"=="(lt: List<x>, rt: List<x>): U64 = (
 
 let .contains(l: List<x>, i: x): U64 = (
    let r = false;
-   for j in l { r = r || i==j; };
+   for list j in l { r = r || i==j; };
    r
 );
 
 let .join(l: List<CString>, sep: CString): CString = (
    let r = SNil;
-   for i in l {
+   for list i in l {
       if non-zero(r)
       then r = r + SAtom(sep) + SAtom(i)
       else r = SAtom(i)

@@ -207,24 +207,6 @@ let .push-all(self: Vector<t>, val: Iterable<t>): Vector<t> = (
    self
 );
 
-let .collect(x: Iterator<t>, to: Vector<t>): Vector<t> = (
-   let rem = remaining-or-zero(x);
-   if rem != 0 {
-      to = to.reserve-additional(rem);
-   };
-
-   for item in x {
-      to = to.push(item);
-   };
-   to
-);
-
-let .collect(x: Iterator<t>, tot: Type<Vector<t>>): Vector<t> = (
-   let to = mk-vector(type(t), 0);
-   to = x.collect(to);
-   to
-);
-
 # TODO: once we have move values, add .into() variant that does not clone the data first
 
 ## does not destory input vec
@@ -248,7 +230,7 @@ let .into(l: Iterable<t>, out: Type<Vector<t>>): Vector<t> = (
 let .into(self: Vector<x>, tt: Type<String>): String = (
    let rval = "[";
    let has-item = false;
-   for v in self {
+   for vector v in self {
       if has-item then rval = rval + ",";
       has-item = true;
       rval = rval + v.into(type(String));
@@ -265,7 +247,7 @@ let .ptr(v: Vector<t>, toelem: U64): t[] = (
 
 let .contains(v: Vector<t>, i: t): U64 = (
    let result = false;
-   for vi in v {
+   for vector vi in v {
       if vi==i then result = true;
    };
    result
