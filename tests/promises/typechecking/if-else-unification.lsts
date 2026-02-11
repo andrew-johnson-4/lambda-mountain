@@ -1,5 +1,5 @@
 
-import lib2/core/bedrock.lsts;
+import lib/std/minimal.lsts;
 
 # Nil is dominant
 let f1(): Nil = if true then 1 else ();

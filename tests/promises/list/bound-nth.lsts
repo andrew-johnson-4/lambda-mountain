@@ -1,5 +1,5 @@
 
-import lib2/core/bedrock.lsts;
+import lib/std/minimal.lsts;
 
 assert( cons(123, [] : List<U8>).nth(0) == Some(123) );
 assert( safe-alloc-block-count == 0 );

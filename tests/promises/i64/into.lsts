@@ -1,5 +1,5 @@
 
-import lib2/core/bedrock.lsts;
+import lib/std/minimal.lsts;
 
 assert( 0_i64.into(type(String)) == "0" );
 assert( 1_i64.into(type(String)) == "1" );

@@ -1,5 +1,5 @@
 
-import lib2/core/bedrock.lsts;
+import lib/std/minimal.lsts;
 
 cons(8,cons(123, [] : List<U8>)).reverse;
 assert( safe-alloc-block-count == 0 );

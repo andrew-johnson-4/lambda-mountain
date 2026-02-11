@@ -1,5 +1,5 @@
 
-import lib2/core/bedrock.lsts;
+import lib/std/minimal.lsts;
 
 let f(ls: List<x>): Nil = (
    let v = mk-vector(type(x));

@@ -1,5 +1,5 @@
 
-import lib2/core/bedrock.lsts;
+import lib/std/minimal.lsts;
 
 assert( (None : U64?) == (None : U64?) );
 assert( Some(0) == Some(0) );
