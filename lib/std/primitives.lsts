@@ -29,7 +29,21 @@ let :Blob $"primitive::while"(cond: Bool, body: Any): Nil = (
    );
 );
 
+let :Blob $"primitive::while"(body: Any, cond: Any): Nil = (
+   $":frame"( $":frame"(body); $":frame"(cond) );
+   $":expression"(
+      l"({while("; $":expression"(cond); l"){"; $":expression"(body); l";};})";
+   );
+);
+
 let :Blob $"primitive::if"(f: Any, t: Any, c: Bool): Nil = (
+   $":frame"( $":frame"(c); $":frame"(t); $":frame"(f); );
+   $":expression"(
+      l"("; $":expression"(c); l"?"; $":expression"(t); l":"; $":expression"(f); l")";
+   );
+);
+
+let :Blob $"primitive::if"(f: Any, t: Any, c: Any): Nil = (
    $":frame"( $":frame"(c); $":frame"(t); $":frame"(f); );
    $":expression"(
       l"("; $":expression"(c); l"?"; $":expression"(t); l":"; $":expression"(f); l")";

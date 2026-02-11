@@ -34,7 +34,7 @@ let $"set[]"(od: CompatOwnedData<t>[], idx: USize, val: t): Nil = (
    then fail(c"OwnedData set[] Access Null Pointer");
    if idx >= od.occupied then fail("OwnedData set[\{idx}] Index Access Out of Bounds");
    if type(t) <: type(MustRelease) then od.data[idx].release;
-   od.data[idx] = val;
+   od.data[idx] = val; ()
 );
 
 let .push(od: CompatOwnedData<t>[], d: t): Nil = (

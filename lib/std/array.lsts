@@ -1,30 +1,32 @@
 
-declare-binop( $"!=", raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );
-declare-binop( $"==", raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l"=="; y; l")"; ) );
-declare-binop( $"<",  raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l"<"; y; l")"; ) );
-declare-binop( $"<=", raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l"<="; y; l")"; ) );
-declare-binop( $">",  raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l">"; y; l")"; ) );
-declare-binop( $">=", raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l">="; y; l")"; ) );
+declare-binop-retain( $"[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), ( l"("; x; l"["; y; l"])"; ) );
+declare-ternop( $"set[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), raw-type(Nil), ( l"("; x; l"["; y; l"]="; z; l")"; ) );
 
-declare-binop( $"+", raw-type(base-type[]), raw-type(U64), raw-type(base-type[]), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"!=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"+", raw-type(base-type[]), raw-type(USize), raw-type(base-type[]), ( l"("; x; l"+"; y; l")"; ) );
 declare-binop( $"+", raw-type(base-type[]), raw-type(ISize), raw-type(base-type[]), ( l"("; x; l"+"; y; l")"; ) );
-declare-binop( $"-", raw-type(base-type[]), raw-type(U64), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(USize), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
 declare-binop( $"-", raw-type(base-type[]), raw-type(ISize), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
-declare-binop( $"-", raw-type(base-type[]), raw-type(base-type[]), raw-type(U64), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(base-type[]), raw-type(USize), ( l"("; x; l"-"; y; l")"; ) );
 
-declare-unop( not, raw-type(base-type[]), raw-type(U64), ( l"(!"; x; l")"; ) );
+declare-unop( $"&", raw-type(t+MustNotRetain), raw-type(t[]), (l"(&"; x; l")";) );
+declare-unop( $".void-pointer", raw-type(?[]), raw-type(C<"void">[]), x );
 
-declare-unop( into-branch-conditional, raw-type(base-type[]), raw-type(U64), x );
+let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
+   # BEFORE CHANGING THIS: talk to alex
 
-declare-binop( $"[]", raw-type(base-type[]), raw-type(U64), raw-type(base-type), ( l"("; x; l"["; y; l"])"; ) );
-declare-ternop( $"set[]", raw-type(base-type[]), raw-type(U64), raw-type(base-type), raw-type(base-type), ( l"("; x; l"["; y; l"]="; z; l")"; ) );
-
-declare-unop( open, raw-type(t), raw-type(t), x );
-declare-unop( open, raw-type(base-type[]), raw-type(base-type), (l"(*"; x; l")";) );
-declare-unop( $"&", raw-type(t), raw-type(t[]), (l"(&"; x; l")";) );
-
-declare-unop( raw, raw-type(t), raw-type(t), x );
-declare-unop( raw, raw-type(base-type[]), raw-type(base-type[]+Raw), x );
+   while len > 0_sz {
+      let ignored = ptr[0_sz];
+      len = len - 1_sz;
+      ptr = ((ptr as U8[]) + (sizeof(t) as USize)) as t[];
+   };
+);
 
 # TODO: configure this with conditional compilation to remove if unused
 # EXAMPLE: # if CFG.debug
@@ -36,23 +38,17 @@ declare-unop( raw, raw-type(base-type[]), raw-type(base-type[]+Raw), x );
 let safe-alloc-block-count = 0_u64;
 let safe-alloc-block-count-monotonic = 0_u64;
 
-let mark-memory-as-safe(ptr: t[], len: U64): Nil = (
+let safe-alloc-impl(nb: USize): ?[] = (
    # BEFORE CHANGING THIS: talk to alex
 
-   while len > 0_u64 {
-      let ignored = ptr[0_u64];
-      len = len - 1_u64;
-      ptr = ((ptr as U8[]) + sizeof(t)) as t[];
-   };
-);
+   let ptr = malloc(nb) as ?[];
 
-let safe-alloc-impl(nb: U64): ?[] = (
-   # BEFORE CHANGING THIS: talk to alex
-
-   let ptr = malloc(nb);
-   if ptr as U64 == 0_u64 {
-      fail("malloc \{nb}B fail");
+   if ptr as USize == 0_sz {
+      fail(c"malloc fail");
    };
+
+   # Zero Out Memory
+   memset(ptr as C<"void">[], 0, nb);
 
    mark-memory-as-safe(ptr as U8[], nb);
 
@@ -63,37 +59,58 @@ let safe-alloc-impl(nb: U64): ?[] = (
    ptr
 );
 
-let safe-realloc-impl(ptr: ?[], nb: U64): ?[] = (
+let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
    # BEFORE CHANGING THIS: talk to alex
 
-   let new_ptr = realloc(ptr, nb) as ?[];
-   if new_ptr as U64 == 0_u64 {
-      fail("realloc to \{nb}B fail");
+   let new-ptr = realloc(ptr as C<"void">[], nb) as ?[];
+
+   if new-ptr as USize == 0_sz {
+      fail(c"realloc fail");
    };
 
-   mark-memory-as-safe(new_ptr as U8[], nb);
+   # Zero Out Memory
+   memset(new-ptr as C<"void">[], 0, nb);
+
+   mark-memory-as-safe(new-ptr as U8[], nb);
 
    # TODO: wrap counter adjustments in conditional compilation
    safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
 
-   new_ptr
+   new-ptr
 );
 
 ## this will fail() if len is 0
-let safe-alloc(len: U64, ty: Type<t>): t[] = (
+let safe-alloc(len: USize, ty: Type<t>): t[] = (
    # BEFORE CHANGING THIS: talk to alex
 
-   let nb = len * sizeof(t);
+   let nb = len * (sizeof(t) as USize);
    safe-alloc-impl(nb) as t[]
 );
 
 ## this will fail() if len is 0
-let safe-realloc(ptr: t[], len: U64, ty: Type<t>): t[] = (
+let safe-realloc(ptr: t[], len: USize, ty: Type<t>): t[] = (
    # BEFORE CHANGING THIS: talk to alex
 
-   let nb = len * sizeof(t);
+   let nb = len * (sizeof(t) as USize);
    safe-realloc-impl(ptr as ?[], nb) as t[]
 );
+
+let safe-free(ptr: ?[]): Nil = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   # TODO: wrap counter adjustments in conditional compilation
+   safe-alloc-block-count = safe-alloc-block-count - 1;
+
+   free(ptr as C<"void">[]);
+   ()
+);
+
+declare-unop( open, raw-type(t), raw-type(t), x );
+declare-unop( open, raw-type(base-type[]), raw-type(base-type), (l"(*"; x; l")";) );
+declare-unop( $"&", raw-type(t), raw-type(t[]), (l"(&"; x; l")";) );
+
+declare-unop( raw, raw-type(t), raw-type(t), x );
+declare-unop( raw, raw-type(base-type[]), raw-type(base-type[]+Raw), x );
 
 let close(x: p): p[] = (
    let r = safe-alloc(1_u64, type(p));
