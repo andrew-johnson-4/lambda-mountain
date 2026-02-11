@@ -363,6 +363,8 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
       };
       if not(config-v3) and base==c"OwnedData" and args.length==1 {
          head(args);
+      } else if base==c"CompatOwnedData" and args.length==1 {
+         t1(c"OwnedData",head(args));
       } else TGround ( base, close(args) );
    };
    while lsts-parse-head(tokens) == c"[" or lsts-parse-head(tokens)==c"?" {
