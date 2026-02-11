@@ -22,7 +22,7 @@ let substitute-normalized(tctx: Maybe<TypeContext>, tt: Type): Type = (
          else tand(result)
       );
       TGround{tag:c"Linear",parameters:[TGround{tag:c"Phi::Live"}..]} => tt;
-      TGround{tag=tag,parameters=parameters} => TGround(tag,close(substitute-normalized(tctx,parameters)));
+      TGround{tag=tag,parameters=parameters} => TGround(tag,close-owned(substitute-normalized(tctx,parameters)));
       TVar{name=name} => (
          let tn = tctx.lookup(name).normalized-type;
          if non-zero(tn) then tn else tt;
@@ -55,7 +55,7 @@ let substitute-macro(tctx: Maybe<TypeContext>, tt: Type): Type = (
          else tand(result)
       );
       TGround{tag:c"Linear",parameters:[TGround{tag:c"Phi::Live"}..]} => tt;
-      TGround{tag=tag,parameters=parameters} => TGround(tag,close(substitute-macro(tctx,parameters)));
+      TGround{tag=tag,parameters=parameters} => TGround(tag,close-owned(substitute-macro(tctx,parameters)));
       TVar{name=name} => (
          let tn = tctx.lookup(name).normalized-type;
          if non-zero(tn) then tn else tt;

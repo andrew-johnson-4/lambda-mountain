@@ -6,19 +6,19 @@ let ta = TAny;
 #    1 from close
 #    0 from 0 length list
 # this is an upper bound, because the list implementation should be replaced with vector eventually
-let t0(tag: CString): Type = TGround(tag, close([] : List<Type>));
+let t0(tag: CString): Type = TGround(tag, close-owned([] : List<Type>));
 
 # new allocations = 2
 #    1 from close
 #    1 from 1 length list
 # this is an upper bound, because the list implementation should be replaced with vector eventually
-let t1(tag: CString, p1: Type): Type = TGround(tag, close([p1]));
+let t1(tag: CString, p1: Type): Type = TGround(tag, close-owned([p1]));
 
 # new allocations = 3
 #    1 from close
 #    2 from 2 length list
 # this is an upper bound, because the list implementation should be replaced with vector eventually
-let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, close([p2, p1]));
+let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, close-owned([p2, p1]));
 
 # new allocations = 0
 let tv(name: CString): Type = TVar(name);
@@ -95,7 +95,7 @@ let .extend(lt: Type, rt: Type): Type = (
 
 # new allocations = 1
 # this is an upper bound, because the list implementation should be replaced with vector eventually
-let ts(tag: CString, ps: List<Type>): Type = TGround( tag, close(ps) );
+let ts(tag: CString, ps: List<Type>): Type = TGround( tag, close-owned(ps) );
 
 # new allocations = 0
 let tand(t: Vector<Type>): Type = TAnd(t.sort);

@@ -21,7 +21,7 @@ let .substitute(tctx: TypeContext?, tt: Type): Type = (
          else if result.length==1 then result[0]
          else tand(result)
       );
-      TGround{tag=tag,parameters=parameters} => TGround(tag,close(tctx.substitute(parameters)));
+      TGround{tag=tag,parameters=parameters} => TGround(tag,close-owned(tctx.substitute(parameters)));
       TVar{name=name} => (
          let tn = tctx.lookup(name).direct-type;
          if non-zero(tn) then tn else tt;

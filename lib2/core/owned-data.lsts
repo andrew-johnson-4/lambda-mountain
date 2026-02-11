@@ -6,11 +6,11 @@ type OwnedData<t> = {
    data: t[]+FlexibleArrayMember
 };
 
-let mk-owned-data(tt: Type<t>, capacity: USize, occupied: USize): CompatOwnedData<t>[] = (
+let mk-owned-data(tt: Type<t>, capacity: USize, occupied: USize): OwnedData<t>[] = (
    let od = safe-alloc(
       # TODO: make sizeof return USize
-      (sizeof(CompatOwnedData<t>) as USize) + (sizeof(t) as USize) * capacity,
-      type(CompatOwnedData<t>)
+      (sizeof(OwnedData<t>) as USize) + (sizeof(t) as USize) * capacity,
+      type(OwnedData<t>)
    );
    od.reference-count = 1;
    od.occupied = occupied;
@@ -18,18 +18,18 @@ let mk-owned-data(tt: Type<t>, capacity: USize, occupied: USize): CompatOwnedDat
    od
 );
 
-let mk-owned-data(tt: Type<t>, capacity: USize): CompatOwnedData<t>[] = (
+let mk-owned-data(tt: Type<t>, capacity: USize): OwnedData<t>[] = (
    mk-owned-data(tt, capacity, 0)
 );
 
-let $"[]"(od: CompatOwnedData<t>[], idx: USize): t = (
+let $"[]"(od: OwnedData<t>[], idx: USize): t = (
    if (od as USize)==0
    then fail(c"OwnedData [] Access Null Pointer");
    if idx >= od.occupied then fail("OwnedData [\{idx}] Index Access Out of Bounds");
    od.data[idx]
 );
 
-let $"set[]"(od: CompatOwnedData<t>[], idx: USize, val: t): Nil = (
+let $"set[]"(od: OwnedData<t>[], idx: USize, val: t): Nil = (
    if (od as USize)==0
    then fail(c"OwnedData set[] Access Null Pointer");
    if idx >= od.occupied then fail("OwnedData set[\{idx}] Index Access Out of Bounds");
@@ -37,7 +37,7 @@ let $"set[]"(od: CompatOwnedData<t>[], idx: USize, val: t): Nil = (
    od.data[idx] = val;
 );
 
-let .push(od: CompatOwnedData<t>[], d: t): Nil = (
+let .push(od: OwnedData<t>[], d: t): Nil = (
    if (od as USize)==0
    then fail(c"OwnedData .push Into Null Pointer");
    if od.occupied >= od.capacity
@@ -46,7 +46,7 @@ let .push(od: CompatOwnedData<t>[], d: t): Nil = (
    od.occupied = od.occupied + 1;
 );
 
-let .pop(od: CompatOwnedData<t>[]): t = (
+let .pop(od: OwnedData<t>[]): t = (
    if (od as USize)==0
    then fail(c"OwnedData .pop From Null Pointer");
    if od.occupied == 0
@@ -55,17 +55,23 @@ let .pop(od: CompatOwnedData<t>[]): t = (
    od.data[od.occupied]
 );
 
-let open(od: CompatOwnedData<t>[]): t = (
+let open(od: OwnedData<t>[]): t = (
    od[0];
 );
 
-let close-owned(d: t): CompatOwnedData<t>[] = (
+let close-owned(d: t): OwnedData<t>[] = (
    let od = mk-owned-data(type(t), 1);
    od.push(d);
    od
 );
 
-let .release(od: CompatOwnedData<t>[]): Nil = (
+let close(d: t): OwnedData<t>[] = (
+   let od = mk-owned-data(type(t), 1);
+   od.push(d);
+   od
+);
+
+let .release(od: OwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
       if od.reference-count==0 then fail(c"OwnedData.release called when reference count is already zero. This object has already been freed!");
       od.reference-count = od.reference-count - 1;
@@ -83,7 +89,7 @@ let .release(od: CompatOwnedData<t>[]): Nil = (
    };
 );
 
-let .retain(od: CompatOwnedData<t>[]): Nil = (
+let .retain(od: OwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
       if od.reference-count==0 then fail(c"OwnedData.retain called when reference count is zero. This object has already been freed!");
       od.reference-count = od.reference-count + 1;

@@ -16,7 +16,7 @@ let substitute(ctx: AContext, tt: Type): Type = (
          _ => tt;
       };
       TGround{tag=tag,parameters=parameters} => (
-         TGround( tag, close(substitute(ctx,parameters)) )
+         TGround( tag, close-owned(substitute(ctx,parameters)) )
       );
       TAnd{conjugate=conjugate} => (
          let result = mk-vector(type(Type), 0);

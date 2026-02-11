@@ -317,7 +317,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          tokens = tnext-rest.second;
       };
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-      if args.length==1 then head(args) else TGround ( c"Tuple", close(args) );
+      if args.length==1 then head(args) else TGround ( c"Tuple", close-owned(args) );
    } else if lsts-parse-head(tokens)==c"?" {
       lsts-parse-expect(c"?", tokens); tokens = tail(tokens);
       ta
@@ -369,7 +369,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          t0(c"MustRetain");
       } else if base==c"CompatMustRelease" and args.length==0 {
          t0(c"MustRelease");
-      } else TGround ( base, close(args) );
+      } else TGround ( base, close-owned(args) );
    };
    while lsts-parse-head(tokens) == c"[" or lsts-parse-head(tokens)==c"?" {
       if lsts-parse-head(tokens)==c"[" {
