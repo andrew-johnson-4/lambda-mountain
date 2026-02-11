@@ -103,6 +103,6 @@ let .to-hex(i: U64): CString = (
       rpt = rpt - 1;
    };
    buff = buff.push(0);
-   buff.data as CString
+   buff.data.data as CString
 );
 
