@@ -6,8 +6,8 @@
 # TAnd = 3
 # TODO: replace TGround List implementation with Vector which is much more efficient
 # for this reason allocation counts only have an upper bound rather than exact bound
-type Type zero TAny implies CompatMustRetain, CompatMustRelease
-        = TGround { tag:CString, parameters:CompatOwnedData<List<Type>>[] }
+type Type zero TAny implies MustRetain, MustRelease
+        = TGround { tag:CString, parameters:OwnedData<List<Type>>[] }
         | TAny
         | TVar { name:CString }
         | TAnd { conjugate:Vector<Type> };
