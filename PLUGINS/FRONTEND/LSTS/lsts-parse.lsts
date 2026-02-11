@@ -363,6 +363,12 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
       };
       if not(config-v3) and base==c"OwnedData" and args.length==1 {
          head(args);
+      } else if base==c"CompatOwnedData" and args.length==1 {
+         t1(c"OwnedData",head(args));
+      } else if base==c"CompatMustRetain" and args.length==0 {
+         t0(c"MustRetain");
+      } else if base==c"CompatMustRelease" and args.length==0 {
+         t0(c"MustRelease");
       } else TGround ( base, close(args) );
    };
    while lsts-parse-head(tokens) == c"[" or lsts-parse-head(tokens)==c"?" {
@@ -1093,7 +1099,6 @@ let lsts-parse-let(tokens: List<Token>): (AST, List<Token>) = (
    } else {
       mk-glb( with-location(mk-token(name),loc), return-term );
    };
-   if not(config-v3) and (name==c".retain" or name==c".release") then rvalue = mk-nil();
    (rvalue, tokens)
 );
 

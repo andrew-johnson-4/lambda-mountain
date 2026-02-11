@@ -59,6 +59,12 @@ let open(od: OwnedData<t>[]): t = (
    od[0];
 );
 
+let close-owned(d: t): OwnedData<t>[] = (
+   let od = mk-owned-data(type(t), 1);
+   od.push(d);
+   od
+);
+
 let close(d: t): OwnedData<t>[] = (
    let od = mk-owned-data(type(t), 1);
    od.push(d);
