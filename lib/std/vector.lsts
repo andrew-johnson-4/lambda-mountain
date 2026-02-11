@@ -262,3 +262,6 @@ let deep-hash(ts: Vector<t>): U64 = (
 # ignore, don't port to lib2
 # for compatibility in lmcommon
 let .buffer-into-string(c: Vector<U8>): Vector<U8> = c;
+
+let .release(v: Vector<x>): Nil = ();
+let .retain(v: Vector<x>): Vector<x> = v;

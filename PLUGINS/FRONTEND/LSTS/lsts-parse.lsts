@@ -1099,7 +1099,6 @@ let lsts-parse-let(tokens: List<Token>): (AST, List<Token>) = (
    } else {
       mk-glb( with-location(mk-token(name),loc), return-term );
    };
-   if not(config-v3) and (name==c".retain" or name==c".release") then rvalue = mk-nil();
    (rvalue, tokens)
 );
 

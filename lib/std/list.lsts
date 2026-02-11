@@ -197,3 +197,7 @@ let deep-hash(ts: List<t>): U64 = (
    for list t0 in ts { return = return + deep-hash(t0); };
    return;
 );
+
+# TODO: remove
+let .release(tt: List<x>): Nil = ();
+let .retain(tt: List<x>): List<x> = tt;

@@ -31,3 +31,7 @@ let .retain(t: Type): Type = (
    };
    t
 );
+
+# TODO: remove
+let .release(tt: x[]): Nil = ();
+let .retain(tt: x[]): x[] = tt;
