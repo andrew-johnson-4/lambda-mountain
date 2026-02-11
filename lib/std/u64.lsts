@@ -38,8 +38,8 @@ let to-string(i: U64): CString = (
       out = out.push(ci);
    };
 
-   out.reverse-self();
-   out.into(type(CString));
+   out.reverse();
+   out.buffer-into-cstring
 );
 
 let .into(i: U64, tt: Type<String>): String = (

@@ -11,16 +11,21 @@ let .file-extension(path: CString): CString = (
 );
 
 let read-binary-file-to(out: Vector<U8>, path: CString): Vector<U8> = (
-   let fp = fopen(path as U8[], untern("rb") as U8[]);
+   let fp = fopen(path as C<"char">[], c"rb" as C<"char">[]);
    if (fp as U64) == 0_u64 {
-      fail("Unable to read from file: \{path}");
+      # Cannot use format strings here because this file is used in "baremetal" package that doesn't use GC
+      # TODO: add support for format strings inside of CStrings
+      fail(c"Unable to read from file: " + path);
    };
-   let by = 1_u64;
-   while by {
-      let increment = 1024_u64;
-      out = out.reserve-additional(increment);
-      by = fread(out.ptr(out.length), 1_u64, increment, fp);
-      out._length = (out.length + by) as U32;
+   let buffer = mk-vector(type(U8), 1024 as USize);
+   let bytes-read = 1_sz;
+   while bytes-read > 0 {
+      bytes-read = fread(buffer.data.data as C<"void">[], 1 as C<"size_t">, 1024 as C<"size_t">, fp);
+      let bi = 0_sz;
+      while bi < (bytes-read as USize) {
+         out = out.push(buffer.data.data[bi]);
+         bi = bi + 1;
+      };
    };
    fclose(fp);
    out
@@ -28,7 +33,7 @@ let read-binary-file-to(out: Vector<U8>, path: CString): Vector<U8> = (
 
 let read-file(fp: CString): CString = (
    let v = read-binary-file-to(mk-vector(type(U8)), fp);
-   v.into(type(CString))
+   v.buffer-into-cstring
 );
 
 let :Blob $"io::file::stdin"(): IO::File = $":expression"(l"stdin");

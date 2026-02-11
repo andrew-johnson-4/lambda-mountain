@@ -149,6 +149,13 @@ let .buffer-into-string(v: Vector<U8>): String = (
    String(0, v.length, v.data)
 );
 
+# new allocations = 1 if realloc is necessary
+#                 | 0
+let .buffer-into-cstring(v: Vector<U8>): String = (
+   v.data.retain;
+   v.data.data as CString
+);
+
 # new allocations = 0
 let $"set[]"( v: Vector<t>, i: USize, val: t ): Nil = (
    if i >= v.length then fail(c"Vector Index Out of Bounds");
