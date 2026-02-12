@@ -40,7 +40,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          c"--typecheck" => config-mode = ModeTypecheck();
          c"--parse" => config-mode = ModeParse();
          c"--compile" => config-mode = ModeCompile();
-         c"--v1" => (config-v3 = false; config-v0 = true;);
+         c"--v0" => (config-v3 = false; config-v0 = true;);
          c"--v1" => (config-v3 = false; config-v1 = true;);
          c"--v2" => config-v3 = false;
          c"--v3" => config-v3 = true;
