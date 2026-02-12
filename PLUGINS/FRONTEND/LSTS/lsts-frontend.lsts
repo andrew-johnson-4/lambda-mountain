@@ -1,5 +1,6 @@
 
 let lsts-frontend(fp: CString): Nil = (
+   if config-v1 and fp==c"lib/std/minimal.lsts" then fp = c"lib1/std/minimal.lsts";
    if config-v3 and fp==c"lib/std/minimal.lsts" then fp = c"lib2/core/bedrock.lsts";
    if config-v3 and fp==c"lib/std/compiler-only.lsts" then fp = c"lib2/core/compiler-only.lsts";
    lsts-parse(lsts-tokenize(fp));

@@ -263,5 +263,12 @@ let deep-hash(ts: Vector<t>): U64 = (
 # for compatibility in lmcommon
 let .buffer-into-string(c: Vector<U8>): Vector<U8> = c;
 
+# new allocations = 1 if realloc is necessary
+#                 | 0
+let .buffer-into-cstring(v: Vector<U8>): CString = (
+   v.into(type(CString))
+);
+
 let .release(v: Vector<x>): Nil = ();
 let .retain(v: Vector<x>): Vector<x> = v;
+

@@ -60,7 +60,7 @@ let lsts-parse-doc-wordf(tokens: List<Token>, begin: CString, end: CString): Tup
       };
       tokens = tail(tokens);
    };
-   Tuple ( text.buffer-into-string.into(type(CString)), tokens )
+   Tuple ( text.buffer-into-cstring, tokens )
 );
 
 let lsts-parse-doc-expr(tokens: List<Token>): Tuple<AST, List<(CString, AST)>, List<Token>> = (

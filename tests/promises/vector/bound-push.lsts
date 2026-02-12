@@ -1,5 +1,5 @@
 
-import lib2/core/bedrock.lsts;
+import lib/std/minimal.lsts;
 
 # reallocation not necessary
 assert( mk-vector(type(U8), 0).length == 0 );
@@ -9,6 +9,8 @@ safe-alloc-block-count-monotonic = 0;
 
 # reallocation necessary
 assert( mk-vector(type(U8), 0).push(8).length == 1 );
+let v = safe-alloc-block-count;
+print("alloc-count: \{v}\n");
 assert( safe-alloc-block-count == 0 );
 assert( safe-alloc-block-count-monotonic == 1 );
 safe-alloc-block-count-monotonic = 0;

@@ -1,0 +1,75 @@
+
+type Tuple<x,y> implements DefaultPrintable = { first: x, second: y };
+type Tuple<x,y,z> implements DefaultPrintable = { first: x, second: y, third: z };
+type Tuple<w,x,y,z> = { first: w, second: x, third: y, fourth: z };
+type Tuple<v,w,x,y,z> = { first: v, second: w, third: x, fourth: y, fifth: z };
+
+let cmp(l: Tuple<x,y>, r: Tuple<x,y>): Ord = (
+   cmp(l.first, r.first) && cmp(l.second, r.second)
+);
+
+let deep-hash(l: Tuple<x,y>): U64 = (
+   deep-hash(l.first) + deep-hash(l.second)
+);
+
+let print(io: IO::File, l: Tuple<x,y>): Nil = (
+   print(io, "("); print(io, l.first); print(io, ","); print(io, l.second); print(io, ")");
+);
+
+let print(io: IO::File, l: Tuple<x,y,z>): Nil = (
+   print(io, "("); print(io, l.first); print(io, ","); print(io, l.second); print(io, ","); print(io, l.third); print(io, ")");
+);
+
+let cmp(l: Tuple<x,y,z>, r: Tuple<x,y,z>): Ord = (
+   cmp(l.first, r.first) && cmp(l.second, r.second) && cmp(l.third, r.third)
+);
+
+let deep-hash(l: Tuple<x,y,z>): U64 = (
+   deep-hash(l.first) + deep-hash(l.second) + deep-hash(l.third)
+);
+
+let $"=="(l: Tuple<x,y>, r: Tuple<x,y>): U64 = (
+   l.first == r.first && l.second == r.second
+);
+
+let $"!="(l: Tuple<x,y>, r: Tuple<x,y>): U64 = (
+   l.first != r.first || l.second != r.second
+);
+
+let $"<"(l: Tuple<x,y>, r: Tuple<x,y>): U64 = (
+   l.first < r.first ||
+   (l.first == r.first && l.second < r.second)
+);
+
+let $"<="(l: Tuple<x,y>, r: Tuple<x,y>): U64 = (
+   l.first < r.first ||
+   (l.first == r.first && l.second <= r.second)
+);
+
+let $">"(l: Tuple<x,y>, r: Tuple<x,y>): U64 = (
+   l.first > r.first ||
+   (l.first == r.first && l.second > r.second)
+);
+
+let $">="(l: Tuple<x,y>, r: Tuple<x,y>): U64 = (
+   l.first > r.first ||
+   (l.first == r.first && l.second >= r.second)
+);
+
+let .into(l: Tuple<x,y>, tt: Type<String>): String = (
+   "(" + l.first.into(type(String)) + ","
+       + l.second.into(type(String)) + ")"
+);
+
+let .into(l: Tuple<x,y,z>, tt: Type<String>): String = (
+   "(" + l.first.into(type(String)) + ","
+       + l.second.into(type(String)) + ","
+       + l.third.into(type(String)) + ")"
+);
+
+let .into(l: Tuple<w,x,y,z>, tt: Type<String>): String = (
+   "(" + l.first.into(type(String)) + ","
+       + l.second.into(type(String)) + ","
+       + l.third.into(type(String)) + ","
+       + l.fourth.into(type(String)) + ")"
+);

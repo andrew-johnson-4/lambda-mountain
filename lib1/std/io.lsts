@@ -1,0 +1,76 @@
+
+type opaque alias "IO::File" = C<"FILE">[];
+type opaque alias Never = C<"void">;
+type opaque alias Nil = C<"void">;
+
+let .file-extension(path: CString): CString = (
+   while head-string(path) != 0_u8 && head-string(path) != 46_u8 {
+      path = tail-string(path);
+   };
+   path
+);
+
+let read-binary-file-to(out: Vector<U8>, path: CString): Vector<U8> = (
+   let fp = fopen(path as C<"char">[], c"rb" as C<"char">[]);
+   if (fp as U64) == 0_u64 {
+      # Cannot use format strings here because this file is used in "baremetal" package that doesn't use GC
+      # TODO: add support for format strings inside of CStrings
+      fail(c"Unable to read from file: " + path);
+   };
+   let buffer = mk-vector(type(U8), 1024 as USize);
+   let bytes-read = 1_sz;
+   while bytes-read > 0 {
+      bytes-read = fread(buffer.data.data as C<"void">[], 1 as C<"size_t">, 1024 as C<"size_t">, fp);
+      let bi = 0_sz;
+      while bi < (bytes-read as USize) {
+         out = out.push(buffer.data.data[bi]);
+         bi = bi + 1;
+      };
+   };
+   fclose(fp);
+   out
+);
+
+let read-file(fp: CString): CString = (
+   let v = read-binary-file-to(mk-vector(type(U8)), fp);
+   v.buffer-into-cstring
+);
+
+let :Blob $"io::file::stdin"(): IO::File = $":expression"(l"stdin");
+let :Blob $"io::file::stdout"(): IO::File = $":expression"(l"stdout");
+let :Blob $"io::file::stderr"(): IO::File = $":expression"(l"stderr");
+let exit(x: U64): Nil = exit(x as U32) as Nil;
+
+let fail(msg: CString, loc: CString): Never = (
+   print(msg); print(c" at "); print(loc); exit(1_u32) as Never;
+);
+
+let fail(msg: CString): Never = (
+   print(msg); exit(1_u32) as Never;
+);
+
+
+let fail(msg: String, loc: String): Never = (
+   print(msg); print(c" at "); print(loc); exit(1_u32) as Never;
+);
+
+let fail(msg: String): Never = (
+   print(msg); exit(1_u32) as Never;
+);
+
+let write-file(fp: CString, contents: CString): Nil = (
+   let f = fopen(fp as U8[], c"w" as U8[]);
+   let c = contents as U8[];
+   fwrite(c, 1_u64, contents.length, f);
+   fclose(f); ()
+);
+
+let file-exists(fp: CString): U64 = (
+   let f = fopen(fp as U8[], c"r" as U8[]);
+   let exists = false;
+   if (f as U64) != 0 {
+      exists = true;
+      fclose(f); ()
+   };
+   exists
+);

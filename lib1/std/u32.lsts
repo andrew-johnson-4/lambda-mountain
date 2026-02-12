@@ -1,0 +1,22 @@
+
+declare-binop( $"!=", raw-type(U32), raw-type(U32), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(U32), raw-type(U32), raw-type(U64), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(U32), raw-type(U32), raw-type(U64), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(U32), raw-type(U32), raw-type(U64), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(U32), raw-type(U32), raw-type(U64), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(U32), raw-type(U32), raw-type(U64), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"+", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"^", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"^"; y; l")"; ) );
+declare-binop( $"/", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"/"; y; l")"; ) );
+declare-binop( $"%", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"%"; y; l")"; ) );
+declare-binop( $"*", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"*"; y; l")"; ) );
+
+declare-unop( not, raw-type(U32), raw-type(U64), ( l"(!"; x; l")"; ) );
+
+declare-unop( into-branch-conditional, raw-type(U32), raw-type(U64), x );
+
+let cmp(l: U32, r: U32): Ord = if l==r then Equal() else if l<r then LessThan() else GreaterThan();
+
+let print(io: IO::File, x: U32): Nil = (fprintf(io, c"%u", x); ());

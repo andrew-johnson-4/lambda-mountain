@@ -1,5 +1,5 @@
 
-import lib2/core/bedrock.lsts;
+import lib/std/minimal.lsts;
 
 type Flags = Flag1 | Flag2 | Flag3 { x: C<"int"> };
 

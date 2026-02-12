@@ -1,5 +1,5 @@
 
-import lib2/core/bedrock.lsts;
+import lib/std/minimal.lsts;
 
 assert( mk-vector(type(U8)).push(51).buffer-into-string == "3" );
 assert( mk-vector(type(U8)).push(89).buffer-into-string == "Y" );

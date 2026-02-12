@@ -1,5 +1,5 @@
 
-import lib2/core/bedrock.lsts;
+import lib/std/minimal.lsts;
 
 type A implies MustRetain = {};
 type B implies MustRetain = { a: A };

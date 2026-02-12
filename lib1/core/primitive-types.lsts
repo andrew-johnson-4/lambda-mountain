@@ -1,0 +1,11 @@
+
+type U8 implies U16, I16, U32, I32, U64, I64 implements DefaultPrintable suffix _u8;
+type I8 implies I16, I32, I64 implements DefaultPrintable suffix _i8;
+type U16 implies U32, I32, U64, I64 implements DefaultPrintable suffix _u16;
+type I16 implies I32, I64 implements DefaultPrintable suffix _i16;
+type U32 implies U64, I64 implements DefaultPrintable suffix _u32;
+type I32 implies I64 implements DefaultPrintable suffix _i32;
+type U64 implements DefaultPrintable suffix _u64;
+type I64 implements DefaultPrintable suffix _i64;
+type opaque alias ISize suffix _isz = I64;
+type F64 suffix _f64;

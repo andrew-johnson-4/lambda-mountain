@@ -1,5 +1,5 @@
 
-import lib2/core/bedrock.lsts;
+import lib/std/minimal.lsts;
 
 # TODO: add test for empty string
 # empty string should not require a heap allocation

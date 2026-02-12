@@ -1,5 +1,5 @@
 
-import lib2/core/bedrock.lsts;
+import lib/std/minimal.lsts;
 
 if true {
    let v = mk-vector(type(U8), 1).push(8);
