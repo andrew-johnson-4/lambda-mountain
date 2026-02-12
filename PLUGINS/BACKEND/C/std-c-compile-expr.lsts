@@ -99,7 +99,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             f = f.set(c"expression", v.get(c"expression") + SAtom(c":"));
          } else {
             (let pre, let post) = std-c-mangle-declaration(lt, t);
-            if config-v3 {
+            if config-v3 or config-v1 {
                f = f.set(c"frame",
                          f.get(c"frame") + pre + SAtom(c" ")
                        + v.get(c"expression")
