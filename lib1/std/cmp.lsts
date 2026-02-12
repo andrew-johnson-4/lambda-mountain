@@ -1,0 +1,30 @@
+
+
+## order is important here because
+## [type(LessThan).discriminator-case-tag] = 0
+## [type(Equal).discriminator-case-tag] = 1
+## [type(GreaterThan).discriminator-case-tag] = 2
+type Ord = LessThan | Equal | GreaterThan;
+
+let $"=="(l: Ord, r: Ord): U64 = l.discriminator-case-tag == r.discriminator-case-tag;
+let $"!="(l: Ord, r: Ord): U64 = l.discriminator-case-tag != r.discriminator-case-tag;
+let $"<"(l: Ord, r: Ord): U64  = l.discriminator-case-tag <  r.discriminator-case-tag;
+let $"<="(l: Ord, r: Ord): U64 = l.discriminator-case-tag <= r.discriminator-case-tag;
+let $">"(l: Ord, r: Ord): U64  = l.discriminator-case-tag >  r.discriminator-case-tag;
+let $">="(l: Ord, r: Ord): U64 = l.discriminator-case-tag >= r.discriminator-case-tag;
+
+let $"=="(l: x, r: x): U64 = cmp(l, r) == Equal();
+let $"!="(l: x, r: x): U64 = cmp(l, r) != Equal();
+let $"<"(l: x, r: x): U64  = cmp(l, r) <  Equal();
+let $"<="(l: x, r: x): U64 = cmp(l, r) <= Equal();
+let $">"(l: x, r: x): U64  = cmp(l, r) >  Equal();
+let $">="(l: x, r: x): U64 = cmp(l, r) >= Equal();
+
+let $"&&"(l: Ord, r: Ord): Ord = if l == Equal() then r else l;
+
+#TODO print(IO::File, String)
+#let print(io: IO::File, o: Ord): Nil = (
+#   if o == GreaterThan then print(io, "GreaterThan") else
+#   if o == Equal then print(io, "Equal") else
+#   print(io, "LessThan");
+#);

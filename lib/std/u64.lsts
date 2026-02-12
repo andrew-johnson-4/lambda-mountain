@@ -38,8 +38,8 @@ let to-string(i: U64): CString = (
       out = out.push(ci);
    };
 
-   out.reverse();
-   out.buffer-into-cstring
+   out.reverse-self();
+   out.into(type(CString));
 );
 
 let .into(i: U64, tt: Type<String>): String = (
@@ -103,6 +103,6 @@ let .to-hex(i: U64): CString = (
       rpt = rpt - 1;
    };
    buff = buff.push(0);
-   buff.data.data as CString
+   buff.data as CString
 );
 

@@ -1,0 +1,52 @@
+
+declare-binop( $"!=", raw-type(I64), raw-type(I64), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(I64), raw-type(I64), raw-type(U64), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(I64), raw-type(I64), raw-type(U64), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(I64), raw-type(I64), raw-type(U64), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(I64), raw-type(I64), raw-type(U64), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(I64), raw-type(I64), raw-type(U64), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"+", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"^", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"^"; y; l")"; ) );
+declare-binop( $"/", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"/"; y; l")"; ) );
+declare-binop( $"%", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"%"; y; l")"; ) );
+declare-binop( $"*", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"*"; y; l")"; ) );
+
+declare-unop( not, raw-type(I64), raw-type(U64), ( l"(!"; x; l")"; ) );
+
+declare-unop( into-branch-conditional, raw-type(I64), raw-type(U64), x );
+
+let minimum-I64 = -2147483648_i64;
+
+let print(io: IO::File, x: I64): Nil = (fprintf(io, c"%ld", x); ());
+let max(x: I64, y: I64): I64 = if x>=y then x else y;
+let min(x: I64, y: I64): I64 = if x<=y then x else y;
+
+let to-string(i: I64): CString = (
+   let sign = SNil;
+   let r = SNil;
+   if i < 0_i64 then {
+      sign = SAtom(c"-");
+      i = 0_i64 - i;
+   };
+   let c = 0_u8;
+   while i != 0_i64 {
+      let ci = ((i as U64) % 10_u64 + 48_u64) as U8;
+      i = i / 10_i64;
+      r = SAtom(clone-rope(ci)) + r;
+   };
+   if not(non-zero(r)) then r = SAtom(c"0");
+   clone-rope(sign + r);
+);
+
+let to-i64(s: CString): I64 = (
+   let negative = false;
+   if head-string(s)==45 {
+      negative = true;
+      s = tail-string(s);
+   };
+   let base = to-u64(s) as I64;
+   if negative then base = 0_i64 - base;
+   base
+);

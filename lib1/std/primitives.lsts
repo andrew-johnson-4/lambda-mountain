@@ -1,0 +1,75 @@
+
+# TODO remove after porting to new C frontend
+type "C_regex__t_*_" implies C<"regex_t">[];
+type "C_char_*" implies C<"char">[];
+type "C_size__t_" implies C<"size_t">;
+type "C_regmatch__t_*" implies C<"regmatch_t">[];
+type "C_int" implies C<"int32_t">;
+
+declare-unop( $"cdecl::return", raw-type(Any), raw-type(Nil), (l"return "; x; l";";) );
+declare-unop( $"cdecl::return", raw-type(Nil), raw-type(Nil), (x; l";";) );
+
+declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs+MustNotFresh+MustNotMove+MustNotRetain+MustReleaseAfterCall+MustNotRewrite), raw-type(Nil), ( l"({"; y; l"="; x; l";({});})"; ) );
+
+# needs to be declared to prevent a special case during inference
+# this only needs to be declared if you want to support casting type information into String literals
+# EXAMPLE: print(typeof(x))
+declare-binop( $".into", type(Any), type(CString), raw-type(CString), () );
+
+declare-unop( typeof, type(x), raw-type(Type<x>), () );
+
+# this operator is hard-coded in the compiler for now
+# but this definition being in the library is simplest for inference
+declare-binop( $"<:", type(Any), type(Any), raw-type(Bool), () );
+
+let :Blob $"primitive::while"(cond: Bool, body: Any): Nil = (
+   $":frame"( $":frame"(cond); $":frame"(body) );
+   $":expression"(
+      l"({while("; $":expression"(cond); l"){"; $":expression"(body); l";};})";
+   );
+);
+
+let :Blob $"primitive::while"(body: Any, cond: Any): Nil = (
+   $":frame"( $":frame"(body); $":frame"(cond) );
+   $":expression"(
+      l"({while("; $":expression"(cond); l"){"; $":expression"(body); l";};})";
+   );
+);
+
+let :Blob $"primitive::if"(f: Any, t: Any, c: Bool): Nil = (
+   $":frame"( $":frame"(c); $":frame"(t); $":frame"(f); );
+   $":expression"(
+      l"("; $":expression"(c); l"?"; $":expression"(t); l":"; $":expression"(f); l")";
+   );
+);
+
+let :Blob $"primitive::if"(f: Any, t: Any, c: Any): Nil = (
+   $":frame"( $":frame"(c); $":frame"(t); $":frame"(f); );
+   $":expression"(
+      l"("; $":expression"(c); l"?"; $":expression"(t); l":"; $":expression"(f); l")";
+   );
+);
+
+let :Blob $"primitive::call"(ictx: ImplicitContext, args: Any): Nil = (
+   $":frame"( $":frame"(ictx); $":frame"(args); );
+   $":expression"(
+      l"("; $":function-id"(ictx); l"("; $":expression"(args); l"))";
+   );
+);
+
+declare-unop( $".discriminator-case-tag", raw-type(LMStruct+MustNotRetain+MustReleaseAfterCall+CaseNumber<cn>), raw-type(USize), ( l"("; cn : L; l")"; ) );
+declare-unop( $".discriminator-case-tag", raw-type(LMStruct+MustNotRetain+MustReleaseAfterCall), raw-type(USize), ( l"("; x; l".discriminator_case_tag)"; ) );
+
+declare-unop-retain( $"primitive::field-get", raw-type(base-type+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), ( l"("; x; l"."; mangle(field-name : L); l")"; ) );
+declare-binop( $"primitive::field-set", raw-type(base-type+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), raw-type(Nil), ( l"("; x; l"."; mangle(field-name : L); l"="; y; l")"; ) );
+
+declare-unop-retain( $"primitive::field-get-indirect", raw-type(base-type[]+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), ( l"("; x; l"->"; mangle(field-name : L); l")"; ) );
+declare-binop( $"primitive::field-set-indirect", raw-type(base-type[]+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), raw-type(Nil), ( l"("; x; l"->"; mangle(field-name : L); l"="; y; l")"; ) );
+
+declare-unop( branchtrue, raw-type(Nil), raw-type(Bool), l"1" );
+declare-unop( branchfalse, raw-type(Nil), raw-type(Bool), l"0" );
+
+# needs to be declared to prevent a special case during inference
+# this only needs to be declared if you want to support casting type information into String literals
+# EXAMPLE: print(typeof(x))
+declare-binop( $".into", type(Any), type(String), raw-type(String), () );

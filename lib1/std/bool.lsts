@@ -1,0 +1,5 @@
+
+type alias Bool = U64;
+
+let true = 1_u64;
+let false = 0_u64;

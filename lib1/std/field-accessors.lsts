@@ -1,0 +1,3 @@
+
+declare-unop( $".discriminator-case-tag", raw-type(LMStruct+CaseNumber<cn>), raw-type(USize), ( l"("; cn : L; l")"; ) );
+declare-unop( $".discriminator-case-tag", raw-type(LMStruct), raw-type(USize), ( l"("; x; l".discriminator_case_tag)"; ) );

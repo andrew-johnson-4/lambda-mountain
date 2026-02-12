@@ -6,7 +6,7 @@
 let clone-rope(s: S): CString = (
    let out = mk-vector(type(U8), 64);
    out = clone-rope-impl(s, out);
-   out.buffer-into-cstring
+   out.into(type(CString))
 );
 
 let clone-rope-impl(s: S, out: Vector<U8>): Vector<U8> = (

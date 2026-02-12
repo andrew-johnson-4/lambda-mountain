@@ -1,140 +1,184 @@
 
 ## faster than [type(List<t>)]. should be used when you append or remove data a lot
-type Vector<t> implies CompatMustRetain, CompatMustRelease
-   = { data: CompatOwnedData<t>[] };
+type Vector<t> implements Collection<t>
+                = { data: t[], _length: U32, capacity: U32 };
 
-let .release(x: Vector<t>): Nil = (
-   if (x.data as USize) != 0 {
-      x.data.release;
-   };
-   mark-as-released(x);
+type Vector<t> implements Iterable<t>;
+
+let .length(v: Vector<t>): U64 = (
+   v._length
 );
 
-let .retain(x: Vector<t>): Vector<t> = (
-   if (x.data as USize) != 0 {
-      x.data.retain;
-   };
-   x
+let mk-vector(type: Type<t>, capacity: U64): Vector<t> = (
+   let ptr = if (capacity == 0_u64) then (0_u64 as t[]) else (safe-alloc(capacity, type(t)));
+   Vector( ptr, 0_u32, capacity as U32 )
 );
 
-
-# new allocations = 0 if capacity==0
-#                 | 1
-let mk-vector(ty: Type<t>, capacity: USize): Vector<t> = (
-   if capacity==0 then Vector(0 as CompatOwnedData<t>[]) else Vector( mk-owned-data(type(t), capacity) )
-);
-
-# new allocations = 0
 let mk-vector(ty: Type<t>): Vector<t> = (
-   mk-vector(type(t), 0)
+   mk-vector(ty, 0_u32)
 );
 
-# new allocations = 0 if capacity==0
-#                 | 1
-let mk-vector(capacity: USize): Vector<t> = (
-   if capacity==0 then Vector(0 as CompatOwnedData<t>[]) else Vector( mk-owned-data(type(t), capacity) )
-);
-
-# new allocations = 0
-let mk-vector(): Vector<t> = (
-   mk-vector(type(t), 0)
-);
-
-# new allocations = 0
-let .length(v: Vector<t>): USize = (
-   if (v.data as USize) == 0 then 0 else v.data.occupied
-);
-
-# new allocations = 0
-let $"[]"(v: Vector<t>, idx: USize): t = (
-   v.data[idx]
-);
-
-# new allocations = 1
-let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (
-   let new-data = mk-owned-data(type(t), target-capacity);
-   let dlo = 0_sz;
-   let dhi = v.length;
-   while dlo < dhi {
-      new-data.push(v[dlo]);
-      dlo = dlo + 1;
+## generate a [type(Vector<t>)], in which each element is [value]
+let fill-vector(value: t, len: U64): Vector<t> = (
+   let v = mk-vector(type(t), len);
+   while len > 0 {
+      v[len-1] = value;
+      len = len - 1;
    };
-   Vector( new-data )
-);
-
-# TODO: Vector<t> and i: t should have the same type variable and it should unify
-# new allocations = 1 if realloc is necessary
-#                 | 0
-let .push(v: Vector<t>, i: t): Vector<t> = (
-   # if this vector is a view, or if it is full, then we need to reallocate
-   if (v.data as USize)==0 or v.data.occupied==v.data.capacity {
-      let new-capacity = if v.length==0 then 4_sz
-      else (v.length >> 1_sz) + v.length; # this is mul 1.5, not 3
-      v = v.realloc(new-capacity);
-   };
-   v.data.push(i);
    v
 );
 
-# Note: this *reduces* the size of the vector, so it *never* resizes
-# There is no need to return the original vector because it never gets modified
-let .pop(v: Vector<t>): t = (
-   if v.length == 0 {
+## does not change the length length, or destroy old elements!
+let .realloc(v: Vector<t>, target-capacity: U64): Vector<t> = (
+   let newp = if (target-capacity == 0_u64) then (0_u64 as t[]) else (safe-realloc(v.data, target-capacity, type(t)));
+   Vector( newp, v.length as U32, target-capacity as U32 )
+);
+
+## reserve additional num elements to the current length
+let .reserve-additional(v: Vector<t>, additional: U64): Vector<t> = (
+   if (v.capacity - v.length) < additional as U32 {
+      v.realloc((v.length as U64) + additional)
+   } else {
+      v
+   }
+);
+
+## INPUT VECTOR GETS POISONED
+let .push(v: Vector<t>, i: t): Vector<t> = (
+   if v.length >= v.capacity {
+      let new-cap = if v.capacity == 0 {
+         4_u64
+      } else {
+         (v.length >> 1_u32) + v.length # this is mul 1.5, not 3
+      };
+      v = v.realloc(new-cap as U64);
+   };
+   v.data[v.length as U64] = i;
+   v._length = v._length + 1_u32;
+   v
+);
+
+## shrinks the vector if it has way too many elements. shouldn't be called manually
+let .shrink(v: Vector<t>): Vector<t> = (
+    let too-much = v.capacity - v.length;
+    let minimum = (v.length >> 1) + v.length; # mul 1.5
+    if too-much > minimum {
+       v = v.realloc(minimum);
+    };
+    v
+);
+
+## INPUT VECTOR GETS POISONED
+let .remove-front(v: Vector<t>, num: U64): Vector<t> = (
+    if num > v.length() {
+        fail("tried to remove \{num} elements from vector, but only have \{v.length()}");
+    };
+
+    let i = num;
+    while i < v.length() {
+        v[i-num] = v[i];
+        i = i + 1;
+    };
+    v._length = v._length - (num as U32);
+
+    v.shrink();
+);
+
+## INPUT VECTOR GETS POISONED
+let .remove-back(v: Vector<t>, num: U64): Vector<t> = (
+    if num > v.length() {
+        fail("tried to remove \{num} elements from vector, but only have \{v.length()}");
+    };
+
+    v._length = v._length - (num as U32);
+
+    v.shrink();
+);
+
+## INPUT VECTOR GETS POISONED
+let .pop-front(v: Vector<t>): Tuple<t, Vector<t>> = (
+    if v.length() == 0 {
+        fail("Tried to pop from empty Vector.");
+    };
+
+    let x = v[0];
+    v = v.remove-front(1);
+
+    Tuple ( x, v )
+);
+
+let .pop-backwards-compatible(v: Vector<t>): Tuple<t, Vector<t>> = v.pop;
+
+## INPUT VECTOR GETS POISONED
+let .pop(v: Vector<t>): Tuple<t, Vector<t>> = (
+   if v.length() == 0 {
       fail("Tried to pop from empty Vector.");
    };
-   v.data.pop
+
+   let lasti = v.length - 1;
+   let last = v[lasti as U64];
+   v = v.remove-back(1);
+
+   Tuple ( last, v )
 );
 
-# TODO: remove after dumping lib1
-let .pop-backwards-compatible(v: Vector<t>): (t, Vector<t>) = (
-   let e = v.pop();
-   (e, v)
+let .clone(self: Vector<t>): Vector<t> = (
+   self.unsafe-iter().collect(type(Vector<t>))
 );
 
-# new allocations = 0
-let cmp(x: Vector<x>, y: Vector<x>): Ord = (
-   let r = Equal;
-   if not(is(x, y)) {
-      let xi = 0_sz;
-      let yi = 0_sz;
-      while xi < x.length and yi < y.length {
-         let xycmp = cmp(x[xi], y[yi]);
-         if is(xycmp,LessThan) {
-            r = LessThan;
-            xi = x.length;
-            yi = y.length;
-         } else if is(xycmp,GreaterThan) {
-            r = GreaterThan;
-            xi = x.length;
-            yi = y.length;
-         } else {
-            xi = xi + 1;
-            yi = yi + 1;
-         }
-      };
-      if xi < x.length { r = GreaterThan };
-      if yi < y.length { r = LessThan };
+let $"[]"( v: Vector<t>, i: U64 ): t = (
+   if i >= (v.length as U64) {
+      fail("Vector Index Out of Bounds"); ()
    };
-   r
+   v.data[i]
 );
 
-# new allocations = 0
+let $"set[]"( v: Vector<t>, i: U64, val: t ): Nil = (
+   if i >= v.length {
+      fail("Vector Index Out of Bounds"); ()
+   };
+   v.data[i] = val; 
+   ()
+);
+
+# for safety, we clone the vector
+# All modifications done to the vector after creating the iterator will not be seen
+let .iter(v: Vector<t>): CollectionIteratorBase<Vector<t>,t> = (
+   v.clone().unsafe-iter()
+);
+
+# If you modify the vector after creating the iterator, weird things will happen
+let .unsafe-iter(v: Vector<t>): CollectionIteratorBase<Vector<t>,t> = (
+   v.into(type(CollectionIteratorBase<Vector<t>,t>))
+);
+
+let .reverse-self(v: Vector<t>): Nil = (
+   let i = 0_u64;
+   while i < (v.length >> 1) {
+      let ri = v.length - i - 1;
+      let temp = v[i];
+      v[i] = v[ri];
+      v[ri] = temp;
+      i = i + 1;
+   };
+);
+
 let .sort(v: Vector<t>): Vector<t> = (
    let n = v.length;
-   let i = 0_sz;
-   if n > 1 then while i < n - 1_sz {
-      let swapped = false;
-      let j = 0_sz;
-      while j < n - i - 1_sz {
-         if v[j + 1_sz] < v[j] {
+   let i = 0_u64;
+   while i < n - 1_u64 {
+      let swapped = 0_u64;
+      let j = 0_u64;
+      while j < n - i - 1_u64 {
+         if v[j + 1_u64] < v[j] {
             let tmp = v[j];
-            v[j] = v[j + 1_sz];
-            v[j + 1_sz] = tmp;
-            swapped = true;
+            v[j] = v[j + 1_u64];
+            v[j + 1_u64] = tmp;
+            swapped = 1;
          };
-         j = j + 1_sz;
+         j = j + 1_u64;
       };
-      i = i + 1_sz;
+      i = i + 1_u64;
       if not(swapped) {
          i = n;
       };
@@ -142,35 +186,66 @@ let .sort(v: Vector<t>): Vector<t> = (
    v
 );
 
-# new allocations = 1 if realloc is necessary
-#                 | 0
-let .buffer-into-cstring(v: Vector<U8>): CString = (
-   v.data.retain;
-   v.data.data as CString
+let print(v: Vector<x>): Nil = (
+   print(untern(v.into(type(String))));
 );
 
-# new allocations = 0
-let $"set[]"( v: Vector<t>, i: USize, val: t ): Nil = (
-   if i >= v.length then fail(c"Vector Index Out of Bounds");
-   v.data[i] = val;
-);
-
-# new allocations = 0
-let .reverse(v: Vector<t>): Vector<t> = (
-   let vi = 0_sz;
-   while vi < (v.length/2) {
-      let tmp = v[vi];
-      v[vi] = v[v.length - vi - 1];
-      v[v.length - vi - 1] = tmp;
-      vi = vi + 1;
+let .swap-keys-for-values(kvs: Vector<(k,v)>): Vector<(v,k)> = (
+   let swapped = mk-vector(type((v,k)));
+   for vector kv in kvs {
+      swapped = swapped.push((kv.second, kv.first));
    };
-   v
+   swapped
 );
 
-# new allocations = 0
-let .into(v: Vector<t>, tt: Type<Vector<t>>): Vector<t> = v;
+let .push-all(self: Vector<t>, val: Iterable<t>): Vector<t> = (
+   let ln = length-or-zero(val);
+   if ln != 0 {
+      self = self.reserve-additional(ln);
+   };
+   self = val.unsafe-iter().collect(self);
+   self
+);
 
-let .contains(v: Vector<t>, i: t): Bool = (
+# TODO: once we have move values, add .into() variant that does not clone the data first
+
+## does not destory input vec
+let .into(in: Vector<U8>, res: Type<CString>): CString = (
+   let out = mk-vector(type(U8), in.length+1);
+   let i = 0_u64;
+   while i < in.length { out = out.push(in[i]); i = i + 1; };
+   out = out.push(0_u8);
+   ((out.data as U8[]) as CString)
+);
+
+## does not destory input vec
+let .into(self: Vector<U8>, res: Type<String>): String = (
+   intern(self.into(type(CString)))
+);
+
+let .into(l: Iterable<t>, out: Type<Vector<t>>): Vector<t> = (
+   l.iter().collect(type(Vector<t>))
+);
+
+let .into(self: Vector<x>, tt: Type<String>): String = (
+   let rval = "[";
+   let has-item = false;
+   for vector v in self {
+      if has-item then rval = rval + ",";
+      has-item = true;
+      rval = rval + v.into(type(String));
+   };
+   rval + "]"
+);
+
+let .ptr(v: Vector<t>, toelem: U64): t[] = (
+   if toelem >= v.capacity {
+      fail("Vector.ptr() index out of capacity bounds"); ()
+   };
+   ((v.data as U64) + sizeof(t) * toelem) as t[]
+);
+
+let .contains(v: Vector<t>, i: t): U64 = (
    let result = false;
    for vector vi in v {
       if vi==i then result = true;
@@ -184,11 +259,16 @@ let deep-hash(ts: Vector<t>): U64 = (
    return;
 );
 
-let .swap-keys-for-values(kvs: Vector<(k,v)>): Vector<(v,k)> = (
-   let swapped = mk-vector(type((v,k)));
-   # TODO: fix linear variable bug
-   #for vector kv in kvs {
-   #   swapped.push((kv.second, kv.first));
-   #};
-   swapped
+# ignore, don't port to lib2
+# for compatibility in lmcommon
+let .buffer-into-string(c: Vector<U8>): Vector<U8> = c;
+
+# new allocations = 1 if realloc is necessary
+#                 | 0
+let .buffer-into-cstring(v: Vector<U8>): CString = (
+   v.into(type(CString))
 );
+
+let .release(v: Vector<x>): Nil = ();
+let .retain(v: Vector<x>): Vector<x> = v;
+

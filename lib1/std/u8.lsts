@@ -1,0 +1,33 @@
+
+declare-binop( $"!=", raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(U8), raw-type(U8), raw-type(U64), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"+", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"^", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"^"; y; l")"; ) );
+declare-binop( $"/", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"/"; y; l")"; ) );
+declare-binop( $"%", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"%"; y; l")"; ) );
+declare-binop( $"*", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"*"; y; l")"; ) );
+
+declare-unop( not, raw-type(U8), raw-type(U64), ( l"(!"; x; l")"; ) );
+
+declare-unop( into-branch-conditional, raw-type(U8), raw-type(U64), x );
+
+let print(x: U8): Nil = print(x as U64);
+
+let clone-rope(s: U8): CString = (
+   let x = safe-alloc(2, type(U8));
+   x[0] = s;
+   x[1] = 0_u8;
+   x as CString;
+);
+
+let .into(i: U8, tt: Type<String>): String = (
+   intern(to-string(i as U64))
+);
+
+let print(io: IO::File, x: U8): Nil = (fprintf(io, c"%u", x); ());
