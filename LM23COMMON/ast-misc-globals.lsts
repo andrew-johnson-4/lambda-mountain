@@ -30,3 +30,4 @@ let parse-suffixes = [] : List<(CString,Type)>;
 non-zero(parse-suffixes); # TODO remove
 
 let config-v3 = true;
+let config-v1 = false;
