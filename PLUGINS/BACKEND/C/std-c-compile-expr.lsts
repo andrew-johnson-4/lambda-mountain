@@ -105,7 +105,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                        + v.get(c"expression")
                        + SAtom(c" ") + post + SAtom(c";")
                        + SAtom(c"memset(&") + v.get(c"expression")
-                       + SAtom(c",0,sizeof ") + v.get(c"expression") + SAtom(c");")
+                       + SAtom(c",0,sizeof(") + v.get(c"expression") + SAtom(c"));")
                );
             } else {
                f = f.set(c"frame",
