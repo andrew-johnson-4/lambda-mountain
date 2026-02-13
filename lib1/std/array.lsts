@@ -24,7 +24,7 @@ let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
    while len > 0_sz {
       let ignored = ptr[0_sz];
       len = len - 1_sz;
-      ptr = ((ptr as U8[]) + (sizeof(t) as USize)) as t[];
+      ptr = ((ptr as U8[]) + 1_sz) as t[];
    };
 );
 
