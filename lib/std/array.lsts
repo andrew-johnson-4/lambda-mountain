@@ -42,7 +42,7 @@ let mark-memory-as-safe(ptr: t[], len: U64): Nil = (
    while len > 0_u64 {
       let ignored = ptr[0_u64];
       len = len - 1_u64;
-      ptr = ((ptr as U8[]) + sizeof(t)) as t[];
+      ptr = ((ptr as U8[]) + 1) as t[];
    };
 );
 

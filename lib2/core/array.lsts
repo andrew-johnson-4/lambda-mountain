@@ -22,7 +22,7 @@ let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
    while len > 0_sz {
       let ignored = ptr[0_sz];
       len = len - 1_sz;
-      ptr = ((ptr as U8[]) + (sizeof(t) as USize)) as t[];
+      ptr = ((ptr as U8[]) + 1_sz) as t[];
    };
 );
 
@@ -65,9 +65,6 @@ let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
    if new-ptr as USize == 0_sz {
       fail(c"realloc fail");
    };
-
-   # Zero Out Memory
-   memset(new-ptr as C<"void">[], 0, nb);
 
    mark-memory-as-safe(new-ptr as U8[], nb);
 
