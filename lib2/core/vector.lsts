@@ -152,6 +152,7 @@ let .buffer-into-string(v: Vector<U8>): String = (
 # new allocations = 1 if realloc is necessary
 #                 | 0
 let .buffer-into-cstring(v: Vector<U8>): CString = (
+   v.push(0);
    v.data.retain;
    v.data.data as CString
 );

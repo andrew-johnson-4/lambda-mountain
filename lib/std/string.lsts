@@ -104,10 +104,10 @@ let .get-suffix(s: String, pre: String): String = (
    s[s.length - pre.length:]
 );
 
-let head-string(x: CString): U8 = (x as U8[])[0_u64];
-let tail-string(x: CString): CString = ((x as U8[]) + 1_u64) as CString;
-let head(x: CString): U8 = (x as U8[])[0_u64];
-let tail(x: CString): CString = ((x as U8[]) + 1_u64) as CString;
+let head-string(x: CString): U8 = if (x as USize)==0 then 0_u8 else (x as U8[])[0_u64];
+let tail-string(x: CString): CString = if (x as USize)==0 then c"" else (((x as U8[]) + 1_u64) as CString);
+let head(x: CString): U8 = head-string(x);
+let tail(x: CString): CString = tail-string(x);
 
 let deep-hash(key: CString): U64 = (
    let i = 0_u64;
