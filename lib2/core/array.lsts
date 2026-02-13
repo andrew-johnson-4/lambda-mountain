@@ -66,9 +66,6 @@ let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
       fail(c"realloc fail");
    };
 
-   # Zero Out Memory
-   memset(new-ptr as C<"void">[], 0, nb);
-
    mark-memory-as-safe(new-ptr as U8[], nb);
 
    # TODO: wrap counter adjustments in conditional compilation
