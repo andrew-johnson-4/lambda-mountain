@@ -99,6 +99,7 @@ let $"[:]"(x: String, low: I64, hi: I64): String = (
 );
 
 let tail-string(x: String): String = x[ 1_i64 : x.length as I64 ];
+let tail(x: String): String = x[ 1_i64 : x.length as I64 ];
 
 let $"[]"(x: String, low: I64): U8 = (
    if low < 0 then low = (x.length as I64) + low;
@@ -113,6 +114,7 @@ let $"[]"(x: String, low: U64): U8 = (
 );
 
 let head-string(x: String): U8 = x[0_u64];
+let head(x: String): U8 = x[0_u64];
 
 let .has-suffix(base: String, sfx: String): U64 = (
    base.length >= sfx.length &&

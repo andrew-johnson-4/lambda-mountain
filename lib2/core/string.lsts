@@ -194,3 +194,6 @@ let .remove-prefix(base: String, pfx: String): String = (
    then base[ pfx.length as I64 : minimum-I64 ]
    else base
 );
+
+let tail(x: String): String = x[ 1_i64 : x.length as I64 ];
+let head(x: String): U8 = x[0];

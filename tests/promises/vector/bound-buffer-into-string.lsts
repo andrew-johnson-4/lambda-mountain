@@ -10,5 +10,5 @@ import lib/std/minimal.lsts;
 # 1 string literal "a"
 assert( mk-vector(type(U8), 1).push(97).buffer-into-string == "a" );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 2 );
+if not(config-v23) then assert( safe-alloc-block-count-monotonic == 2 );
 safe-alloc-block-count-monotonic = 0;

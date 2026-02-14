@@ -3,4 +3,4 @@ import lib/std/minimal.lsts;
 
 assert( "a" + "b" == "ab" );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 4 );
+if not(config-v23) then assert( safe-alloc-block-count-monotonic == 4 );

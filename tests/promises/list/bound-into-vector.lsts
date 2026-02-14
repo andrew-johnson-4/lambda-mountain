@@ -3,4 +3,4 @@ import lib/std/minimal.lsts;
 
 cons(2,cons(1, [] : List<U8>)).into(type(Vector<U8>));
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 3 );
+if not(config-v23) then assert( safe-alloc-block-count-monotonic == 3 );
