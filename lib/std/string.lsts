@@ -56,9 +56,10 @@ let .is-digit(base: CString): U64 = (
 );
 
 let $"[]"(base: CString, idx: U64): U8 = (
-   if idx < base.length
+   if (base as USize) == 0 then fail(c"Index Out Of Bounds in String[]");
+   else if idx < base.length
    then (base as U8[])[idx]
-   else fail("Index Out Of Bounds in String[]");
+   else fail(c"Index Out Of Bounds in String[]");
 );
 
 let .into(s: CString, tgt: Type<String>): String = intern(s);
@@ -125,11 +126,13 @@ let deep-hash(key: CString): U64 = (
 );
 
 let .length(s: CString): U64 = (
-   let si = 0_u64;
-   while (s as U8[])[si] != 0 {
-      si = si + 1;
-   };
-   si
+   if (s as USize) == 0 then 0 else {
+      let si = 0_u64;
+      while (s as U8[])[si] != 0 {
+         si = si + 1;
+      };
+      si
+   }
 );
 
 let .has-prefix(base: CString, pfx: CString): U64 = (
@@ -204,10 +207,13 @@ let .contains(base: CString, pat: CString): U64 = (
 );
 
 let $"+"(l: CString, r: CString): CString = (
+   let l_length = l.length;
+   let r_length = r.length;
    let buf = malloc(l.length + r.length + 1) as C<"char">[];
    memset(buf, 0, l.length+r.length+1); 
    strcat(buf, l as C<"char">[]);
    strcat(buf, r as C<"char">[]);
+   buf[l_length + r_length] = 0 as C<"char">;
    buf as CString
 );
 
