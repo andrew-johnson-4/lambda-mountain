@@ -1,20 +1,12 @@
 
 let typecheck(): Nil = (
-   print(c"Typecheck 1\n");
    infer-global-context-prim(ast-parsed-program);
-   print(c"Typecheck 2\n");
    infer-global-context-td(ast-parsed-program);
-   print(c"Typecheck 3\n");
    infer-global-context(ast-parsed-program);
-   print(c"Typecheck 4\n");
    assert-no-infinite-types();
-   print(c"Typecheck 5\n");
    (global-flow-tctx, ast-parsed-program) = infer-global-terms(global-flow-tctx, ast-parsed-program);
-   print(c"Typecheck 6\n");
    tctx-currently-processing-globals = false;
-   print(c"Typecheck 7\n");
    (global-flow-tctx, ast-parsed-program) = std-infer-expr(global-flow-tctx, ast-parsed-program, false, Used, ta);
-   print(c"Typecheck 8\n");
    # TODO: release globals for graceful exit
    while non-zero(stack-to-specialize) { match stack-to-specialize {
       # this can't be a normal for-loop because it gets extended during iteration
@@ -23,10 +15,7 @@ let typecheck(): Nil = (
          specialize(key, ctx, result-type, term);
       );
    }};
-   print(c"Typecheck 9\n");
    validate-interfaces();
    assert-well-typed(ast-parsed-program);
-   print(c"Typecheck 10\n");
    decorate-var-to-def();
-   print(c"Typecheck 11\n");
 );
