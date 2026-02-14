@@ -661,7 +661,7 @@ let lsts-parse-mul(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-parse-map(tokens: List<Token>): Tuple<AST,List<Token>> = (
    lsts-parse-expect(c"{", tokens); let loc = head(tokens).location; tokens = tail(tokens);
-   let term = if config-v3
+   let term = if config-v3 or config-v23
    then mk-app( Var( c"mk-hashtable", with-location(mk-token("mk-hashtable"),loc) ), mk-nil() )
    else Lit( c"HashtableEqEOF", with-location(mk-token("HashtableEqEOF"),loc) );
    if lsts-parse-head(tokens)==c"for" {

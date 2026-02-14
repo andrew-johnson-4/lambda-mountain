@@ -43,6 +43,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          c"--v0" => (config-v3 = false; config-v0 = true;);
          c"--v1" => (config-v3 = false; config-v1 = true;);
          c"--v2" => config-v3 = false;
+         c"--v23" => (config-v3 = false; config-v23 = true;);
          c"--v3" => config-v3 = true;
          c"--highlight" => (
             config-mode = ModeTokenize();
