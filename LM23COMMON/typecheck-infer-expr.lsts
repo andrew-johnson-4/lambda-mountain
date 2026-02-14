@@ -334,7 +334,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   tctx = tctx.phi-override(to-tt, from-tt, term);
                   if from-tt.is-t(c"Phi::Id",1) and from-tt.slot(c"Phi::Id",1).l1.simple-tag != to-tt.slot(c"Phi::Id",1).l1.simple-tag {
                      tctx = tctx.phi-move(from-tt, term);
-                  }
+                  };
                };
 
                rt = tctx.with-phi(rt, term);
@@ -408,6 +408,7 @@ let wrap-call(tctx: TypeContext?, fname: CString, term: AST): (TypeContext?, AST
 );
 
 let std-infer-call-arg(tctx: TypeContext?, term: AST, function-name: CString, hint: Type): (TypeContext?, AST) = (
+   let feq = function-name==c"list::cons";
    if function-name==c"list::cons" { match term {
       App{k=left, m=right} => (
          (tctx, let new-k) = std-infer-expr(tctx, k, false, Call(function-name), ta);
