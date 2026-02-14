@@ -3,4 +3,4 @@ import lib/std/minimal.lsts;
 
 assert( cons(123, [] : List<U8>).nth(0) == Some(123) );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 1 );
+if not(config-v23) then assert( safe-alloc-block-count-monotonic == 1 );

@@ -53,7 +53,7 @@ let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContex
          let ri = to-i64(clone-rope(rs));
          while li < ri {
             ri = ri - 1;
-            r = SCons( close(SAtom(to-string(ri))), close(r) );
+            r = SCons( close(SAtom(ri.into(type(CString)))), close(r) );
          }
       );
       App{ left:Var{key:c"uuid"} } => r = SAtom(uuid());
@@ -72,7 +72,7 @@ let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContex
          if typeof-term(f).is-arrow { match f {
             Var{fname=key} => (
                if fname.has-prefix(c":")
-               then r = blob-render-simple(ctx, tail-string(fname), a).second
+               then r = blob-render-simple(ctx, tail(fname), a).second
                else r = std-c-compile-call(ctx, fname, a).get(context-key);
             );
             _ => (
@@ -97,14 +97,14 @@ let blob-render(ctx: FContext, term: AST, f: Fragment): Fragment = (
       App{ left:Lit{key:c":"}, right:App{ t=left, right:AType{} } } => blob-render(ctx, t, f);
       App{ left:Var{k=key}, a=right } => (
          if k.has-prefix(c":")
-         then f.set(tail-string(k), blob-render-simple(ctx, tail-string(k), a).second)
-         else f.set(c"expression", blob-render-simple(ctx, tail-string(k), a).second)
+         then f.set(tail(k), blob-render-simple(ctx, tail(k), a).second)
+         else f.set(c"expression", blob-render-simple(ctx, tail(k), a).second)
       );
       App{ rst=left, right:App{ left:Var{k=key}, a=right } } => (
          f = blob-render(ctx, rst, f);
          if k.has-prefix(c":")
-         then f.set(tail-string(k), blob-render-simple(ctx, tail-string(k), a).second)
-         else f.set(c"expression", blob-render-simple(ctx, tail-string(k), a).second)
+         then f.set(tail(k), blob-render-simple(ctx, tail(k), a).second)
+         else f.set(c"expression", blob-render-simple(ctx, tail(k), a).second)
       );
       _ => f.set(c"expression", blob-render-simple(ctx,c"expression",term).second);
    }

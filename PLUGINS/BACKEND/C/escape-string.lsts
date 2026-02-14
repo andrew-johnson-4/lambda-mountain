@@ -1,10 +1,10 @@
 
 let escape-string(s: CString): CString = (
    let e = SNil;
-   while head-string(s) {
-      if head-string(s) == 92 {
-         s = tail-string(s);
-         match head-string(s) {
+   while head(s) {
+      if head(s) == 92 {
+         s = tail(s);
+         match head(s) {
             58 => e = e + SAtom(c";");   # \: -> ;
             91 => e = e + SAtom(c"(");   # \[ -> (
             92 => e = e + SAtom(c"\\");  # \\ -> \
@@ -16,10 +16,10 @@ let escape-string(s: CString): CString = (
             115 => e = e + SAtom(c" ");  # \s -> [space]
             c => fail("Illegal Escape Sequence In String: \{c}\n");
          };
-         s = tail-string(s);
+         s = tail(s);
       } else {
-         e = e + SAtom(clone-rope(head-string(s)));
-         s = tail-string(s);
+         e = e + SAtom(clone-rope(head(s)));
+         s = tail(s);
       }
    };
    clone-rope(e)

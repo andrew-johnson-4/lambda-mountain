@@ -51,8 +51,8 @@ let safe-alloc-impl(nb: USize): ?[] = (
    mark-memory-as-safe(ptr as U8[], nb);
 
    # TODO: wrap counter adjustments in conditional compilation
-   safe-alloc-block-count = safe-alloc-block-count + 1;
-   safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
+   if not(config-v23) then safe-alloc-block-count = safe-alloc-block-count + 1;
+   if not(config-v23) then safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
 
    ptr
 );
@@ -69,7 +69,7 @@ let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
    mark-memory-as-safe(new-ptr as U8[], nb);
 
    # TODO: wrap counter adjustments in conditional compilation
-   safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
+   if not(config-v23) then safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
 
    new-ptr
 );
@@ -94,7 +94,7 @@ let safe-free(ptr: ?[]): Nil = (
    # BEFORE CHANGING THIS: talk to alex
 
    # TODO: wrap counter adjustments in conditional compilation
-   safe-alloc-block-count = safe-alloc-block-count - 1;
+   if not(config-v23) then safe-alloc-block-count = safe-alloc-block-count - 1;
 
    free(ptr as C<"void">[]);
    ()

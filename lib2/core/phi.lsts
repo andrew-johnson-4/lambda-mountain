@@ -9,6 +9,10 @@ let :Blob mark-as-released(x: x+(MustRelease::Released ~> MustRelease::Released)
    $":frame"($":frame"(x));
    $":expression"($":expression"(x));
 );
+let :Blob mark-as-released(x: x): Nil = (
+   $":frame"($":frame"(x));
+   $":expression"($":expression"(x));
+);
 
 let :Blob destroy(x: x+MustNotRetain): Nil = (
    $":frame"();

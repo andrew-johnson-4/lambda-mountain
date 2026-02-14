@@ -3,10 +3,10 @@ import lib/std/minimal.lsts;
 
 assert( mk-hashtable(type(U8), type(U8), 0).bind(8,9)[8] == Some(9) );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 1 );
+if not(config-v23) then assert( safe-alloc-block-count-monotonic == 1 );
 safe-alloc-block-count-monotonic = 0;
 
 assert( mk-hashtable(type(U8), type(U8), 0).bind(8,9)[9] == (None : U8?) );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 1 );
+if not(config-v23) then assert( safe-alloc-block-count-monotonic == 1 );
 safe-alloc-block-count-monotonic = 0;

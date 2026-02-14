@@ -336,7 +336,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          lsts-parse-expect(c"[Type Tag]", tokens);
       };
       let base = lsts-substitute-type-aliases(lsts-parse-head(tokens)); tokens = tail(tokens);
-      if not(config-v3) and base==c"Hashtable" then base = c"HashtableEq";
+      if not(config-v3) and not(config-v23) and base==c"Hashtable" then base = c"HashtableEq";
       while non-zero(tokens) and lsts-parse-head(tokens)==c":" and lsts-parse-head(tail(tokens))==c":" {
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
@@ -361,7 +361,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          };
          lsts-parse-expect(c">", tokens); tokens = tail(tokens);
       };
-      if not(config-v3) and base==c"OwnedData" and args.length==1 {
+      if not(config-v3) and not(config-v23) and base==c"OwnedData" and args.length==1 {
          head(args);
       } else if base==c"CompatOwnedData" and args.length==1 {
          t1(c"OwnedData",head(args));
@@ -661,7 +661,7 @@ let lsts-parse-mul(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-parse-map(tokens: List<Token>): Tuple<AST,List<Token>> = (
    lsts-parse-expect(c"{", tokens); let loc = head(tokens).location; tokens = tail(tokens);
-   let term = if config-v3
+   let term = if config-v3 or config-v23
    then mk-app( Var( c"mk-hashtable", with-location(mk-token("mk-hashtable"),loc) ), mk-nil() )
    else Lit( c"HashtableEqEOF", with-location(mk-token("HashtableEqEOF"),loc) );
    if lsts-parse-head(tokens)==c"for" {

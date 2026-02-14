@@ -13,7 +13,7 @@ safe-alloc-block-count-monotonic = 0;
 
 assert( mk-hashtable(type(U8), type(U8), 123).length == 0 );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 1 );
+if not(config-v23) then assert( safe-alloc-block-count-monotonic == 1 );
 safe-alloc-block-count-monotonic = 0;
 
 assert( (mk-hashtable() : Hashtable<U8,U8>).length == 0 );
@@ -28,5 +28,5 @@ safe-alloc-block-count-monotonic = 0;
 
 assert( (mk-hashtable(123) : Hashtable<U8,U8>).length == 0 );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 1 );
+if not(config-v23) then assert( safe-alloc-block-count-monotonic == 1 );
 safe-alloc-block-count-monotonic = 0;

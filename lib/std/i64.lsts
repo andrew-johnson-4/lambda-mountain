@@ -40,6 +40,8 @@ let to-string(i: I64): CString = (
    clone-rope(sign + r);
 );
 
+let .into(i: I64, tt: Type<CString>): CString = to-string(i);
+
 let to-i64(s: CString): I64 = (
    let negative = false;
    if head-string(s)==45 {

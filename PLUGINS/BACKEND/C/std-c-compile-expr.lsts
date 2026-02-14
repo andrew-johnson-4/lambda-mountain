@@ -99,7 +99,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             f = f.set(c"expression", v.get(c"expression") + SAtom(c":"));
          } else {
             (let pre, let post) = std-c-mangle-declaration(lt, t);
-            if config-v3 or config-v1 or config-v0 {
+            if config-v3 or config-v23 or config-v1 or config-v0 {
                f = f.set(c"frame",
                          f.get(c"frame") + pre + SAtom(c" ")
                        + v.get(c"expression")
@@ -170,15 +170,15 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       Lit{val=key} => (
          let tt = typeof-term(t);
-         if tt.is-t(c"C",1) && tt.r1.is-t(c"uint8_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) && tt.r1.is-t(c"uint06_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) && tt.r1.is-t(c"uint22_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) && tt.r1.is-t(c"uint64_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) && tt.r1.is-t(c"int8_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) && tt.r1.is-t(c"int06_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) && tt.r1.is-t(c"int22_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) && tt.r1.is-t(c"int64_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) && tt.r1.is-t(c":Label",0) then mk-expression(val)
+         if tt.is-t(c"C",1) and tt.r1.is-t(c"uint8_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) and tt.r1.is-t(c"uint06_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) and tt.r1.is-t(c"uint22_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) and tt.r1.is-t(c"uint64_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) and tt.r1.is-t(c"int8_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) and tt.r1.is-t(c"int06_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) and tt.r1.is-t(c"int22_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) and tt.r1.is-t(c"int64_t",0) then mk-expression(val)
+         else if tt.is-t(c"C",1) and tt.r1.is-t(c":Label",0) then mk-expression(val)
          else if tt.is-t(c"L",0) then mk-expression(val)
          else if tt.is-t(c"CString",0) then mk-expression(val.escape-as-cstring)
          else if tt.slot(c"Array",2).l1.slot(c"C",1).l1.is-t(c"char",0) then mk-expression(val.escape-as-cstring)
@@ -190,9 +190,9 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             SAtom(c"{int return_code = regcomp(&") + SAtom(rgx-id) + SAtom(c", ") +
             val.escape-as-cstring + SAtom(c", REG_EXTENDED); if(return_code){ fprintf(stderr,\"Could not compile regex.\"); exit(1);}};\n");
             mk-expression(rgx-id);
-         } else if tt.is-datatype && tt.is-t(c"List",1) && val==c"LEOF" {
+         } else if tt.is-datatype and tt.is-t(c"List",1) and val==c"LEOF" {
             std-c-compile-call(ctx, val, typeof-term(t), mk-nil());
-         } else if tt.is-datatype && tt.is-t(c"HashtableEq",2) && val==c"HashtableEqEOF" {
+         } else if tt.is-datatype and tt.is-t(c"HashtableEq",2) and val==c"HashtableEqEOF" {
             std-c-compile-call(ctx, val, typeof-term(t), mk-nil());
          } else { match val {
             c"True" => mk-expression(c"(1)");
@@ -239,14 +239,14 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          e
       );
       App{ is-cons=is-cons, left=left, right=right } => (
-          if not(is-cons) && typeof-term(left).is-arrow {
+          if not(is-cons) and typeof-term(left).is-arrow {
              match left {
                 Var{fname=key:c"<:"} => (
                    match right {
                       App{ lt=left, rt=right } => (
                          let lt-tt = typeof-term(lt);
                          let rt-tt = typeof-term(rt);
-                         if lt-tt.is-t(c"Type",1) && rt-tt.is-t(c"Type",1)
+                         if lt-tt.is-t(c"Type",1) and rt-tt.is-t(c"Type",1)
                          then (
                             let lt-val = denormalize(lt-tt.slot(c"Type",1).l1);
                             let rt-val = denormalize(rt-tt.slot(c"Type",1).l1);
@@ -263,7 +263,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                       App{ lt=left, rt=right } => (
                          let lt-tt = typeof-term(lt);
                          let rt-tt = typeof-term(rt);
-                         if lt-tt.is-t(c"Type",1) && rt-tt <: t1(c"Type",t0(c"CString")).rewrite-type-alias
+                         if lt-tt.is-t(c"Type",1) and rt-tt <: t1(c"Type",t0(c"CString")).rewrite-type-alias
                          then (
                             let lt-val = lt-tt.slot(c"Type",1).l1.into(type(String)).into(type(CString));
                             mk-expression(lt-val.escape-as-cstring)
@@ -315,7 +315,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          mk-fragment();
       );
    };
-   if is-stmt && non-zero(f.get(c"expression")) then f = f.set(c"expression", f.get(c"expression") + SAtom(c";"));
+   if is-stmt and non-zero(f.get(c"expression")) then f = f.set(c"expression", f.get(c"expression") + SAtom(c";"));
    f.context = close(ctx);
    f.type = typeof-term(t); f
 );

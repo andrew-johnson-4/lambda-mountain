@@ -7,4 +7,4 @@ import lib/std/minimal.lsts;
 
 assert( "a" == "a" );
 assert( safe-alloc-block-count == 0 );
-assert( safe-alloc-block-count-monotonic == 2 );
+if not(config-v23) then assert( safe-alloc-block-count-monotonic == 2 );

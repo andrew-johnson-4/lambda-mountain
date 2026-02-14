@@ -1,7 +1,7 @@
 
 let mangle-identifier(k: CString): S = (
    let cs = SAtom(c"LM_");
-   while head-string(k) { match head-string(k) {
+   while head(k) != 0 { match head(k) {
       33 => cs = cs + SAtom(c"_EX_"); # !
       36 => cs = cs + SAtom(c"_DL_"); # $
       37 => cs = cs + SAtom(c"_MD_"); # %
@@ -28,7 +28,7 @@ let mangle-identifier(k: CString): S = (
       124 => cs = cs + SAtom(c"_BR_"); # |
       126 => cs = cs + SAtom(c"_TL_"); # ~
       c => cs = cs + SAtom(clone-rope(c));
-   }; k = tail-string(k); };
+   }; k = tail(k); };
    cs
 );
 

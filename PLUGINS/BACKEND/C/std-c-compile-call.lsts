@@ -29,7 +29,7 @@ let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor
          exit-error("STD C compile call is open \{fname} (\{typeof-term(args)})\n\{typeof-term(fterm)}\nArgs \{args}\n", args);
       };
       let push-args = std-c-compile-push-args(ctx, args);
-      let function-id = if typeof-term(fterm).is-t(c"FFI",0) || typeof-term(fterm).is-t(c"C-FFI",0)
+      let function-id = if typeof-term(fterm).is-t(c"FFI",0) or typeof-term(fterm).is-t(c"C-FFI",0)
                         then fname else mangle-identifier-function(fname, typeof-term(fterm));
       let ictx = mk-fragment().set(c"function-id", SAtom(function-id));
       let inner-ctx = mk-fctx().bind(c"ictx", t0(c"ImplicitContext"), ictx)
