@@ -5,8 +5,6 @@ import stdlib.h;
 import string.h;
 import regex.h;
 
-let config-v23 = false;
-
 import lib2/core/l.lsts;
 import lib2/core/phi.lsts;
 import lib2/core/platform-macros.lsts;
@@ -27,3 +25,5 @@ import lib2/core/cstring.lsts;
 import lib2/core/array.lsts;
 import lib2/core/io.lsts;
 import lib2/core/cmp.lsts;
+
+let config-v23 = false;

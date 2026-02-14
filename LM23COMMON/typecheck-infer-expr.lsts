@@ -428,7 +428,7 @@ let std-infer-call-arg(tctx: TypeContext?, term: AST, function-name: CString, hi
    }} else if function-name==c"map::cons" { match term {
       App{k=left, m=right} => (
          (tctx, let new-k) = std-infer-expr(tctx, k, false, Call(function-name), ta);
-         let direct-hint = if config-v3
+         let direct-hint = if config-v3 or config-v23
          then t2(c"Hashtable",typeof-term(new-k).normalize.slot(c"Cons",2).l1,typeof-term(new-k).normalize.slot(c"Cons",2).l2) && t0(c"ReturnHint")
          else t2(c"HashtableEq",typeof-term(new-k).normalize.slot(c"Cons",2).l1,typeof-term(new-k).normalize.slot(c"Cons",2).l2);
          (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), direct-hint);
