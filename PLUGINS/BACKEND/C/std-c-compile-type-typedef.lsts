@@ -66,7 +66,7 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
             if case-tag!=c"" and case-fields.length > 0 {
                assemble-types-section = assemble-types-section + SAtom(c"    struct {\n");
                for vector Tuple{field-name=first, field-type=second} in case-fields {
-                  let mangled-field-name = to-string(case-number) + c"_" + field-name;
+                  let mangled-field-name = case-number.into(type(CString)) + c"_" + field-name;
                   field-type = tctx.substitute(field-type);
                   (let pre-tt, let post-tt) = std-c-mangle-declaration(field-type, td);
                   assemble-types-section = assemble-types-section + SAtom(c"      ") + pre-tt + SAtom(c" ") + mangle-identifier(mangled-field-name) + post-tt + SAtom(c";\n");

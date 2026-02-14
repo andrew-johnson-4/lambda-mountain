@@ -1,5 +1,5 @@
 
-let std-c-compile-destructure-args(ctx: FContext, lhs: AST, is-fragment: U64): FContext = (
+let std-c-compile-destructure-args(ctx: FContext, lhs: AST, is-fragment: Bool): FContext = (
    match lhs {
       App{ rst=left, right:App{ left:Lit{key:c":"}, right:App{ lhs-v=left:Var{k=key}, right:AType{kt=tt} } } } => (
          ctx = std-c-compile-destructure-args(ctx, rst, is-fragment);

@@ -32,10 +32,6 @@ let .into(i: I64, tt: Type<String>): String = (
    String(0 as USize, cs-length, od)
 );
 
-let .into(i: U64, tt: Type<CString>): CString = (
-   i.into(type(String)).into(type(CString))
-);
-
 let .into(i: U64, tt: Type<String>): String = (
    let od = mk-owned-data(type(U8), 20_sz);
    let cs-length = 0_sz;
@@ -135,3 +131,8 @@ let read-file(fp: CString): CString = (
    let v = read-binary-file-to(mk-vector(type(U8)), fp);
    v.buffer-into-string.into(type(CString))
 );
+
+let .into(i: x, tt: Type<CString>): CString = (
+   i.into(type(String)).into(type(CString))
+);
+

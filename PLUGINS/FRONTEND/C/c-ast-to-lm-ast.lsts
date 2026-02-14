@@ -608,7 +608,7 @@ let std-c-decorate-pointer(tt: Type, ptr: CTerm): Type = (
 
 let std-c-type-of-integer(i: String): Type = (
    if i.has-prefix("-") {
-      let n = to-u64(untern(tail-string(i)));
+      let n = to-u64(untern(tail(i)));
       if n <= 128 then t1(c"C",t0(c"uint8_t")) else
       if n <= 32768 then t1(c"C",t0(c"uint06_t")) else
       if n <= 2147483648 then t1(c"C",t0(c"uint22_t")) else
