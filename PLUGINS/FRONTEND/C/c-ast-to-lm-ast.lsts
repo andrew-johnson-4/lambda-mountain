@@ -1,5 +1,5 @@
 
-let std-c-declare-dedup-index = {} : HashtableEq<String,Bool>;
+let std-c-declare-dedup-index = {} : Hashtable<String,Bool>;
 
 let std-c-declare(t: CTerm): Nil = (
    match t {

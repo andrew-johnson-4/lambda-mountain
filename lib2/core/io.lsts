@@ -12,3 +12,9 @@ let file-exists(fp: CString): Bool = (
    };
    exists
 );
+
+let write-file(fp: CString, contents: CString): Nil = (
+   let f = fopen(fp, c"w");
+   fwrite(contents as C<"void">[], 1, contents.length, f);
+   fclose(f); ()
+);

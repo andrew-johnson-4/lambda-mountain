@@ -647,7 +647,7 @@ let std-c-parse-enumerator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<To
    e
 );
 
-let std-c-enumeration-constant-index = {} : HashtableEq<String,Bool>;
+let std-c-enumeration-constant-index = {} : Hashtable<String,Bool>;
 
 let std-c-parse-enumerator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = (None : Maybe<CTerm>)();
@@ -697,7 +697,7 @@ let std-c-parse-specifier-qualifier(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
    sq
 );
 
-let std-c-typedef-name-index = {} : HashtableEq<String,Bool>;
+let std-c-typedef-name-index = {} : Hashtable<String,Bool>;
 
 # some C things are non-standard but still just hard-coded
 std-c-typedef-name-index = std-c-typedef-name-index.bind("__builtin_va_list", true);

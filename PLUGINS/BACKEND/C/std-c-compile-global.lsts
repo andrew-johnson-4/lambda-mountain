@@ -1,5 +1,5 @@
 
-let std-c-force-imports = {} : HashtableEq<CString,Bool>;
+let std-c-force-imports = {} : Hashtable<CString,Bool>;
 
 let std-c-force-import-clib(lib: CString): Nil = (
    std-c-force-imports = std-c-force-imports.bind(lib, true);
@@ -37,12 +37,12 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    else if k==c"bsearch" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"qsort" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"__compar_fn_t" then std-c-force-import-clib(c"stdlib.h")
-   else if typeof-term(term).is-open || typeof-term(term).is-t(c"Blob",0) || typeof-term(term).is-t(c"FFI",0) || typeof-term(term).is-t(c"Prop",0) then ()
-   else if k==c"main" && not(non-zero(compile-global-c-main-term)) then {
+   else if typeof-term(term).is-open or typeof-term(term).is-t(c"Blob",0) or typeof-term(term).is-t(c"FFI",0) or typeof-term(term).is-t(c"Prop",0) then ()
+   else if k==c"main" and not(non-zero(compile-global-c-main-term)) then {
       compile-global-c-main-term = term;
    } else match term {
       App{left:Lit{key:c":"}, right:App{left:ASTNil{}, right:AType{tt=tt}}} => (
-         if not(tt.is-t(c"C-FFI",0)) && not(tt.is-t(c"C-Fragment",0)) {
+         if not(tt.is-t(c"C-FFI",0)) and not(tt.is-t(c"C-Fragment",0)) {
             let clean-tt = typeof-term(term).weaken.without-phi;
             k = mangle-identifier(k, clean-tt);
          };
@@ -53,14 +53,14 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom(k);
          text = text + post-decl;
          text = text + SAtom(c";\n");
-         if can-unify(t1(c"C",t0(c"typedef")), tt) || can-unify(t2(c"Array",t1(c"C",t0(c"typedef")),ta), tt) {
+         if can-unify(t1(c"C",t0(c"typedef")), tt) or can-unify(t2(c"Array",t1(c"C",t0(c"typedef")),ta), tt) {
             assemble-header-typedef-section = assemble-header-typedef-section + text;
          } else {
             assemble-gdecl-section = assemble-gdecl-section + text;
          }
       );
       App{left:Lit{key:c":"}, right:App{t=left, right:AType{tt=tt}}} => (
-         if not(tt.is-t(c"C-FFI",0)) && not(tt.is-t(c"C-Fragment",0)) {
+         if not(tt.is-t(c"C-FFI",0)) and not(tt.is-t(c"C-Fragment",0)) {
             let clean-tt = typeof-term(term).weaken.without-phi;
             k = mangle-identifier(k, clean-tt);
          };
@@ -84,7 +84,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             text = text + SAtom(c";\n");
 
             let inner-expr = std-c-compile-expr( ctx, t, false );
-            if can-unify(t1(c"C",t0(c"typedef")), tt) || can-unify(t2(c"Array",t1(c"C",t0(c"typedef")),ta), tt) {
+            if can-unify(t1(c"C",t0(c"typedef")), tt) or can-unify(t2(c"Array",t1(c"C",t0(c"typedef")),ta), tt) {
                assemble-header-typedef-section = assemble-header-typedef-section + text;
             } else {
                assemble-gdecl-section = assemble-gdecl-section + text;
@@ -94,7 +94,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          }
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => (
-         if k!=c"main" && not(typeof-term(term).is-t(c"C-FFI_s",0)) {
+         if k!=c"main" and not(typeof-term(term).is-t(c"C-FFI_s",0)) {
             k = mangle-identifier-function(k, typeof-term(term).without-phi);
          };
          ctx = std-c-compile-destructure-args( ctx, lhs, false );
@@ -103,9 +103,9 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             App{ left:Lit{key:c":"}, right:App{ left:ASTNil{}, right:AType{asc-tt=tt} } } => asc-tt.is-t(c"Nil",0);
             _ => true;
          };
-         if initialized || can-unify(t1(c"C",t0(c"typedef")), tt) {
+         if initialized or can-unify(t1(c"C",t0(c"typedef")), tt) {
             let text = SNil();
-            if not(config-strip-debug) && loc.filename != c"Unknown" {
+            if not(config-strip-debug) and loc.filename != c"Unknown" {
                text = text + SAtom(c"\n#line ");
                text = text + SAtom(to-string(loc.line));
                text = text + SAtom(c" \"");
@@ -128,7 +128,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
 
          if initialized {
             let text = SNil();
-            if not(config-strip-debug) && loc.filename != c"Unknown" {
+            if not(config-strip-debug) and loc.filename != c"Unknown" {
                text = text + SAtom(c"\n#line ");
                text = text + SAtom(to-string(loc.line));
                text = text + SAtom(c" \"");
@@ -153,7 +153,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
       );
       t => (
          let tt = typeof-term(term);
-         if not(typeof-term(term).is-t(c"C-FFI",0)) && not(tt.is-t(c"C-Fragment",0)) {
+         if not(typeof-term(term).is-t(c"C-FFI",0)) and not(tt.is-t(c"C-Fragment",0)) {
             k = mangle-identifier(k, tt.without-phi);
          };
 
