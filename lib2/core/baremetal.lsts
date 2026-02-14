@@ -26,4 +26,4 @@ import lib2/core/array.lsts;
 import lib2/core/io.lsts;
 import lib2/core/cmp.lsts;
 
-let config-v23 = false;
+let config-v23 = true;

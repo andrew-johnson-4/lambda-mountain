@@ -29,6 +29,7 @@ let print-toks-json(fp: CString): Nil = (
 let show-alloc-count = false;
 
 let main(argc: C_int, argv: CString[]): Nil = (
+   config-v23 = false;
    let argi = 1_sz;
    let input = [] : List<CString>;
    let highlight = false;
