@@ -19,6 +19,14 @@ let std-c-compile-type-typedef(td: AST): Nil = (
    }};
 );
 
+# TODO:
+# Problem:
+# * Need to recurse to visit concrete types of fields
+# Solution:
+# * index typedefs so that they can be found from just the lhs-type.ground-tag-and-arity
+# * remove need to capture the AST here
+# * TBD
+
 let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type: Type, td: AST): Nil = (
    match td { Typedef{} => (); _ => (fail("Invalid compile type \{concrete-type} \{td}\n"); ()); };
    let location = (td as Tag::Typedef).location;

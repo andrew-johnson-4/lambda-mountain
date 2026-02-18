@@ -1,5 +1,6 @@
 
 let index-typedef-fields = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
+let index-typedef = {} : Hashtable<(CString,U64),AST>;
 
 let index-typedefs(program: AST): Nil = (
    for vector def in program.unroll-seq { match def {
@@ -22,7 +23,8 @@ let index-typedefs(program: AST): Nil = (
                fields-types = fields-types.push((lhs-type,case-field.second));
                index-typedef-fields = index-typedef-fields.bind(lhs-type.ground-tag-and-arity,fields-types);
             }
-         }
+         };
+         index-typedef = index-typedef.bind(lhs-type.ground-tag-and-arity, def);
       );
       _ => ();
    }}
