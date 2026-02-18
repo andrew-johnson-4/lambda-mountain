@@ -1,18 +1,26 @@
 
+let index-typedef-fields = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
+
 let index-typedefs(program: AST): Nil = (
    for vector def in program.unroll-seq { match def {
       Typedef{} => (
+         let lhs-type = (def as Tag::Typedef).lhs-type;
          let cases = (def as Tag::Typedef).cases;
          let has-cases = false;
-         for vector case-fields in cases {
-            if non-zero(case-fields.first) {
+         let fields = mk-vector(type((Type,Type)));
+         for vector case in cases {
+            if non-zero(case.first) {
                has-cases = true;
-               index-index-of-tag(case-fields.first, 0);
-               if case-fields.second.length == 0 then index-lone-tag(case-fields.first);
+               index-index-of-tag(case.first, 0);
+               if case.second.length == 0 then index-lone-tag(case.first);
             };
             if not(has-cases) {
-               let lhs-type = (def as Tag::Typedef).lhs-type;
                index-index-of-tag(lhs-type.simple-tag, 0);
+            };
+            for vector case-field in case.second {
+               let fields-types = index-typedef-fields.lookup(lhs-type.ground-tag-and-arity, mk-vector(type((Type,Type))));
+               fields-types = fields-types.push((lhs-type,case-field.second));
+               index-typedef-fields = index-typedef-fields.bind(lhs-type.ground-tag-and-arity,fields-types);
             }
          }
       );
