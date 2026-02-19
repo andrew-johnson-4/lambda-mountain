@@ -24,7 +24,7 @@ let index-typedefs(program: AST): Nil = (
                index-typedef-fields = index-typedef-fields.bind(lhs-type.ground-tag-and-arity,fields-types);
             }
          };
-         index-typedef = index-typedef.bind(lhs-type.ground-tag-and-arity, def);
+         if cases.length>0 then index-typedef = index-typedef.bind(lhs-type.ground-tag-and-arity, def);
       );
       _ => ();
    }}
