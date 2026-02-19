@@ -12,14 +12,16 @@ let std-c-compile-type-typedef(td: AST): Nil = (
 
    if cases.length > 0 {
    for vector concrete-type in concrete-type-instances-index.lookup(lhs-type.ground-tag-and-arity, mk-vector(type(Type))) {
-      assemble-header-section = assemble-header-section + SAtom(c"typedef struct ") + std-c-mangle-type(concrete-type, td)
-                              + SAtom(c" ") + std-c-mangle-type(concrete-type, td) + SAtom(c";\n");
       let tctx = unify(lhs-type, concrete-type, td);
-      continue-compile-c-typedefs-concrete = cons( (tctx, concrete-type, td), continue-compile-c-typedefs-concrete );
+      continue-compile-c-typedefs-concrete = cons( (tctx, concrete-type), continue-compile-c-typedefs-concrete );
    }};
 );
 
-let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type: Type, td: AST): Nil = (
+let concrete-typedef-compiled-index = {} : Hashtable<Type,Bool>;
+
+let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type: Type): Nil = (
+   concrete-type = concrete-type.with-only-datatype;
+   let td = index-typedef.lookup(concrete-type.ground-tag-and-arity, mk-eof());
    match td { Typedef{} => (); _ => (fail("Invalid compile type \{concrete-type} \{td}\n"); ()); };
    let location = (td as Tag::Typedef).location;
    let implements = (td as Tag::Typedef).implements;
@@ -38,10 +40,15 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
          }
       }
    };
-   if is-incomplete {
-      continue-compile-c-typedefs-concrete = cons( (tctx, concrete-type, td), continue-compile-c-typedefs-concrete );
+   if concrete-typedef-compiled-index.lookup(concrete-type,false) or cases.length==0 {
+   } else if is-incomplete {
+      continue-compile-c-typedefs-concrete = cons( (tctx, concrete-type), continue-compile-c-typedefs-concrete );
    } else {
+      concrete-typedef-compiled-index = concrete-typedef-compiled-index.bind(concrete-type, true);
       is-cstruct-hard-compiled-index = is-cstruct-hard-compiled-index.bind(concrete-type, 1_u64);
+
+      assemble-header-section = assemble-header-section + SAtom(c"typedef struct ") + std-c-mangle-type(concrete-type, td)
+                              + SAtom(c" ") + std-c-mangle-type(concrete-type, td) + SAtom(c";\n");
 
       assemble-types-section = assemble-types-section + SAtom(c"struct ") + std-c-mangle-type(concrete-type, td) + SAtom(c"{\n");
       
@@ -78,6 +85,38 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
          assemble-types-section = assemble-types-section + SAtom(c"  };\n");
       };
       assemble-types-section = assemble-types-section + SAtom(c"};\n");
+
+      for vector Tuple{case-tag=first, case-fields=second} in cases {
+         for vector Tuple{field-name=first, field-type=second} in case-fields {
+            let closed-field-type = tctx.substitute(field-type);
+
+            match closed-field-type {
+               TGround{tag:c"Array", parameters:[cp2..cp1..]} => (
+                  let field-td = index-typedef.lookup(cp1.ground-tag-and-arity,mk-eof());
+                  let field-lhs-type = match field-td { Typedef{field-lhs-type=lhs-type} => field-lhs-type; _ => ta; };
+                  if non-zero(field-lhs-type) {
+                    let field-tctx = unify(field-lhs-type, cp1, field-td);
+                    continue-compile-c-typedefs-concrete = cons( (field-tctx, cp1.rewrite-type-alias), continue-compile-c-typedefs-concrete );
+                  };
+
+                  field-td = index-typedef.lookup(cp2.ground-tag-and-arity,mk-eof());
+                  field-lhs-type = match field-td { Typedef{field-lhs-type2=lhs-type} => field-lhs-type2; _ => ta; };
+                  if non-zero(field-lhs-type) {
+                    let field-tctx = unify(field-lhs-type, cp2, field-td);
+                    continue-compile-c-typedefs-concrete = cons( (field-tctx, cp2.rewrite-type-alias), continue-compile-c-typedefs-concrete );
+                  };
+               );
+               _ => (
+                  let field-td = index-typedef.lookup(closed-field-type.ground-tag-and-arity,mk-eof());
+                  let field-lhs-type = match field-td { Typedef{field-lhs-type=lhs-type} => field-lhs-type; _ => ta; };
+                  if non-zero(field-lhs-type) {
+                    let field-tctx = unify(field-lhs-type, closed-field-type, field-td);
+                    continue-compile-c-typedefs-concrete = cons( (field-tctx, closed-field-type.rewrite-type-alias), continue-compile-c-typedefs-concrete );
+                  };
+               );
+            };
+         };
+      };
    };
 );
 
@@ -98,13 +137,13 @@ let is-incomplete-typedef(tt: Type, is-flexible-array-member: U64): U64 = (
    }
 );
 
-let continue-compile-c-typedefs-concrete = [] : List<(TypeContext?,Type,AST)>;
+let continue-compile-c-typedefs-concrete = [] : List<(TypeContext?,Type)>;
 let continue-compile-c-typedefs-count = 0_u64;
 let is-cstruct-hard-compiled-index = {} : Hashtable<Type,U64>;
 
 let try-continue-compile-c-typedefs(): Nil = (
    let continue = continue-compile-c-typedefs-concrete;
-   continue-compile-c-typedefs-concrete = [] : List<(TypeContext?,Type,AST)>;
+   continue-compile-c-typedefs-concrete = [] : List<(TypeContext?,Type)>;
    while non-zero(continue) {
       continue-compile-c-typedefs-count = continue-compile-c-typedefs-count + 1;
       if continue-compile-c-typedefs-count > 200
@@ -115,10 +154,10 @@ let try-continue-compile-c-typedefs(): Nil = (
          };
          exit(1);
       );
-      for list Tuple{tctx=first, base-type=second, body=third} in continue {
-         if not(base-type.is-open) then std-c-compile-type-typedef-concrete(tctx, base-type, body);
+      for list Tuple{tctx=first, base-type=second} in continue {
+         if not(base-type.is-open) then std-c-compile-type-typedef-concrete(tctx, base-type);
       };
       continue = continue-compile-c-typedefs-concrete;
-      continue-compile-c-typedefs-concrete = [] : List<(TypeContext?,Type,AST)>;
+      continue-compile-c-typedefs-concrete = [] : List<(TypeContext?,Type)>;
    }
 );
