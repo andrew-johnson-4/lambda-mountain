@@ -21,7 +21,6 @@ let concrete-typedef-compiled-index = {} : Hashtable<Type,Bool>;
 
 let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type: Type): Nil = (
    concrete-type = concrete-type.with-only-datatype;
-   print("Try visit \{concrete-type}\n");
    let td = index-typedef.lookup(concrete-type.ground-tag-and-arity, mk-eof());
    match td { Typedef{} => (); _ => (fail("Invalid compile type \{concrete-type} \{td}\n"); ()); };
    let location = (td as Tag::Typedef).location;
@@ -90,7 +89,6 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
       for vector Tuple{case-tag=first, case-fields=second} in cases {
          for vector Tuple{field-name=first, field-type=second} in case-fields {
             let closed-field-type = tctx.substitute(field-type);
-            print("Visit closed field type \{concrete-type} \{closed-field-type}\n");
 
             match closed-field-type {
                TGround{tag:c"Array", parameters:[cp2..cp1..]} => (
@@ -98,14 +96,14 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
                   let field-lhs-type = match field-td { Typedef{field-lhs-type=lhs-type} => field-lhs-type; _ => ta; };
                   if non-zero(field-lhs-type) {
                     let field-tctx = unify(field-lhs-type, cp1, field-td);
-                    continue-compile-c-typedefs-concrete = cons( (field-tctx, cp1), continue-compile-c-typedefs-concrete );
+                    continue-compile-c-typedefs-concrete = cons( (field-tctx, cp1.rewrite-type-alias), continue-compile-c-typedefs-concrete );
                   };
 
                   field-td = index-typedef.lookup(cp2.ground-tag-and-arity,mk-eof());
                   field-lhs-type = match field-td { Typedef{field-lhs-type2=lhs-type} => field-lhs-type2; _ => ta; };
                   if non-zero(field-lhs-type) {
                     let field-tctx = unify(field-lhs-type, cp2, field-td);
-                    continue-compile-c-typedefs-concrete = cons( (field-tctx, cp2), continue-compile-c-typedefs-concrete );
+                    continue-compile-c-typedefs-concrete = cons( (field-tctx, cp2.rewrite-type-alias), continue-compile-c-typedefs-concrete );
                   };
                );
                _ => (
@@ -113,7 +111,7 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
                   let field-lhs-type = match field-td { Typedef{field-lhs-type=lhs-type} => field-lhs-type; _ => ta; };
                   if non-zero(field-lhs-type) {
                     let field-tctx = unify(field-lhs-type, closed-field-type, field-td);
-                    continue-compile-c-typedefs-concrete = cons( (field-tctx, closed-field-type), continue-compile-c-typedefs-concrete );
+                    continue-compile-c-typedefs-concrete = cons( (field-tctx, closed-field-type.rewrite-type-alias), continue-compile-c-typedefs-concrete );
                   };
                );
             };
