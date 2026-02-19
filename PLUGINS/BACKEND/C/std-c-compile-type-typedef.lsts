@@ -85,16 +85,37 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
          assemble-types-section = assemble-types-section + SAtom(c"  };\n");
       };
       assemble-types-section = assemble-types-section + SAtom(c"};\n");
+
       for vector Tuple{case-tag=first, case-fields=second} in cases {
          for vector Tuple{field-name=first, field-type=second} in case-fields {
             let closed-field-type = tctx.substitute(field-type);
-            let field-td = index-typedef.lookup(field-type.ground-tag-and-arity,mk-eof());
-            let field-lhs-type = match field-td { Typedef{field-lhs-type=lhs-type} => field-lhs-type; _ => ta; };
-            if non-zero(field-lhs-type) {
-               let index-typedef = {} : Hashtable<(CString,U64),AST>;
-               let field-tctx = unify(field-lhs-type, closed-field-type, field-td);
-               continue-compile-c-typedefs-concrete = cons( (field-tctx, closed-field-type), continue-compile-c-typedefs-concrete );
-            }
+            print("Visit closed field type \{concrete-type} \{closed-field-type}\n");
+
+            match closed-field-type {
+               TGround{tag:c"Array", parameters:[cp2..cp1..]} => (
+                  let field-td = index-typedef.lookup(cp1.ground-tag-and-arity,mk-eof());
+                  let field-lhs-type = match field-td { Typedef{field-lhs-type=lhs-type} => field-lhs-type; _ => ta; };
+                  if non-zero(field-lhs-type) {
+                    let field-tctx = unify(field-lhs-type, cp1, field-td);
+                    continue-compile-c-typedefs-concrete = cons( (field-tctx, cp1), continue-compile-c-typedefs-concrete );
+                  };
+
+                  field-td = index-typedef.lookup(cp2.ground-tag-and-arity,mk-eof());
+                  field-lhs-type = match field-td { Typedef{field-lhs-type2=lhs-type} => field-lhs-type2; _ => ta; };
+                  if non-zero(field-lhs-type) {
+                    let field-tctx = unify(field-lhs-type, cp2, field-td);
+                    continue-compile-c-typedefs-concrete = cons( (field-tctx, cp2), continue-compile-c-typedefs-concrete );
+                  };
+               );
+               _ => (
+                  let field-td = index-typedef.lookup(closed-field-type.ground-tag-and-arity,mk-eof());
+                  let field-lhs-type = match field-td { Typedef{field-lhs-type=lhs-type} => field-lhs-type; _ => ta; };
+                  if non-zero(field-lhs-type) {
+                    let field-tctx = unify(field-lhs-type, closed-field-type, field-td);
+                    continue-compile-c-typedefs-concrete = cons( (field-tctx, closed-field-type), continue-compile-c-typedefs-concrete );
+                  };
+               );
+            };
          };
       };
    };
