@@ -17,14 +17,6 @@ let std-c-compile-type-typedef(td: AST): Nil = (
    }};
 );
 
-# TODO:
-# Problem:
-# * Need to recurse to visit concrete types of fields
-# Solution:
-# * index typedefs so that they can be found from just the lhs-type.ground-tag-and-arity
-# * remove need to capture the AST here
-# * TBD
-
 let concrete-typedef-compiled-index = {} : Hashtable<Type,Bool>;
 
 let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type: Type): Nil = (
@@ -88,21 +80,23 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
                };
                assemble-types-section = assemble-types-section + SAtom(c"    };\n");
             };
-            for vector Tuple{field-name=first, field-type=second} in case-fields {
-               let closed-field-type = tctx.substitute(field-type);
-               let field-td = index-typedef.lookup(field-type.ground-tag-and-arity,mk-eof());
-               let field-lhs-type = match field-td { Typedef{field-lhs-type=lhs-type} => field-lhs-type; _ => ta; };
-               if non-zero(field-lhs-type) {
-                  let index-typedef = {} : Hashtable<(CString,U64),AST>;
-                  let field-tctx = unify(field-lhs-type, closed-field-type, field-td);
-                  continue-compile-c-typedefs-concrete = cons( (field-tctx, closed-field-type), continue-compile-c-typedefs-concrete );
-               }
-            };
             case-number = case-number + 1;
          };
          assemble-types-section = assemble-types-section + SAtom(c"  };\n");
       };
       assemble-types-section = assemble-types-section + SAtom(c"};\n");
+      for vector Tuple{case-tag=first, case-fields=second} in cases {
+         for vector Tuple{field-name=first, field-type=second} in case-fields {
+            let closed-field-type = tctx.substitute(field-type);
+            let field-td = index-typedef.lookup(field-type.ground-tag-and-arity,mk-eof());
+            let field-lhs-type = match field-td { Typedef{field-lhs-type=lhs-type} => field-lhs-type; _ => ta; };
+            if non-zero(field-lhs-type) {
+               let index-typedef = {} : Hashtable<(CString,U64),AST>;
+               let field-tctx = unify(field-lhs-type, closed-field-type, field-td);
+               continue-compile-c-typedefs-concrete = cons( (field-tctx, closed-field-type), continue-compile-c-typedefs-concrete );
+            }
+         };
+      };
    };
 );
 
