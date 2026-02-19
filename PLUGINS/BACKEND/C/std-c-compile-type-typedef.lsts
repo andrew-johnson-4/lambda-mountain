@@ -20,6 +20,7 @@ let std-c-compile-type-typedef(td: AST): Nil = (
 let concrete-typedef-compiled-index = {} : Hashtable<Type,Bool>;
 
 let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type: Type): Nil = (
+   concrete-type = concrete-type.with-only-datatype;
    print("Try visit \{concrete-type}\n");
    let td = index-typedef.lookup(concrete-type.ground-tag-and-arity, mk-eof());
    match td { Typedef{} => (); _ => (fail("Invalid compile type \{concrete-type} \{td}\n"); ()); };
