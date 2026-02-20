@@ -101,11 +101,6 @@ let $"[:]"(x: String, low: I64, hi: I64): String = (
 let tail-string(x: String): String = x[ 1_i64 : x.length as I64 ];
 let tail(x: String): String = x[ 1_i64 : x.length as I64 ];
 
-let $"[]"(x: String, low: I64): U8 = (
-   if low < 0 then low = (x.length as I64) + low;
-   x[low as U64]
-);
-
 let $"[]"(x: String, low: U64): U8 = (
    let lowp = x.start + low;
    if lowp < x.start then fail("Index Out Of Bounds: String []");

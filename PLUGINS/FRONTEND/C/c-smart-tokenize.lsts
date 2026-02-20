@@ -100,7 +100,7 @@ let std-c-tokenize-string(file-path: String, text: String): List<Token> = (
          text = rest;
       );
 
-      rest => ( fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0_u64])}"); );
+      rest => ( fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0])}"); );
    }; };
 
    let internal-tokens = [] : List<Token>;

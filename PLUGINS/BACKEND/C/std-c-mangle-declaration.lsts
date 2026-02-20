@@ -13,19 +13,19 @@ let std-c-mangle-declaration(tt: Type, blame: AST): Tuple<S,S> = (
 
 let std-c-mangle-declaration-internal(tt: Type, blame: AST): Tuple<S,S> = std-c-mangle-declaration-internal(tt, false, blame);
 
-let std-c-mangle-declaration-internal(tt: Type, is-flexible-array-member: U64, blame: AST): Tuple<S,S> = (
+let std-c-mangle-declaration-internal(tt: Type, is-flexible-array-member: Bool, blame: AST): Tuple<S,S> = (
    match tt {
       TGround{tag:c"Array", parameters:[ TGround{tag:c"CONST"}.. array-base.. ]} => (
          let rest = std-c-mangle-declaration-internal(array-base, false, blame);
          ( rest.first, rest.second + SAtom(c"[]") )
       );
-      TGround{tag:c"Array", parameters:[ TGround{tag:c"C",parameters:[TGround{width=tag}..]}.. array-base.. ]} => (
+      TGround{tag:c"Array", parameters:[ TGround{tag:c"C",parameters:[TGround{width1=tag}..]}.. array-base.. ]} => (
          let rest = std-c-mangle-declaration-internal(array-base, false, blame);
-         ( rest.first, rest.second + SAtom(c"[") + SAtom(width) + SAtom(c"]") )
+         ( rest.first, rest.second + SAtom(c"[") + SAtom(width1) + SAtom(c"]") )
       );
-      TGround{tag:c"Array", parameters:[ TGround{width=tag}.. array-base.. ]} => (
+      TGround{tag:c"Array", parameters:[ TGround{width2=tag}.. array-base.. ]} => (
          let rest = std-c-mangle-declaration-internal(array-base, false, blame);
-         ( rest.first, rest.second + SAtom(c"[") + SAtom(width) + SAtom(c"]") )
+         ( rest.first, rest.second + SAtom(c"[") + SAtom(width2) + SAtom(c"]") )
       );
       TGround{tag:c"Array", parameters:[ TAny{}.. array-base.. ]} => (
          if is-flexible-array-member {

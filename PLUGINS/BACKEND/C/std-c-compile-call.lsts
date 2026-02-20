@@ -3,7 +3,7 @@ let std-c-compile-call(ctx: FContext, fname: CString, args: AST): Fragment = std
 
 let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor: Type, args: AST): Fragment = (
    let fterm = Some(mk-tctx()).maybe-find-callable(fname, typeof-term(args), args, return-hint-if-constructor)
-                              .expect("std-c-compile-call Function \{fname} was null\nArguments: \{typeof-term(args)}, Return Hint \{return-hint-if-constructor}\n").blame-or-zero;
+                              .expect("std-c-compile-call Function \{fname} was null\nArguments: \{typeof-term(args)}, Return Hint \{return-hint-if-constructor}\nAt \{args.location}\n").blame-or-zero;
    if typeof-term(fterm).is-t(c"Blob",0) {
       if typeof-term(fterm).is-open and fname!=c"open" and fname!=c"mov" then {
          for list tr in Some(mk-tctx()).lookups(fname) {

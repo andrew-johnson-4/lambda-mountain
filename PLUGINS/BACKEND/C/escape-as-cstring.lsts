@@ -2,21 +2,21 @@
 let .escape-as-cstring(in: CString): S = (
    let out = (SNil());
    while non-zero(in) { match in {
-      c"\""..  rest => (out = out + SAtom(c"\\\\\""); in = rest;);
-      c"\\:"..  rest => (out = out + SAtom(c";"); in = rest;);
-      c"\\["..  rest => (out = out + SAtom(c"("); in = rest;);
-      c"\\]"..  rest => (out = out + SAtom(c")"); in = rest;);
-      c"\\\\".. rest => (out = out + SAtom(c"\\\\\\\\"); in = rest;);
-      c"\\`"..  rest => (out = out + SAtom(c"'"); in = rest;);
-      c"\\l"..  rest => (out = out + SAtom(c"λ"); in = rest;);
-      c"\\n"..  rest => (out = out + SAtom(c"\\\\n"); in = rest;);
-      c"\\o"..  rest => (out = out + SAtom(c"#"); in = rest;);
-      c"\\s"..  rest => (out = out + SAtom(c" "); in = rest;);
-      c"\\t"..  rest => (out = out + SAtom(c"\\\\t"); in = rest;);
-      c"\\"..   rest => fail("Illegal Escape Character: \{head(rest)}");
-      rest => (
-         out = out + SAtom(clone-rope(head(rest)));
-         in = tail(rest);
+      c"\""..  rest1 => (out = out + SAtom(c"\\\\\""); in = rest1;);
+      c"\\:"..  rest2 => (out = out + SAtom(c";"); in = rest2;);
+      c"\\["..  rest3 => (out = out + SAtom(c"("); in = rest3;);
+      c"\\]"..  rest4 => (out = out + SAtom(c")"); in = rest4;);
+      c"\\\\".. rest5 => (out = out + SAtom(c"\\\\\\\\"); in = rest5;);
+      c"\\`"..  rest6 => (out = out + SAtom(c"'"); in = rest6;);
+      c"\\l"..  rest7 => (out = out + SAtom(c"λ"); in = rest7;);
+      c"\\n"..  rest8 => (out = out + SAtom(c"\\\\n"); in = rest8;);
+      c"\\o"..  rest9 => (out = out + SAtom(c"#"); in = rest9;);
+      c"\\s"..  rest10 => (out = out + SAtom(c" "); in = rest10;);
+      c"\\t"..  rest11 => (out = out + SAtom(c"\\\\t"); in = rest11;);
+      c"\\"..   rest12 => fail("Illegal Escape Character: \{head(rest12)}");
+      rest13 => (
+         out = out + SAtom(clone-rope(head(rest13)));
+         in = tail(rest13);
       );
    }};
    SAtom(c"\"") + out + SAtom(c"\"")

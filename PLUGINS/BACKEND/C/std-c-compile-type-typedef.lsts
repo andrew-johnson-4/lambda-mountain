@@ -32,8 +32,8 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
    let cases = (td as Tag::Typedef).cases;
 
    let is-incomplete = false;
-   for vector Tuple{case-tag=first, case-fields=second} in cases {
-      for vector Tuple{field-name=first, field-type=second} in case-fields {
+   for vector Tuple{case-tag1=first, case-fields=second} in cases {
+      for vector Tuple{field-name1=first, field-type=second} in case-fields {
          field-type = tctx.substitute(field-type).rewrite-type-alias;
          if is-incomplete-typedef(field-type) {
             is-incomplete = true;
@@ -45,7 +45,7 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
       continue-compile-c-typedefs-concrete = cons( (tctx, concrete-type), continue-compile-c-typedefs-concrete );
    } else {
       concrete-typedef-compiled-index = concrete-typedef-compiled-index.bind(concrete-type, true);
-      is-cstruct-hard-compiled-index = is-cstruct-hard-compiled-index.bind(concrete-type, 1_u64);
+      is-cstruct-hard-compiled-index = is-cstruct-hard-compiled-index.bind(concrete-type, true);
 
       assemble-header-section = assemble-header-section + SAtom(c"typedef struct ") + std-c-mangle-type(concrete-type, td)
                               + SAtom(c" ") + std-c-mangle-type(concrete-type, td) + SAtom(c";\n");
@@ -53,13 +53,13 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
       assemble-types-section = assemble-types-section + SAtom(c"struct ") + std-c-mangle-type(concrete-type, td) + SAtom(c"{\n");
       
       let has-cases = false;
-      for vector Tuple{case-tag=first, case-fields=second} in cases {
-         if case-tag==c"" {
-            for vector Tuple{field-name=first, field-type=second} in case-fields {
-               let mangled-field-name = c"0_" + field-name;
+      for vector Tuple{case-tag2=first, case-fields=second} in cases {
+         if case-tag2==c"" {
+            for vector Tuple{field-name2=first, field-type=second} in case-fields {
+               let mangled-field-name1 = c"0_" + field-name2;
                field-type = tctx.substitute(field-type);
                (let pre-tt, let post-tt) = std-c-mangle-declaration(field-type, td);
-               assemble-types-section = assemble-types-section + SAtom(c"  ") + pre-tt + SAtom(c" ") + mangle-identifier(mangled-field-name) + post-tt + SAtom(c";\n");
+               assemble-types-section = assemble-types-section + SAtom(c"  ") + pre-tt + SAtom(c" ") + mangle-identifier(mangled-field-name1) + post-tt + SAtom(c";\n");
             }
          } else has-cases = true;
       };
@@ -69,14 +69,14 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
 
          assemble-types-section = assemble-types-section + SAtom(c"  union {\n");
          let case-number = 0_u64;
-         for vector Tuple{case-tag=first, case-fields=second} in cases {
-            if case-tag!=c"" and case-fields.length > 0 {
+         for vector Tuple{case-tag3=first, case-fields=second} in cases {
+            if case-tag3!=c"" and case-fields.length > 0 {
                assemble-types-section = assemble-types-section + SAtom(c"    struct {\n");
-               for vector Tuple{field-name=first, field-type=second} in case-fields {
-                  let mangled-field-name = case-number.into(type(CString)) + c"_" + field-name;
+               for vector Tuple{field-name3=first, field-type=second} in case-fields {
+                  let mangled-field-name2 = case-number.into(type(CString)) + c"_" + field-name3;
                   field-type = tctx.substitute(field-type);
                   (let pre-tt, let post-tt) = std-c-mangle-declaration(field-type, td);
-                  assemble-types-section = assemble-types-section + SAtom(c"      ") + pre-tt + SAtom(c" ") + mangle-identifier(mangled-field-name) + post-tt + SAtom(c";\n");
+                  assemble-types-section = assemble-types-section + SAtom(c"      ") + pre-tt + SAtom(c" ") + mangle-identifier(mangled-field-name2) + post-tt + SAtom(c";\n");
                };
                assemble-types-section = assemble-types-section + SAtom(c"    };\n");
             };
@@ -86,8 +86,8 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
       };
       assemble-types-section = assemble-types-section + SAtom(c"};\n");
 
-      for vector Tuple{case-tag=first, case-fields=second} in cases {
-         for vector Tuple{field-name=first, field-type=second} in case-fields {
+      for vector Tuple{case-tag4=first, case-fields=second} in cases {
+         for vector Tuple{field-name4=first, field-type=second} in case-fields {
             let closed-field-type = tctx.substitute(field-type);
 
             match closed-field-type {
@@ -120,18 +120,18 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
    };
 );
 
-let is-incomplete-typedef(tt: Type): U64 = is-incomplete-typedef(tt, tt.is-t(c"FlexibleArrayMember",0));
-let is-incomplete-typedef(tt: Type, is-flexible-array-member: U64): U64 = (
+let is-incomplete-typedef(tt: Type): Bool = is-incomplete-typedef(tt, tt.is-t(c"FlexibleArrayMember",0));
+let is-incomplete-typedef(tt: Type, is-flexible-array-member: Bool): Bool = (
    match tt {
       TAnd{conjugate=conjugate} => (
-         let r = 0_u64;
+         let r = false;
          for vector c in conjugate { r = r or is-incomplete-typedef(c, is-flexible-array-member) };
          r
       );
       TAny{} => false;
       TVar{} => false;
-      TGround{tag:"Sized",parameters:[st..]} => is-incomplete-typedef(st);
-      TGround{tag:"Array",parameters:[_..base-type..]} => if is-flexible-array-member then is-incomplete-typedef(base-type) else false;
+      TGround{tag:c"Sized",parameters:[st..]} => is-incomplete-typedef(st);
+      TGround{tag:c"Array",parameters:[_..base-type..]} => if is-flexible-array-member then is-incomplete-typedef(base-type) else false;
       TGround{} => complex-type-index.lookup(tt.ground-tag-and-arity,false)
                 and not(is-cstruct-hard-compiled-index.lookup(tt, false));
    }
@@ -139,7 +139,7 @@ let is-incomplete-typedef(tt: Type, is-flexible-array-member: U64): U64 = (
 
 let continue-compile-c-typedefs-concrete = [] : List<(TypeContext?,Type)>;
 let continue-compile-c-typedefs-count = 0_u64;
-let is-cstruct-hard-compiled-index = {} : Hashtable<Type,U64>;
+let is-cstruct-hard-compiled-index = {} : Hashtable<Type,Bool>;
 
 let try-continue-compile-c-typedefs(): Nil = (
    let continue = continue-compile-c-typedefs-concrete;

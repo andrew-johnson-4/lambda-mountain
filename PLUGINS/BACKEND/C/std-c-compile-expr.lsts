@@ -76,7 +76,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             let def = var-to-def(t);
             let e = std-c-fragment-context.lookup(def, mk-fragment());
             if not(non-zero(e)) {
-               exit-error( untern("Unable to Find Variable Fragment in Context: \{key}"), t );
+               exit-error("Unable to Find Variable Fragment in Context: \{key}", t );
             }; e
          }
       );
@@ -241,7 +241,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       App{ is-cons=is-cons, left=left, right=right } => (
           if not(is-cons) and typeof-term(left).is-arrow {
              match left {
-                Var{fname=key:c"<:"} => (
+                Var{fname1=key:c"<:"} => (
                    match right {
                       App{ lt=left, rt=right } => (
                          let lt-tt = typeof-term(lt);
@@ -253,12 +253,12 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                             if can-unify( rt-val, lt-val )
                             then mk-expression(c"1")
                             else mk-expression(c"0")
-                         ) else std-c-compile-call(ctx, fname, right);
+                         ) else std-c-compile-call(ctx, fname1, right);
                       );
-                      _ => std-c-compile-call(ctx, fname, right);
+                      _ => std-c-compile-call(ctx, fname1, right);
                    }
                 );
-                Var{fname=key:c".into"} => (
+                Var{fname2=key:c".into"} => (
                    match right {
                       App{ lt=left, rt=right } => (
                          let lt-tt = typeof-term(lt);
@@ -267,28 +267,28 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                          then (
                             let lt-val = lt-tt.slot(c"Type",1).l1.into(type(String)).into(type(CString));
                             mk-expression(lt-val.escape-as-cstring)
-                         ) else std-c-compile-call(ctx, fname, right);
+                         ) else std-c-compile-call(ctx, fname2, right);
                       );
-                      _ => std-c-compile-call(ctx, fname, right);
+                      _ => std-c-compile-call(ctx, fname2, right);
                    }
                 );
-                Var{fname=key} => (
+                Var{fname3=key} => (
                    let return-hint = ta;
-                   if fname==c"mk-hashtable" then return-hint = typeof-term(t).normalize;
-                   std-c-compile-call(ctx, fname, return-hint, right);
+                   if fname3==c"mk-hashtable" then return-hint = typeof-term(t).normalize;
+                   std-c-compile-call(ctx, fname3, return-hint, right);
                 );
-                App{ left:Lit{key:c":"}, right:App{ left:Var{fname=key}, right:AType{tt=tt} } } => (
+                App{ left:Lit{key:c":"}, right:App{ left:Var{fname4=key}, right:AType{tt=tt} } } => (
                    let return-hint = ta;
-                   if fname==c"mk-hashtable" then return-hint = typeof-term(t).normalize;
-                   std-c-compile-call(ctx, fname, return-hint, right);
+                   if fname4==c"mk-hashtable" then return-hint = typeof-term(t).normalize;
+                   std-c-compile-call(ctx, fname4, return-hint, right);
                 );
-                Lit{fname=key} => (
+                Lit{fname5=key} => (
                    let return-type = typeof-term(t).normalize;
-                   std-c-compile-call(ctx, fname, return-type, right);
+                   std-c-compile-call(ctx, fname5, return-type, right);
                 );
-                App{ left:Lit{key:c":"}, right:App{ left:Lit{fname=key}, right:AType{tt=tt} } } => (
+                App{ left:Lit{key:c":"}, right:App{ left:Lit{fname6=key}, right:AType{tt=tt} } } => (
                    let return-type = typeof-term(t).normalize;
-                   std-c-compile-call(ctx, fname, return-type, right);
+                   std-c-compile-call(ctx, fname6, return-type, right);
                 );
                 _ => (
                   let call = std-c-compile-expr(ctx, left, false);

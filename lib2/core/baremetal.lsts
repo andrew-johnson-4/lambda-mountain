@@ -5,6 +5,9 @@ import stdlib.h;
 import string.h;
 import regex.h;
 
+# not sure why this is necessary, the C frontend must be missing this definition?
+let :FFI mktemp(template: U8[]): U8[] = ();
+
 import lib2/core/l.lsts;
 import lib2/core/phi.lsts;
 import lib2/core/platform-macros.lsts;

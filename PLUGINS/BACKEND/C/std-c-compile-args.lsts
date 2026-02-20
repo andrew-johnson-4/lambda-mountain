@@ -2,7 +2,7 @@
 
 let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs: AST, f: Fragment): Tuple<Fragment,FContext,FContext> = (
    match lhs {
-      App{lhs-rst=left, right:App{ left:Lit{key:c":"}, right:App{left-lhs=left:Var{k=key}, right:AType{kt=tt}} }} => (
+      App{lhs-rst=left, right:App{ left:Lit{key:c":"}, right:App{left-lhs=left:Var{k1=key}, right:AType{kt=tt}} }} => (
          if typeof-term(rhs).is-t(c"Cons",2) {
             match rhs {
                App{le=left, re=right} => (
@@ -12,7 +12,7 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
                         if kt.is-open { callee-ctx = union(callee-ctx, unify(kt, typeof-term(re), rhs)); };
                         let c1 = std-c-compile-expr(caller-ctx, re, false);
                         caller-ctx = open(c1.context);
-                        callee-ctx = bind-vararg(callee-ctx, k, kt, c1);
+                        callee-ctx = bind-vararg(callee-ctx, k1, kt, c1);
                         (f, callee-ctx, caller-ctx) = std-c-compile-args(callee-ctx, caller-ctx, lhs, le, f);
                         f = f.set(c"frame", f.get(c"frame") + c1.get(c"frame"));
                      } else {
@@ -22,7 +22,7 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
                      if kt.is-open { callee-ctx = union(callee-ctx, unify(kt, typeof-term(re), rhs)); };
                      let c1 = std-c-compile-expr(caller-ctx, re, false);
                      caller-ctx = open(c1.context);
-                     callee-ctx = callee-ctx.bind(k, kt, c1);
+                     callee-ctx = callee-ctx.bind(k1, kt, c1);
                      std-c-fragment-context = std-c-fragment-context.bind( left-lhs, c1 );
                      (f, callee-ctx, caller-ctx) = std-c-compile-args(callee-ctx, caller-ctx, lhs-rst, le, f);
                      f = f.set(c"frame", f.get(c"frame") + c1.get(c"frame"));
@@ -37,7 +37,7 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
                   let c1 = std-c-compile-expr(caller-ctx, rhs, false);
                   f = f.set(c"frame", f.get(c"frame") + c1.get(c"frame"));
                   caller-ctx = open(c1.context);
-                  callee-ctx = bind-vararg(callee-ctx, k, kt, c1);
+                  callee-ctx = bind-vararg(callee-ctx, k1, kt, c1);
                } else {
                   (f, callee-ctx, caller-ctx) = std-c-compile-args(callee-ctx, caller-ctx, lhs-rst, rhs, f);  
                }
@@ -46,13 +46,13 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
                let c1 = std-c-compile-expr(caller-ctx, rhs, false);
                caller-ctx = open(c1.context);
                std-c-fragment-context = std-c-fragment-context.bind( left-lhs, c1 );
-               callee-ctx = callee-ctx.bind(k, kt, c1);
+               callee-ctx = callee-ctx.bind(k1, kt, c1);
                f = f.set(c"frame", f.get(c"frame") + c1.get(c"frame"));
             }
          };
          (f, callee-ctx, caller-ctx)
       );
-      App{ left:Lit{key:c":"}, right:App{left-lhs=left:Var{k=key}, right:AType{kt=tt}} } => (
+      App{ left:Lit{key:c":"}, right:App{left-lhs=left:Var{k2=key}, right:AType{kt=tt}} } => (
          if typeof-term(rhs).is-t(c"Cons",2) {
             match rhs {
                App{le=left, re=right} => (
@@ -61,7 +61,7 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
                      if kt.is-open { callee-ctx = union(callee-ctx, unify(kt, typeof-term(re), rhs)); };
                      let c1 = std-c-compile-expr(caller-ctx, re, false);
                      caller-ctx = open(c1.context);
-                     callee-ctx = bind-vararg(callee-ctx, k, kt, c1);
+                     callee-ctx = bind-vararg(callee-ctx, k2, kt, c1);
                      (f, callee-ctx, caller-ctx) = std-c-compile-args(callee-ctx, caller-ctx, lhs, le, f);
                      f = f.set(c"frame", f.get(c"frame") + c1.get(c"frame"));
                   } else {
@@ -76,7 +76,7 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
                   if kt.is-open { callee-ctx = union(callee-ctx, unify(kt, typeof-term(rhs), rhs)); };
                   let c1 = std-c-compile-expr(caller-ctx, rhs, false);
                   caller-ctx = open(c1.context);
-                  callee-ctx = bind-vararg(callee-ctx, k, kt, c1);
+                  callee-ctx = bind-vararg(callee-ctx, k2, kt, c1);
                   f = f.set(c"frame", f.get(c"frame") + c1.get(c"frame"));
                } else {
                   (f, callee-ctx, caller-ctx) = std-c-compile-args(callee-ctx, caller-ctx, lhs, rhs, f);
@@ -86,7 +86,7 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
                let c1 = std-c-compile-expr(caller-ctx, rhs, false);
                caller-ctx = open(c1.context);
                std-c-fragment-context = std-c-fragment-context.bind( left-lhs, c1 );
-               callee-ctx = callee-ctx.bind(k, kt, c1);
+               callee-ctx = callee-ctx.bind(k2, kt, c1);
                f = f.set(c"frame", f.get(c"frame") + c1.get(c"frame"));
             }
          };
