@@ -63,7 +63,7 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
       ".".. rest => (tokens = cons(text[:".".length], tokens); text = rest;);
 
       (lin=r/^'[a-z]{1,3}/).. rest => (
-         tokens = cons(text[:lin.length], tokens); text = rest;
+         tokens = cons(text[:lin.get-or-panic.length], tokens); text = rest;
       );
 
       # for docs
@@ -75,21 +75,21 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
       );
 
       (lit=r/^[r]?[cl]?["]([^"\\]|([\\].))*["]/).. rest => (
-         tokens = cons(text[:lit.length], tokens); text = rest;
+         tokens = cons(text[:lit.get-or-panic.length], tokens); text = rest;
       );
 
       (rgx=r/^r[\/]([^\/]|([\\].))*[\/]/).. rest => (
-         tokens = cons(text[:rgx.length], tokens); text = rest;
+         tokens = cons(text[:rgx.get-or-panic.length], tokens); text = rest;
       );
 
       (id=r/^[$]["]([^"\\]|([\\].))*["]/).. rest => (
-         tokens = cons(text[:id.length], tokens); text = rest;
+         tokens = cons(text[:id.get-or-panic.length], tokens); text = rest;
       );
 
       "$".. rest => (tokens = cons(text[:"$".length], tokens); text = rest;);
 
       (id=r/^[a-zA-Z0-9_-]+/).. rest => (
-         tokens = cons(text[:id.length], tokens); text = rest;
+         tokens = cons(text[:id.get-or-panic.length], tokens); text = rest;
       );
 
       (comment=r/^#[^\n]*[\n]/).. rest => (

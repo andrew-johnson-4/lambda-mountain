@@ -175,19 +175,19 @@ deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rest,
 
 deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rl"macro::lhs-bind"(rl":Variable:"(b), rl":Literal:"(l)), rest ))) ((
    $"let"(uuid(v))(term);
-   $"if"(uuid(v).has-prefix(l)) (
-           $"let"(b)(uuid(v).remove-prefix(l));
-           (match-pats-arm(uuid(v)[b.length:],rest))
-        ) (branchfalse())
+   $"let"(b)(uuid(v).remove-prefix(l));
+   $"if"(uuid(b).is-some)
+      (match-pats-arm(uuid(b).get-or-panic,rest))
+      (branchfalse())
 ));
 
 
 deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rest, rl"macro::lhs-bind"(rl":Variable:"(b), rl":Literal:"(l)) ))) ((
    $"let"(uuid(v))(term);
-   $"if"(uuid(v).has-suffix(l)) (
-           $"let"(b)(uuid(v).remove-suffix(l));
-           (match-pats-arm(uuid(v)[:b.length],rest))
-        ) (branchfalse())
+   $"let"(b)(uuid(v).remove-suffix(l));
+   $"if"(uuid(b).is-some)
+      (match-pats-arm(uuid(b).get-or-panic,rest))
+      (branchfalse())
 ));
 
 deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x1) )) ((

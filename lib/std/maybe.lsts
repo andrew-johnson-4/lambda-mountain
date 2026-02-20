@@ -10,6 +10,7 @@ let .get-or(m: Maybe<x>, default: x): x = (
 
 # Don't add this to lib2, it is just a backwards compatibility feature
 let .get-or(m: x, default: x): x = m;
+let .get-or-panic(m: x): x = m;
 
 let .get-or-panic(m: Maybe<x>): x = (
    match m {

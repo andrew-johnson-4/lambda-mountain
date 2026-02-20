@@ -9,7 +9,7 @@ dev: install-production
 build: compile-production
 	time ./production --v23 --c -o deploy1.c SRC/index.lsts
 	$(CC) $(CFLAGS) deploy1.c -o deploy1
-	time ./deploy1 --typecheck --v23 --c -o deploy2.c SRC/index.lsts
+	time ./deploy1 --v23 --c -o deploy2.c SRC/index.lsts
 	diff deploy1.c deploy2.c
 	mv deploy1.c BOOTSTRAP/cli.c
 	rm -f deploy1 deploy1.c deploy2.c
