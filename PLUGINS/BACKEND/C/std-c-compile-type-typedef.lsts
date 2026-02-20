@@ -56,10 +56,10 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
       for vector Tuple{case-tag2=first, case-fields=second} in cases {
          if case-tag2==c"" {
             for vector Tuple{field-name2=first, field-type=second} in case-fields {
-               let mangled-field-name = c"0_" + field-name2;
+               let mangled-field-name1 = c"0_" + field-name2;
                field-type = tctx.substitute(field-type);
                (let pre-tt, let post-tt) = std-c-mangle-declaration(field-type, td);
-               assemble-types-section = assemble-types-section + SAtom(c"  ") + pre-tt + SAtom(c" ") + mangle-identifier(mangled-field-name) + post-tt + SAtom(c";\n");
+               assemble-types-section = assemble-types-section + SAtom(c"  ") + pre-tt + SAtom(c" ") + mangle-identifier(mangled-field-name1) + post-tt + SAtom(c";\n");
             }
          } else has-cases = true;
       };
@@ -73,10 +73,10 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
             if case-tag3!=c"" and case-fields.length > 0 {
                assemble-types-section = assemble-types-section + SAtom(c"    struct {\n");
                for vector Tuple{field-name3=first, field-type=second} in case-fields {
-                  let mangled-field-name = case-number.into(type(CString)) + c"_" + field-name3;
+                  let mangled-field-name2 = case-number.into(type(CString)) + c"_" + field-name3;
                   field-type = tctx.substitute(field-type);
                   (let pre-tt, let post-tt) = std-c-mangle-declaration(field-type, td);
-                  assemble-types-section = assemble-types-section + SAtom(c"      ") + pre-tt + SAtom(c" ") + mangle-identifier(mangled-field-name) + post-tt + SAtom(c";\n");
+                  assemble-types-section = assemble-types-section + SAtom(c"      ") + pre-tt + SAtom(c" ") + mangle-identifier(mangled-field-name2) + post-tt + SAtom(c";\n");
                };
                assemble-types-section = assemble-types-section + SAtom(c"    };\n");
             };

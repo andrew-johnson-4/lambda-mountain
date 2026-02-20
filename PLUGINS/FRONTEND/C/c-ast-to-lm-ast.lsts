@@ -8,9 +8,9 @@ let std-c-declare(t: CTerm): Nil = (
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          return-type = return-type && t0(c"C-FFI");
          for list init in inits { match init {
-            CBinaryOp{op:"=", arg1:CIdentifier{name=value}, value=arg2} => (
+            CBinaryOp{op:"=", arg1:CIdentifier{name1=value}, value=arg2} => (
                ast-parsed-program = ast-parsed-program + Glb(
-                  mk-token(name), close(App( false,
+                  mk-token(name1), close(App( false,
                      close(Lit(c":", mk-token(c":"))),
                      close(App( false,
                         close(std-c-expr-of-statement(value)),
@@ -19,13 +19,13 @@ let std-c-declare(t: CTerm): Nil = (
                   ))
                );
             );
-            CIdentifier{name=value} => (if not(std-c-declare-dedup-index.has(name)) {
-               std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name, true);
+            CIdentifier{name2=value} => (if not(std-c-declare-dedup-index.has(name2)) {
+               std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name2, true);
                if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
-                  std-c-typedef-name-index = std-c-typedef-name-index.bind(name, true);
+                  std-c-typedef-name-index = std-c-typedef-name-index.bind(name2, true);
                };
                ast-parsed-program = ast-parsed-program + Glb(
-                  mk-token(name), close(App( false,
+                  mk-token(name2), close(App( false,
                      close(Lit(c":", mk-token(c":"))),
                      close(App( false,
                         close(mk-nil()),
@@ -35,51 +35,51 @@ let std-c-declare(t: CTerm): Nil = (
                );
             });
             CUnaryPrefix{op:"Declarator(", arg=arg} => (
-               (let name, let body) = std-c-sig-of-declarator(return-type, arg, ta, (None : Maybe<CTerm>)());
-               if not(std-c-declare-dedup-index.has(name.into(type(String)))) {
-                  std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name.into(type(String)), true);
+               (let name3, let body) = std-c-sig-of-declarator(return-type, arg, ta, (None : Maybe<CTerm>)());
+               if not(std-c-declare-dedup-index.has(name3.into(type(String)))) {
+                  std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name3.into(type(String)), true);
                   if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
-                     std-c-typedef-name-index = std-c-typedef-name-index.bind(name.into(type(String)), true);
+                     std-c-typedef-name-index = std-c-typedef-name-index.bind(name3.into(type(String)), true);
                   };
                   ast-parsed-program = ast-parsed-program + Glb(
-                     mk-token(name), close(body)
+                     mk-token(name3), close(body)
                   );
                }
             );
             CBinaryOp{op:"Declarator(", arg1=arg1, arg2=arg2 } => (
-               (let name, let body) = std-c-sig-of-declarator(return-type, arg1, ta, Some(arg2));
-               if not(std-c-declare-dedup-index.has(name.into(type(String)))) {
-                  std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name.into(type(String)), true);
+               (let name4, let body) = std-c-sig-of-declarator(return-type, arg1, ta, Some(arg2));
+               if not(std-c-declare-dedup-index.has(name4.into(type(String)))) {
+                  std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name4.into(type(String)), true);
                   if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
-                     std-c-typedef-name-index = std-c-typedef-name-index.bind(name.into(type(String)), true);
+                     std-c-typedef-name-index = std-c-typedef-name-index.bind(name4.into(type(String)), true);
                   };
                   ast-parsed-program = ast-parsed-program + Glb(
-                     mk-token(name), close(body)
+                     mk-token(name4), close(body)
                   );
                }
             );
             CBinaryOp{op:"Declarator*", ptr=arg1, arg2:CBinaryOp{op:"Declarator(", arg1=arg1, arg2=arg2 } } => (
                return-type = std-c-decorate-pointer(return-type, ptr);
-               (let name, let body) = std-c-sig-of-declarator(return-type, arg1, ta, Some(arg2));
-               if not(std-c-declare-dedup-index.has(name.into(type(String)))) {
-                  std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name.into(type(String)), true);
+               (let name5, let body) = std-c-sig-of-declarator(return-type, arg1, ta, Some(arg2));
+               if not(std-c-declare-dedup-index.has(name5.into(type(String)))) {
+                  std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name5.into(type(String)), true);
                   if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
-                     std-c-typedef-name-index = std-c-typedef-name-index.bind(name.into(type(String)), true);
+                     std-c-typedef-name-index = std-c-typedef-name-index.bind(name5.into(type(String)), true);
                   };
                   ast-parsed-program = ast-parsed-program + Glb(
-                     mk-token(name), close(body)
+                     mk-token(name5), close(body)
                   );
                }
             );
-            CBinaryOp{op:"Declarator*", ptr=arg1, arg2:CIdentifier{name=value} } => (
-               if not(std-c-declare-dedup-index.has(name)) {
-                  std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name, true);
+            CBinaryOp{op:"Declarator*", ptr=arg1, arg2:CIdentifier{name6=value} } => (
+               if not(std-c-declare-dedup-index.has(name6)) {
+                  std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name6, true);
                   if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
-                     std-c-typedef-name-index = std-c-typedef-name-index.bind(name, true);
+                     std-c-typedef-name-index = std-c-typedef-name-index.bind(name6, true);
                   };
                   return-type = std-c-decorate-pointer(return-type, ptr);
                   ast-parsed-program = ast-parsed-program + Glb(
-                     mk-token(name), close(App( false,
+                     mk-token(name6), close(App( false,
                         close(Lit(c":", mk-token(c":"))),
                         close(App( false,
                            close(mk-nil()),
@@ -296,44 +296,44 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
       CList{value=value} => std-c-type-of-specifiers(value);
       CType1{value=value} => ( t1(c"C",t0(value.into(type(CString)))), ta );
       CBinaryOp{op:"struct", arg1:CIdentifier{name=value}, decl=arg2} => (
-         let cname = if name=="" then uuid() else name.into(type(CString));
-         if cname == c"_G_fpos_t" then ()
-         else if cname == c"_G_fpos64_t" then ()
-         else if cname == c"_IO_FILE" then ()
-         else if cname == c"re_pattern_buffer" then ()
+         let cname1 = if name=="" then uuid() else name.into(type(CString));
+         if cname1 == c"_G_fpos_t" then ()
+         else if cname1 == c"_G_fpos64_t" then ()
+         else if cname1 == c"_IO_FILE" then ()
+         else if cname1 == c"re_pattern_buffer" then ()
          else match decl {
             CMaybe{value:None{}} => ();
             CMaybe{value:Some{def=content}} => (
                ast-parsed-program = ast-parsed-program + Glb(
                   mk-token(uuid()), close(
-                     mk-lit(c"struct " + cname + c"{\n" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
+                     mk-lit(c"struct " + cname1 + c"{\n" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
                         t0(c"C-Fragment") && t0(c"C-FFI") && t0(c"Literal")
                      )
                   )
                );
             );
          };
-         (t1(c"C",t0(c"struct " + cname)), ta)
+         (t1(c"C",t0(c"struct " + cname1)), ta)
       );
       CBinaryOp{op:"union", arg1:CIdentifier{name=value}, decl=arg2} => (
-         let cname = if name=="" then uuid() else name.into(type(CString));
+         let cname2 = if name=="" then uuid() else name.into(type(CString));
          match decl {
             CMaybe{value:None{}} => ();
             CMaybe{value:Some{def=content}} => (
                ast-parsed-program = ast-parsed-program + Glb(
                   mk-token(uuid()), close(
-                     mk-lit(c"union " + cname + c"{\n" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
+                     mk-lit(c"union " + cname2 + c"{\n" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
                         t0(c"C-Fragment") && t0(c"C-FFI") && t0(c"Literal")
                      )
                   )
                );
             );
          };
-         (t1(c"C",t0(c"union " + cname)), ta)
+         (t1(c"C",t0(c"union " + cname2)), ta)
       );
       CBinaryOp{op:"enum", arg1:CIdentifier{name=value}, decl=arg2} => (
-         let cname = if name=="" then uuid() else name.into(type(CString));
-         (t1(c"C",t0(c"enum " + cname)), ta)
+         let cname3 = if name=="" then uuid() else name.into(type(CString));
+         (t1(c"C",t0(c"enum " + cname3)), ta)
       );
       _ => fail("Unsupported C Specifiers:\n\{specifiers}\n");
    };
