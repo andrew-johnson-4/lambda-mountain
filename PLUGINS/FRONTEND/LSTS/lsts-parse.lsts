@@ -143,9 +143,9 @@ let lsts-parse-doc(tokens: List<Token>): Tuple<AST, List<Token>> = (
    Tuple ( ast, tokens )
 );
 
-let lsts-has-assign(tokens: List<Token>): U64 = (
+let lsts-has-assign(tokens: List<Token>): Bool = (
    let depth = 0_i64;
-   let has-assign = 0;
+   let has-assign = false;
    while non-zero(tokens) { match tokens {
       [Token{key:c"["} .. rest] => (depth = depth + 1_i64; tokens = rest;);
       [Token{key:c"{"} .. rest] => (depth = depth + 1_i64; tokens = rest;);
@@ -157,7 +157,7 @@ let lsts-has-assign(tokens: List<Token>): U64 = (
       [Token{key:c","} .. rest] => (if depth <= 0_i64 {tokens = [] : List<Token>} else {tokens = rest;});
       [Token{key:c"."}.. Token{key:c"."} .. rest] => (if depth == 0_i64 {tokens = [] : List<Token>;} else {tokens = rest;});
       [Token{key:c"="}.. Token{key:c">"} .. rest] => (if depth == 0_i64 {tokens = [] : List<Token>;} else {tokens = rest;});
-      [Token{key:c"="} .. rest] => (if depth == 0_i64 {has-assign = 1; tokens = [] : List<Token>;} else {tokens = rest;});
+      [Token{key:c"="} .. rest] => (if depth == 0_i64 {has-assign = true; tokens = [] : List<Token>;} else {tokens = rest;});
       [Token{key:c"if"} .. rest] => (if depth == 0_i64 {tokens = [] : List<Token>;} else {tokens = rest;});
       [Token{key:c"then"} .. rest] => (if depth == 0_i64 {tokens = [] : List<Token>;} else {tokens = rest;});
       [Token{key:c"else"} .. rest] => (if depth == 0_i64 {tokens = [] : List<Token>;} else {tokens = rest;});
@@ -401,9 +401,9 @@ let lsts-parse-expression-possibly-tuple(tokens: List<Token>): Tuple<AST,List<To
    let base-rest = lsts-parse-expression(tokens);
    let base = base-rest.first;
    tokens = base-rest.second;
-   let is-tuple = 0;
+   let is-tuple = false;
    while lsts-parse-head(tokens) == c"," {
-      is-tuple = 1;
+      is-tuple = true;
       tokens = tail(tokens);
       base-rest = lsts-parse-expression(tokens);
       base = mk-cons(base, base-rest.first);
@@ -1041,9 +1041,9 @@ let lsts-parse-function-signature(fname: CString, tokens: List<Token>, loc: Sour
 
 let lsts-parse-let(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c"let", tokens); let loc = head(tokens).location; tokens = tail(tokens);
-   let prop = 0;
+   let prop = false;
    if lsts-parse-head(tokens)==c"prop" {
-      prop = 1;
+      prop = true;
       lsts-parse-expect(c"prop", tokens); tokens = tail(tokens);
    };
    let misc-tt = ta;
