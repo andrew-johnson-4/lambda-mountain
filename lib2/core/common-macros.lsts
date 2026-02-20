@@ -175,18 +175,18 @@ deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rest,
 
 deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rl"macro::lhs-bind"(rl":Variable:"(b), rl":Literal:"(l)), rest ))) ((
    $"let"(uuid(v))(term);
-   $"let"(b)(uuid(v).remove-prefix(l));
-   $"if"(uuid(b).is-some)
-      (match-pats-arm(uuid(b).get-or-panic,rest))
+   $"let"(uuid(p))(uuid(v).remove-prefix(l));
+   $"if"(uuid(p).is-some)
+      ($"let"(b)(uuid(p).get-or-panic); match-pats-arm(b,rest))
       (branchfalse())
 ));
 
 
 deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rest, rl"macro::lhs-bind"(rl":Variable:"(b), rl":Literal:"(l)) ))) ((
    $"let"(uuid(v))(term);
-   $"let"(b)(uuid(v).remove-suffix(l));
-   $"if"(uuid(b).is-some)
-      (match-pats-arm(uuid(b).get-or-panic,rest))
+   $"let"(uuid(p))(uuid(v).remove-suffix(l));
+   $"if"(uuid(p).is-some)
+      ($"let"(b)(uuid(p).get-or-panic); match-pats-arm(b,rest))
       (branchfalse())
 ));
 
