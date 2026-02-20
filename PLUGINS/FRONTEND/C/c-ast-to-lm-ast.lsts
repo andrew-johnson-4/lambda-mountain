@@ -4,11 +4,11 @@ let std-c-declare-dedup-index = {} : Hashtable<String,Bool>;
 let std-c-declare(t: CTerm): Nil = (
    match t {
       CFunctionDefinition{spec=specifiers,decl=declarator,dl=declaration-list,stmt=statement} => std-c-declare-function(spec, decl, dl, stmt);
-      CBinaryOp{op:c"Declaration",spec=arg1,arg2:CMaybe{value:Some{content:CList{inits=value}}}} => (
+      CBinaryOp{op:"Declaration",spec=arg1,arg2:CMaybe{value:Some{content:CList{inits=value}}}} => (
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          return-type = return-type && t0(c"C-FFI");
          for list init in inits { match init {
-            CBinaryOp{op:c"=", arg1:CIdentifier{name=value}, value=arg2} => (
+            CBinaryOp{op:"=", arg1:CIdentifier{name=value}, value=arg2} => (
                ast-parsed-program = ast-parsed-program + Glb(
                   mk-token(name), close(App( false,
                      close(Lit(c":", mk-token(c":"))),
@@ -34,7 +34,7 @@ let std-c-declare(t: CTerm): Nil = (
                   ))
                );
             });
-            CUnaryPrefix{op:c"Declarator(", arg=arg} => (
+            CUnaryPrefix{op:"Declarator(", arg=arg} => (
                (let name, let body) = std-c-sig-of-declarator(return-type, arg, ta, (None : Maybe<CTerm>)());
                if not(std-c-declare-dedup-index.has(name.into(type(String)))) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name.into(type(String)), true);
@@ -46,7 +46,7 @@ let std-c-declare(t: CTerm): Nil = (
                   );
                }
             );
-            CBinaryOp{op:c"Declarator(", arg1=arg1, arg2=arg2 } => (
+            CBinaryOp{op:"Declarator(", arg1=arg1, arg2=arg2 } => (
                (let name, let body) = std-c-sig-of-declarator(return-type, arg1, ta, Some(arg2));
                if not(std-c-declare-dedup-index.has(name.into(type(String)))) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name.into(type(String)), true);
@@ -58,7 +58,7 @@ let std-c-declare(t: CTerm): Nil = (
                   );
                }
             );
-            CBinaryOp{op:c"Declarator*", ptr=arg1, arg2:CBinaryOp{op:c"Declarator(", arg1=arg1, arg2=arg2 } } => (
+            CBinaryOp{op:"Declarator*", ptr=arg1, arg2:CBinaryOp{op:"Declarator(", arg1=arg1, arg2=arg2 } } => (
                return-type = std-c-decorate-pointer(return-type, ptr);
                (let name, let body) = std-c-sig-of-declarator(return-type, arg1, ta, Some(arg2));
                if not(std-c-declare-dedup-index.has(name.into(type(String)))) {
@@ -71,7 +71,7 @@ let std-c-declare(t: CTerm): Nil = (
                   );
                }
             );
-            CBinaryOp{op:c"Declarator*", ptr=arg1, arg2:CIdentifier{name=value} } => (
+            CBinaryOp{op:"Declarator*", ptr=arg1, arg2:CIdentifier{name=value} } => (
                if not(std-c-declare-dedup-index.has(name)) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name, true);
                   if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
@@ -99,30 +99,30 @@ let std-c-declare(t: CTerm): Nil = (
 let std-c-nametypes-of-params-list(params: List<CTerm>, is-vararg: Bool): List<(CString,Type)> = (
    let nametypes = [] : List<(CString,Type)>;
    for list p in params { match p {
-      CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CIdentifier{name=value}} => (
+      CBinaryOp{op:"ParameterDeclaration", spec=arg1, arg2:CIdentifier{name=value}} => (
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          nametypes = cons((name.into(type(CString)), return-type), nametypes);
       );
-      CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:c"Declarator*",ptr=arg1,arg2:CIdentifier{name=value}}} => (
+      CBinaryOp{op:"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:"Declarator*",ptr=arg1,arg2:CIdentifier{name=value}}} => (
          name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          return-type = std-c-decorate-pointer(return-type, ptr);
          nametypes = cons((name.into(type(CString)), return-type), nametypes);
       );
-      CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CTernaryOp{op:c"Declarator[",arg1:CIdentifier{name=value}}} => (
+      CBinaryOp{op:"ParameterDeclaration", spec=arg1, arg2:CTernaryOp{op:"Declarator[",arg1:CIdentifier{name=value}}} => (
          name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          return-type = t2(c"Array", return-type, ta);
          nametypes = cons((name.into(type(CString)), return-type), nametypes);
       );
-      CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:c"Declarator[",arg1:CIdentifier{name=value},sz=arg2}} => (
+      CBinaryOp{op:"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:"Declarator[",arg1:CIdentifier{name=value},sz=arg2}} => (
          name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          let sz-t = t1(c"C",t0(std-c-fragment-of-struct-definition-body(sz)));
          return-type = t2(c"Array", return-type, sz-t);
          nametypes = cons((name.into(type(CString)), return-type), nametypes);
       );
-      CBinaryOp{op:c"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:c"Declarator(",decl=arg1,arg2:CList{dparams=value}}} => (
+      CBinaryOp{op:"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:"Declarator(",decl=arg1,arg2:CList{dparams=value}}} => (
          (let name, let base-arrow-type) = std-c-type-of-arrow(spec, decl, dparams);
          name = name + c"_" + uuid(); # C names can end with _s or other literal type suffixes
          nametypes = cons((name, base-arrow-type), nametypes);
@@ -173,7 +173,7 @@ let std-c-type-of-arrow(spec: CTerm, decl: CTerm, params: List<CTerm>): (CString
 let std-c-nametype-of-decl(base-type: Type, decl: CTerm): (CString, Type) = (
    match decl {
       CIdentifier{value=value} => (value.into(type(CString)), base-type);
-      CBinaryOp{op:c"Declarator*",ptr=arg1,arg2:CIdentifier{value=value}} => (value.into(type(CString)), std-c-decorate-pointer(base-type, ptr));
+      CBinaryOp{op:"Declarator*",ptr=arg1,arg2:CIdentifier{value=value}} => (value.into(type(CString)), std-c-decorate-pointer(base-type, ptr));
       _ => (fail("Unexpected std-c-nametype-of-decl \{decl}\n"); (c"", ta));
    }
 );
@@ -186,9 +186,9 @@ let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, misc-type: Typ
       Some{content=content} => (print("std-c-sig-of-declarator unrecognized params \{content}\n"); mk-nil());
    };
    match declarator {
-      CBinaryOp{op:c"Declarator*", ptr=arg1, arg2:CIdentifier{name=value}} => (
+      CBinaryOp{op:"Declarator*", ptr=arg1, arg2:CIdentifier{name=value}} => (
          misc-type = std-c-decorate-pointer(misc-type, ptr);
-         (untern(name), Abs( close(params), close(App( false,
+         (name.into(type(CString)), Abs( close(params), close(App( false,
                close(Lit(c":", mk-token(c":"))),
                close(App( false,
                   close(mk-nil()),
@@ -198,7 +198,7 @@ let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, misc-type: Typ
          ))
       );
       CIdentifier{name=value} => (
-         (untern(name), Abs( close(params), close(App( false,
+         (name.into(type(CString)), Abs( close(params), close(App( false,
                close(Lit(c":", mk-token(c":"))),
                close(App( false,
                   close(mk-nil()),
@@ -237,42 +237,42 @@ let std-c-declare-function(specifiers: CTerm, declarator: CTerm, declaration-lis
 
 let std-c-fragment-of-struct-definition-body(body: CTerm): CString = (
    match body {
-      CUnaryPrefix{op:c"StructDeclarator", arg=arg} => (
+      CUnaryPrefix{op:"StructDeclarator", arg=arg} => (
          std-c-fragment-of-struct-definition-body(arg)
       );
-      CUnaryPrefix{op:c"sizeof", arg=arg} => (
+      CUnaryPrefix{op:"sizeof", arg=arg} => (
          c"sizeof(" + std-c-fragment-of-struct-definition-body(arg) + c")"
       );
-      CBinaryOp{op:c"Declarator[", arg1:CIdentifier{id=value}, arg2=arg2} => (
+      CBinaryOp{op:"Declarator[", arg1:CIdentifier{id=value}, arg2=arg2} => (
          id.into(type(CString)) + c"[" + std-c-fragment-of-struct-definition-body(arg2) + c"]"
       );
-      CBinaryOp{op:c"Declarator*", arg2=arg2} => (
+      CBinaryOp{op:"Declarator*", arg2=arg2} => (
          c"*" + std-c-fragment-of-struct-definition-body(arg2)
       );
-      CBinaryOp{op:c"TypeName", spec=arg1, arg2=arg2} => (
+      CBinaryOp{op:"TypeName", spec=arg1, arg2=arg2} => (
          (let return-type, let misc-type) = std-c-type-of-specifiers(spec);
          clone-rope(std-c-mangle-type(return-type, mk-eof()))
       );
-      CBinaryOp{op:c"-", arg1=arg1, arg2=arg2} => (
+      CBinaryOp{op:"-", arg1=arg1, arg2=arg2} => (
          c"(" + std-c-fragment-of-struct-definition-body(arg1) + c"-" + std-c-fragment-of-struct-definition-body(arg2) + c")"
       );
-      CBinaryOp{op:c"+", arg1=arg1, arg2=arg2} => (
+      CBinaryOp{op:"+", arg1=arg1, arg2=arg2} => (
          c"(" + std-c-fragment-of-struct-definition-body(arg1) + c"+" + std-c-fragment-of-struct-definition-body(arg2) + c")"
       );
-      CBinaryOp{op:c"*", arg1=arg1, arg2=arg2} => (
+      CBinaryOp{op:"*", arg1=arg1, arg2=arg2} => (
          c"(" + std-c-fragment-of-struct-definition-body(arg1) + c"*" + std-c-fragment-of-struct-definition-body(arg2) + c")"
       );
-      CBinaryOp{op:c"/", arg1=arg1, arg2=arg2} => (
+      CBinaryOp{op:"/", arg1=arg1, arg2=arg2} => (
          c"(" + std-c-fragment-of-struct-definition-body(arg1) + c"/" + std-c-fragment-of-struct-definition-body(arg2) + c")"
       );
-      CBinaryOp{op:c"%", arg1=arg1, arg2=arg2} => (
+      CBinaryOp{op:"%", arg1=arg1, arg2=arg2} => (
          c"(" + std-c-fragment-of-struct-definition-body(arg1) + c"%" + std-c-fragment-of-struct-definition-body(arg2) + c")"
       );
-      CBinaryOp{op:c"StructDeclaration", spec=arg1, decl=arg2} => (
+      CBinaryOp{op:"StructDeclaration", spec=arg1, decl=arg2} => (
          (let return-type, let misc-type) = std-c-type-of-specifiers(spec);
          c"\t" + clone-rope(std-c-mangle-type(return-type, mk-eof())) + c" " + std-c-fragment-of-struct-definition-body(decl) + c";\n"
       );
-      CBinaryOp{op:c"StructDeclarator:", arg1=arg1, arg2=arg2} => (
+      CBinaryOp{op:"StructDeclarator:", arg1=arg1, arg2=arg2} => (
          std-c-fragment-of-struct-definition-body(arg1) + c" : " + std-c-fragment-of-struct-definition-body(arg2)
       );
       CInteger{value=value} => value.into(type(CString));
@@ -294,8 +294,8 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
    match specifiers {
       CMaybe{value:Some{content=content}} => std-c-type-of-specifiers(content);
       CList{value=value} => std-c-type-of-specifiers(value);
-      CType1{value=value} => ( t1(c"C",t0(untern(value))), ta );
-      CBinaryOp{op:c"struct", arg1:CIdentifier{name=value}, decl=arg2} => (
+      CType1{value=value} => ( t1(c"C",t0(value.into(type(CString)))), ta );
+      CBinaryOp{op:"struct", arg1:CIdentifier{name=value}, decl=arg2} => (
          let cname = if name=="" then uuid() else name.into(type(CString));
          if cname == c"_G_fpos_t" then ()
          else if cname == c"_G_fpos64_t" then ()
@@ -315,7 +315,7 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
          };
          (t1(c"C",t0(c"struct " + cname)), ta)
       );
-      CBinaryOp{op:c"union", arg1:CIdentifier{name=value}, decl=arg2} => (
+      CBinaryOp{op:"union", arg1:CIdentifier{name=value}, decl=arg2} => (
          let cname = if name=="" then uuid() else name.into(type(CString));
          match decl {
             CMaybe{value:None{}} => ();
@@ -331,7 +331,7 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
          };
          (t1(c"C",t0(c"union " + cname)), ta)
       );
-      CBinaryOp{op:c"enum", arg1:CIdentifier{name=value}, decl=arg2} => (
+      CBinaryOp{op:"enum", arg1:CIdentifier{name=value}, decl=arg2} => (
          let cname = if name=="" then uuid() else name.into(type(CString));
          (t1(c"C",t0(c"enum " + cname)), ta)
       );
@@ -368,7 +368,7 @@ let std-c-lhs-of-parameter-list(declaration-list: CTerm): AST = (
 let std-c-lift-lhs(rhs: AST): (AST, AST) = (
     let lhs = mk-eof();
     match rhs {
-       App{ is-cons:1_u8, left=left, right=right } => (
+       App{ is-cons:true, left=left, right=right } => (
           (lhs, rhs) = std-c-lift-lhs(left);
           (let new-lhs, let new-rhs) = std-c-lift-lhs(right);
           if is(lhs, mk-eof()) then (lhs = new-lhs) else (lhs = App( true, close(lhs), close(new-lhs) ));
@@ -450,13 +450,13 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          )
       );
       CIdentifier{value=value} => (
-         Var( untern(value), mk-token(value) )
+         Var( value.into(type(CString)), mk-token(value) )
       );
       CInteger{value=value} => (
          App(
             close(Lit(c":", mk-token(c":"))),
             close(App(
-               close(Lit( untern(value), mk-token(value) )),
+               close(Lit( value.into(type(CString)), mk-token(value) )),
                close(AType( std-c-type-of-integer(value) ))
             ))
          )
@@ -469,7 +469,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
                let d = App(
                   close(App(
                      close(Var( c"let", mk-token(c"let") )),
-                     close(Var( untern(name), mk-token(name) ))
+                     close(Var( name.into(type(CString)), mk-token(name) ))
                   )),
                   close(App(
                      close(Lit( c":", mk-token(c":") )),
@@ -487,7 +487,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
                let d = App(
                   close(App(
                      close(Var( c"let", mk-token(c"let") )),
-                     close(Var( untern(name), mk-token(name) ))
+                     close(Var( name.into(type(CString)), mk-token(name) ))
                   )),
                   close(App(
                      close(Lit( c":", mk-token(c":") )),
@@ -506,7 +506,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
                let d = App(
                   close(App(
                      close(Var( c"let", mk-token(c"let") )),
-                     close(Var( untern(name), mk-token(name) ))
+                     close(Var( name.into(type(CString)), mk-token(name) ))
                   )),
                   close(App(
                      close(Lit( c":", mk-token(c":") )),
@@ -526,7 +526,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
       );
       CTernaryOp{op=op, arg1=arg1, arg2=arg2, arg3=arg3 } => (
          App(
-            close(Var( untern(op), mk-token(op) )),
+            close(Var( op.into(type(CString)), mk-token(op) )),
             close(App(
                true,
                close(App(
@@ -544,7 +544,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
       );
       CBinaryOp{op=op, arg1=arg1, arg2=arg2 } => (
          App(
-            close(Var( untern(op), mk-token(op) )),
+            close(Var( op.into(type(CString)), mk-token(op) )),
             close(App(
                true,
                close(std-c-expr-of-statement(arg1)),
@@ -554,19 +554,19 @@ let std-c-expr-of-statement(t: CTerm): AST = (
       );
       CUnaryPrefix{op=op, arg=arg } => (
          App(
-            close(Var( c"prefix:" + untern(op), mk-token("prefix:" + op) )),
+            close(Var( c"prefix:" + op.into(type(CString)), mk-token("prefix:" + op) )),
             close(std-c-expr-of-statement(arg))
          );
       );
       CUnaryPostfix{op=op, arg=arg } => (
          App(
-            close(Var( c"postfix:" + untern(op), mk-token("postfix:" + op) )),
+            close(Var( c"postfix:" + op.into(type(CString)), mk-token("postfix:" + op) )),
             close(std-c-expr-of-statement(arg))
          );
       );
       CZOp{op=op} => (
          App(
-            close(Var( untern("c::" + op), mk-token("c::" + op) )),
+            close(Var( ("c::" + op).into(type(CString)), mk-token("c::" + op) )),
             close(mk-nil())
          );
       );
@@ -608,13 +608,13 @@ let std-c-decorate-pointer(tt: Type, ptr: CTerm): Type = (
 
 let std-c-type-of-integer(i: String): Type = (
    if i.has-prefix("-") {
-      let n = to-u64(untern(tail(i)));
+      let n = to-u64(tail(i).into(type(CString)));
       if n <= 128 then t1(c"C",t0(c"uint8_t")) else
       if n <= 32768 then t1(c"C",t0(c"uint06_t")) else
       if n <= 2147483648 then t1(c"C",t0(c"uint22_t")) else
       t1(c"C",t0(c"uint64_t"))
    } else {
-      let n = to-u64(untern(i));
+      let n = to-u64(i.into(type(CString)));
       if n <= 255 then t1(c"C",t0(c"int8_t")) else
       if n <= 65535 then t1(c"C",t0(c"int06_t")) else
       if n <= 4294967295 then t1(c"C",t0(c"int22_t")) else
