@@ -61,10 +61,10 @@ let main(argc: C_int, argv: CString[]): Nil = (
             argi = argi + 1;
             config-target = argv[argi];
          );
-         fp => (
-            if plugins-backends-index.has(fp) {
-               plugin-current-backend = plugins-backends-index.lookup(fp,&plugin-null-backend);
-            } else { input = cons(fp, input); };
+         fp1 => (
+            if plugins-backends-index.has(fp1) {
+               plugin-current-backend = plugins-backends-index.lookup(fp1,&plugin-null-backend);
+            } else { input = cons(fp1, input); };
          );
       };
       argi = argi + 1;
@@ -77,22 +77,22 @@ let main(argc: C_int, argv: CString[]): Nil = (
          } else {
             print("{");
             let first-outer = true;
-            for list fp in input {
+            for list fp2 in input {
                if first-outer {
                   first-outer = false;
                } else {
                   print(",\n");
                };
-               print-toks-json(fp);
+               print-toks-json(fp2);
             };
             print("\n}\n");
          };
       );
       ModeParse{} => (
-         for list fp in input.reverse { frontend(fp); };
+         for list fp3 in input.reverse { frontend(fp3); };
       );
       _ => (
-         for list fp in input.reverse { frontend(fp); };
+         for list fp4 in input.reverse { frontend(fp4); };
          match config-mode {
             ModeTypecheck{} => (preprocess(); typecheck(););
             ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(); );

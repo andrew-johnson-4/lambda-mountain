@@ -32,8 +32,8 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
    let cases = (td as Tag::Typedef).cases;
 
    let is-incomplete = false;
-   for vector Tuple{case-tag=first, case-fields=second} in cases {
-      for vector Tuple{field-name=first, field-type=second} in case-fields {
+   for vector Tuple{case-tag1=first, case-fields=second} in cases {
+      for vector Tuple{field-name1=first, field-type=second} in case-fields {
          field-type = tctx.substitute(field-type).rewrite-type-alias;
          if is-incomplete-typedef(field-type) {
             is-incomplete = true;
@@ -53,10 +53,10 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
       assemble-types-section = assemble-types-section + SAtom(c"struct ") + std-c-mangle-type(concrete-type, td) + SAtom(c"{\n");
       
       let has-cases = false;
-      for vector Tuple{case-tag=first, case-fields=second} in cases {
-         if case-tag==c"" {
-            for vector Tuple{field-name=first, field-type=second} in case-fields {
-               let mangled-field-name = c"0_" + field-name;
+      for vector Tuple{case-tag2=first, case-fields=second} in cases {
+         if case-tag2==c"" {
+            for vector Tuple{field-name2=first, field-type=second} in case-fields {
+               let mangled-field-name = c"0_" + field-name2;
                field-type = tctx.substitute(field-type);
                (let pre-tt, let post-tt) = std-c-mangle-declaration(field-type, td);
                assemble-types-section = assemble-types-section + SAtom(c"  ") + pre-tt + SAtom(c" ") + mangle-identifier(mangled-field-name) + post-tt + SAtom(c";\n");
@@ -69,11 +69,11 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
 
          assemble-types-section = assemble-types-section + SAtom(c"  union {\n");
          let case-number = 0_u64;
-         for vector Tuple{case-tag=first, case-fields=second} in cases {
-            if case-tag!=c"" and case-fields.length > 0 {
+         for vector Tuple{case-tag3=first, case-fields=second} in cases {
+            if case-tag3!=c"" and case-fields.length > 0 {
                assemble-types-section = assemble-types-section + SAtom(c"    struct {\n");
-               for vector Tuple{field-name=first, field-type=second} in case-fields {
-                  let mangled-field-name = case-number.into(type(CString)) + c"_" + field-name;
+               for vector Tuple{field-name3=first, field-type=second} in case-fields {
+                  let mangled-field-name = case-number.into(type(CString)) + c"_" + field-name3;
                   field-type = tctx.substitute(field-type);
                   (let pre-tt, let post-tt) = std-c-mangle-declaration(field-type, td);
                   assemble-types-section = assemble-types-section + SAtom(c"      ") + pre-tt + SAtom(c" ") + mangle-identifier(mangled-field-name) + post-tt + SAtom(c";\n");
@@ -86,8 +86,8 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
       };
       assemble-types-section = assemble-types-section + SAtom(c"};\n");
 
-      for vector Tuple{case-tag=first, case-fields=second} in cases {
-         for vector Tuple{field-name=first, field-type=second} in case-fields {
+      for vector Tuple{case-tag4=first, case-fields=second} in cases {
+         for vector Tuple{field-name4=first, field-type=second} in case-fields {
             let closed-field-type = tctx.substitute(field-type);
 
             match closed-field-type {
