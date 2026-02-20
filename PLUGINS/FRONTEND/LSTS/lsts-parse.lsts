@@ -67,18 +67,18 @@ let lsts-parse-doc-expr(tokens: List<Token>): Tuple<AST, List<(CString, AST)>, L
    let tags = [] : List<(CString, AST)>;
    let val = match lsts-parse-head(tokens) {
       c"__" => (
-         (let s, tokens) = lsts-parse-doc-wordf(tokens, c"__", c"__");
-         mk-app( mk-var("meta::style::underline"), mk-lit(s) )
+         (let s1, tokens) = lsts-parse-doc-wordf(tokens, c"__", c"__");
+         mk-app( mk-var("meta::style::underline"), mk-lit(s1) )
       );
 
       c"**" => (
-         (let s, tokens) = lsts-parse-doc-wordf(tokens, c"**", c"**");
-         mk-app( mk-var("meta::style::bold"), mk-lit(s) )
+         (let s2, tokens) = lsts-parse-doc-wordf(tokens, c"**", c"**");
+         mk-app( mk-var("meta::style::bold"), mk-lit(s2) )
       );
 
       c"[" => (
          tokens = tail(tokens);
-         let v = if lsts-parse-head(tokens) == c"[" {
+         let v1 = if lsts-parse-head(tokens) == c"[" {
             tokens = tail(tokens);
             let key = lsts-parse-head(tokens); tokens = tail(tokens);
             let val = mk-nil();
@@ -90,11 +90,11 @@ let lsts-parse-doc-expr(tokens: List<Token>): Tuple<AST, List<(CString, AST)>, L
             tags = cons( (key,val), tags );
             mk-nil();
          } else {
-            (let v, tokens) = lsts-parse-expression(tokens);
-            v
+            (let v2, tokens) = lsts-parse-expression(tokens);
+            v2
          };
          lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
-         v
+         v1
       );
 
       word => (
@@ -820,8 +820,8 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
          (let vt, tokens) = lsts-parse-type(tokens);
          pt = pt && vt;
       } else {
-         (let v, tokens) = lsts-parse-identifier(tokens);
-         pt = tv(v);
+         (let v1, tokens) = lsts-parse-identifier(tokens);
+         pt = tv(v1);
          if lsts-parse-head(tokens)==c":" {
             lsts-parse-expect(c":", tokens); tokens = tail(tokens);
             (let vt, tokens) = lsts-parse-type(tokens);
@@ -836,8 +836,8 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
             (let vt, tokens) = lsts-parse-type(tokens);
             pt = pt && vt;
          } else {
-            (let v, tokens) = lsts-parse-identifier(tokens);
-            pt = tv(v);
+            (let v2, tokens) = lsts-parse-identifier(tokens);
+            pt = tv(v2);
             if lsts-parse-head(tokens)==c":" {
                lsts-parse-expect(c":", tokens); tokens = tail(tokens);
                (let vt, tokens) = lsts-parse-type(tokens);
@@ -1340,8 +1340,8 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
       expr = mk-var(c"_").with-location(head(tokens).location);
       lsts-parse-expect(c"_", tokens); tokens = tail(tokens);
    } else if lsts-is-ident-head(lsts-parse-head(tokens)) {
-      (let name, tokens) = lsts-parse-identifier(tokens);
-      expr = mk-var(name).with-location(head(tokens).location);
+      (let name2, tokens) = lsts-parse-identifier(tokens);
+      expr = mk-var(name2).with-location(head(tokens).location);
    } else {
       lsts-parse-expect(c"[Left Hand Side]", tokens);
    };
@@ -1388,8 +1388,8 @@ let .is-lsts-constant(key: CString): Bool = (
 let .is-constant(t: AST): Bool = (
    match t {
       App{ left:Lit{key:c":"}, right:App{ left:Lit{}, right:AType{} } } => true;
-      Lit{key=key} => key.is-lsts-constant;
-      Var{key=key} => key.is-lsts-constant;
+      Lit{key1=key} => key1.is-lsts-constant;
+      Var{key2=key} => key2.is-lsts-constant;
       _ => false;
    }
 );

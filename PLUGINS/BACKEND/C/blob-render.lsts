@@ -4,8 +4,8 @@ let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContex
    match term {
       ASTNil{} => ();
       ASTEOF{} => ();
-      Var{key=key} => r = ctx.lookup(key, typeof-term(term), term).get(context-key);
-      Lit{key=key} => r = SAtom(key);
+      Var{key1=key} => r = ctx.lookup(key1, typeof-term(term), term).get(context-key);
+      Lit{key2=key} => r = SAtom(key2);
       App{ left:Lit{key:c":"}, right:App{ t=left, right:AType{tt=tt} } } => r = blob-render-simple(ctx, context-key, t).second;
       App{ left:Lit{key:c"as"}, right:App{ t=left, right:AType{tt=tt} } } => r = blob-render-simple(ctx, context-key, t).second;
       App{ left:Lit{key:c"scope"}, t=right } => r = blob-render-simple(ctx, context-key, t).second;
@@ -13,7 +13,7 @@ let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContex
          left:App{ left:Lit{key:c":"}, right:App{ left:Lit{key:c"for-arg"}, right:AType{} } },
          right:App{
             left:App{
-               left:Abs{ lhs-t=lhs:Var{lhs=key}, rhs:ASTNil{} },
+               left:Abs{ lhs-t=lhs:Var{lhs1=key}, rhs:ASTNil{} },
                right:App{ left:Var{key:c"for-arg-i"}, right:Var{vsk=key} }
             }, iter=right
          }
@@ -21,7 +21,7 @@ let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContex
          let vs = ctx.lookup-soft(vsk, ta, mk-eof());
          for list vi in vs.vararg {
             std-c-fragment-context = std-c-fragment-context.bind(lhs-t, vi);
-            let inner-ctx = ctx.bind(lhs, vs.type, vi);
+            let inner-ctx = ctx.bind(lhs1, vs.type, vi);
             r = r + blob-render-simple(inner-ctx, context-key, iter).second;
          };
       );
@@ -29,7 +29,7 @@ let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContex
          left:App{ left:Lit{key:c":"}, right:App{ left:Lit{key:c"for-atom"}, right:AType{} } },
          right:App{
             left:App{
-               left:Abs{ lhs-t=lhs:Var{lhs=key}, rhs:ASTNil{} },
+               left:Abs{ lhs-t=lhs:Var{lhs2=key}, rhs:ASTNil{} },
                rng=right
             }, iter=right
          }
@@ -38,7 +38,7 @@ let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContex
          while non-zero(rngs) { match rngs {
             SCons{ a=left, rst=right } => (
                let f = mk-expression(a);
-               let inner-ctx = ctx.bind(lhs, t0(c"L"), f);
+               let inner-ctx = ctx.bind(lhs2, t0(c"L"), f);
                std-c-fragment-context = std-c-fragment-context.bind(lhs-t,f);
                r = r + blob-render-simple(inner-ctx, context-key, iter).second;
                rngs = rst;
@@ -62,10 +62,10 @@ let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContex
          r = std-c-mangle-declaration-internal(tt.l1.normalize.rewrite-opaque-type-alias.without-any-phi, term).first;
       );
       App{ left:Var{key:c"mangle-post"}, right:AType{tt=tt} } => r = std-c-mangle-declaration-internal(tt.l1.normalize.rewrite-opaque-type-alias.without-any-phi, term).second;
-      App{ left:Abs{ lhs-t=lhs:Var{lhs=key}, rhs:ASTNil{}, tlt=tt }, rhs=right } => (
+      App{ left:Abs{ lhs-t=lhs:Var{lhs3=key}, rhs:ASTNil{}, tlt=tt }, rhs=right } => (
          let s = blob-render-simple(ctx, context-key, rhs).second;
          let f = mk-fragment().set(context-key,s).set(c"expression",s);
-         ctx = ctx.bind(lhs, typeof-term(rhs), f);
+         ctx = ctx.bind(lhs3, typeof-term(rhs), f);
          std-c-fragment-context = std-c-fragment-context.bind(lhs-t, f);
       );
       App{ f=left, a=right } => (
@@ -95,16 +95,16 @@ let blob-render-simple(ctx: FContext, context-key: CString, term: AST): (FContex
 let blob-render(ctx: FContext, term: AST, f: Fragment): Fragment = (
    match term {
       App{ left:Lit{key:c":"}, right:App{ t=left, right:AType{} } } => blob-render(ctx, t, f);
-      App{ left:Var{k=key}, a=right } => (
-         if k.has-prefix(c":")
-         then f.set(tail(k), blob-render-simple(ctx, tail(k), a).second)
-         else f.set(c"expression", blob-render-simple(ctx, tail(k), a).second)
+      App{ left:Var{k1=key}, a=right } => (
+         if k1.has-prefix(c":")
+         then f.set(tail(k1), blob-render-simple(ctx, tail(k1), a).second)
+         else f.set(c"expression", blob-render-simple(ctx, tail(k1), a).second)
       );
-      App{ rst=left, right:App{ left:Var{k=key}, a=right } } => (
+      App{ rst=left, right:App{ left:Var{k2=key}, a=right } } => (
          f = blob-render(ctx, rst, f);
-         if k.has-prefix(c":")
-         then f.set(tail(k), blob-render-simple(ctx, tail(k), a).second)
-         else f.set(c"expression", blob-render-simple(ctx, tail(k), a).second)
+         if k2.has-prefix(c":")
+         then f.set(tail(k2), blob-render-simple(ctx, tail(k2), a).second)
+         else f.set(c"expression", blob-render-simple(ctx, tail(k2), a).second)
       );
       _ => f.set(c"expression", blob-render-simple(ctx,c"expression",term).second);
    }
