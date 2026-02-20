@@ -11,7 +11,7 @@ let c-frontend(fp: CString): Nil = (
    cmd = cmd + c" -D__LM__";
    cmd = cmd + c" -include \"" + fp + c"\"";
 
-   if system(cmd) != 0 {
+   if system(cmd) as U64 != 0_u64 {
       fail(c"cpp failed. command: \"" + cmd + c"\"");
    };
 
