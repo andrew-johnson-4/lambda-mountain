@@ -461,7 +461,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
             ))
          )
       );
-      CBinaryOp{op:c"Declaration", spec=arg1, arg2:CMaybe{value:Some{content:CList{decls=value}}} } => (
+      CBinaryOp{op:"Declaration", spec=arg1, arg2:CMaybe{value:Some{content:CList{decls=value}}} } => (
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          let expr = mk-eof();
          for list decl in decls {match decl {
@@ -483,7 +483,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
                   expr = App( close(expr), close(d) );
                } else expr = d;
             );
-            CBinaryOp{op:c"=", arg1:CIdentifier{name=value}, value=arg2 } => (
+            CBinaryOp{op:"=", arg1:CIdentifier{name=value}, value=arg2 } => (
                let d = App(
                   close(App(
                      close(Var( c"let", mk-token(c"let") )),
@@ -501,7 +501,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
                   expr = App( close(expr), close(d) );
                } else expr = d;
             );
-            CBinaryOp{op:c"Declarator*", ptr=arg1, arg2:CIdentifier{name=value}} => (
+            CBinaryOp{op:"Declarator*", ptr=arg1, arg2:CIdentifier{name=value}} => (
                return-type = std-c-decorate-pointer(return-type, ptr);
                let d = App(
                   close(App(
@@ -538,7 +538,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
             ))
          );
       );
-      CBinaryOp{op:c"TypeName", arg1=arg1, arg2=arg2 } => (
+      CBinaryOp{op:"TypeName", arg1=arg1, arg2=arg2 } => (
          (let rt, let mt) = std-c-type-of-specifiers(arg1);
          AType(rt)
       );
