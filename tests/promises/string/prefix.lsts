@@ -1,0 +1,27 @@
+
+import lib/std/minimal.lsts;
+
+assert( "\sa".remove-prefix("\s") == Some("a") );
+assert( "a".remove-prefix("\s") == (None : String?) );
+
+assert( "\ta".remove-prefix("\t") == Some("a") );
+assert( "a".remove-prefix("\t") == (None : String?) );
+
+assert( "\na".remove-prefix("\n") == Some("a") );
+assert( "a".remove-prefix("\n") == (None : String?) );
+
+assert( "__a".remove-prefix("__") == Some("a") );
+assert( "a".remove-prefix("__") == (None : String?) );
+
+assert( "'a-".remove-prefix(r/^'[a-z]{1,3}/) == Some("-") );
+assert( "-".remove-prefix(r/^'[a-z]{1,3}/) == (None : String?) );
+
+assert( "'a-".remove-prefix(r/^'[a-z]{1,3}/) == Some("-") );
+assert( "-".remove-prefix(r/^'[a-z]{1,3}/) == (None : String?) );
+
+assert( "\"a\"a".remove-prefix(r/^[r]?[cl]?["]([^"\\]|([\\].))*["]/) == Some("a") );
+assert( "a".remove-prefix(r/^[r]?[cl]?["]([^"\\]|([\\].))*["]/) == (None : String?) );
+
+assert( "abc-d=".remove-prefix(r/^[a-zA-Z0-9_-]+/) == Some("=") );
+assert( "=".remove-prefix(r/^[a-zA-Z0-9_-]+/) == (None : String?) );
+

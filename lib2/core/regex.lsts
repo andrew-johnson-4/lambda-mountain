@@ -45,8 +45,7 @@ let $"=="(text: CString, rgx: Regex): Bool = (
    (status as U64)==0 and matches[0].rm_so==0 and matches[0].rm_eo==text.length
 );
 
-# TODO remove (this method name is a misnomer), correct name is ".get-prefix"
-let .remove-prefix(text: String, rgx: Regex): String = (
+let .remove-prefix(text: String, rgx: Regex): String? = (
    let matches = () : C<"regmatch_t">[1];
    let a1 = &rgx as C<"regex_t">[];
    let a2 = text.data.data as C<"char">[];
@@ -60,11 +59,12 @@ let .remove-prefix(text: String, rgx: Regex): String = (
       a4,
       a5
    );
-   if matches[0].rm_so != 0 then fail(".remove-prefix regex did not match the prefix");
-   text[0_i64 : matches[0].rm_eo as I64]
+   if matches[0].rm_so != 0 then (None : String?)
+   else if matches[0].rm_eo == 0 then (None : String?)
+   else Some(text[matches[0].rm_eo as I64 : ])
 );
 
-let .get-prefix(text: String, rgx: Regex): String = (
+let .get-prefix(text: String, rgx: Regex): String? = (
    let matches = () : C<"regmatch_t">[1];
    let a1 = &rgx as C<"regex_t">[];
    let a2 = text.data.data as C<"char">[];
@@ -78,6 +78,7 @@ let .get-prefix(text: String, rgx: Regex): String = (
       a4,
       a5
    );
-   if matches[0].rm_so != 0 then fail(".get-prefix regex did not match the prefix");
-   text[0_i64 : matches[0].rm_eo as I64]
+   if matches[0].rm_so != 0 then (None : String?)
+   else if matches[0].rm_eo == 0 then (None : String?)
+   else Some(text[0_i64 : matches[0].rm_eo as I64])
 );
