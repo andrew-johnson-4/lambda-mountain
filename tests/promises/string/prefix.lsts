@@ -25,3 +25,8 @@ assert( "a".remove-prefix(r/^[r]?[cl]?["]([^"\\]|([\\].))*["]/) == (None : Strin
 assert( "abc-d=".remove-prefix(r/^[a-zA-Z0-9_-]+/) == Some("=") );
 assert( "=".remove-prefix(r/^[a-zA-Z0-9_-]+/) == (None : String?) );
 
+assert( "import ".remove-prefix(r/^[a-zA-Z0-9_-]+/) == Some(" ") );
+assert( " ".remove-prefix(r/^[a-zA-Z0-9_-]+/) == (None : String?) );
+
+assert( " import "[1_u64:].remove-prefix(r/^[a-zA-Z0-9_-]+/) == Some(" ") );
+assert( "  "[1_u64:].remove-prefix(r/^[a-zA-Z0-9_-]+/) == (None : String?) );
