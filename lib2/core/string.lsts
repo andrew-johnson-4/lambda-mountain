@@ -91,7 +91,7 @@ let .into(cs: CString, tt: Type<String>): String = (
 # ```
 let .into(s: String, tt: Type<CString>): CString = (
    s.data.retain;
-   s.data.data as CString
+   (s.data.data + s.start-offset) as CString
 );
 
 let $"[:]"(x: String, low: U64, hi: U64): String = x[low as I64 : hi as I64];
