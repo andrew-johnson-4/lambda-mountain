@@ -31,7 +31,7 @@ let .has-prefix(text: String, rgx: Regex): Bool = (
 let $"=="(text: CString, rgx: Regex): Bool = (
    let matches = () : C<"regmatch_t">[1];
    let a1 = &rgx as C<"regex_t">[];
-   let a2 = (text.data.data + text.start-offset) as C<"char">[];
+   let a2 = text as C<"char">[];
    let a3 = 1 as C<"size_t">;
    let a4 = matches as C<"regmatch_t">[];
    let a5 = 0 as C<"int">;
