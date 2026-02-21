@@ -106,6 +106,8 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
       );
    }; };
 
+   print("Tokens: \{tokens}\n");
+
    let internal-tokens = [] : List<Token>;
    for list t in tokens {
       internal-tokens = cons( mk-lsts-token(t), internal-tokens );

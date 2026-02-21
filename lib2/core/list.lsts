@@ -41,7 +41,7 @@ let hash(t: List<x>): U64 = (
 
 let .into(l: List<x>, tt: Type<String>): String = (
    let s = "[";
-   for vector li in l {
+   for list li in l {
       if s.length > 1 then s = s + ",";
       s = s + li.into(type(String));
    };
