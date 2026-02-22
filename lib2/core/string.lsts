@@ -45,7 +45,6 @@ let cmp(l: String, r: String): Ord = (
       (r.data.data + r.start-offset) as C<"void">[],
       min(l-size, r-size)
    ) as I64;
-   print("memcmp '\{l}' x '\{r}' = \{c}\n");
    if c < 0 then LessThan
    else if c > 0 then GreaterThan
    else if l-size < r-size then LessThan
@@ -175,7 +174,6 @@ let hash(key: String): U64 = (
    result = result + (result << 3);
    result = result ^ (result >> 11);
    result = result + (result << 15);
-   print("hash '\{key}' = \{result}\n");
    result
 );
 
