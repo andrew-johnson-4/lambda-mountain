@@ -98,7 +98,7 @@ let .into(s: String, tt: Type<CString>): CString = (
       si = si + 1;
    };
    od.push(0);
-   od.data.data as CString
+   od.data as CString
 );
 
 let $"[:]"(x: String, low: U64, hi: U64): String = x[low as I64 : hi as I64];
