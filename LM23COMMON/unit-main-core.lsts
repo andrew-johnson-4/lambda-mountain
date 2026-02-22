@@ -92,9 +92,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          for list fp3 in input.reverse { frontend(fp3); };
       );
       _ => (
-         print("Start Frontend\n");
-         for list fp4 in input.reverse { print("Parse \{fp4}\n"); frontend(fp4); };
-         print("Frontend Passed\n");
+         for list fp4 in input.reverse { frontend(fp4); };
          match config-mode {
             ModeTypecheck{} => (preprocess(); typecheck(););
             ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(); );
