@@ -2,7 +2,7 @@ CC = clang
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	time lm --v2 tests/promises/lm-ascript/ascript-integrated.lsts
+	time lm --v23 tests/promises/lm-ascript/ascript-integrated.lsts
 	gcc tmp.c
 	./a.out
 
@@ -19,7 +19,7 @@ deploy: build smoke-test
 deploy-lite: build smoke-test-lite
 
 valgrind: install-bootstrap
-	valgrind --tool=callgrind lm --v2 SRC/index.lsts
+	valgrind --tool=callgrind lm --v23 SRC/index.lsts
 
 valgrind-view:
 	callgrind_annotate callgrind.out.18778
@@ -35,7 +35,7 @@ gprof-view-call-graph:
 	gprof -q bootstrap.exe gmon.out
 
 profile: install-bootstrap
-	perf record lm --v2 SRC/index.lsts
+	perf record lm --v23 SRC/index.lsts
 	./report.sh
 
 compile-bootstrap:
@@ -44,7 +44,7 @@ compile-bootstrap:
 
 compile-production: compile-bootstrap
 	rm -f production
-	./bootstrap.exe --v2 --c -o production.c SRC/index.lsts
+	./bootstrap.exe --v23 --c -o production.c SRC/index.lsts
 	$(CC) $(CFLAGS) -o production production.c
 	rm -f production.c
 

@@ -90,8 +90,15 @@ let .into(cs: CString, tt: Type<String>): String = (
 # }
 # ```
 let .into(s: String, tt: Type<CString>): CString = (
-   s.data.retain;
-   (s.data.data + s.start-offset) as CString
+   let s-length = s.length;
+   let od = mk-owned-data(type(U8), s-length+1);
+   let si = 0_sz;
+   while si < s-length {
+      od.push(s[si] as U8);
+      si = si + 1;
+   };
+   od.push(0);
+   od.data.data as CString
 );
 
 let $"[:]"(x: String, low: U64, hi: U64): String = x[low as I64 : hi as I64];

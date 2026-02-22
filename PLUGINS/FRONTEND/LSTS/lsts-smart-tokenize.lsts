@@ -104,11 +104,17 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
       rest => (
          fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0_sz])}");
       );
-   }; };
+   }; if non-zero(tokens) then print("Last Token: \{head(tokens)}\n"); };
+
+   print("All Tokens: \{tokens}\n");
 
    let internal-tokens = [] : List<Token>;
    for list t in tokens {
       internal-tokens = cons( mk-lsts-token(t), internal-tokens );
+   };
+
+   for list t in internal-tokens {
+      print("Token: '\{t.key}'\n");
    };
 
    internal-tokens;
