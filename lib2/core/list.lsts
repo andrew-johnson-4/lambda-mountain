@@ -40,7 +40,12 @@ let hash(t: List<x>): U64 = (
 );
 
 let .into(l: List<x>, tt: Type<String>): String = (
-   "[..TODO..List.into(String)..]"
+   let s = "[";
+   for list li in l {
+      if s.length > 1 then s = s + ",";
+      s = s + li.into(type(String));
+   };
+   s + "]";
 );
 
 # new allocations = 0

@@ -90,8 +90,15 @@ let .into(cs: CString, tt: Type<String>): String = (
 # }
 # ```
 let .into(s: String, tt: Type<CString>): CString = (
-   s.data.retain;
-   s.data.data as CString
+   let s-length = s.length;
+   let od = mk-owned-data(type(U8), s-length+1);
+   let si = 0_sz;
+   while si < s-length {
+      od.push(s[si] as U8);
+      si = si + 1;
+   };
+   od.push(0);
+   od.data as CString
 );
 
 let $"[:]"(x: String, low: U64, hi: U64): String = x[low as I64 : hi as I64];
@@ -135,8 +142,8 @@ let $"+"(l: String, r: String): String = (
    let r-length = r.length;
    let cs-length = l-length + r-length;
    let od = mk-owned-data(type(U8), cs-length);
-   memcpy(od.data as C<"void">[], l.data.data as C<"void">[], l-length as USize);
-   memcpy((od.data + l-length) as C<"void">[], r.data.data as C<"void">[], r-length as USize);
+   memcpy(od.data as C<"void">[], (l.data.data + l.start-offset) as C<"void">[], l-length as USize);
+   memcpy((od.data + l-length) as C<"void">[], (r.data.data + r.start-offset) as C<"void">[], r-length as USize);
    String(0 as USize, cs-length, od) 
 );
 

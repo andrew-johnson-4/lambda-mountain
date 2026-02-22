@@ -8,7 +8,7 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
 
    let push-newline = false;
    let tokens = [] : List<String>;
-   while non-zero(text) {match text {
+   while non-zero(text) { match text {
       "\s".. rest => text = rest;
       "\t".. rest => text = rest;
       "\n".. rest => (
@@ -101,7 +101,9 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
       #             "in File \{rest.file-name-of-token}, "
       #             "Line \{rest.line-of-token}, "
       #             "Column \{rest.column-of-token}.");
-      rest => ( fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0_sz])}"); );
+      rest => (
+         fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0_sz])}");
+      );
    }; };
 
    let internal-tokens = [] : List<Token>;
