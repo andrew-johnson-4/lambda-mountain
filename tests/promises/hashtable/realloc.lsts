@@ -1,0 +1,16 @@
+
+import lib/std/minimal.lsts;
+
+let table = mk-hashtable(type(String), type(U64));
+
+let ti = 0_u64;
+while ti < 5000 {
+   table = table.bind("\{ti}", ti);
+   ti = ti + 1;
+};
+
+ti = 0_u64;
+while ti < 5000 {
+   assert(table.lookup("\{ti}", 0_u64) == ti);
+   ti = ti + 1;
+};

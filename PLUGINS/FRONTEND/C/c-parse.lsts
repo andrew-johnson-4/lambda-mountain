@@ -714,7 +714,7 @@ std-c-typedef-name-index = std-c-typedef-name-index.bind("__builtin_va_list", tr
 
 let std-c-parse-typedef-name(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = (None : Maybe<CTerm>)();
-   print("Typedef lookup typename \{head(tokens).key}\n");
+   print("Typedef lookup typename '\{head(tokens).key}'\n");
    if non-zero(tokens) and std-c-typedef-name-index.has(head(tokens).skey) {
       print("Typedef found typename \{head(tokens).key}\n");
       Tuple( Some(CType1(head(tokens).skey)), tail(tokens) )

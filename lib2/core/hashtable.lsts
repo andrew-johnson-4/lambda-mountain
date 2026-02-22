@@ -83,14 +83,17 @@ let .length(h: Hashtable<k,v>): USize = (
 # Reallocates the hashtable with a new capacity, rehashing all existing entries.
 # Used internally when the hashtable needs to grow.
 let .realloc(h: Hashtable<k,v>, target-capacity: USize): Hashtable<k,v> = (
+   print("Realloc \{target-capacity}\n");
    let new-data = mk-sparse-owned-data(type((HashtableRowExists,k,v)), target-capacity);
    let old-i = 0_sz;
    while old-i < h.data.capacity {
       let old-kv = h.data[old-i];
       if is(old-kv.first,HashtableRowFilled)
       then new-data[old-i] = h.data[old-i];
+      new-data.occupied = new-data.occupied + 1;
       old-i = old-i + 1;
    };
+   print("Reallocated \{target-capacity}\n");
    Hashtable(new-data)
 );
 
