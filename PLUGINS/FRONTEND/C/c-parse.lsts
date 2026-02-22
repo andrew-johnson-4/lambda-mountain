@@ -142,7 +142,6 @@ let std-c-is-reserved-word(tk: String): Bool = (
    if tk == "_Noreturn" then (reserved = true);
    if tk == "_Atomic" then (reserved = true);
    if tk == "_Static_assert" then (reserved = true);
-   print("Is reserved word: \{tk} = \{reserved}\n");
    reserved
 );
 
@@ -238,14 +237,10 @@ let std-c-parse-function-definition(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let declaration-specifiers = std-c-parse-declaration-specifiers(tokens);
    if declaration-specifiers.first.is-some {
-      print("Parsing Declaration after specifiers \{head(tokens).key}\n");
       tokens = declaration-specifiers.second;
       let init-declarator-list = std-c-parse-init-declarator-list(tokens); tokens = init-declarator-list.second;
-      print("Parsing Declaration after decl list \{head(tokens).key}\n");
       let attr = std-c-parse-attribute(tokens); tokens = attr.second;
-      print("Parsing Declaration after attribute \{head(tokens).key}\n");
       tokens = std-c-take-expect(tokens, ";");
-      print("Parsing Declaration after ; \{head(tokens).key}\n");
       Tuple( Some(CBinaryOp("Declaration", close-owned(declaration-specifiers.first.get-or-panic), close-owned(CMaybe(close-owned(init-declarator-list.first))) )), tokens )
    } else {
       let ad = std-c-parse-static-assert-declaration(tokens); tokens = ad.second;
@@ -275,7 +270,6 @@ let std-c-parse-declaration-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,L
    if spec.first.is-none then { spec = std-c-parse-type-qualifier(tokens); };
    if spec.first.is-none then { spec = std-c-parse-function-specifier(tokens); };
    if spec.first.is-none then { spec = std-c-parse-alignment-specifier(tokens); };
-   print("Parsed declaration specifier, followed by \{head(tokens).key}\n");
    spec
 );
 
@@ -323,13 +317,11 @@ let std-c-parse-declaration-or-statement(tokens: List<Token>): Tuple<Maybe<CTerm
 );
 
 let std-c-parse-init-declarator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   print("Init declarator list start, followed by \{head(tokens).key} \{head(tail(tokens)).key} \{head(tail(tail(tokens))).key}\n");
    let no = (None : Maybe<CTerm>)();
    let id = std-c-parse-init-declarator(tokens);
    if id.first.is-some {
       let ids = [id.first.get-or-panic];
       tokens = id.second;
-      print("Init declarator list declarator, followed by \{head(tokens).key}\n");
       while std-c-can-take(tokens, ",") {
          tokens = std-c-take-expect(tokens, ",");
          id = std-c-parse-init-declarator(tokens); tokens = id.second;
@@ -340,9 +332,7 @@ let std-c-parse-init-declarator-list(tokens: List<Token>): Tuple<Maybe<CTerm>,Li
 );
 
 let std-c-parse-init-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   print("Init declarator at \{head(tokens).key}\n");
    let declarator = std-c-parse-declarator(tokens);
-   print("Init declarator after declarator at \{head(tokens).key}\n");
    if declarator.first.is-some {
       tokens = declarator.second;
       if std-c-can-take(tokens, "=") {
@@ -373,7 +363,7 @@ let std-c-parse-static-assert-declaration(tokens: List<Token>): Tuple<Maybe<CTer
 
 let std-c-parse-storage-class-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = (None : Maybe<CTerm>)();
-   if std-c-can-take(tokens, "typedef") then (tokens = std-c-take-expect(tokens, "typedef"); print("take typedef \{head(tokens).key}\n"); Tuple(Some(CType1("typedef")), tokens) )
+   if std-c-can-take(tokens, "typedef") then (tokens = std-c-take-expect(tokens, "typedef"); Tuple(Some(CType1("typedef")), tokens) )
    else if std-c-can-take(tokens, "__extension__") then (tokens = std-c-take-expect(tokens, "__extension__"); Tuple(Some(CType1("__extension__")), tokens) )
    else if std-c-can-take(tokens, "extern") then (tokens = std-c-take-expect(tokens, "extern"); Tuple(Some(CType1("extern")), tokens) )
    else if std-c-can-take(tokens, "static") then (tokens = std-c-take-expect(tokens, "static"); Tuple(Some(CType1("static")), tokens) )
@@ -714,9 +704,7 @@ std-c-typedef-name-index = std-c-typedef-name-index.bind("__builtin_va_list", tr
 
 let std-c-parse-typedef-name(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = (None : Maybe<CTerm>)();
-   print("Typedef lookup typename '\{head(tokens).key}'\n");
    if non-zero(tokens) and std-c-typedef-name-index.has(head(tokens).skey) {
-      print("Typedef found typename \{head(tokens).key}\n");
       Tuple( Some(CType1(head(tokens).skey)), tail(tokens) )
    } else Tuple( no, tokens )
 );

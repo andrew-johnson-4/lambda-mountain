@@ -2,7 +2,6 @@
 let std-c-declare-dedup-index = {} : Hashtable<String,Bool>;
 
 let std-c-declare(t: CTerm): Nil = (
-   print("Declare \{t}\n");
    match t {
       CFunctionDefinition{spec=specifiers,decl=declarator,dl=declaration-list,stmt=statement} => std-c-declare-function(spec, decl, dl, stmt);
       CBinaryOp{op:"Declaration",spec=arg1,arg2:CMaybe{value:Some{content:CList{inits=value}}}} => (
@@ -23,7 +22,6 @@ let std-c-declare(t: CTerm): Nil = (
             CIdentifier{name2=value} => (if not(std-c-declare-dedup-index.has(name2)) {
                std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name2, true);
                if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
-                  print("Bind typename '\{name2}'\n");
                   std-c-typedef-name-index = std-c-typedef-name-index.bind(name2, true);
                };
                ast-parsed-program = ast-parsed-program + Glb(
@@ -41,7 +39,6 @@ let std-c-declare(t: CTerm): Nil = (
                if not(std-c-declare-dedup-index.has(name3.into(type(String)))) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name3.into(type(String)), true);
                   if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
-                     print("Bind typename '\{name3}'\n");
                      std-c-typedef-name-index = std-c-typedef-name-index.bind(name3.into(type(String)), true);
                   };
                   ast-parsed-program = ast-parsed-program + Glb(
@@ -54,7 +51,6 @@ let std-c-declare(t: CTerm): Nil = (
                if not(std-c-declare-dedup-index.has(name4.into(type(String)))) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name4.into(type(String)), true);
                   if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
-                     print("Bind typename '\{name4}'\n");
                      std-c-typedef-name-index = std-c-typedef-name-index.bind(name4.into(type(String)), true);
                   };
                   ast-parsed-program = ast-parsed-program + Glb(
@@ -68,7 +64,6 @@ let std-c-declare(t: CTerm): Nil = (
                if not(std-c-declare-dedup-index.has(name5.into(type(String)))) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name5.into(type(String)), true);
                   if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
-                     print("Bind typename '\{name5}'\n");
                      std-c-typedef-name-index = std-c-typedef-name-index.bind(name5.into(type(String)), true);
                   };
                   ast-parsed-program = ast-parsed-program + Glb(
@@ -80,7 +75,6 @@ let std-c-declare(t: CTerm): Nil = (
                if not(std-c-declare-dedup-index.has(name6)) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name6, true);
                   if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
-                     print("Bind typename '\{name6}'\n");
                      std-c-typedef-name-index = std-c-typedef-name-index.bind(name6, true);
                   };
                   return-type = std-c-decorate-pointer(return-type, ptr);

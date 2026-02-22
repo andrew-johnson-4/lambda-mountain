@@ -88,7 +88,7 @@ let .realloc(h: Hashtable<k,v>, target-capacity: USize): Hashtable<k,v> = (
    while old-i < h.data.capacity {
       let old-kv = h.data[old-i];
       if is(old-kv.first,HashtableRowFilled)
-      then new-data.bind-direct(h.data[old-i].second, h.data[old-i].third);
+      then new-data.bind-direct(old-kv.second, old-kv.third);
       old-i = old-i + 1;
    };
    new-data
