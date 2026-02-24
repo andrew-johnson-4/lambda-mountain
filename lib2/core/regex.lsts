@@ -19,7 +19,6 @@ declare-ternop( $"set.rm_eo", raw-type(C<"regmatch_t">[]), raw-type(USize), raw-
 declare-zop( $"reg_startend", raw-type(C<"int">), l"REG_STARTEND" );
 
 let .has-prefix(text: String, rgx: Regex): Bool = (
-   print("Has Prefix \{text}\n");
    # TODO: fix this mess. The preprocessor is unpacking these erroneously
    # macros 2.0 doesn't have this problem, but this code still needs to be updated after swapping
    let a1 = &rgx as C<"regex_t">[];
@@ -36,7 +35,6 @@ let .has-prefix(text: String, rgx: Regex): Bool = (
       a4 as C<"regmatch_t">[],
       a5
    );
-   print("Hased Prefix \{text}\n");
    (status as U64) == 0
 );
 
@@ -58,14 +56,13 @@ let $"=="(text: CString, rgx: Regex): Bool = (
 );
 
 let .remove-prefix(text: String, rgx: Regex): String? = (
-   print("Remove Prefix \{text}\n");
    let matches = () : C<"regmatch_t">[1];
+   matches[0].rm_so = 0;
+   matches[0].rm_eo = text.length;
    let a1 = &rgx as C<"regex_t">[];
    let a2 = (text.data.data + text.start-offset) as C<"char">[];
    let a3 = 1 as C<"size_t">;
-   let a4 = () : C<"regmatch_t">[1];
-   a4[0].rm_so = 0;
-   a4[0].rm_eo = text.length;
+   let a4 = matches as C<"regmatch_t">[];
    let a5 = reg_startend();
    let status = regexec(
       a1,
@@ -74,21 +71,20 @@ let .remove-prefix(text: String, rgx: Regex): String? = (
       a4,
       a5
    );
-   print("Removed Prefix \{text}\n");
-   if matches[0].rm_so != 0 then (None : String?)
+   if (status as U64)!=0 then (None : String?)
+   else if matches[0].rm_so != 0 then (None : String?)
    else if matches[0].rm_eo == 0 then (None : String?)
-   else Some(text[matches[0].rm_eo as I64 : ])
+   else Some(text[matches[0].rm_eo as I64 : ]);
 );
 
 let .get-prefix(text: String, rgx: Regex): String? = (
-   print("Get Prefix \{text}\n");
    let matches = () : C<"regmatch_t">[1];
+   matches[0].rm_so = 0;
+   matches[0].rm_eo = text.length;
    let a1 = &rgx as C<"regex_t">[];
    let a2 = (text.data.data + text.start-offset) as C<"char">[];
    let a3 = 1 as C<"size_t">;
-   let a4 = () : C<"regmatch_t">[1];
-   a4[0].rm_so = 0;
-   a4[0].rm_eo = text.length;
+   let a4 = matches as C<"regmatch_t">[];
    let a5 = reg_startend();
    let status = regexec(
       a1,
@@ -97,8 +93,8 @@ let .get-prefix(text: String, rgx: Regex): String? = (
       a4,
       a5
    );
-   print("Getd Prefix \{text}\n");
-   if matches[0].rm_so != 0 then (None : String?)
+   if (status as U64)!=0 then (None : String?)
+   else if matches[0].rm_so != 0 then (None : String?)
    else if matches[0].rm_eo == 0 then (None : String?)
    else Some(text[0_i64 : matches[0].rm_eo as I64])
 );
