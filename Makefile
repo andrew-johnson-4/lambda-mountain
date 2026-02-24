@@ -2,7 +2,7 @@ CC = clang
 CFLAGS = -w -O2 -march=native -mtune=native
 
 dev: install-production
-	time lm --v23 tests/promises/lm-ascript/ascript-integrated.lsts
+	time lm --v23 tests/promises/string/prefix.lsts
 	gcc tmp.c
 	./a.out
 
@@ -44,7 +44,7 @@ compile-bootstrap:
 
 compile-production: compile-bootstrap
 	rm -f production
-	./bootstrap.exe --v23 --c -o production.c SRC/index.lsts
+	./bootstrap.exe --v2 --c -o production.c SRC/index.lsts
 	$(CC) $(CFLAGS) -o production production.c
 	rm -f production.c
 
