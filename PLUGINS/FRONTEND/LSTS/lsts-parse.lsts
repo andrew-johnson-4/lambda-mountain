@@ -193,11 +193,8 @@ let lsts-is-type-tag(s: CString): Bool = (
 );
 
 let lsts-parse(tokens: List<Token>): Nil = (
-   print("LSTS parse\n");
    while non-zero(tokens) {
-      print("LSTS parse 1\n");
       (let docx, tokens) = lsts-parse-doc(tokens);
-      print("LSTS parse After Doc\n");
       let prev-tokens = tokens;
       match tokens {
          [ Token{key:c"let"}.. _] => (
@@ -213,20 +210,14 @@ let lsts-parse(tokens: List<Token>): Nil = (
             ast-parsed-program = ast-parsed-program + bind;
          );
          [ Token{key:c"deprecated"}.. Token{key:c"macro"}.. rst] => (
-            print("Deprecated macro 1\n");
             (let mlhs, tokens) = lsts-parse-atom-without-tail(rst);
             let mrhs = ASTNil;
-            print("Deprecated macro 2\n");
             lsts-parse-expect(c"(",tokens); tokens = tail(tokens);
-            print("Deprecated macro 3\n");
             if lsts-parse-head(tokens)==c"let" then (mrhs, tokens) = lsts-parse-let(tokens)
             else (mrhs, tokens) = lsts-parse-atom(tokens);
-            print("Deprecated macro 4\n");
             lsts-parse-expect(c")",tokens); tokens = tail(tokens);
-            print("Deprecated macro 5\n");
             preprocess-macros = MSeq( close(preprocess-macros), Macro(mlhs.without-location, mrhs.without-location) );
             lsts-parse-expect(c";",tokens); tokens = tail(tokens);
-            print("Deprecated macro 5\n");
          );
          [ Token{key:c"interface"}.. _] => tokens = lsts-parse-interface(tokens);
          [ Token{key:c"import"}.. rest] => (
@@ -247,12 +238,10 @@ let lsts-parse(tokens: List<Token>): Nil = (
             lsts-parse-expect(c";",tokens); tokens = tail(tokens);
          );
       };
-      print("LSTS parse After Nibble\n");
       if is(prev-tokens, tokens) { fail("Unrecognized Token During Parsing: \{lsts-parse-head(tokens)}\n") };
       if non-zero(docx) { 
          ast-parsed-program = ast-parsed-program + mk-meta(docx);
       };
-      print("LSTS parse After After Nibble\n");
    };
 );
 

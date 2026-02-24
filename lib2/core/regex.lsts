@@ -36,7 +36,6 @@ let .has-prefix(text: String, rgx: Regex): Bool = (
       a4 as C<"regmatch_t">[],
       a5
    );
-   print("Has prefix status=\{status as U64}, rm_so=\{a4[0].rm_so as U64}, rm_eo=\{a4[0].rm_eo as U64}\n");
    status != reg_nomatch() and a4[0].rm_so==0
 );
 
