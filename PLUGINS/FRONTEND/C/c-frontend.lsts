@@ -1,5 +1,6 @@
 
 let c-frontend(fp: CString): Nil = (
+   print("Parse \{fp}\n");
    # mktemp modifies this buffer, so it can't be a string constant
    # string concatenation is used to create a dynamic string
    let tmpfile = c"/tmp/lm.tmp.XXXXXX" + c"";
@@ -18,6 +19,7 @@ let c-frontend(fp: CString): Nil = (
    let file-contents = read-file(tmp);
    let tokens = std-c-tokenize-string(fp, file-contents);
    std-c-parse(tokens);
+   print("Parsed \{fp}\n");
 );
 
 
