@@ -30,3 +30,6 @@ assert( " ".remove-prefix(r/^[a-zA-Z0-9_-]+/) == (None : String?) );
 
 assert( " import "[1_u64:].remove-prefix(r/^[a-zA-Z0-9_-]+/) == Some(" ") );
 assert( "  "[1_u64:].remove-prefix(r/^[a-zA-Z0-9_-]+/) == (None : String?) );
+
+assert( "ORANGEAPPLE".remove-prefix(r/APPLE/) == (None : String?) );
+assert( not("ORANGEAPPLE".has-prefix(r/APPLE/)) );

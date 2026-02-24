@@ -28,5 +28,6 @@ import lib2/core/cstring.lsts;
 import lib2/core/array.lsts;
 import lib2/core/io.lsts;
 import lib2/core/cmp.lsts;
+import lib2/core/c_int.lsts;
 
 let config-v23 = true;
