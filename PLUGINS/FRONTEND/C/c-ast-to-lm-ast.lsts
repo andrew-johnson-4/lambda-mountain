@@ -2,7 +2,6 @@
 let std-c-declare-dedup-index = {} : Hashtable<String,Bool>;
 
 let std-c-declare(t: CTerm): Nil = (
-   print("Declare \{t}\n");
    match t {
       CFunctionDefinition{spec=specifiers,decl=declarator,dl=declaration-list,stmt=statement} => std-c-declare-function(spec, decl, dl, stmt);
       CBinaryOp{op:"Declaration",spec=arg1,arg2:CMaybe{value:Some{content:CList{inits=value}}}} => (
@@ -95,7 +94,6 @@ let std-c-declare(t: CTerm): Nil = (
       );
       _ => print("Unsupported C Declaration:\n\{t}\n");
    };
-   print("Declared \{t}\n");
 );
 
 let std-c-nametypes-of-params-list(params: List<CTerm>, is-vararg: Bool): List<(CString,Type)> = (
