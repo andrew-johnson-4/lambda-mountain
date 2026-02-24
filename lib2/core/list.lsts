@@ -77,6 +77,7 @@ let $"[]"(tt: List<x>, idx: USize): x = (
          fail(c"list index out of bounds");
       };
       tt = tail(tt);
+      idx = idx - 1;
    };
    head(tt)
 );

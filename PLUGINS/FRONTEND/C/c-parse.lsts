@@ -86,6 +86,13 @@ let .into(l: CTerm, tt: Type<String>): String = (
 
 let std-c-parse(tokens: List<Token>): Nil = (
    while non-zero(tokens) {
+      print("C Parse Tokens:\n");
+      let ti = 0_sz;
+      while ti < 30 and ti < tokens.length {
+         print("Parse \{ti} |tokens|=\{tokens.length}\n");
+         print("Parse \{tokens[ti].key}\n");
+         ti = ti + 1;
+      };
       let original-tokens = tokens;
       tokens = std-c-parse-external-declaration(tokens);
       if is(tokens, original-tokens) {
