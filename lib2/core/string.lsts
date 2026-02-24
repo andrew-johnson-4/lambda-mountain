@@ -144,6 +144,7 @@ let $"+"(l: String, r: String): String = (
    let od = mk-owned-data(type(U8), cs-length);
    memcpy(od.data as C<"void">[], (l.data.data + l.start-offset) as C<"void">[], l-length as USize);
    memcpy((od.data + l-length) as C<"void">[], (r.data.data + r.start-offset) as C<"void">[], r-length as USize);
+   od.occupied = cs-length;
    String(0 as USize, cs-length, od) 
 );
 
