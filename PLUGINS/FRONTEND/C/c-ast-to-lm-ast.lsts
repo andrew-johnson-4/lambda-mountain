@@ -2,6 +2,7 @@
 let std-c-declare-dedup-index = {} : Hashtable<String,Bool>;
 
 let std-c-declare(t: CTerm): Nil = (
+   print("Declare \{t}\n");
    match t {
       CFunctionDefinition{spec=specifiers,decl=declarator,dl=declaration-list,stmt=statement} => std-c-declare-function(spec, decl, dl, stmt);
       CBinaryOp{op:"Declaration",spec=arg1,arg2:CMaybe{value:Some{content:CList{inits=value}}}} => (
