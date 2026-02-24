@@ -2,13 +2,17 @@
 let std-c-declare-dedup-index = {} : Hashtable<String,Bool>;
 
 let std-c-declare(t: CTerm): Nil = (
+   print("Declare \{t}\n");
    match t {
       CFunctionDefinition{spec=specifiers,decl=declarator,dl=declaration-list,stmt=statement} => std-c-declare-function(spec, decl, dl, stmt);
       CBinaryOp{op:"Declaration",spec=arg1,arg2:CMaybe{value:Some{content:CList{inits=value}}}} => (
+         print("Declare 1\n");
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
+         print("Declare 2\n");
          return-type = return-type && t0(c"C-FFI");
          for list init in inits { match init {
             CBinaryOp{op:"=", arg1:CIdentifier{name1=value}, value=arg2} => (
+               print("Declare 3.1\n");
                ast-parsed-program = ast-parsed-program + Glb(
                   mk-token(name1), close(App( false,
                      close(Lit(c":", mk-token(c":"))),
@@ -20,6 +24,7 @@ let std-c-declare(t: CTerm): Nil = (
                );
             );
             CIdentifier{name2=value} => (if not(std-c-declare-dedup-index.has(name2)) {
+               print("Declare 3.2\n");
                std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name2, true);
                if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
                   std-c-typedef-name-index = std-c-typedef-name-index.bind(name2, true);
@@ -35,6 +40,7 @@ let std-c-declare(t: CTerm): Nil = (
                );
             });
             CUnaryPrefix{op:"Declarator(", arg=arg} => (
+               print("Declare 3.3\n");
                (let name3, let body) = std-c-sig-of-declarator(return-type, arg, ta, (None : Maybe<CTerm>)());
                if not(std-c-declare-dedup-index.has(name3.into(type(String)))) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name3.into(type(String)), true);
@@ -47,18 +53,25 @@ let std-c-declare(t: CTerm): Nil = (
                }
             );
             CBinaryOp{op:"Declarator(", arg1=arg1, arg2=arg2 } => (
+               print("Declare 3.4\n");
                (let name4, let body) = std-c-sig-of-declarator(return-type, arg1, ta, Some(arg2));
+               print("Declare 3.4.1\n");
                if not(std-c-declare-dedup-index.has(name4.into(type(String)))) {
+                  print("Declare 3.4.2\n");
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name4.into(type(String)), true);
+                  print("Declare 3.4.3\n");
                   if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
                      std-c-typedef-name-index = std-c-typedef-name-index.bind(name4.into(type(String)), true);
                   };
+                  print("Declare 3.4.4\n");
                   ast-parsed-program = ast-parsed-program + Glb(
                      mk-token(name4), close(body)
                   );
+                  print("Declare 3.4.5\n");
                }
             );
             CBinaryOp{op:"Declarator*", ptr=arg1, arg2:CBinaryOp{op:"Declarator(", arg1=arg1, arg2=arg2 } } => (
+               print("Declare 3.5\n");
                return-type = std-c-decorate-pointer(return-type, ptr);
                (let name5, let body) = std-c-sig-of-declarator(return-type, arg1, ta, Some(arg2));
                if not(std-c-declare-dedup-index.has(name5.into(type(String)))) {
@@ -72,6 +85,7 @@ let std-c-declare(t: CTerm): Nil = (
                }
             );
             CBinaryOp{op:"Declarator*", ptr=arg1, arg2:CIdentifier{name6=value} } => (
+               print("Declare 3.6\n");
                if not(std-c-declare-dedup-index.has(name6)) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name6, true);
                   if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
@@ -91,6 +105,7 @@ let std-c-declare(t: CTerm): Nil = (
             );
             _ => print("Unsupported C Declaration Init\n\{init}\n");
          }};
+         print("Declare 3\n");
       );
       _ => print("Unsupported C Declaration:\n\{t}\n");
    };
@@ -98,24 +113,32 @@ let std-c-declare(t: CTerm): Nil = (
 
 let std-c-nametypes-of-params-list(params: List<CTerm>, is-vararg: Bool): List<(CString,Type)> = (
    let nametypes = [] : List<(CString,Type)>;
-   for list p in params { match p {
+   for list p in params { print("Parse nametype of params list \{p}\n"); match p {
       CBinaryOp{op:"ParameterDeclaration", spec=arg1, arg2:CIdentifier{name=value}} => (
+         print("Nametype of params list 1\n");
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          nametypes = cons((name.into(type(CString)), return-type), nametypes);
       );
       CBinaryOp{op:"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:"Declarator*",ptr=arg1,arg2:CIdentifier{name=value}}} => (
+         print("Nametype of params list 2\n");
          name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
+         print("Nametype of params list 2.1\n");
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
+         print("Nametype of params list 2.2\n");
          return-type = std-c-decorate-pointer(return-type, ptr);
+         print("Nametype of params list 2.3 \{name}\n");
          nametypes = cons((name.into(type(CString)), return-type), nametypes);
+         print("Nametype of params list 2.4\n");
       );
       CBinaryOp{op:"ParameterDeclaration", spec=arg1, arg2:CTernaryOp{op:"Declarator[",arg1:CIdentifier{name=value}}} => (
+         print("Nametype of params list 3\n");
          name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          return-type = t2(c"Array", return-type, ta);
          nametypes = cons((name.into(type(CString)), return-type), nametypes);
       );
       CBinaryOp{op:"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:"Declarator[",arg1:CIdentifier{name=value},sz=arg2}} => (
+         print("Nametype of params list 4\n");
          name = name + "_" + uuid().into(type(String)); # C names can end with _s or other literal type suffixes
          (let return-type, let misc-types) = std-c-type-of-specifiers(spec);
          let sz-t = t1(c"C",t0(std-c-fragment-of-struct-definition-body(sz)));
@@ -123,6 +146,7 @@ let std-c-nametypes-of-params-list(params: List<CTerm>, is-vararg: Bool): List<(
          nametypes = cons((name.into(type(CString)), return-type), nametypes);
       );
       CBinaryOp{op:"ParameterDeclaration", spec=arg1, arg2:CBinaryOp{op:"Declarator(",decl=arg1,arg2:CList{dparams=value}}} => (
+         print("Nametype of params list 5\n");
          (let name, let base-arrow-type) = std-c-type-of-arrow(spec, decl, dparams);
          name = name + c"_" + uuid(); # C names can end with _s or other literal type suffixes
          nametypes = cons((name, base-arrow-type), nametypes);
@@ -132,13 +156,17 @@ let std-c-nametypes-of-params-list(params: List<CTerm>, is-vararg: Bool): List<(
    if is-vararg {
       nametypes = cons((uuid(), t1(c"C",t0(c"..."))), nametypes);
    };
+   print("Before Reverse\n");
    nametypes.reverse
 );
 
 let std-c-sig-of-params-list(params: List<CTerm>, is-vararg: Bool): AST = (
+   print("Sig of params list\n");
    let nametypes = std-c-nametypes-of-params-list(params, is-vararg);
+   print("Sig of params list nametypes\n");
    let return = mk-eof();
    for list Tuple{n=first, tt=second} in std-c-nametypes-of-params-list(params, is-vararg) {
+      print("Sig of params list \{n} : \{tt}\n");
       let pe = mk-var(n).ascript(tt);
       if non-zero(return) {
          return = mk-cons( return, pe );
@@ -146,6 +174,7 @@ let std-c-sig-of-params-list(params: List<CTerm>, is-vararg: Bool): AST = (
          return = pe;
       }
    };
+   print("Sig of params list done\n");
    if non-zero(return) then return else mk-nil()
 );
 
@@ -179,12 +208,14 @@ let std-c-nametype-of-decl(base-type: Type, decl: CTerm): (CString, Type) = (
 );
 
 let std-c-sig-of-declarator(return-type: Type, declarator: CTerm, misc-type: Type, ps: Maybe<CTerm>): (CString, AST) = (
+   print("Sig of declarator 1 \{ps}\n");
    let params = match ps {
       None{} => mk-nil();
       Some{content:CList{value=value}} => std-c-sig-of-params-list(value, false);
       Some{content:CUnaryPrefix{op:"ParameterTypeList...",arg:CList{value=value}}} => std-c-sig-of-params-list(value, true);
       Some{content=content} => (print("std-c-sig-of-declarator unrecognized params \{content}\n"); mk-nil());
    };
+   print("Sig of declarator 2\n");
    match declarator {
       CBinaryOp{op:"Declarator*", ptr=arg1, arg2:CIdentifier{name=value}} => (
          misc-type = std-c-decorate-pointer(misc-type, ptr);
