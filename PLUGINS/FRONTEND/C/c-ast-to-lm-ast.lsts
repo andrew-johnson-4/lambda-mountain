@@ -95,6 +95,7 @@ let std-c-declare(t: CTerm): Nil = (
       );
       _ => print("Unsupported C Declaration:\n\{t}\n");
    };
+   print("Declared \{t}\n");
 );
 
 let std-c-nametypes-of-params-list(params: List<CTerm>, is-vararg: Bool): List<(CString,Type)> = (
