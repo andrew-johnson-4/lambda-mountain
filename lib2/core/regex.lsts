@@ -10,22 +10,33 @@ let :Blob .rm_eo(t: C<"regmatch_t">): U64 = (
    $":expression"( l"("; $":expression"(t); l".rm_eo)"; );
 );
 
+declare-binop( $"set.rm_so", raw-type(C<"regmatch_t">), raw-type(U64), raw-type(Nil), ( l"("; x; l".rm_so="; y;  l")"; ) );
+declare-binop( $"set.rm_eo", raw-type(C<"regmatch_t">), raw-type(U64), raw-type(Nil), ( l"("; x; l".rm_eo="; y;  l")"; ) );
+
+declare-ternop( $"set.rm_so", raw-type(C<"regmatch_t">[]), raw-type(USize), raw-type(U64), raw-type(Nil), ( l"("; x; l"["; y; l"].rm_so="; z;  l")"; ) );
+declare-ternop( $"set.rm_eo", raw-type(C<"regmatch_t">[]), raw-type(USize), raw-type(U64), raw-type(Nil), ( l"("; x; l"["; y; l"].rm_eo="; z;  l")"; ) );
+
+declare-zop( $"reg_startend", raw-type(C<"int">), l"REG_STARTEND" );
+declare-zop( $"reg_nomatch", raw-type(C<"int">), l"REG_NOMATCH" );
+
 let .has-prefix(text: String, rgx: Regex): Bool = (
    # TODO: fix this mess. The preprocessor is unpacking these erroneously
    # macros 2.0 doesn't have this problem, but this code still needs to be updated after swapping
    let a1 = &rgx as C<"regex_t">[];
    let a2 = (text.data.data + text.start-offset) as C<"char">[];
    let a3 = 0 as C<"size_t">;
-   let a4 = 0 as C<"regmatch_t">[];
-   let a5 = 0 as C<"int">;
+   let a4 = () : C<"regmatch_t">[1];
+   a4[0].rm_so = 0;
+   a4[0].rm_eo = text.length;
+   let a5 = reg_startend();
    let status = regexec(
       a1,
       a2,
       a3,
-      a4,
+      a4 as C<"regmatch_t">[],
       a5
    );
-   (status as U64) == 0
+   status != reg_nomatch() and a4[0].rm_so==0
 );
 
 let $"=="(text: CString, rgx: Regex): Bool = (
@@ -42,16 +53,18 @@ let $"=="(text: CString, rgx: Regex): Bool = (
       a4,
       a5
    );
-   (status as U64)==0 and matches[0].rm_so==0 and matches[0].rm_eo==text.length
+   status != reg_nomatch() and matches[0].rm_so==0 and matches[0].rm_eo==text.length
 );
 
 let .remove-prefix(text: String, rgx: Regex): String? = (
    let matches = () : C<"regmatch_t">[1];
+   matches[0].rm_so = 0;
+   matches[0].rm_eo = text.length;
    let a1 = &rgx as C<"regex_t">[];
    let a2 = (text.data.data + text.start-offset) as C<"char">[];
    let a3 = 1 as C<"size_t">;
    let a4 = matches as C<"regmatch_t">[];
-   let a5 = 0 as C<"int">;
+   let a5 = reg_startend();
    let status = regexec(
       a1,
       a2,
@@ -59,18 +72,21 @@ let .remove-prefix(text: String, rgx: Regex): String? = (
       a4,
       a5
    );
-   if matches[0].rm_so != 0 then (None : String?)
+   if status == reg_nomatch() then (None : String?)
+   else if matches[0].rm_so != 0 then (None : String?)
    else if matches[0].rm_eo == 0 then (None : String?)
-   else Some(text[matches[0].rm_eo as I64 : ])
+   else Some(text[matches[0].rm_eo as I64 : ]);
 );
 
 let .get-prefix(text: String, rgx: Regex): String? = (
    let matches = () : C<"regmatch_t">[1];
+   matches[0].rm_so = 0;
+   matches[0].rm_eo = text.length;
    let a1 = &rgx as C<"regex_t">[];
    let a2 = (text.data.data + text.start-offset) as C<"char">[];
    let a3 = 1 as C<"size_t">;
    let a4 = matches as C<"regmatch_t">[];
-   let a5 = 0 as C<"int">;
+   let a5 = reg_startend();
    let status = regexec(
       a1,
       a2,
@@ -78,7 +94,8 @@ let .get-prefix(text: String, rgx: Regex): String? = (
       a4,
       a5
    );
-   if matches[0].rm_so != 0 then (None : String?)
+   if status == reg_nomatch() then (None : String?)
+   else if matches[0].rm_so != 0 then (None : String?)
    else if matches[0].rm_eo == 0 then (None : String?)
    else Some(text[0_i64 : matches[0].rm_eo as I64])
 );
