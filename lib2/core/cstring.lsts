@@ -64,11 +64,14 @@ let hash(key: CString): U64 = (
 );
 
 let $"+"(l: CString, r: CString): CString = (
-   let buf = malloc(l.length + r.length + 1) as C<"char">[];
+   let l-length = l.length;
+   let r-length = r.length;
+   let buf = malloc(l-length + r-length + 1) as C<"char">[];
 
-   memset(buf.void-pointer, 0, l.length+r.length+1);
+   memset(buf.void-pointer, 0, l-length+r-length+1);
    strcat(buf, l as C<"char">[]);
    strcat(buf, r as C<"char">[]);
+   buf[l-length+r-length] = 0 as C<"char">;
    buf as CString
 );
 
