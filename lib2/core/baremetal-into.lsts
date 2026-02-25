@@ -93,17 +93,17 @@ let clone-rope(s: U8): CString = (
 
 # TODO: optimize, this is really inefficient
 let .replace(base: CString, pat: CString, n: CString): CString = (
-   let r = SNil;
+   let r = c"";
    while head(base)!=0 {
       if base.has-prefix(pat) {
          base = base.remove-prefix(pat).get-or(c"");
-         r = r + SAtom(n);
+         r = r + n;
       } else {
-         r = r + SAtom(clone-rope(head(base)));
+         r = r + clone-rope(head(base));
          base = tail(base);
       }
    };
-   clone-rope(r);
+   r
 );
 
 let read-binary-file-to(out: Vector<U8>, path: CString): Vector<U8> = (

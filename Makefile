@@ -1,15 +1,16 @@
 CC = clang
 CFLAGS = -w -O2 -march=native -mtune=native
+LSTSFLAGS = MALLOC_CHECK_=3
 
 dev: install-production
 	time lm --v2 tests/promises/string/prefix.lsts
 	gcc tmp.c
-	./a.out
+	$(LSTSFLAGS) ./a.out
 
 build: compile-production
-	time ./production --v2 --c -o deploy1.c SRC/index.lsts
+	time env $(LSTSFLAGS) ./production --v2 --c -o deploy1.c SRC/index.lsts
 	$(CC) $(CFLAGS) deploy1.c -o deploy1
-	time ./deploy1 --v2 --c -o deploy2.c SRC/index.lsts
+	time env $(LSTSFLAGS) ./deploy1 --v2 --c -o deploy2.c SRC/index.lsts
 	diff deploy1.c deploy2.c
 	mv deploy1.c BOOTSTRAP/cli.c
 	rm -f deploy1 deploy1.c deploy2.c
@@ -26,7 +27,7 @@ valgrind-view:
 
 gprof:
 	$(CC) $(CFLAGS) -pg -o bootstrap.exe BOOTSTRAP/cli.c
-	./bootstrap.exe SRC/index.lsts
+	$(LSTSFLAGS) ./bootstrap.exe SRC/index.lsts
 
 gprof-view-count:
 	gprof bootstrap.exe gmon.out | less
@@ -44,7 +45,7 @@ compile-bootstrap:
 
 compile-production: compile-bootstrap
 	rm -f production
-	./bootstrap.exe --v2 --c -o production.c SRC/index.lsts
+	$(LSTSFLAGS) ./bootstrap.exe --v2 --c -o production.c SRC/index.lsts
 	$(CC) $(CFLAGS) -o production production.c
 	rm -f production.c
 
