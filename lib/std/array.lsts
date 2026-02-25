@@ -105,3 +105,5 @@ let close-owned(x: p): p[] = (
    r[0_u64] = x;
    r
 );
+
+let current_allocated_memory(): U64 = 0;

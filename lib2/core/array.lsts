@@ -104,3 +104,7 @@ let :Blob open(i: x): x = (
    $":expression"($":expression"(i));
    $":frame"($":frame"(i));
 );
+
+let :Blob current_allocated_memory(): U64 = (
+    $":expression"($":expression"(l"({struct mallinfo2 mi = mallinfo2(); mi.uordblks;})"))
+);

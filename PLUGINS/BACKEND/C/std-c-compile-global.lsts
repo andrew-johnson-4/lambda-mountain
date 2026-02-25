@@ -9,7 +9,8 @@ let std-c-finish-forced-imports(): S = (
    (if std-c-force-imports.has(c"stdlib.h") then SAtom(c"#include <stdlib.h>\n") else SNil()) +
    (if std-c-force-imports.has(c"stdio.h") then SAtom(c"#include <stdio.h>\n") else SNil()) +
    (if std-c-force-imports.has(c"regex.h") then SAtom(c"#include <regex.h>\n") else SNil()) +
-   (if std-c-force-imports.has(c"string.h") then SAtom(c"#include <string.h>\n") else SNil())
+   (if std-c-force-imports.has(c"string.h") then SAtom(c"#include <string.h>\n") else SNil()) +
+   (SAtom(c"#include <malloc.h>\n"))
 );
 
 let compile-global-c-main-term = mk-eof();
