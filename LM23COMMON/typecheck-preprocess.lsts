@@ -1,7 +1,12 @@
 
 let preprocess(): Nil = (
+   print("Preprocess 1\n");
    index-typedefs(ast-parsed-program);
+   print("Preprocess 2\n");
    ast-parsed-program = preprocess-apply-literals(ast-parsed-program);
+   print("Preprocess 3\n");
    ast-parsed-program = preprocess-apply(ast-parsed-program);
+   print("Preprocess 4\n");
    ast-parsed-program = preprocess-apply-locations(ast-parsed-program);
+   print("Preprocess 5\n");
 );
