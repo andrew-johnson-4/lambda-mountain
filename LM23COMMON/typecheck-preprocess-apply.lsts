@@ -2,7 +2,6 @@
 let preprocess-apply(program: AST): AST = preprocess-apply(program, false);
 
 let preprocess-apply(program: AST, is-lhs: Bool): AST = (
-   if current_allocated_memory()>0 then print("Preprocess allocated=\{current_allocated_memory() as U64} \{program}\n");
    match program {
       App{ left:App{ left:Var{key:c"macro::concat",ctk1=token}, right:App{ left:Var{lk1=key}, right:Var{rk1=key} } }, nt1=right } => (
          mk-app( mk-var(lk1+rk1, ctk1.unique), preprocess-apply(nt1) )
