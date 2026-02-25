@@ -194,27 +194,22 @@ let lsts-is-type-tag(s: CString): Bool = (
 
 let lsts-parse(tokens: List<Token>): Nil = (
    while non-zero(tokens) {
-      print("LSTS parse TOP LEVEL\n");
       (let docx, tokens) = lsts-parse-doc(tokens);
       let prev-tokens = tokens;
       match tokens {
          [ Token{key:c"let"}.. _] => (
-            print("LSTS parse LET\n");
             (let t, tokens) = lsts-parse-let(tokens);
             ast-parsed-program = ast-parsed-program + t;
          );
          [ Token{key:c"type"}.. _] => (
-            print("LSTS parse TYPE\n");
             (let td, tokens) = lsts-parse-typedef(tokens);
             ast-parsed-program = ast-parsed-program + td;
          );
          [ Token{key:c"typed"}.. Token{key:c"macro"}.. _] => (
-            print("LSTS parse typed macro\n");
             (let bind, tokens) = lsts-parse-typed-macro(tokens);
             ast-parsed-program = ast-parsed-program + bind;
          );
          [ Token{key:c"deprecated"}.. Token{key:c"macro"}.. rst] => (
-            print("LSTS parse deprecated macro\n");
             (let mlhs, tokens) = lsts-parse-atom-without-tail(rst);
             let mrhs = ASTNil;
             lsts-parse-expect(c"(",tokens); tokens = tail(tokens);
@@ -226,7 +221,6 @@ let lsts-parse(tokens: List<Token>): Nil = (
          );
          [ Token{key:c"interface"}.. _] => tokens = lsts-parse-interface(tokens);
          [ Token{key:c"import"}.. rest] => (
-            print("LSTS parse import\n");
             tokens = rest;
             let path = SNil();
             while non-zero(tokens) and lsts-parse-head(tokens) != c";" {
@@ -237,7 +231,6 @@ let lsts-parse(tokens: List<Token>): Nil = (
             frontend(clone-rope(path));
          );
          _ => (
-            print("LSTS parse small expression\n");
             let term-rest = lsts-parse-small-expression(tokens);
             let term = term-rest.first;
             tokens = term-rest.second;
@@ -249,7 +242,6 @@ let lsts-parse(tokens: List<Token>): Nil = (
       if non-zero(docx) { 
          ast-parsed-program = ast-parsed-program + mk-meta(docx);
       };
-      print("LSTS parsed TOP LEVEL\n");
    };
 );
 

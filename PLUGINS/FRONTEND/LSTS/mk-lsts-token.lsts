@@ -1,6 +1,5 @@
 
 let mk-lsts-token(s: String): Token = (
-   print("mk-lsts-token '\{s}'\n");
    let us = s.into(type(CString));
    if us.is-digit or (us.has-prefix(c"-") and tail(us).is-digit) {
       let ds = us;
@@ -47,15 +46,6 @@ let mk-lsts-token(s: String): Token = (
              + c"_s";
    };
    if s.has-prefix("l\"") {
-      print("l prefix '\{us}'\n");
-      let a = us.remove-prefix(c"l\"");
-      print("l prefix '\{a}'\n");   
-      let b = a.get-or(c"").remove-prefix(c"l\"");
-      print("l prefix '\{b}'\n");   
-      let c = b.get-or(c"").replace(c"\\\"", c"\"");
-      print("l prefix '\{c}'\n");   
-      let d = c + c"_l";
-      print("l prefix \{d}\n");   
       us = us.remove-prefix(c"l\"").get-or(c"")
              .remove-suffix(c"\"").get-or(c"")
              .replace(c"\\\"", c"\"")

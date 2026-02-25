@@ -4,11 +4,12 @@ let lsts-tokenize-string(file-path: CString, text: CString): List<Token> = (
 );
 
 let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
+   print("Tokenize String \{file-path}\n");
    smart-token-path-index = smart-token-path-index.bind( text.data as U64, file-path );
 
    let push-newline = false;
    let tokens = [] : List<String>;
-   while non-zero(text) { print("tokenize string '\{text}'\n"); match text {
+   while non-zero(text) { match text {
       "\s".. rest => text = rest;
       "\t".. rest => text = rest;
       "\n".. rest => (
@@ -104,7 +105,7 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
       rest => (
          fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0_sz])}");
       );
-   }; print("tokenized string \{tokens}\n"); };
+   }; };
 
    print("Done tokenizing before internalizing\n");
 
