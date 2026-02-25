@@ -8,7 +8,7 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
 
    let push-newline = false;
    let tokens = [] : List<String>;
-   while non-zero(text) { match text {
+   while non-zero(text) { print("tokenize string '\{text}'\n"); match text {
       "\s".. rest => text = rest;
       "\t".. rest => text = rest;
       "\n".. rest => (
@@ -104,12 +104,16 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
       rest => (
          fail("Unrecognized Token in File \{file-path}: \{clone-rope(rest[0_sz])}");
       );
-   }; };
+   }; print("tokenized string \{tokens}\n"); };
+
+   print("Done tokenizing before internalizing\n");
 
    let internal-tokens = [] : List<Token>;
    for list t in tokens {
       internal-tokens = cons( mk-lsts-token(t), internal-tokens );
    };
+
+   print("Done tokenizing\n");
 
    internal-tokens;
 );
