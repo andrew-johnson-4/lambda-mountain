@@ -48,3 +48,6 @@ assert( c"abcd".remove-suffix(c"ab") == (None : CString?) );
 assert( c"abcd".remove-suffix(c"abcd") == Some(c"") );
 
 assert( c"abcdef".split(c"cd") == mk-vector(type(CString)).push(c"ab").push(c"ef") );
+
+assert( c"dabababd".replace(c"ab",c"c") == c"dcccd" );
+
