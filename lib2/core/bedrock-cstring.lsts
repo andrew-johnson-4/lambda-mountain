@@ -5,7 +5,11 @@ let .remove-prefix(base: CString, prefix: CString): CString? = (
       let base_length = base.length;
       let prefix_length = prefix.length;
       let buf = malloc(base_length - prefix_length + 1) as C<"char">[];
-      strcat(buf, (base as C<"char">[])+prefix_length);
+      let si = 0_sz;
+      while si < (base_length - prefix_length) {
+         buf[si] = base[prefix_length+si] as C<"char">;
+         si = si + 1;
+      };
       buf[base_length - prefix_length] = 0 as C<"char">;
       Some(buf as CString)
    }

@@ -40,9 +40,11 @@ assert( not(c"abcd".contains(c"e")) );
 assert( c"abcd".remove-prefix(c"") == Some(c"abcd") );
 assert( c"abcd".remove-prefix(c"ab") == Some(c"cd") );
 assert( c"abcd".remove-prefix(c"cd") == (None : CString?) );
+assert( c"abcd".remove-prefix(c"abcd") == Some(c"") );
 
 assert( c"abcd".remove-suffix(c"") == Some(c"abcd") );
 assert( c"abcd".remove-suffix(c"cd") == Some(c"ab") );
 assert( c"abcd".remove-suffix(c"ab") == (None : CString?) );
+assert( c"abcd".remove-suffix(c"abcd") == Some(c"") );
 
 assert( c"abcdef".split(c"cd") == mk-vector(type(CString)).push(c"ab").push(c"ef") );
