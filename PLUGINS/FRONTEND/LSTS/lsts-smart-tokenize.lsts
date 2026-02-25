@@ -4,7 +4,6 @@ let lsts-tokenize-string(file-path: CString, text: CString): List<Token> = (
 );
 
 let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
-   print("Tokenize String \{file-path}\n");
    smart-token-path-index = smart-token-path-index.bind( text.data as U64, file-path );
 
    let push-newline = false;
@@ -107,14 +106,10 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
       );
    }; };
 
-   print("Done tokenizing before internalizing\n");
-
    let internal-tokens = [] : List<Token>;
    for list t in tokens {
       internal-tokens = cons( mk-lsts-token(t), internal-tokens );
    };
-
-   print("Done tokenizing\n");
 
    internal-tokens;
 );
