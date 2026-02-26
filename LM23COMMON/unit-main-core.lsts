@@ -40,6 +40,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
       match argv[argi] {
          c"--typecheck" => config-mode = ModeTypecheck();
          c"--parse" => config-mode = ModeParse();
+         c"--preprocess" => config-mode = ModePreprocess();
          c"--compile" => config-mode = ModeCompile();
          c"--v0" => (config-v3 = false; config-v0 = true;);
          c"--v1" => (config-v3 = false; config-v1 = true;);
@@ -90,6 +91,12 @@ let main(argc: C_int, argv: CString[]): Nil = (
       );
       ModeParse{} => (
          for list fp3 in input.reverse { frontend(fp3); };
+         print("\{ast-parsed-program}\n");
+      );
+      ModePreprocess{} => (
+         for list fp32 in input.reverse { frontend(fp32); };
+         preprocess();
+         print("\{ast-parsed-program}\n");
       );
       _ => (
          for list fp4 in input.reverse { frontend(fp4); };
