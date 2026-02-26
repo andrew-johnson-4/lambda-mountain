@@ -3,14 +3,14 @@ CFLAGS = -w -O2 -march=native -mtune=native
 LSTSFLAGS = MALLOC_CHECK_=3
 
 dev: install-production
-	time lm --v23 tests/promises/string/prefix.lsts
+	time lm --v2 tests/promises/string/prefix.lsts
 	gcc tmp.c
 	$(LSTSFLAGS) ./a.out
 
 build: compile-production
-	time env $(LSTSFLAGS) ./production --v23 --c -o deploy1.c SRC/index.lsts
+	time env $(LSTSFLAGS) ./production --v2 --c -o deploy1.c SRC/index.lsts
 	$(CC) $(CFLAGS) deploy1.c -o deploy1
-	time env $(LSTSFLAGS) ./deploy1 --v23 --c -o deploy2.c SRC/index.lsts
+	time env $(LSTSFLAGS) ./deploy1 --v2 --c -o deploy2.c SRC/index.lsts
 	diff deploy1.c deploy2.c
 	mv deploy1.c BOOTSTRAP/cli.c
 	rm -f deploy1 deploy1.c deploy2.c
@@ -20,7 +20,7 @@ deploy: build smoke-test
 deploy-lite: build smoke-test-lite
 
 valgrind: install-bootstrap
-	valgrind --tool=callgrind lm --v23 SRC/index.lsts
+	valgrind --tool=callgrind lm --v2 SRC/index.lsts
 
 valgrind-view:
 	callgrind_annotate callgrind.out.18778
@@ -36,7 +36,7 @@ gprof-view-call-graph:
 	gprof -q bootstrap.exe gmon.out
 
 profile: install-bootstrap
-	perf record lm --v23 SRC/index.lsts
+	perf record lm --v2 SRC/index.lsts
 	./report.sh
 
 compile-bootstrap:
