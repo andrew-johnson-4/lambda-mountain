@@ -168,15 +168,17 @@ let lsts-has-assign(tokens: List<Token>): Bool = (
 );
 
 let lsts-substitute-type-aliases(s: CString): CString = (
-   if s.has-suffix(c"_ss") then intern(s)[:-3_i64].into(type(CString)) else
-   s.remove-suffix(c"_u64").get-or(c"")
-    .remove-suffix(c"_u32").get-or(c"")
-    .remove-suffix(c"_u16").get-or(c"")
-    .remove-suffix(c"_u8").get-or(c"")
-    .remove-suffix(c"_i64").get-or(c"")
-    .remove-suffix(c"_i32").get-or(c"")
-    .remove-suffix(c"_i16").get-or(c"")
-    .remove-suffix(c"_i8").get-or(c"")
+   if s.has-suffix(c"_ss") then s.remove-suffix(c"_ss").get-or(s) else (
+      s = s.remove-suffix(c"_u64").get-or(s);
+      s = s.remove-suffix(c"_u32").get-or(s);
+      s = s.remove-suffix(c"_u16").get-or(s);
+      s = s.remove-suffix(c"_u8").get-or(s);
+      s = s.remove-suffix(c"_i64").get-or(s);
+      s = s.remove-suffix(c"_i32").get-or(s);
+      s = s.remove-suffix(c"_i16").get-or(s);
+      s = s.remove-suffix(c"_i8").get-or(s);
+      s
+   )
 );
 
 let lsts-is-type-tag(s: CString): Bool = (
