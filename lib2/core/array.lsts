@@ -36,12 +36,18 @@ let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
 let safe-alloc-block-count = 0_u64;
 let safe-alloc-block-count-monotonic = 0_u64;
 
-let safe-alloc-impl(nb: USize): ?[] = (
-   if current_allocated_memory()>15000000 then fail("Memory allocated over 15GB. Aborting");
+let safe-alloc-semaphore = false;
+
+let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
+   if not(safe-alloc-semaphore) {
+      safe-alloc-semaphore = true;
+      print("Alloc \{type(t)} size=\{nb}\n");
+      safe-alloc-semaphore = false;
+   };
 
    # BEFORE CHANGING THIS: talk to alex
 
-   let ptr = malloc(nb) as ?[];
+   let ptr = malloc(nb) as t[];
 
    if ptr as USize == 0_sz {
       fail(c"malloc fail");
@@ -81,7 +87,7 @@ let safe-alloc(len: USize, ty: Type<t>): t[] = (
    # BEFORE CHANGING THIS: talk to alex
 
    let nb = len * (sizeof(t) as USize);
-   safe-alloc-impl(nb) as t[]
+   safe-alloc-impl(nb, type(t))
 );
 
 ## this will fail() if len is 0
