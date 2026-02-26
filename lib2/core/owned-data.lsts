@@ -7,7 +7,7 @@ type OwnedData<t> = {
 };
 
 let mk-owned-data(tt: Type<t>, capacity: USize, occupied: USize): OwnedData<t>[] = (
-   let od = safe-alloc(
+   let od = safe-alloc-impl(
       # TODO: make sizeof return USize
       (sizeof(OwnedData<t>) as USize) + (sizeof(t) as USize) * capacity,
       type(OwnedData<t>)

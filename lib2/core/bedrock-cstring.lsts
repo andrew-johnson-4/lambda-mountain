@@ -4,7 +4,7 @@ let .remove-prefix(base: CString, prefix: CString): CString? = (
    else {
       let base_length = base.length;
       let prefix_length = prefix.length;
-      let buf = malloc(base_length - prefix_length + 1) as C<"char">[];
+      let buf = safe-alloc(base_length - prefix_length + 1, type(C<"char">));
       let si = 0_sz;
       while si < (base_length - prefix_length) {
          buf[si] = base[prefix_length+si] as C<"char">;
@@ -19,7 +19,7 @@ let .remove-suffix(base: CString, suffix: CString): CString? = (
    if not(base.has-suffix(suffix)) then None : CString?
    else {
       let new_length = base.length - suffix.length;
-      let buf = malloc(new_length + 1) as C<"char">[];
+      let buf = safe-alloc(new_length + 1, type(C<"char">));
       let si = 0_sz;
       while si < new_length {
          buf[si] = base[si] as C<"char">;

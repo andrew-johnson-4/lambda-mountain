@@ -7,7 +7,7 @@ type SparseOwnedData<t> = {
 };
 
 let mk-sparse-owned-data(tt: Type<t>, capacity: USize, occupied: USize): SparseOwnedData<t>[] = (
-   let od = safe-alloc(
+   let od = safe-alloc-impl(
       # TODO: make sizeof return USize
       (sizeof(SparseOwnedData<t>) as USize) + (sizeof(t) as USize) * capacity,
       type(SparseOwnedData<t>)
