@@ -3,10 +3,10 @@ CFLAGS = -w -O2 -march=native -mtune=native
 LSTSFLAGS = MALLOC_CHECK_=3
 
 dev: install-production
-	lm --v2 --c -o deploy1.c SRC/index.lsts
+	lm --v23 --c -o deploy1.c SRC/index.lsts
 	$(CC) $(CFLAGS) deploy1.c -o deploy1
-	lm --parse SRC/index.lsts > production-parse.txt
-	./deploy1 --parse SRC/index.lsts > deploy-parse.txt
+	lm --preprocess SRC/index.lsts > production-parse.txt
+	./deploy1 --preprocess SRC/index.lsts > deploy-parse.txt
 	diff production-parse.txt deploy-parse.txt
 
 build: compile-production
