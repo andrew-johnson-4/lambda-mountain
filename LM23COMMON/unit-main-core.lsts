@@ -90,6 +90,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
       );
       ModeParse{} => (
          for list fp3 in input.reverse { frontend(fp3); };
+         print("\{ast-parsed-program}\n");
       );
       _ => (
          for list fp4 in input.reverse { frontend(fp4); };
