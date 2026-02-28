@@ -7,6 +7,7 @@ import regex.h;
 
 # not sure why this is necessary, the C frontend must be missing this definition?
 let :FFI mktemp(template: U8[]): U8[] = ();
+let :FFI write(count: USize, ft: C<"int">, buf: C<"void">[], count: USize): USize;
 
 import lib2/core/l.lsts;
 import lib2/core/phi.lsts;

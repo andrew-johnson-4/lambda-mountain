@@ -126,23 +126,7 @@ let $"[]"(s: String, idx: USize): U8 = (
 
 # new allocations = 0
 let print(s: String): Nil = (
-   print(c"print string before fwrite\n");
-   let vi = 0_sz;
-   while vi < s.length {
-      let x = s[vi];
-      vi = vi + 1;
-   };
-   print(c"print string before fwrite after access checks\n");
-   print("print string start-offset=\{s.start-offset}, end-offset=\{s.end-offset}, length=\{s.length}, occupied=\{s.data.occupied}, capacity=\{s.data.capacity}\n".into(type(CString)));
-   let data = s.data.data + s.start-offset;
-   vi = 0_sz;
-   while vi < s.length {
-      let y = data[vi];
-      vi = vi + 1;
-   };
-   print("printed string before fwrite, direct accesses, step by \{sizeof(U8)}\n".into(type(CString)));
    fwrite((s.data.data + s.start-offset) as C<"void">[], sizeof(U8) as USize, s.length as USize, stdout);
-   print(c"print string after fwrite\n");
    ()
 );
 

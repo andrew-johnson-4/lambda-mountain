@@ -39,11 +39,10 @@ let safe-alloc-block-count-monotonic = 0_u64;
 let safe-alloc-semaphore = false;
 
 let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
-   #if not(safe-alloc-semaphore) {
-   #   safe-alloc-semaphore = true;
-   #   print("Alloc \{type(t)} size=\{nb}\n");
-   #   safe-alloc-semaphore = false;
-   #};
+   # WARNING:
+   # SIMD instructions (like in fwrite) can prefetch data beyond the end of a block if unaligned
+   # to avoid this behavior, we will round up all allocations to the nearest 64 byte block
+   nb = (nb + 63) & ~63;
 
    # BEFORE CHANGING THIS: talk to alex
 
@@ -66,6 +65,11 @@ let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
 );
 
 let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
+   # WARNING:
+   # SIMD instructions (like in fwrite) can prefetch data beyond the end of a block if unaligned
+   # to avoid this behavior, we will round up all allocations to the nearest 64 byte block
+   nb = (nb + 63) & ~63;
+
    # BEFORE CHANGING THIS: talk to alex
 
    let new-ptr = realloc(ptr as C<"void">[], nb) as ?[];
