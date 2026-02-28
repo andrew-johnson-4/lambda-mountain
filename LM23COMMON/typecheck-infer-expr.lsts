@@ -195,8 +195,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       Glb{key1=key, val=val} => (
          if true {
             let t = term.into(type(String));
-            print("Infer |\{t.length}|, current-memory = \{current_allocated_memory()}\n");
-            print("Infer \{t}\n");
+            print("Infer t.length=|\{t.length}|, t.start-offset=\{t.start-offset}, t.end-offset=\{t.end-offset}, t.data.occupied=\{t.data.occupied}, t.data.capacity=\{t.data.capacity}, current-memory = \{current_allocated_memory()}\n");
+            t = "Infer \{t}\n";
+            print("Print Infer t.length=|\{t.length}|, t.start-offset=\{t.start-offset}, t.end-offset=\{t.end-offset}, t.data.occupied=\{t.data.occupied}, t.data.capacity=\{t.data.capacity}, current-memory = \{current_allocated_memory()}\n");
+            print(t);
             print("Printed Success\n");
          };
          let rough-tt = typeof-term(term);

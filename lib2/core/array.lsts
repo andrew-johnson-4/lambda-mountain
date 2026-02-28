@@ -99,6 +99,7 @@ let safe-realloc(ptr: t[], len: USize, ty: Type<t>): t[] = (
 );
 
 let safe-free(ptr: ?[]): Nil = (
+   print("FREE!!!!!!!!!!!!!!!\n");
    # BEFORE CHANGING THIS: talk to alex
 
    # TODO: wrap counter adjustments in conditional compilation
