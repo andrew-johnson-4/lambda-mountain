@@ -42,7 +42,7 @@ let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
    # WARNING:
    # SIMD instructions (like in fwrite) can prefetch data beyond the end of a block if unaligned
    # to avoid this behavior, we will round up all allocations to the nearest 64 byte block
-   nb = (nb + 63) & ~63;
+   nb = ((nb + 63) / 64) * 64;
 
    # BEFORE CHANGING THIS: talk to alex
 
@@ -61,6 +61,12 @@ let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
    if not(config-v23) then safe-alloc-block-count = safe-alloc-block-count + 1;
    if not(config-v23) then safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
 
+   let bi = 0_sz;
+   while bi < nb {
+      if (ptr as U8[])[0] != 0 then fail(c"memset 0 memory was non zero\n");
+      bi = bi + 1;
+   };
+
    ptr
 );
 
@@ -68,7 +74,7 @@ let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
    # WARNING:
    # SIMD instructions (like in fwrite) can prefetch data beyond the end of a block if unaligned
    # to avoid this behavior, we will round up all allocations to the nearest 64 byte block
-   nb = (nb + 63) & ~63;
+   nb = ((nb + 63) / 64) * 64;
 
    # BEFORE CHANGING THIS: talk to alex
 
@@ -103,7 +109,6 @@ let safe-realloc(ptr: t[], len: USize, ty: Type<t>): t[] = (
 );
 
 let safe-free(ptr: ?[]): Nil = (
-   print("FREE!!!!!!!!!!!!!!!\n");
    # BEFORE CHANGING THIS: talk to alex
 
    # TODO: wrap counter adjustments in conditional compilation
