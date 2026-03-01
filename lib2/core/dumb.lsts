@@ -2,8 +2,8 @@
 # This library is to provide alternatives to libc functions that are not SIMD enabled
 # SIMD operators fail on some machines if load overlaps the program break boundary
 
-let dumb_memcmp(s1: U8[], s2: U8[], n: USize): USize = (
-    let i = 0_sz;
+let dumb_memcmp(s1: U8[], s2: U8[], n: USize): I32 = (
+    let i = 0_i32;
     let m = 0;
     while i < n and m == 0 {
        if s1[i] < s2[i] then m = -1;
@@ -21,4 +21,25 @@ let dumb_strlen(s1: CString): USize = (
        i = i + 1;
     };
     l
+);
+
+let dumb_strcmp(s1: CString, s2: CString): I32 = (
+    let i = 0_i32;
+    let m = 0;
+    while s1[i]!=0 and s2[i]!=0 and m == 0 {
+       if s1[i] < s2[i] then m = -1;
+       else if s1[i] > s2[i] then m = 1;
+       i = i + 1;
+    };
+    if s1[i]==0 and s2[i]!=0 then m = -1;
+    if s1[i]!=0 and s2[i]==0 then m = 1;
+    m
+);
+
+let dumb_memset(s1: U8[], v: U8, l: USize): Nil = (
+    let i = 0_sz;
+    while i < l {
+       s1[i] = v;
+       i = i + 1;
+    };
 );

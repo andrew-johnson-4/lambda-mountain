@@ -48,7 +48,7 @@ let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
    };
 
    # Zero Out Memory
-   memset(ptr as C<"void">[], 0, nb);
+   dumb_memset(ptr as U8[], 0, nb);
 
    mark-memory-as-safe(ptr as U8[], nb);
 
