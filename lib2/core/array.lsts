@@ -39,12 +39,6 @@ let safe-alloc-block-count-monotonic = 0_u64;
 let safe-alloc-semaphore = false;
 
 let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
-   #if not(safe-alloc-semaphore) {
-   #   safe-alloc-semaphore = true;
-   #   print("Alloc \{type(t)} size=\{nb}\n");
-   #   safe-alloc-semaphore = false;
-   #};
-
    # BEFORE CHANGING THIS: talk to alex
 
    let ptr = malloc(nb) as t[];

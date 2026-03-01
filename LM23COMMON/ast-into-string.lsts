@@ -1,6 +1,6 @@
 
 let .into(t: AST, tgt: Type<String>): String = (
-   match t {
+   let return = match t {
       ASTEOF{} => "EOF";
       ASTNil{} => "()";
       App{left:Lit{key:c":"},right:App{inner=left, right:AType{tt=tt}}} => (
@@ -32,6 +32,7 @@ let .into(t: AST, tgt: Type<String>): String = (
       );
       Meta{val=val} => "meta \{val}\n";
    };
+   return
 );
 
 let .ast-params-into(t: AST, tgt: Type<String>): String = (

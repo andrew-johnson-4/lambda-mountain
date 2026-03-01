@@ -1,4 +1,9 @@
 
+let .start-offset(s: String): U64 = 0;
+let .end-offset(s: String): U64 = 0;
+let .occupied(s: U8[]): U64 = 0;
+let .capacity(s: U8[]): U64 = 0;
+
 let cmp(l: CString, r: String): Ord = (
    cmp( intern(l), r )
 );
