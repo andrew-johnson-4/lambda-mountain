@@ -2,11 +2,11 @@
 # The "LMCString" makes the CString a subtype of C<"char">[] instead of a direct alias
 type alias CString suffix _s = C<"char">[];
 
-let .length(l: CString): USize = strlen(l) as USize;
+let .length(l: CString): USize = dumb_strlen(l) as USize;
 let non-zero(l: CString): Bool = l.length > 0;
 
 let cmp(l: CString, r: CString): Ord = (
-   let c = strcmp( l, r ) as I64;
+   let c = dumb_strcmp( l, r ) as I64;
    if c < 0 then LessThan
    else if c > 0 then GreaterThan
    else Equal
@@ -66,13 +66,10 @@ let hash(key: CString): U64 = (
 let $"+"(l: CString, r: CString): CString = (
    let l-length = l.length;
    let r-length = r.length;
-   let buf = safe-alloc(l-length + r-length + 1, type(C<"char">));
-
-   memset(buf.void-pointer, 0, l-length+r-length+1);
-   strcat(buf, l as C<"char">[]);
-   strcat(buf, r as C<"char">[]);
-   buf[l-length+r-length] = 0 as C<"char">;
-   buf as CString
+   let buf = safe-alloc(l-length + r-length + 1, type(C<"char">)) as CString;
+   dumb_strcat(buf, l);
+   dumb_strcat(buf, r);
+   buf
 );
 
 let .has-suffix(s2: CString, s1: CString): Bool = (

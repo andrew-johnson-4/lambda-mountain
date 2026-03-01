@@ -40,9 +40,9 @@ let non-zero(s: String): Bool = s.length > 0;
 let cmp(l: String, r: String): Ord = (
    let l-size = l.end-offset - l.start-offset;
    let r-size = r.end-offset - r.start-offset;
-   let c = memcmp(
-      (l.data.data + l.start-offset) as C<"void">[],
-      (r.data.data + r.start-offset) as C<"void">[],
+   let c = dumb_memcmp(
+      (l.data.data + l.start-offset) as U8[],
+      (r.data.data + r.start-offset) as U8[],
       min(l-size, r-size)
    ) as I64;
    if c < 0 then LessThan
@@ -142,22 +142,22 @@ let $"+"(l: String, r: String): String = (
    let r-length = r.length;
    let cs-length = l-length + r-length;
    let od = mk-owned-data(type(U8), cs-length);
-   memcpy(od.data as C<"void">[], (l.data.data + l.start-offset) as C<"void">[], l-length as USize);
-   memcpy((od.data + l-length) as C<"void">[], (r.data.data + r.start-offset) as C<"void">[], r-length as USize);
+   dumb_memcpy(od.data as U8[], (l.data.data + l.start-offset) as U8[], l-length as USize);
+   dumb_memcpy((od.data + l-length) as U8[], (r.data.data + r.start-offset) as U8[], r-length as USize);
    od.occupied = cs-length;
    String(0 as USize, cs-length, od) 
 );
 
 # new allocations = 0
 let fail(msg: String): Never = (
-   fwrite((msg.data.data + msg.start-offset) as C<"void">[], sizeof(U8) as USize, msg.length, stderr);
+   write(2, (msg.data.data + msg.start-offset) as C<"void">[], msg.length);
    exit(1) as Never;
 );
 
 let fail(msg: String, loc: String): Never = (
-   fwrite((msg.data.data + msg.start-offset) as C<"void">[], sizeof(U8) as USize, msg.length, stderr);
-   fwrite(c" at " as C<"void">[], sizeof(U8) as USize, c" at ".length, stderr);
-   fwrite((loc.data.data + loc.start-offset) as C<"void">[], sizeof(U8) as USize, loc.length, stderr);
+   write(2, (msg.data.data + msg.start-offset) as C<"void">[], msg.length);
+   write(2, c" at " as C<"void">[], c" at ".length);
+   write(2, (loc.data.data + loc.start-offset) as C<"void">[], loc.length);
    exit(1) as Never;
 );
 
