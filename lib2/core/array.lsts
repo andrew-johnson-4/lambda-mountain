@@ -61,12 +61,6 @@ let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
    if not(config-v23) then safe-alloc-block-count = safe-alloc-block-count + 1;
    if not(config-v23) then safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
 
-   let bi = 0_sz;
-   while bi < nb {
-      if (ptr as U8[])[0] != 0 then fail(c"memset 0 memory was non zero\n");
-      bi = bi + 1;
-   };
-
    ptr
 );
 
