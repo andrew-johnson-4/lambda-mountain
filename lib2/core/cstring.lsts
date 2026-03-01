@@ -66,13 +66,10 @@ let hash(key: CString): U64 = (
 let $"+"(l: CString, r: CString): CString = (
    let l-length = l.length;
    let r-length = r.length;
-   let buf = safe-alloc(l-length + r-length + 1, type(C<"char">));
-
-   dumb_memset(buf as U8[], 0, l-length+r-length+1);
-   strcat(buf, l as C<"char">[]);
-   strcat(buf, r as C<"char">[]);
-   buf[l-length+r-length] = 0 as C<"char">;
-   buf as CString
+   let buf = safe-alloc(l-length + r-length + 1, type(C<"char">)) as CString;
+   dumb_strcat(buf, l);
+   dumb_strcat(buf, r);
+   buf
 );
 
 let .has-suffix(s2: CString, s1: CString): Bool = (
