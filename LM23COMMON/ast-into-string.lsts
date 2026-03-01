@@ -1,14 +1,12 @@
 
 let .into(t: AST, tgt: Type<String>): String = (
    let return = match t {
-      ASTEOF{} =>(print("into ASTEOF\n"); "EOF");
-      ASTNil{} => (print("into ASTNil\n"); "()");
+      ASTEOF{} => "EOF";
+      ASTNil{} => "()";
       App{left:Lit{key:c":"},right:App{inner=left, right:AType{tt=tt}}} => (
-         print("into Ascript\n");
          inner.into(type(String)) + " : " + tt.into(type(String));
       );
       App{is-cons:is-cons, left=left,right=right} => (
-         print("into App\n");
          if is-cons
          then "(" + left.into(type(String)) + "," + right.into(type(String)) + ")";
          else left.into(type(String)) + "(" + right.into(type(String)) + ")";
@@ -16,30 +14,24 @@ let .into(t: AST, tgt: Type<String>): String = (
       Var{vkey=key} => (print("into Var\n"); vkey.into(type(String)));
       Lit{lkey=key} => (print("into Lit\n"); "'" + lkey.into(type(String)));
       Abs{lhs=lhs,rhs=rhs} => (
-         print("into Abs\n");
          "(fn (" + lhs.ast-params-into(type(String)) + ") = " + rhs.into(type(String)) + ")";
       );
       Glb{gkey=key,gval=val} => (
-         print("into Glb\n");
          "let \{gkey.key} = " + gval.into(type(String)) + ";";
       );
       AType{tt=tt} => (print("into AType\n"); tt.into(type(String)));
       Seq{seq=seq} => (
-         print("into Seq\n");
          let ret = "";
          for vector s in seq { if non-zero(ret) then ret = ret + "\n"; ret = ret + s.into(type(String)) };
          ret
       );
       Typedef{lhs-type=lhs-type} => (
-         print("into Typedef\n");
          let r = "type";
          if non-zero(lhs-type) then r = r + " " + lhs-type.into(type(String));
          r = r + ";"; r
       );
-      Meta{val=val} => (print("into Meta\n"); "meta \{val}\n");
+      Meta{val=val} => "meta \{val}\n";
    };
-   print("Into Term return.length=|\{return.length}|, return.start-offset=\{return.start-offset}, return.end-offset=\{return.end-offset}, return.data.occupied=\{return.data.occupied}, return.data.capacity=\{return.data.capacity}, current-memory = \{current_allocated_memory()}\n");
-   print("into Term '\{return}'\n");
    return
 );
 
