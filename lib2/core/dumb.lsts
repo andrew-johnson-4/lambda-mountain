@@ -13,6 +13,14 @@ let dumb_memcmp(s1: U8[], s2: U8[], n: USize): I32 = (
     m
 );
 
+let dumb_memcpy(s1: U8[], s2: U8[], n: USize): Nil = (
+    let i = 0_sz;
+    while i < n {
+       s1[i] = s2[i];
+       i = i + 1;
+    };
+);
+
 let dumb_strlen(s1: CString): USize = (
     let l = 0_sz;
     let i = 0_sz;
