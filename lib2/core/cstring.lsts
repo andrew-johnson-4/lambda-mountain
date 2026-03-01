@@ -2,7 +2,7 @@
 # The "LMCString" makes the CString a subtype of C<"char">[] instead of a direct alias
 type alias CString suffix _s = C<"char">[];
 
-let .length(l: CString): USize = strlen(l) as USize;
+let .length(l: CString): USize = dumb_strlen(l) as USize;
 let non-zero(l: CString): Bool = l.length > 0;
 
 let cmp(l: CString, r: CString): Ord = (

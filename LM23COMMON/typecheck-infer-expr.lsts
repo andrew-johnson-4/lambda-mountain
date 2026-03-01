@@ -6,6 +6,8 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
    (tctx, tt)
 );
 
+let debug-active-expr = false;
+
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
    profile-visit-ast-unique(term);
    profile-visit-ast-equal(term);
@@ -193,6 +195,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          }};
       );
       Glb{key1=key, val=val} => (
+         print("Infer \{term}\n");
+         if key1.key==c"lsts-tokenize-string" then debug-active-expr = true;
          let rough-tt = typeof-term(term);
          if rough-tt.is-arrow and not(rough-tt.is-open) and not(rough-tt.is-t(c"TypedMacro",0)) {
             let tctx-tctx = tctx.get-or(mk-tctx());
@@ -213,6 +217,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                term = new-term;
             };
          };
+         if key1.key==c"lsts-tokenize-string" then debug-active-expr = false;
       );
       Var{key2=key, token=token} => (
          (tctx, let vt) = typeof-var(term, tctx, key2, hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));

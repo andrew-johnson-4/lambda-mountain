@@ -3,16 +3,16 @@ CFLAGS = -w -O2 -march=native -mtune=native
 LSTSFLAGS = MALLOC_CHECK_=3
 
 dev: install-production
-	lm --v2 --c -o deploy1.c SRC/index.lsts
+	lm --v23 --c -o deploy1.c SRC/index.lsts
 	$(CC) $(CFLAGS) deploy1.c -o deploy1
 	lm --preprocess SRC/index.lsts > production-parse.txt
 	./deploy1 --preprocess SRC/index.lsts > deploy-parse.txt
 	diff production-parse.txt deploy-parse.txt
 
 build: compile-production
-	time env $(LSTSFLAGS) ./production --v2 --c -o deploy1.c SRC/index.lsts > log1.txt
+	time env $(LSTSFLAGS) ./production --v23 --c -o deploy1.c SRC/index.lsts > log1.txt
 	$(CC) $(CFLAGS) deploy1.c -o deploy1
-	time env $(LSTSFLAGS) ./deploy1 --v2 --c -o deploy2.c SRC/index.lsts > log2.txt
+	time env $(LSTSFLAGS) ./deploy1 --v23 --c -o deploy2.c SRC/index.lsts > log2.txt
 	diff deploy1.c deploy2.c
 	mv deploy1.c BOOTSTRAP/cli.c
 	rm -f deploy1 deploy1.c deploy2.c
