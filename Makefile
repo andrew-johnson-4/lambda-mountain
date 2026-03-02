@@ -2,6 +2,11 @@ CC = clang
 CFLAGS = -w -O2 -march=native -mtune=native
 LSTSFLAGS = MALLOC_CHECK_=3
 
+# WARNING: You may need to increase ulimit
+# the compiler stack frames are currently fairly fat and inefficient
+# recursion is used fairly heavily
+# recommendation: ulimit -s unlimited
+
 dev: install-production
 	lm --v2 --c -o deploy1.c SRC/index.lsts
 	$(CC) $(CFLAGS) deploy1.c -o deploy1
