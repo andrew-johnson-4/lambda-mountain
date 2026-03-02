@@ -8,9 +8,15 @@ type S zero SNil = SNil
 let $"SAtom"(key: CString): S = SAtom(key.into(type(String)));
 
 let clone-rope(s: S): CString = (
+   print("Clone rope 1\n");
    let out = mk-vector(type(U8));
    out = clone-rope-impl(s, out);
-   out.buffer-into-cstring
+   print("Clone Rope 2\n");
+   let r = out.buffer-into-cstring;
+   print("Cloned Rope 3.1\n");
+   print("Cloned Rope 3.2 '\{r.length}'\n");
+   print("Cloned Rope 3.3 '\{r}'\n");
+   r
 );
 
 let clone-rope-impl(s: S, out: Vector<U8>): Vector<U8> = (
