@@ -15,6 +15,6 @@ let file-exists(fp: CString): Bool = (
 
 let write-file(fp: CString, contents: CString): Nil = (
    let f = fopen(fp, c"w");
-   write(f as USize, contents as C<"void">[], contents.length);
+   fwrite(contents as C<"void">[], 1, contents.length, f);
    fclose(f); ()
 );

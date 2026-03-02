@@ -10,7 +10,7 @@ let $"SAtom"(key: CString): S = SAtom(key.into(type(String)));
 let clone-rope(s: S): CString = (
    let out = mk-vector(type(U8));
    out = clone-rope-impl(s, out);
-   out.buffer-into-cstring
+   out.buffer-into-cstring;
 );
 
 let clone-rope-impl(s: S, out: Vector<U8>): Vector<U8> = (
