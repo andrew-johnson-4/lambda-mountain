@@ -52,7 +52,7 @@ compile-bootstrap:
 
 compile-production: compile-bootstrap
 	rm -f production
-	$(LSTSFLAGS) ./bootstrap.exe --v2 --c -o production.c SRC/index.lsts
+	$(LSTSFLAGS) ./bootstrap.exe --v23 --c -o production.c SRC/index.lsts
 	$(CC) $(CFLAGS) -o production production.c
 	rm -f production.c
 
