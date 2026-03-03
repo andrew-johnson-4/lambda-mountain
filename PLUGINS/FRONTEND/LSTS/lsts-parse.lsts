@@ -591,11 +591,16 @@ let lsts-parse-bitwise(tokens: List<Token>): Tuple<AST,List<Token>> = (
 let lsts-parse-logical-not(tokens: List<Token>): Tuple<AST,List<Token>> = (
    if lsts-parse-head(tokens)==c"not" {
       let op-t = head(tokens); let op = op-t.key; tokens = tail(tokens);
-      (let term, tokens) = lsts-parse-logical-not(tokens);
-      term = mk-app( 
-         Var( op, op-t ),
-         term
-      );
+      let term = mk-eof();
+      if lsts-parse-head(tokens)==c"," or lsts-parse-head(tokens)==c")" or lsts-parse-head(tokens)==c";" {
+         term = Var( op, op-t );
+      } else {
+         (term, tokens) = lsts-parse-logical-not(tokens);
+         term = mk-app( 
+            Var( op, op-t ),
+            term
+         );
+      };
       Tuple ( term, tokens )
    } else lsts-parse-cmp(tokens)
 );
