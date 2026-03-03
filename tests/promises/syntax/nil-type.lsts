@@ -1,0 +1,7 @@
+
+import lib/core/bedrock.lsts;
+
+let f() = ();
+let f(): () = ();
+
+() : ();
