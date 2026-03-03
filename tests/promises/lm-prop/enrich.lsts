@@ -1,5 +1,5 @@
 
-import LM23COMMON/unit-prop-core.lsts;
+import SRC/unit-prop-core.lsts;
 
 add-quick-prop( t0(c"A.1"), ta, t0(c"A.2") );
 add-weaken-quick-prop( t0(c"A.1"), ta, t0(c"A.2") );

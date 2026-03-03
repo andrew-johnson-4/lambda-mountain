@@ -1,5 +1,5 @@
 
-import LM23COMMON/unit-ascript-core.lsts;
+import SRC/unit-ascript-core.lsts;
 
 datatype-index = datatype-index.bind( (c"A", 1_u64), true );
 add-concrete-type-instance( t1(c"A",t0(c"B")), mk-eof() );

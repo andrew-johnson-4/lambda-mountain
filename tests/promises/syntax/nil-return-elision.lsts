@@ -1,5 +1,5 @@
 
-import lib/std/minimal.lsts;
+import lib/core/bedrock.lsts;
 
 # return type defaults to Nil
 let f() = ();

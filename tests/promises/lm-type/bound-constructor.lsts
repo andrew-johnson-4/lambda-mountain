@@ -1,5 +1,5 @@
 
-import LM23COMMON/unit-type-core.lsts;
+import SRC/unit-type-core.lsts;
 
 # some of these counts are upper bounds because List will be replaced with Vector implementation
 

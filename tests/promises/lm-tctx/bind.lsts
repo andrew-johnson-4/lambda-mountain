@@ -1,5 +1,5 @@
 
-import LM23COMMON/unit-tctx-core.lsts;
+import SRC/unit-tctx-core.lsts;
 
 let tctx0 = Some(mk-tctx());
 let tctx1 = tctx0.bind(c"a", t0(c"A"), mk-eof());

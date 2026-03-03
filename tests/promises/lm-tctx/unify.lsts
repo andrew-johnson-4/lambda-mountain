@@ -1,5 +1,5 @@
 
-import LM23COMMON/unit-tctx-core.lsts;
+import SRC/unit-tctx-core.lsts;
 
 assert( unify( t0(c"A"), (t0(c"A") && t0(c"B")), mk-eof() ) == Some(mk-tctx()) );
 assert( unify( t0(c"B"), (t0(c"A") && t0(c"B")), mk-eof() ) == Some(mk-tctx()) );

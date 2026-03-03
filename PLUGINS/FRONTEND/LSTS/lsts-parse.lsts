@@ -588,6 +588,23 @@ let lsts-parse-bitwise(tokens: List<Token>): Tuple<AST,List<Token>> = (
    Tuple ( term, tokens )
 );
 
+let lsts-parse-logical-not(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   if lsts-parse-head(tokens)==c"not" {
+      let op-t = head(tokens); let op = op-t.key; tokens = tail(tokens);
+      let term = mk-eof();
+      if lsts-parse-head(tokens)==c"," or lsts-parse-head(tokens)==c")" or lsts-parse-head(tokens)==c";" {
+         term = Var( op, op-t );
+      } else {
+         (term, tokens) = lsts-parse-logical-not(tokens);
+         term = mk-app( 
+            Var( op, op-t ),
+            term
+         );
+      };
+      Tuple ( term, tokens )
+   } else lsts-parse-cmp(tokens)
+);
+
 let lsts-parse-cmp(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let term-rest = lsts-parse-bitwise(tokens);
    let term = term-rest.first;
@@ -629,13 +646,13 @@ let lsts-parse-ascript(tokens: List<Token>): Tuple<AST,List<Token>> = (
 );
 
 let lsts-parse-andor(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   let term-rest = lsts-parse-cmp(tokens);
+   let term-rest = lsts-parse-logical-not(tokens);
    let term = term-rest.first;
    tokens = term-rest.second;
    while lsts-parse-head(tokens)==c"&&" or lsts-parse-head(tokens)==c"||"
       or lsts-parse-head(tokens)==c"and" or lsts-parse-head(tokens)==c"or" or lsts-parse-head(tokens)==c"xor" {
       let op-t = head(tokens); let op = op-t.key; tokens = tail(tokens);
-      let term2-rest = lsts-parse-cmp(tokens);
+      let term2-rest = lsts-parse-logical-not(tokens);
       tokens = term2-rest.second;
       term = mk-app( 
          Var( op, op-t ),

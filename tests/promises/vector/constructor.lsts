@@ -1,5 +1,5 @@
 
-import lib/std/minimal.lsts;
+import lib/core/bedrock.lsts;
 
 mk-vector(type(U8), 0);
 assert( safe-alloc-block-count == 0 );
@@ -7,10 +7,10 @@ assert( safe-alloc-block-count == 0 );
 mk-vector(type(U8), 2);
 assert( safe-alloc-block-count == 0 );
 
-mk-vector(type(U8), 2).push(123);
+let _01 = mk-vector(type(U8), 2).push(123);
 assert( safe-alloc-block-count == 0 );
 
-mk-vector(type(U8), 0).push(123);
+let _02 = mk-vector(type(U8), 0).push(123);
 assert( safe-alloc-block-count == 0 );
 
 assert( mk-vector(type(U8), 2).push(123).push(45)[0] == 123 );

@@ -1,5 +1,5 @@
 
-import LM23COMMON/unit-type-core.lsts;
+import SRC/unit-type-core.lsts;
 
 assert( ta.l1 == ta );
 assert( ta.l2 == ta );

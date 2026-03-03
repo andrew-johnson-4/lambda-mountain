@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm --v23 tests/promises/typechecking/must-use-reject-1.lsts
+	lm --v23 tests/promises/syntax/logical-not.lsts
 	$(CC) $(CFLAGS) tmp.c
 	./a.out
 

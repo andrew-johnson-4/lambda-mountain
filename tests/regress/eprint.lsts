@@ -1,7 +1,0 @@
-
-import std/default.lsts;
-
-let main(): Nil = (
-   print(1);
-   eprint(2);
-);

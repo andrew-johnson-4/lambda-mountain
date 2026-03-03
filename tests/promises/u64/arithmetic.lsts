@@ -1,5 +1,5 @@
 
-import lib/std/minimal.lsts;
+import lib/core/bedrock.lsts;
 
 assert( 1_u64 == 1_u64 );
 assert( 2_u64 == 2_u64 );

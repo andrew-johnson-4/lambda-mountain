@@ -1,5 +1,5 @@
 
-import LM23COMMON/unit-prop-core.lsts;
+import SRC/unit-prop-core.lsts;
 
 let tctx = Some(mk-tctx());
 tctx = tctx.bind-global(c"f", t2(c"Arrow", t0(c"A"), t0(c"B")), mk-var(c"a"));

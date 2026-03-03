@@ -1,4 +1,4 @@
 
-import lib/std/minimal.lsts;
+import lib/core/bedrock.lsts;
 
 assert( (mk-vector(type(String)).push("A"), 1).first == mk-vector(type(String)).push("A") );
