@@ -1,6 +1,6 @@
 
 
-import LM23COMMON/unit-ascript-core.lsts;
+import SRC/unit-ascript-core.lsts;
 
 let term0 = mk-var(c"a");
 let term1 = mk-var(c"a");

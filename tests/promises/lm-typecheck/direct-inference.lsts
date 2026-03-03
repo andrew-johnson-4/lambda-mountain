@@ -1,5 +1,5 @@
 
-import LM23COMMON/unit-typecheck-core.lsts;
+import SRC/unit-typecheck-core.lsts;
 
 let tctx1 = Some(mk-tctx());
 let term1 = mk-eof();

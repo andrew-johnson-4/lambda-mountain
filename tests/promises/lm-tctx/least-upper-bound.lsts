@@ -1,5 +1,5 @@
 
-import LM23COMMON/unit-prop-core.lsts;
+import SRC/unit-prop-core.lsts;
 
 let tctx = Some(mk-tctx());
 
