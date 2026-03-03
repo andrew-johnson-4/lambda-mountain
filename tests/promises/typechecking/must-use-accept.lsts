@@ -1,0 +1,8 @@
+
+import lib/std/minimal.lsts;
+
+let v = mk-vector(type(U8));
+v = v.push(1);
+
+let h = mk-hashtable(type(U8),type(U8));
+h = h.bind(2,3);
