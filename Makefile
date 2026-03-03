@@ -8,11 +8,9 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm --v23 --c -o deploy1.c SRC/index.lsts
-	$(CC) $(CFLAGS) deploy1.c -o deploy1
-	lm --preprocess SRC/index.lsts > production-parse.txt
-	./deploy1 --preprocess SRC/index.lsts > deploy-parse.txt
-	diff production-parse.txt deploy-parse.txt
+	lm --v23 tests/promises/typechecking/must-use-reject-1.lsts
+	$(CC) $(CFLAGS) tmp.c
+	./a.out
 
 build: compile-production
 	time env $(LSTSFLAGS) ./production --v23 --c -o deploy1.c SRC/index.lsts

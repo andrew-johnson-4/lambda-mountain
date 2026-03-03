@@ -15,6 +15,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       Tuple{ first:TAny{} } => ctx = yes;
       Tuple{ first:TGround{tag:c"Any"} } => ctx = yes;
       Tuple{ first:TGround{tag:c"MustNotRetain"} } => ctx = yes;
+      Tuple{ first:TGround{tag:c"MustUse"} } => ctx = yes;
       Tuple{ first:TGround{tag:c"MustNotMove"} } => ctx = yes;
       Tuple{ first:TGround{tag:c"MustReleaseAfterCall"} } => ctx = yes;
       Tuple{ first:TGround{tag:c"MustNotRewrite"} } => ctx = yes;
@@ -36,6 +37,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
             if result.is-some then (match lc {
                TGround{tag:c"Any"} => ();
                TGround{tag:c"MustNotRetain"} => ();
+               TGround{tag:c"MustUse"} => ();
                TGround{tag:c"MustNotMove"} => ();
                TGround{tag:c"MustReleaseAfterCall"} => ();
                TGround{tag:c"MustNotRewrite"} => ();

@@ -17,6 +17,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       Tuple{ first:TAny{} } => true;
       Tuple{ first:TGround{tag:c"Any"} } => true;
       Tuple{ first:TGround{tag:c"MustNotRetain"} } => true;
+      Tuple{ first:TGround{tag:c"MustUse"} } => true;
       Tuple{ first:TGround{tag:c"MustNotMove"} } => true;
       Tuple{ first:TGround{tag:c"MustReleaseAfterCall"} } => true;
       Tuple{ first:TGround{tag:c"MustNotRewrite"} } => true;
@@ -31,6 +32,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
             if result then (match lc {
                TGround{tag:c"Any"} => ();
                TGround{tag:c"MustNotRetain"} => ();
+               TGround{tag:c"MustUse"} => ();
                TGround{tag:c"MustNotMove"} => ();
                TGround{tag:c"MustReleaseAfterCall"} => ();
                TGround{tag:c"MustNotRewrite"} => ();

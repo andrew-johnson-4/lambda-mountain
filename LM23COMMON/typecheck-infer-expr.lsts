@@ -394,6 +394,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.phi-move(typeof-term(term),term);
       }
    }};
+   if used.is-unused and typeof-term(term).is-t(c"MustUse",0) then exit-error("MustUse term value must be used", term);
    (tctx, term);
 );
 
