@@ -96,7 +96,7 @@ let .realloc(h: Hashtable<k,v>, target-capacity: USize): Hashtable<k,v> = (
 
 # new allocations = 1 if realloc is necessary
 #                 | 0
-let .bind(h: Hashtable<k,v>, key: k, val: v): Hashtable<k,v> = (
+let .bind(h: Hashtable<k,v>, key: k, val: v): Hashtable<k,v>+MustUse = (
    if (h.data as USize) == 0 or h.data.capacity == 0 {
       # Hashtables can be allocated on the stack as empty values
       # Resize these to size 32 next
