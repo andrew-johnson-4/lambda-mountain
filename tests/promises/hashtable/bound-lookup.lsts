@@ -1,5 +1,5 @@
 
-import lib/std/minimal.lsts;
+import lib/core/bedrock.lsts;
 
 assert( mk-hashtable(type(U64), type(U64), 0).bind(8_u64,9_u64).lookup(8_u64,123_u64) == 9 );
 assert( safe-alloc-block-count == 0 );

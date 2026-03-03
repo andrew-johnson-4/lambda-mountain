@@ -1,2 +1,0 @@
-
-type alias I8 suffix _i8 = I64;

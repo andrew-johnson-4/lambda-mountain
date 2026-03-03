@@ -10,3 +10,5 @@ import LM23COMMON/unit-backend-core.lsts;
 import LM23COMMON/unit-main-core.lsts;
 
 import PLUGINS/FRONTEND/LSTS/index.lsts;
+import PLUGINS/BACKEND/C/index.lsts;
+import PLUGINS/FRONTEND/C/index.lsts;

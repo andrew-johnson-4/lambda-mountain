@@ -1,5 +1,5 @@
 
-import lib/std/minimal.lsts;
+import lib/core/bedrock.lsts;
 
 assert( mk-vector(type(U8)).reverse == mk-vector(type(U8)) );
 assert( mk-vector(type(U8)).push(1).reverse == mk-vector(type(U8)).push(1) );

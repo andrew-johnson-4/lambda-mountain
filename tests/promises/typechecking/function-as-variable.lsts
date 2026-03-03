@@ -1,5 +1,5 @@
 
-import lib/std/minimal.lsts;
+import lib/core/bedrock.lsts;
 
 # blocked on backend/frontend support/integration for local variables that are functions
 

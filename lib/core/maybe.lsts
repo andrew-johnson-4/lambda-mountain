@@ -1,0 +1,70 @@
+
+type Maybe<x> implies MustRetain, MustRelease zero None = None | Some { content: x };
+
+let .release(t: Maybe<x>): Nil = (
+   if t.discriminator-case-tag==(t as Tag::Some).discriminator-case-tag {
+      if type(x) <: type(MustRelease) { (t as Tag::Some).content.release; };
+   };
+   mark-as-released(t);
+);
+
+let .retain(t: Maybe<x>): Maybe<x> = (
+   if t.discriminator-case-tag==(t as Tag::Some).discriminator-case-tag {
+      if type(x) <: type(MustRetain) { mark-as-released((t as Tag::Some).content.retain); };
+   };
+   t
+);
+
+let cmp(l: Maybe<x>, r: Maybe<x>): Ord = (
+   if l.discriminator-case-tag==(l as Tag::Some).discriminator-case-tag
+   and r.discriminator-case-tag==(r as Tag::Some).discriminator-case-tag
+   then cmp((l as Tag::Some).content, (r as Tag::Some).content)
+   else cmp(l.discriminator-case-tag,r.discriminator-case-tag);
+);
+
+let hash(t: Maybe<x>): U64 = (
+   if t.discriminator-case-tag==(t as Tag::Some).discriminator-case-tag
+   then hash((t as Tag::Some).content)
+   else 0
+);
+
+let .into(t: Maybe<x>, tt: Type<String>): String = (
+   if t.discriminator-case-tag==(t as Tag::Some).discriminator-case-tag
+   then "Some(" + (t as Tag::Some).content.into(type(String)) + ")"
+   else "None"
+);
+
+let .get-or(m: Maybe<x>, default: x): x = (
+   match m {
+      Some{content=content} => content;
+      None{} => default;
+   }
+);
+
+let .get-or-panic(m: Maybe<x>): x = (
+   match m {
+      Some{content=content} => content;
+   }
+);
+
+let .is-none(m: Maybe<x>): Bool = (
+   m.discriminator-case-tag == (m as Tag::None).discriminator-case-tag
+);
+
+let .is-some(m: Maybe<x>): Bool = (
+   m.discriminator-case-tag == (m as Tag::Some).discriminator-case-tag
+);
+
+let .expect(l: Maybe<x>, msg: CString): x = (
+   match l {
+      Some{content=content} => content;
+      _ => fail(msg);
+   }
+);
+
+let .expect(l: Maybe<x>, msg: String): x = (
+   match l {
+      Some{content=content} => content;
+      _ => fail(msg);
+   }
+);

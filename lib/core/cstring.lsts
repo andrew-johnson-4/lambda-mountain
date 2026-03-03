@@ -1,0 +1,133 @@
+
+# The "LMCString" makes the CString a subtype of C<"char">[] instead of a direct alias
+type alias CString suffix _s = C<"char">[];
+
+let .length(l: CString): USize = dumb_strlen(l) as USize;
+let non-zero(l: CString): Bool = l.length > 0;
+
+let cmp(l: CString, r: CString): Ord = (
+   let c = dumb_strcmp( l, r ) as I64;
+   if c < 0 then LessThan
+   else if c > 0 then GreaterThan
+   else Equal
+);
+
+# TODO: replace this with a macro or something
+# [specialize(x = CString)]
+let $"=="(l: CString, r: CString): Bool = cmp(l, r) == Equal;
+let $"!="(l: CString, r: CString): Bool = cmp(l, r) != Equal;
+let $"<"(l: CString, r: CString): Bool  = cmp(l, r) <  Equal;
+let $"<="(l: CString, r: CString): Bool = cmp(l, r) <= Equal;
+let $">"(l: CString, r: CString): Bool  = cmp(l, r) >  Equal;
+let $">="(l: CString, r: CString): Bool = cmp(l, r) >= Equal;
+
+let fail(msg: CString): Never = (
+   fputs(msg, stderr);
+   exit(1);
+   () as Never
+);
+
+let fail(msg1: CString, msg2: CString): Never = (
+   fputs(msg1, stderr);
+   fputs(msg2, stderr);
+   exit(1);
+   () as Never
+);
+
+let print(msg: CString): Nil = (
+   fputs(msg, stdout); ()
+);
+
+let eprint(msg: CString): Nil = (
+   fputs(msg, stderr); ()
+);
+
+let $"[]"(l: CString, idx: USize): U8 = (
+   (l as U8[])[idx]
+);
+
+let deep-hash(key: CString): U64 = hash(key);
+let hash(key: CString): U64 = (
+   let i = 0_sz;
+   let key-length = key.length;
+   let result = 0_u64;
+   while i < key-length {
+      result = result + key[i];
+      result = result + (result << 10);
+      result = result ^ (result >> 6);
+      i = i + 1;
+   };
+   result = result + (result << 3);
+   result = result ^ (result >> 11);
+   result = result + (result << 15);
+   result
+);
+
+let $"+"(l: CString, r: CString): CString = (
+   let l-length = l.length;
+   let r-length = r.length;
+   let buf = safe-alloc(l-length + r-length + 1, type(C<"char">)) as CString;
+   dumb_strcat(buf, l);
+   dumb_strcat(buf, r);
+   buf
+);
+
+let .has-suffix(s2: CString, s1: CString): Bool = (
+   let s1-length = s1.length;
+   let s2-length = s2.length;
+   if s1-length > s2-length then false else {
+      let i = 0_sz;
+      let return = true;
+      while i < s1-length {
+         if s1[s1-length - i - 1] != s2[s2-length - i - 1]
+         then return = false;
+         i = i + 1;
+      };
+      return
+   }
+);
+
+let .has-prefix(s2: CString, s1: CString): Bool = (
+   let s1-length = s1.length;
+   let s2-length = s2.length;
+   if s1-length > s2-length then false else {
+      let i = 0_sz;
+      let return = true;
+      while i < s1-length {
+         if s1[i] != s2[i]
+         then return = false;
+         i = i + 1;
+      };
+      return
+   }
+);
+
+let head(x: CString): U8 = if non-zero(x) then (x as U8[])[0] else 0;
+let tail(x: CString): CString = if non-zero(x) then ((x as U8[]) + 1) as CString else c"";
+
+let .contains(base: CString, pat: CString): Bool = (
+   let r = false;
+   while not(r) and non-zero(base) {
+      r = base.has-prefix(pat);
+      base = tail(base);
+   };
+   r
+);
+
+let .file-extension(path: CString): CString = (
+   while head(path) != 0_u8 and head(path) != 46_u8 {
+      path = tail(path);
+   };
+   path
+);
+
+let .is-digit(base: CString): Bool = (
+   if non-zero(base) {
+      let r = true;
+      while head(base) != 0_u8 and r {
+         r = 48_u8 <= head(base) and head(base) <= 57_u8;
+         base = tail(base);
+      };
+      r
+   } else false
+);

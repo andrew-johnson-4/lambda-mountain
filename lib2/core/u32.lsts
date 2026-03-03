@@ -1,2 +1,0 @@
-
-type alias U32 suffix _u32 = U64;

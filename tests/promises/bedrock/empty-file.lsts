@@ -1,2 +1,2 @@
 
-import lib/std/minimal.lsts;
+import lib/core/bedrock.lsts;

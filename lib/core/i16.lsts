@@ -1,0 +1,2 @@
+
+type alias I16 suffix _i16 = I64;

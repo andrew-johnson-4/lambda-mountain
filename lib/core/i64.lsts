@@ -1,0 +1,51 @@
+
+type opaque alias I64 suffix _i64 = C<"int64_t">;
+
+# C can't handle this literal directly because it needs to store as unsigned first before converting to signed
+let minimum-I64 = -9223372036854775807_i64 - 1_i64;
+
+declare-binop( $"!=", raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"&", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"&"; y; l")"; ) );
+declare-binop( $"|", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"|"; y; l")"; ) );
+declare-binop( $"^", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"^"; y; l")"; ) );
+declare-binop( $"+", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"/", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"/"; y; l")"; ) );
+declare-binop( $"%", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"%"; y; l")"; ) );
+declare-binop( $"*", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"*"; y; l")"; ) );
+
+declare-unop( $"~", raw-type(I64), raw-type(I64), ( l"((int64_t)(~"; x; l"))"; ) );
+
+let min(l: I64, r: I64): I64 = (
+   if l < r then l else r
+);
+let max(l: I64, r: I64): I64 = (
+   if l > r then l else r
+);
+
+let cmp(l: I64, r: I64): Ord = (
+   if l < r then LessThan
+   else if l > r then GreaterThan
+   else Equal
+);
+
+let abs(i: I64): I64 = if i<0 then 0_i64 - i else i;
+
+let hash(x: I64): U64 = x as U64;
+
+let to-i64(s: CString): I64 = (
+   let negative = false;
+   if head(s)==45 {
+      negative = true;
+      s = tail(s);
+   };
+   let base = to-u64(s) as I64;
+   if negative then base = 0_i64 - base;
+   base
+);

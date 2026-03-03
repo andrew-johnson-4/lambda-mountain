@@ -1,5 +1,5 @@
 
-import lib/std/minimal.lsts;
+import lib/core/bedrock.lsts;
 
 assert( non-zero("a") );
 assert( safe-alloc-block-count == 0 );

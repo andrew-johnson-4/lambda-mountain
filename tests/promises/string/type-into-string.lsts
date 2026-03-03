@@ -1,4 +1,4 @@
 
-import lib/std/minimal.lsts;
+import lib/core/bedrock.lsts;
 
 assert( type(U8).into(type(String)) == "U8" );
