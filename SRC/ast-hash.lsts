@@ -1,0 +1,17 @@
+
+let hash(t: AST): U64 = (
+   match t {
+      Meta{ val=val } => hash(val) + 123;
+      ASTEOF{} => 456;
+      ASTNil{} => 789;
+      App{ is-cons=is-cons, left=left, right=right } => hash(is-cons) + hash(left) + hash(right);
+      Var{ key1=key, token=token } => hash(key1);
+      Lit{ key2=key, token=token } => hash(key2);
+      Abs{ lhs=lhs, rhs=rhs, tt=tt } => hash(lhs) + hash(rhs) + hash(tt);
+      AType{ tt=tt } => hash(tt);
+      Seq{ seq=seq } => hash(seq);
+      Glb{ key3=key, val=val } => 012 + hash(val);
+      Typedef{ lhs-type=lhs-type, implies=implies, implements=implements, size=size, alias=alias, opaque-alias=opaque-alias } => 
+      hash(lhs-type) + hash(implies) + hash(implements) + hash(size) + hash(alias) + hash(opaque-alias);
+   }
+);

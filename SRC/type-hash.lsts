@@ -1,0 +1,13 @@
+
+let hash(tt: Type): U64 = (
+   match tt {
+      TAny{} => 0_u64;
+      TVar{name=name} => hash(name);
+      TAnd{conjugate=conjugate} => (
+         let result = 0_u64;
+         for vector c in conjugate { result = result + hash(c) };
+         result
+      );
+      TGround{tag=tag,parameters=parameters} => hash(tag) + hash(parameters);
+   }
+);
