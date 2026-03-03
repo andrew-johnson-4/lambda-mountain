@@ -1,7 +1,0 @@
-
-let .is-and(tt: Type): Bool = (
-   match tt {
-      TAnd{} => true;
-      _ => false;
-   }
-);

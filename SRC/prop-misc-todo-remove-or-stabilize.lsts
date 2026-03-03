@@ -1,0 +1,16 @@
+
+let .normalized-type(tr: TypeContextRow): Type = (
+   match tr {
+      TypeContextRow{ nt=nt, dt=dt } => if non-zero(nt) then nt else dt.normalize;
+      _ => ta;
+   }
+);
+
+let .def(tr: TypeContextRow): AST = (
+   match tr {
+      TypeContextRow{ blame=blame } => blame;
+      _ => ASTEOF;
+   }
+);
+
+let .into(tr: TypeContextRow, tt: Type<String>): String = "TypeContextRow{ key: \"\{tr.key-or-zero}\", dt: \"\{tr.dt-or-zero}\" }";

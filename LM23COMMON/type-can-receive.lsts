@@ -1,2 +1,0 @@
-
-let can-receive(ft: Type, pt: Type): Bool = pt <: ft.range;

@@ -1,2 +1,0 @@
-
-let can-apply(ft: Type, pt: Type): Bool = pt <: ft.domain;

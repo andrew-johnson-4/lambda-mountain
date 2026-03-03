@@ -1,0 +1,59 @@
+
+let .lookup(tctx: TypeContext?, key: CString): TypeContextRow = tctx.get-or(mk-tctx()).tctx.lookup(key);
+let .lookup(trs: List<TypeContextRow>, key: CString): TypeContextRow = (
+   let default = NullTypeContextRow;
+   let continue = true;
+   for list tr in trs { if continue {
+      if tr.key-or-zero == key {
+         default = tr;
+         continue = false;
+      }
+   }};
+   if not(non-zero(default)) {
+      for list tr in global-tctx.lookup(key, [] : List<TypeContextRow>) {
+         if tr.key-or-zero == key {
+            if non-zero(default) {
+               eprint("Duplicate Global Symbol \{key}\n");
+               eprint("At \{default.blame-or-zero.location}\n");
+               eprint("And \{tr.blame-or-zero.location}\n");
+               exit(1);
+            };
+            default = tr;
+         }
+      };
+   };
+   default
+);
+
+let .lookups(tctx: TypeContext?, key: CString): List<TypeContextRow> = tctx.get-or(mk-tctx()).tctx.lookups(key);
+let .lookups(trs: List<TypeContextRow>, key: CString): List<TypeContextRow> = (
+   let default = [] : List<TypeContextRow>;
+   let continue = true;
+   for list tr in trs { if continue {
+      if tr.key-or-zero == key {
+         default = cons(tr, default);
+         continue = false;
+      }
+   }};
+   if continue {
+      for list tr in global-tctx.lookup(key, [] : List<TypeContextRow>) {
+         if tr.key-or-zero == key {
+            default = cons(tr, default);
+         }
+      };
+   };
+   default
+);
+
+let .lookup-phi(tctx: TypeContext?, key: CString): PhiContextRow = tctx.get-or(mk-tctx()).pctx.lookup(key);
+let .lookup(trs: List<PhiContextRow>, key: CString): PhiContextRow = (
+   let default = NullPhiContextRow;
+   let continue = true;
+   for list tr in trs { if continue {
+      if tr.phi-id-or-zero == key {
+         default = tr;
+         if not(tr.dead-on-arrival-or-zero) then continue = false;
+      }
+   }};
+   default
+);

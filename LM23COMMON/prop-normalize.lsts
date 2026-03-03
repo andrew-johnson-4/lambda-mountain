@@ -1,4 +1,0 @@
-
-let .normalize(tt: Type): Type = (
-   tt.rewrite-type-alias.weaken
-);

@@ -1,0 +1,4 @@
+
+type StackToSpecialize = { key:CString, ctx:Maybe<TypeContext>, result-type:Type, term: AST };
+
+let stack-to-specialize = [] : List<StackToSpecialize>;

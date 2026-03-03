@@ -1,7 +1,0 @@
-
-import lib/core/bedrock.lsts;
-import lib/core/compiler-only.lsts;
-
-let safe-alloc-block-count = 0;
-
-import LM23COMMON/util-uuid.lsts;

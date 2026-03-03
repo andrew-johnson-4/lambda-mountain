@@ -1,0 +1,5 @@
+
+let lone-index = {} : Hashtable<CString,Bool>;
+
+let index-lone-tag(tag: CString): Nil = lone-index = lone-index.bind(tag,true);
+let is-lone-tag(tag: CString): Bool = lone-index.lookup(tag,false);

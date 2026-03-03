@@ -1,7 +1,0 @@
-
-let preprocess(): Nil = (
-   index-typedefs(ast-parsed-program);
-   ast-parsed-program = preprocess-apply-literals(ast-parsed-program);
-   ast-parsed-program = preprocess-apply(ast-parsed-program);
-   ast-parsed-program = preprocess-apply-locations(ast-parsed-program);
-);

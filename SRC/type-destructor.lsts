@@ -1,0 +1,22 @@
+
+let .r(tt: Type, i: USize): Type = (
+   match tt {
+      TGround { parameters=parameters } => parameters.nth(i).get-or(ta);
+      _ => ta;
+   }
+);
+let .r1(tt: Type): Type = tt.r(0);
+let .r2(tt: Type): Type = tt.r(1);
+let .r3(tt: Type): Type = tt.r(2);
+let .r4(tt: Type): Type = tt.r(3);
+
+let .l(tt: Type, i: USize): Type = (
+   match tt {
+      TGround { parameters=parameters } => parameters.reverse.nth(i).get-or(ta);
+      _ => ta;
+   }
+);
+let .l1(tt: Type): Type = tt.l(0);
+let .l2(tt: Type): Type = tt.l(1);
+let .l3(tt: Type): Type = tt.l(2);
+let .l4(tt: Type): Type = tt.l(3);

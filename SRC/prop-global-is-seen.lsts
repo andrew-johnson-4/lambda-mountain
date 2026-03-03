@@ -1,0 +1,9 @@
+
+let global-symbol-registry = {} : Hashtable<(CString,Type),Bool>;
+
+let mark-global-as-seen(name: CString, tt: Type, tlt: Type): Nil = (
+   if global-is-seen(name,tt) and not(tlt.is-t(c"FFI",0)) then fail("Duplicate Global Symbol \{name} : \{tt}");
+   global-symbol-registry = global-symbol-registry.bind((name,tt), true);
+);
+
+let global-is-seen(name: CString, tt: Type): Bool = global-symbol-registry.lookup((name,tt),false);

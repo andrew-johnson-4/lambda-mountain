@@ -1,0 +1,7 @@
+
+let .simple-arity(tt: Type): U64 = (
+   match tt {
+      TGround { parameters=parameters } => parameters.length;
+      _ => 0;
+   }
+);

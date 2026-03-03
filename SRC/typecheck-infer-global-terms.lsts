@@ -1,0 +1,93 @@
+
+let infer-bind-global(tctx: TypeContext?, key: CString, nt: Type, dt: Type, blame: AST): TypeContext? = (
+   tctx.bind-global(key, nt, dt, blame)
+);
+
+let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
+   match term {
+      Seq{seq=seq} => (
+         let def-i = 0_sz;
+         while def-i < seq.length {
+            (tctx, let rterm) = infer-global-terms(tctx, seq[def-i]);
+            seq[def-i] = rterm;
+            def-i = def-i + 1;
+         };
+      );
+      Glb{val:Abs{}} => ();
+      Glb{k=key, rhs=val} => (
+         (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Used, ta);
+         if not(is(rhs,new-rhs)) then {
+            let new-term = mk-glb(k, new-rhs);
+            mark-var-to-def(new-term, term);
+            term = new-term;
+            rhs = new-rhs;
+         };
+         let kto = typeof-term(rhs);
+         let ktd = kto && t0(c"GlobalVariable");
+         tctx = tctx.bind-global(k.key, kto, ktd, term);
+         if not(global-is-seen(k.key, ktd)) {
+            mark-global-as-seen(k.key, ktd, ta);
+            tctx = tctx.ascript(term, ktd);
+            (tctx, _) = tctx.maybe-apply-callable(c"mov", t2(c"Cons",ktd.without-phi,ktd.without-phi), term);
+         }
+      );
+      _ => (
+         (tctx, term) = std-infer-expr(tctx, term, false, Unused, ta);
+      );
+   };
+   (tctx, term)
+);
+
+let infer-global-context-prim(term: AST): Nil = (
+   match term {
+      Seq{seq=seq} => (
+         for vector s in seq { infer-global-context-prim(s) }
+      );
+      Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
+         if k.key.has-prefix(c"primitive::") then {
+            let ft = t2(c"Arrow", typeof-lhs(lhs), return-type.without-modifiers).without-phi-keep-state && misc-tt;
+            if not(global-is-seen(k.key, ft)) {
+               mark-global-as-seen(k.key, ft, misc-tt);
+               Some(mk-tctx()).ascript(term, ft);
+               Some(mk-tctx()).ascript(frhs, ft);
+               Some(mk-tctx()).bind-global(k.key, ft, ft, term);
+            }
+         };
+      );
+      _ => ();
+   }
+);
+
+let infer-global-context-td(term: AST): Nil = (
+   match term {
+      Seq{seq=seq} => (
+         for vector s in seq { infer-global-context-td(s) };
+         for vector s in type-ast-inserts { ast-parsed-program = ast-parsed-program + s; };
+      );
+      Typedef{} => infer-type-definition(term);
+      _ => ();
+   }
+);
+
+let infer-global-context(term: AST): Nil = (
+   match term {
+      Seq{seq=seq} => (
+         for vector s in seq { infer-global-context(s) }
+      );
+      Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
+         if k.key.has-prefix(c"primitive::") then ()
+         else if misc-tt.is-t(c"TypedMacro",0) then bind-new-macro(k.key, frhs)
+         else {
+            let ft = t2(c"Arrow", typeof-lhs(lhs), return-type.rewrite-type-alias.expand-implied-phi.without-modifiers).without-phi-keep-state && misc-tt;
+            if not(global-is-seen(k.key, ft)) {
+               mark-global-as-seen(k.key, ft, misc-tt);
+               Some(mk-tctx()).ascript(term, ft);
+               Some(mk-tctx()).ascript(frhs, ft);
+               Some(mk-tctx()).bind-global(k.key, ft, denormalize-strong(ft), term);
+            }
+         };
+      );
+      _ => ();
+   };
+);
+

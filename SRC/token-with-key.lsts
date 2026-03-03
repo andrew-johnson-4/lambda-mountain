@@ -1,0 +1,4 @@
+
+let with-key(t: Token, k: CString): Token = (
+   Token( k, iuid(), t.location )
+);

@@ -1,0 +1,2 @@
+
+let cmp(lt: Token, rt: Token): Ord = cmp(lt.key,rt.key);

@@ -1,2 +1,0 @@
-
-let .with-only-phi(tt: Type): Type = tt.slot(c"Phi::State",1).l1;
