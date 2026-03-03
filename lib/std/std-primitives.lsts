@@ -1,7 +1,0 @@
-
-type CString implements Collection<U8> suffix _s;
-
-type String implements Collection<U8> suffix _ss
-          = { data:U8[] , start:U8[] , end:U8[] , data-end:U8[] };
-
-let .start-offset(s: String): U64 = s.start - s.data;

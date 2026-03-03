@@ -1,0 +1,14 @@
+
+import lib/std/minimal.lsts;
+
+assert( not true == false );
+assert( not(true) == false );
+assert( not not true == true );
+assert( true or not true == true );
+assert( true or not false == true );
+assert( false or not true == false );
+assert( false or not false == true );
+assert( true and not true == false );
+assert( true and not false == true );
+assert( false and not true == false );
+assert( false and not false == false );
