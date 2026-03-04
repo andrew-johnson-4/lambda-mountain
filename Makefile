@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm --v23 tests/promises/syntax/nil-type.lsts
+	lm --v23 tests/promises/typechecking/nil-never-variables.lsts
 	$(CC) $(CFLAGS) tmp.c
 	./a.out
 

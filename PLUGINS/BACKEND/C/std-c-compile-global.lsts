@@ -17,6 +17,7 @@ let std-c-finish-forced-imports(): S = (
 let compile-global-c-main-term = mk-eof();
 
 let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
+   let kt = typeof-term(term);
    std-c-force-import-clib(c"string.h");
    if k==c"" then ()
    else if k==c"div_t" then std-c-force-import-clib(c"stdlib.h")
@@ -39,13 +40,13 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    else if k==c"bsearch" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"qsort" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"__compar_fn_t" then std-c-force-import-clib(c"stdlib.h")
-   else if typeof-term(term).is-open or typeof-term(term).is-t(c"Blob",0) or typeof-term(term).is-t(c"FFI",0) or typeof-term(term).is-t(c"Prop",0) then ()
+   else if kt.is-open or kt.is-t(c"Blob",0) or kt.is-t(c"FFI",0) or kt.is-t(c"Prop",0) then ()
    else if k==c"main" and not(non-zero(compile-global-c-main-term)) then {
       compile-global-c-main-term = term;
    } else match term {
       App{left:Lit{key:c":"}, right:App{left:ASTNil{}, right:AType{tt=tt}}} => (
          if not(tt.is-t(c"C-FFI",0)) and not(tt.is-t(c"C-Fragment",0)) {
-            let clean-tt = typeof-term(term).weaken.without-phi;
+            let clean-tt = kt.weaken.without-phi;
             k = mangle-identifier(k, clean-tt);
          };
          (let pre-decl, let post-decl) = std-c-mangle-declaration(tt, term);
@@ -55,7 +56,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom(k);
          text = text + post-decl;
          text = text + SAtom(c";\n");
-         if can-unify(t1(c"C",t0(c"typedef")), tt) or can-unify(t2(c"Array",t1(c"C",t0(c"typedef")),ta), tt) {
+         if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: t1(c"C",t0(c"void")) then ()
+         else if can-unify(t1(c"C",t0(c"typedef")), tt) or can-unify(t2(c"Array",t1(c"C",t0(c"typedef")),ta), tt) {
             assemble-header-typedef-section = assemble-header-typedef-section + text;
          } else {
             assemble-gdecl-section = assemble-gdecl-section + text;
@@ -63,20 +65,25 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
       );
       App{left:Lit{key:c":"}, right:App{t=left, right:AType{tt=tt}}} => (
          if not(tt.is-t(c"C-FFI",0)) and not(tt.is-t(c"C-Fragment",0)) {
-            let clean-tt = typeof-term(term).weaken.without-phi;
+            let clean-tt = kt.weaken.without-phi;
             k = mangle-identifier(k, clean-tt);
          };
          let gend = false;
          if tt.is-t(c"C-Fragment",0) {
             match t {
                Lit{key=key} => (
-                  assemble-gdecl-section = assemble-gdecl-section + SAtom(key);
+                  if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: t1(c"C",t0(c"void")) then ()
+                  else assemble-gdecl-section = assemble-gdecl-section + SAtom(key);
                   gend = true;
                );
                _ => ();
             }
          };
-         if not(gend) {
+         if not(gend) and (kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: t1(c"C",t0(c"void"))) {
+            let inner-expr = std-c-compile-expr( ctx, t, false );
+            let text = inner-expr.get(c"expression") + SAtom(c";\n");
+            assemble-global-initializer-section = assemble-global-initializer-section + text;
+         } else if not(gend) {
             (let pre-decl, let post-decl) = std-c-mangle-declaration(tt, term);
             let text = SNil();
             text = text + pre-decl;
@@ -86,7 +93,10 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             text = text + SAtom(c";\n");
 
             let inner-expr = std-c-compile-expr( ctx, t, false );
-            if can-unify(t1(c"C",t0(c"typedef")), tt) or can-unify(t2(c"Array",t1(c"C",t0(c"typedef")),ta), tt) {
+            if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: t1(c"C",t0(c"void")) then {
+               text = SNil;
+               text = SAtom(k) + SAtom(c" = ") + inner-expr.get(c"expression") + SAtom(c";\n");
+            } else if can-unify(t1(c"C",t0(c"typedef")), tt) or can-unify(t2(c"Array",t1(c"C",t0(c"typedef")),ta), tt) {
                assemble-header-typedef-section = assemble-header-typedef-section + text;
             } else {
                assemble-gdecl-section = assemble-gdecl-section + text;
@@ -96,8 +106,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          }
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => (
-         if k!=c"main" and not(typeof-term(term).is-t(c"C-FFI_s",0)) {
-            k = mangle-identifier-function(k, typeof-term(term).without-phi);
+         if k!=c"main" and not(kt.is-t(c"C-FFI_s",0)) {
+            k = mangle-identifier-function(k, kt.without-phi);
          };
          ctx = std-c-compile-destructure-args( ctx, lhs, false );
          let loc = term.location;
@@ -154,8 +164,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          };
       );
       t => (
-         let tt = typeof-term(term);
-         if not(typeof-term(term).is-t(c"C-FFI",0)) and not(tt.is-t(c"C-Fragment",0)) {
+         let tt = kt;
+         if not(kt.is-t(c"C-FFI",0)) and not(tt.is-t(c"C-Fragment",0)) {
             k = mangle-identifier(k, tt.without-phi);
          };
 
@@ -166,11 +176,17 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom(k);
          text = text + post-decl;
          text = text + SAtom(c";\n");
-         assemble-gdecl-section = assemble-gdecl-section + text;
+         if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: t1(c"C",t0(c"void")) then ()
+         else assemble-gdecl-section = assemble-gdecl-section + text;
 
          let inner-expr = std-c-compile-expr( ctx, t, false );
-         text = SAtom(k) + SAtom(c" = ") + inner-expr.get(c"expression") + SAtom(c";\n");
-         assemble-global-initializer-section = assemble-global-initializer-section + text;
+         if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: t1(c"C",t0(c"void")) {
+            text = inner-expr.get(c"expression") + SAtom(c";\n");
+            assemble-global-initializer-section = assemble-global-initializer-section + text;
+         } else {
+            text = SAtom(k) + SAtom(c" = ") + inner-expr.get(c"expression") + SAtom(c";\n");
+            assemble-global-initializer-section = assemble-global-initializer-section + text;
+         }
       );
    }
 );
