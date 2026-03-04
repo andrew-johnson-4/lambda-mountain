@@ -22,24 +22,26 @@ let $">"(l: CString, r: CString): Bool  = cmp(l, r) >  Equal;
 let $">="(l: CString, r: CString): Bool = cmp(l, r) >= Equal;
 
 let fail(msg: CString): Never = (
-   fputs(msg, stderr);
+   write(2, msg as C<"void">[], msg.length);
    exit(1);
    () as Never
 );
 
 let fail(msg1: CString, msg2: CString): Never = (
-   fputs(msg1, stderr);
-   fputs(msg2, stderr);
+   write(2, msg1 as C<"void">[], msg1.length);
+   write(2, msg2 as C<"void">[], msg2.length);
    exit(1);
    () as Never
 );
 
 let print(msg: CString): Nil = (
-   fputs(msg, stdout); ()
+   write(1, msg as C<"void">[], msg.length);
+   ()
 );
 
 let eprint(msg: CString): Nil = (
-   fputs(msg, stderr); ()
+   write(2, msg as C<"void">[], msg.length);
+   ()
 );
 
 let $"[]"(l: CString, idx: USize): U8 = (
