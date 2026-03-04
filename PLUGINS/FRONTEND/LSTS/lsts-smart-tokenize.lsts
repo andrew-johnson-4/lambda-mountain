@@ -19,7 +19,6 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
          text = rest;
       );
 
-      "__".. rest => (tokens = cons(text[:"__".length], tokens); text = rest;);
       "**".. rest => (tokens = cons(text[:"**".length], tokens); text = rest;);
       "\\".. rest => (tokens = cons(text[:"\\".length], tokens); text = rest;);
       "~=".. rest => (tokens = cons(text[:"~=".length], tokens); text = rest;);
