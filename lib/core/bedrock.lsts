@@ -14,6 +14,3 @@ import lib/core/list.lsts;
 import lib/core/s.lsts;
 import lib/core/hashtable.lsts;
 import lib/core/regex.lsts;
-
-# TODO: remove after V3 release
-let deep-hash(x: t): U64 = hash(x);

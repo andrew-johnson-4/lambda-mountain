@@ -1,0 +1,12 @@
+
+import lib/core/bedrock.lsts;
+
+let f() = (
+   let a = ();
+   let b = () as Never;
+);
+
+let a = ();
+let b = () : ();
+let c = () as Never;
+let d = () as Never : Never;

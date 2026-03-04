@@ -69,14 +69,14 @@ let $"&&"(lt: Type, rt: Type): Type = (
    };
 );
 
-let deep-hash(tt: Type): U64 = (
+let hash(tt: Type): U64 = (
    match tt {
       TAnd{conjugate=conjugate} => (
          let result = 0_u64;
-         for vector c in conjugate { result = result + deep-hash(c) };
+         for vector c in conjugate { result = result + hash(c) };
          result
       );
-      TGround{tag=tag} => deep-hash(tag);
+      TGround{tag=tag} => hash(tag);
    }
 );
 

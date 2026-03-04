@@ -22,7 +22,7 @@ import SRC/type-remove-info.lsts;
 import SRC/type-ground-tag-and-arity.lsts;
 import SRC/type-into-string.lsts;
 import SRC/type-is-any-arg-t.lsts;
-import SRC/type-deep-hash.lsts;
+import SRC/type-hash.lsts;
 import SRC/type-cons-root.lsts;
 import SRC/type-sanitize-phi.lsts;
 import SRC/type-without-phi.lsts;

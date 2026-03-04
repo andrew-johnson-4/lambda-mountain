@@ -30,4 +30,4 @@ import SRC/ast-acontext-union.lsts;
 import SRC/ast-substitute-uuids.lsts;
 import SRC/ast-acontext-to-string.lsts;
 import SRC/ast-unroll-seq.lsts;
-import SRC/ast-deep-hash.lsts;
+import SRC/ast-hash.lsts;
