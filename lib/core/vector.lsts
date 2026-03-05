@@ -1,7 +1,7 @@
 
 ## faster than [type(List<t>)]. should be used when you append or remove data a lot
 type Vector<t> implies CompatMustRetain, CompatMustRelease
-   = { data: OwnedData<t>[] };
+   = { data: CompatOwnedData<t>[] };
 
 let .release(x: Vector<t>): Nil = (
    if (x.data as USize) != 0 {

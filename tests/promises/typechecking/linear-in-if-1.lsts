@@ -1,0 +1,12 @@
+
+import lib/core/bedrock.lsts;
+
+let f() = (
+   let x = ("a", "b");
+   let y = [] : List<String>;
+   if non-zero(x.first) then g(y, "c");
+);
+
+let g(x: List<String>, y: String) = ();
+
+
