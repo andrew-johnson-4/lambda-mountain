@@ -371,10 +371,6 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          head(args);
       } else if base==c"CompatOwnedData" and args.length==1 {
          t1(c"OwnedData",head(args));
-      } else if base==c"CompatMustRetain" and args.length==0 {
-         t0(c"MustRetain");
-      } else if base==c"CompatMustRelease" and args.length==0 {
-         t0(c"MustRelease");
       } else TGround ( base, close(args) );
    };
    while lsts-parse-head(tokens) == c"[" or lsts-parse-head(tokens)==c"?" {
@@ -936,12 +932,16 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
       if lsts-parse-head(tokens)==c"implies" {
          lsts-parse-expect(c"implies", tokens); tokens = tail(tokens);
          (let i, tokens) = lsts-parse-type(tokens);
-         if not(config-v3) and (i.is-t(c"MustRetain",0) or i.is-t(c"MustRelease",0)) then ()
+         if i.is-t(c"CompatMustRelease",0) then infers = infers.push(t0(c"MustRelease"));
+         else if config-v23 and i.is-t(c"MustRelease",0) then ()
+         else if config-v23 and i.is-t(c"MustRetain",0) then ()
          else infers = infers.push(i);
          while lsts-parse-head(tokens)==c"," {
             lsts-parse-expect(c",", tokens); tokens = tail(tokens);
             (i, tokens) = lsts-parse-type(tokens);
-            if not(config-v3) and (i.is-t(c"MustRetain",0) or i.is-t(c"MustRelease",0)) then ()
+            if i.is-t(c"CompatMustRelease",0) then infers = infers.push(t0(c"MustRelease"));
+            else if config-v23 and i.is-t(c"MustRelease",0) then ()
+            else if config-v23 and i.is-t(c"MustRetain",0) then ()
             else infers = infers.push(i);
          }
       };
