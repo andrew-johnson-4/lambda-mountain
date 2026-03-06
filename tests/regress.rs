@@ -34,7 +34,19 @@ fn run_bootstrap(target: &str, leave_tmp: bool, is_v3: bool) -> String {
    if !leave_tmp { rm("tmp.c"); };
    rm("a.out");
    
-   let exit = if is_v3 {
+   let exit = if is_v3 and target.contains(c"lm-") {
+      Command::new("./bootstrap.exe")
+              .stdout(std::process::Stdio::piped())
+              .stderr(std::process::Stdio::piped())
+              .arg("--v23")
+              .arg("-o")
+              .arg("tmp.c")
+              .arg(target)
+              .spawn()
+              .expect("failed to execute process")
+              .wait_with_output()
+              .expect("failed to wait for process")
+   } else if is_v3 {
       Command::new("./bootstrap.exe")
               .stdout(std::process::Stdio::piped())
               .stderr(std::process::Stdio::piped())
