@@ -34,7 +34,7 @@ fn run_bootstrap(target: &str, leave_tmp: bool, is_v3: bool) -> String {
    if !leave_tmp { rm("tmp.c"); };
    rm("a.out");
    
-   let exit = if is_v3 and target.contains(c"lm-") {
+   let exit = if is_v3 && target.contains("lm-") {
       Command::new("./bootstrap.exe")
               .stdout(std::process::Stdio::piped())
               .stderr(std::process::Stdio::piped())
