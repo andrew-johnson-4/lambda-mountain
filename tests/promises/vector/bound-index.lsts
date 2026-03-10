@@ -3,5 +3,5 @@ import lib/core/bedrock.lsts;
 
 assert( mk-vector(type(U8), 123).push(8)[0] == 8 );
 assert( safe-alloc-block-count == 0 );
-if not(config-v23) then assert( safe-alloc-block-count-monotonic == 1 );
+assert( safe-alloc-block-count-monotonic == 1 );
 safe-alloc-block-count-monotonic = 0;

@@ -1,5 +1,0 @@
-
-import lib2/core/bedrock.lsts;
-import LM/type-definition.lsts;
-import LM/type-constructor.lsts;
-import LM/type-compare.lsts;
