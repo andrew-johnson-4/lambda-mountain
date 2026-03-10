@@ -206,3 +206,10 @@ let .nth(tt: Vector<x>, idx: USize): x? = (
    then Some(tt[idx])
    else (None : x?)
 );
+
+let .has-head(tt: Vector<x>): Bool = tt.length > 0;
+
+let head(tt: Vector<t>): t = (
+   if tt.length==0 then fail(c"Vector Index Out of Bounds");
+   tt[0]
+);

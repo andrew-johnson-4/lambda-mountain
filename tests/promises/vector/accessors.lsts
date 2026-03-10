@@ -5,3 +5,14 @@ assert( mk-vector(type(U8)).push(1).push(2).push(3).nth(0) == Some(1) );
 assert( mk-vector(type(U8)).push(1).push(2).push(3).nth(1) == Some(2) );
 assert( mk-vector(type(U8)).push(1).push(2).push(3).nth(2) == Some(3) );
 assert( safe-alloc-block-count == 0 );
+
+assert( not(mk-vector(type(U8)).has-head) );
+assert( mk-vector(type(U8)).push(1).has-head );
+assert( mk-vector(type(U8)).push(1).push(2).has-head );
+assert( mk-vector(type(U8)).push(1).push(2).push(3).has-head );
+assert( safe-alloc-block-count == 0 );
+
+assert( head(mk-vector(type(U8)).push(1)) == 1 );
+assert( head(mk-vector(type(U8)).push(1).push(2)) == 1 );
+assert( head(mk-vector(type(U8)).push(1).push(2).push(3)) == 1 );
+assert( safe-alloc-block-count == 0 );
