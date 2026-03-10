@@ -19,7 +19,7 @@ let .retain(x: Vector<t>): Vector<t> = (
 
 ## Vector slices etc. are not cheap, so we use views, which can be collapsed back into Vectors
 type VectorView<t> implies MustRetain, MustRelease
-   = { data: Vector<t>, start: USize, end: USize };
+   = { data: Vector<t>, start-offset: USize, end-offset: USize };
 
 let .release(x: VectorView<t>): Nil = (
    x.data.release;
@@ -59,9 +59,19 @@ let .length(v: Vector<t>): USize = (
    if (v.data as USize) == 0 then 0 else v.data.occupied
 );
 
+let .length(v: VectorView<t>): USize = (
+   v.end-offset - v.start-offset
+);
+
 # new allocations = 0
 let $"[]"(v: Vector<t>, idx: USize): t = (
    v.data[idx]
+);
+
+# new allocations = 0
+let $"[]"(v: VectorView<t>, idx: USize): t = (
+   if not(idx < v.end-offset - v.start-offset) then fail(c"Vector Index Out Of Bounds");
+   v.data.data[v.start-offset+idx]
 );
 
 # new allocations = 1
@@ -226,4 +236,35 @@ let .has-head(tt: Vector<x>): Bool = tt.length > 0;
 let head(tt: Vector<t>): t = (
    if tt.length==0 then fail(c"Vector Index Out of Bounds");
    tt[0]
+);
+
+let $"[:]"(x: Vector<t>, low: U64, hi: U64): VectorView<t> = x[low as I64 : hi as I64];
+let $"[:]"(x: Vector<t>, low: I64, hi: U64): VectorView<t> = x[low : hi as I64];
+let $"[:]"(x: Vector<t>, low: U64, hi: I64): VectorView<t> = x[low as I64 : hi];
+let $"[:]"(x: VectorView<t>, low: U64, hi: U64): VectorView<t> = x[low as I64 : hi as I64];
+let $"[:]"(x: VectorView<t>, low: I64, hi: U64): VectorView<t> = x[low : hi as I64];
+let $"[:]"(x: VectorView<t>, low: U64, hi: I64): VectorView<t> = x[low as I64 : hi];
+
+let $"[:]"(s: Vector<t>, begin: I64, end: I64): VectorView<t> = (
+   let s-length = s.length as I64;
+   if end == minimum-I64 then end = s-length;
+   if begin < 0_i64 then begin = s-length + begin;
+   if end < 0_i64 then end = s-length + end;
+   if begin < 0_i64 or begin > s-length then fail(c"Vector [:] Slice Start Index Out of Bounds");
+   if end < 0_i64 or end > s-length then fail(c"Vector [:] Slice End Index Out of Bounds");
+   let start-offset = begin as USize;
+   let end-offset = end as USize;
+   VectorView(s, start-offset, end-offset)
+);
+
+let $"[:]"(s: VectorView<t>, begin: I64, end: I64): VectorView<t> = (
+   let s-length = s.length as I64;
+   if end == minimum-I64 then end = s-length;
+   if begin < 0_i64 then begin = s-length + begin;
+   if end < 0_i64 then end = s-length + end;
+   if begin < 0_i64 or begin > s-length then fail(c"Vector [:] Slice Start Index Out of Bounds");
+   if end < 0_i64 or end > s-length then fail(c"Vector [:] Slice End Index Out of Bounds");
+   let start-offset = ((s.start-offset as I64) + begin) as USize;
+   let end-offset = ((s.start-offset as I64) + end) as USize;
+   VectorView(s.data, start-offset, end-offset)
 );

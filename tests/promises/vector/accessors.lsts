@@ -16,3 +16,13 @@ assert( head(mk-vector(type(U8)).push(1)) == 1 );
 assert( head(mk-vector(type(U8)).push(1).push(2)) == 1 );
 assert( head(mk-vector(type(U8)).push(1).push(2).push(3)) == 1 );
 assert( safe-alloc-block-count == 0 );
+
+assert( mk-vector(type(U8)).push(1).push(2).push(3)[1_u64:][0] == 2 );
+assert( mk-vector(type(U8)).push(1).push(2).push(3)[1_u64:][1] == 3 );
+assert( mk-vector(type(U8)).push(1).push(2).push(3)[2_u64:][0] == 3 );
+assert( safe-alloc-block-count == 0 );
+
+assert( mk-vector(type(U8)).push(0).push(1).push(2).push(3)[1_u64:][1_u64:][0] == 2 );
+assert( mk-vector(type(U8)).push(0).push(1).push(2).push(3)[1_u64:][1_u64:][1] == 3 );
+assert( mk-vector(type(U8)).push(0).push(1).push(2).push(3)[1_u64:][2_u64:][0] == 3 );
+assert( safe-alloc-block-count == 0 );
