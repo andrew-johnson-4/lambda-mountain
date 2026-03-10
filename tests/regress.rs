@@ -33,8 +33,13 @@ fn compile_bootstrap() {
 fn run_bootstrap(target: &str, leave_tmp: bool, is_v3: bool) -> String {
    if !leave_tmp { rm("tmp.c"); };
    rm("a.out");
+
+   let lm_protect = target.contains("lm-");
+   if target.contains("lm-ast") then lm_protect = false;
+   if target.contains("lm-tctx") then lm_protect = false;
+   if target.contains("lm-type") then lm_protect = false;
    
-   let exit = if is_v3 && target.contains("lm-") {
+   let exit = if is_v3 && lm_protect {
       Command::new("./bootstrap.exe")
               .stdout(std::process::Stdio::piped())
               .stderr(std::process::Stdio::piped())
