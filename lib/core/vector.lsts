@@ -200,3 +200,9 @@ let .swap-keys-for-values(kvs: Vector<(k,v)>): Vector<(v,k)> = (
    #};
    swapped
 );
+
+let .nth(tt: Vector<x>, idx: USize): x? = (
+   if idx < tt.length
+   then Some(tt[idx])
+   else (None : x?)
+);
