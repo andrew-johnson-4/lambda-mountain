@@ -17,6 +17,20 @@ let .retain(x: Vector<t>): Vector<t> = (
    x
 );
 
+## Vector slices etc. are not cheap, so we use views, which can be collapsed back into Vectors
+type VectorView<t> implies MustRetain, MustRelease
+   = { data: Vector<t>, start: USize, end: USize };
+
+let .release(x: VectorView<t>): Nil = (
+   x.data.release;
+   mark-as-released(x);
+);
+
+let .retain(x: VectorView<t>): VectorView<t> = (
+   x.data.retain;
+   x
+);
+
 
 # new allocations = 0 if capacity==0
 #                 | 1
