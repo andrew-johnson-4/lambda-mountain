@@ -63,6 +63,9 @@ let .length(v: VectorView<t>): USize = (
    v.end-offset - v.start-offset
 );
 
+let non-zero(v: Vector<t>): Bool = v.length > 0;
+let non-zero(v: VectorView<t>): Bool = v.length > 0;
+
 # new allocations = 0
 let $"[]"(v: Vector<t>, idx: USize): t = (
    v.data[idx]

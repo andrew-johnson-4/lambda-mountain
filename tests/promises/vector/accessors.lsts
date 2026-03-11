@@ -36,3 +36,9 @@ assert( head(tail(mk-vector(type(U8)).push(0).push(1).push(2).push(3)[1_u64:])) 
 assert( head(tail(tail(mk-vector(type(U8)).push(0).push(1).push(2).push(3)[1_u64:]))) == 3 );
 assert( head(tail(tail(mk-vector(type(U8)).push(0).push(1).push(2).push(3)[1_u64:]))) == 3 );
 assert( safe-alloc-block-count == 0 );
+
+assert( not(non-zero(mk-vector(type(U8)))) );
+assert( non-zero(mk-vector(type(U8)).push(1)) );
+assert( not(non-zero(tail(mk-vector(type(U8)).push(1)))) );
+assert( non-zero(tail(mk-vector(type(U8)).push(1).push(2))) );
+assert( safe-alloc-block-count == 0 );
