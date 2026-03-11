@@ -232,8 +232,14 @@ let .nth(tt: Vector<x>, idx: USize): x? = (
 );
 
 let .has-head(tt: Vector<x>): Bool = tt.length > 0;
+let .has-head(tt: VectorView<x>): Bool = tt.length > 0;
 
 let head(tt: Vector<t>): t = (
+   if tt.length==0 then fail(c"Vector Index Out of Bounds");
+   tt[0]
+);
+
+let head(tt: VectorView<t>): t = (
    if tt.length==0 then fail(c"Vector Index Out of Bounds");
    tt[0]
 );
