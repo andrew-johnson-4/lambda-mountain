@@ -268,3 +268,6 @@ let $"[:]"(s: VectorView<t>, begin: I64, end: I64): VectorView<t> = (
    let end-offset = ((s.start-offset as I64) + end) as USize;
    VectorView(s.data, start-offset, end-offset)
 );
+
+let tail(s: Vector<t>): VectorView<t> = s[1_i64:];
+let tail(s: VectorView<t>): VectorView<t> = s[1_i64:];
