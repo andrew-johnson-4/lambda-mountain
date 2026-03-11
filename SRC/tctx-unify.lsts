@@ -177,3 +177,17 @@ let unify(fpt: List<Type>, pt: List<Type>, blame: AST): Maybe<TypeContext> = (
    ctx
 );
 
+let unify(fpt: Vector<Type>, pt: Vector<Type>, blame: AST): Maybe<TypeContext> = (
+   let ctx = (None : Maybe<TypeContext>)();
+   let yes = Some(mk-tctx());
+   match Tuple( fpt, pt ) {
+      Tuple{ first:[lp1..lps], second:[rp1..rps] } => (
+         ctx = unify-inner(lp1,rp1,blame);
+         if non-zero(ctx) { ctx = union(ctx, unify(lps,rps,blame)); }
+      );
+      Tuple{ first:[], second:[] } => ctx = yes;
+      Tuple{} => ();
+   };
+   ctx
+);
+
