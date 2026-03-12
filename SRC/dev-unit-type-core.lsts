@@ -28,7 +28,7 @@ import SRC/type-sanitize-phi.lsts;
 import SRC/type-without-phi.lsts;
 import SRC/type-without-any-phi.lsts;
 import SRC/type-without-slot.lsts;
-import SRC/type-move-linear.lsts;
+import SRC/dev-type-move-linear.lsts;
 import SRC/type-can-apply.lsts;
 import SRC/type-can-receive.lsts;
 import SRC/type-without-phi-keep-state.lsts;
