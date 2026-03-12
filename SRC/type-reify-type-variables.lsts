@@ -19,3 +19,11 @@ let .reify-type-variables(tt: List<Type>): List<Type> = (
       _ => tt;
    };
 );
+
+let .reify-type-variables(tt: Vector<Type>): Vector<Type> = (
+   let next = mk-vector(type(Type));
+   for vector t in tt {
+      next = next.push(t.reify-type-variables);
+   };
+   next
+);

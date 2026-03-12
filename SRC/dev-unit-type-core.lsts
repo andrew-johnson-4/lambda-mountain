@@ -37,6 +37,6 @@ import SRC/type-most-special.lsts;
 import SRC/type-as-return-hint.lsts;
 import SRC/type-resurrect.lsts;
 import SRC/type-cons-tail-or-self.lsts;
-import SRC/type-without-modifiers.lsts;
+import SRC/dev-type-without-modifiers.lsts;
 import SRC/type-with-only-phi.lsts;
 import SRC/type-reify-type-variables.lsts;
