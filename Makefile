@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm SRC/dev-index.lsts
+	lm --v23 SRC/dev-index.lsts
 	$(CC) $(CFLAGS) tmp.c
 	./a.out
 
