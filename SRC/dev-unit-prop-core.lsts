@@ -1,7 +1,7 @@
 
 import SRC/dev-unit-tctx-core.lsts;
-import SRC/prop-core.lsts;
-import SRC/prop-alias.lsts;
+import SRC/dev-prop-core.lsts;
+import SRC/dev-prop-alias.lsts;
 import SRC/prop-is-special.lsts;
 import SRC/prop-normalize.lsts;
 import SRC/prop-denormalize.lsts;
