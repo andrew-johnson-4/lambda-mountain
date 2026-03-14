@@ -18,7 +18,7 @@ import SRC/prop-is-phi-type.lsts;
 import SRC/prop-phi-as-state.lsts;
 import SRC/prop-phi-override.lsts;
 import SRC/prop-misc-todo-remove-or-stabilize.lsts;
-import SRC/prop-tctx-substitute.lsts;
+import SRC/dev-prop-tctx-substitute.lsts;
 import SRC/prop-typeof-var-raw.lsts;
 import SRC/prop-typeof-tag.lsts;
 import SRC/prop-type-datatype.lsts;

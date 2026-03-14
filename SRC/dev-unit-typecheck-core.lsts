@@ -34,7 +34,7 @@ import SRC/typecheck-preprocess-apply.lsts;
 import SRC/typecheck-validate-interfaces.lsts;
 import SRC/typecheck-index-typedefs.lsts;
 import SRC/typecheck-preprocess.lsts;
-import SRC/typecheck-infer-type-definition.lsts;
+import SRC/dev-typecheck-infer-type-definition.lsts;
 import SRC/typecheck-assert-no-infinite-types.lsts;
 import SRC/typecheck-assert-one-typed.lsts;
 import SRC/typecheck-assert-well-typed.lsts;
