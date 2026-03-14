@@ -11,7 +11,7 @@ import SRC/prop-tctx-find-callable.lsts;
 import SRC/prop-stack-to-specialize.lsts;
 import SRC/prop-tctx-apply-callable.lsts;
 import SRC/prop-tctx-phi-merge.lsts;
-import SRC/prop-tctx-least-upper-bound.lsts;
+import SRC/dev-prop-tctx-least-upper-bound.lsts;
 import SRC/prop-tctx-definition.lsts;
 import SRC/prop-expand-implied-phi.lsts;
 import SRC/prop-is-phi-type.lsts;
