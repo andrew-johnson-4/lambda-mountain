@@ -9,6 +9,6 @@ import SRC/dev-unit-typecheck-core.lsts;
 import SRC/dev-unit-backend-core.lsts;
 import SRC/unit-main-core.lsts;
 
-import PLUGINS/FRONTEND/LSTS/index.lsts;
+import PLUGINS/FRONTEND/LSTS/dev-index.lsts;
 import PLUGINS/BACKEND/C/index.lsts;
 import PLUGINS/FRONTEND/C/index.lsts;
