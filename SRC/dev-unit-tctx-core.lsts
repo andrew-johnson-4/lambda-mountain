@@ -22,4 +22,4 @@ import SRC/tctx-phi-move-all.lsts;
 import SRC/tctx-phi-initialize.lsts;
 import SRC/dev-tctx-substitute.lsts;
 import SRC/tctx-misc-globals.lsts;
-import SRC/typecheck-infer-tctx.lsts;
+import SRC/dev-typecheck-infer-tctx.lsts;
