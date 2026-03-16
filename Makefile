@@ -13,9 +13,9 @@ dev: install-production
 	./a.out
 
 build: compile-production
-	time env $(LSTSFLAGS) ./production --v23 --c -o deploy1.c SRC/index.lsts
+	time env $(LSTSFLAGS) ./production --v23 --c -o deploy1.c SRC/dev-index.lsts
 	$(CC) $(CFLAGS) deploy1.c -o deploy1
-	time env $(LSTSFLAGS) ./deploy1 --v23 --c -o deploy2.c SRC/index.lsts
+	time env $(LSTSFLAGS) ./deploy1 --v23 --c -o deploy2.c SRC/dev-index.lsts
 	diff deploy1.c deploy2.c
 	mv deploy1.c BOOTSTRAP/cli.c
 	rm -f deploy1 deploy1.c deploy2.c
