@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm --v23 SRC/dev-index.lsts
+	lm --v23 tests/promises/vector/constructor.lsts
 	$(CC) $(CFLAGS) tmp.c
 	./a.out
 
@@ -50,7 +50,7 @@ compile-bootstrap:
 
 compile-production: compile-bootstrap
 	rm -f production
-	$(LSTSFLAGS) ./bootstrap.exe --v23 --c -o production.c SRC/index.lsts
+	$(LSTSFLAGS) ./bootstrap.exe --v23 --c -o production.c SRC/dev-index.lsts
 	$(CC) $(CFLAGS) -o production production.c
 	rm -f production.c
 
