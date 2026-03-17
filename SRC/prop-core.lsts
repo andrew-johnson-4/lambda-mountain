@@ -16,6 +16,7 @@ let .enrich(base: Type): Type = (
 );
 
 let .enrich-strong(base: Type): Type = (
+   print("Enrich \{base}\n");
    match base {
       TGround { tag:c"Cons", parameters:[p2..p1..] } => (
          base = t2(c"Cons", p1.enrich-strong, p2.enrich-strong);
@@ -48,6 +49,7 @@ let .enrich-strong(base: Type): Type = (
       );
       _ => ();
    };
+   print("Enriched \{base}\n");
    base.enrich
 );
 

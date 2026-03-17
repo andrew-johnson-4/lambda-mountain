@@ -73,7 +73,7 @@ let infer-global-context(term: AST): Nil = (
    match term {
       Seq{seq=seq} => (
          print("Infer Seq\n");
-         for vector s in seq { infer-global-context(s) }
+         for vector s in seq { infer-global-context(s) };
          print("Inferred Seq\n");
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
