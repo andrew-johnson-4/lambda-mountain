@@ -5,7 +5,8 @@ let add-type-alias(lt: Type, rt: Type): Nil = (
    type-alias-index = type-alias-index.bind( lt.ground-tag-and-arity, ( lt, rt ) );
 );
 let .rewrite-type-alias(lt: Type): Type = (
-   match lt {
+   print("Rewrite type alias \{lt}\n");
+   let return = match lt {
       TGround{tag:c"Phi::State",parameters:[_..]} => lt;
       TGround{tag:c"Phi::Id",parameters:[_..]} => lt;
       TGround{tag:c"Phi::Transition",parameters:[_.._..]} => lt;
@@ -39,7 +40,9 @@ let .rewrite-type-alias(lt: Type): Type = (
          else tand(result)
       );
       _ => lt;
-   }
+   };
+   print("Rewrote type alias \{lt} -> \{return}\n");
+   return
 );
 let .rewrite-type-alias(lt: Vector<Type>): Vector<Type> = (
    let next = mk-vector(type(Type));

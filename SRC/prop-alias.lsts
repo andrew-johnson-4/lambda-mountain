@@ -5,7 +5,7 @@ let add-type-alias(lt: Type, rt: Type): Nil = (
    type-alias-index = type-alias-index.bind( lt.ground-tag-and-arity, ( lt, rt ) );
 );
 let .rewrite-type-alias(lt: Type): Type = (
-   match lt {
+   let return = match lt {
       TGround{tag:c"Phi::State",parameters:[_..]} => lt;
       TGround{tag:c"Phi::Id",parameters:[_..]} => lt;
       TGround{tag:c"Phi::Transition",parameters:[_.._..]} => lt;
@@ -39,7 +39,8 @@ let .rewrite-type-alias(lt: Type): Type = (
          else tand(result)
       );
       _ => lt;
-   }
+   };
+   return
 );
 let .rewrite-type-alias(lt: List<Type>): List<Type> = (
    match lt {
