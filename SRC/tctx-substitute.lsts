@@ -1,9 +1,10 @@
 
-let .substitute(tctx: TypeContext?, tt: List<Type>): List<Type> = (
-   match tt {
-      LCons{head=head,tail=tail} => cons( tctx.substitute(head), tctx.substitute(tail) );
-      _ => tt;
-   }
+let .substitute(tctx: TypeContext?, tt: Vector<Type>): Vector<Type> = (
+   let next = mk-vector(type(Type));
+   for vector t in tt {
+      next = next.push(tctx.substitute(t));
+   };
+   next
 );
 
 let .substitute(tctx: TypeContext?, tt: Type): Type = (
@@ -21,7 +22,7 @@ let .substitute(tctx: TypeContext?, tt: Type): Type = (
          else if result.length==1 then result[0]
          else tand(result)
       );
-      TGround{tag=tag,parameters=parameters} => TGround(tag,close(tctx.substitute(parameters)));
+      TGround{tag=tag,parameters=parameters} => TGround(tag,tctx.substitute(parameters));
       TVar{name=name} => (
          let tn = tctx.lookup(name).direct-type;
          if non-zero(tn) then tn else tt;

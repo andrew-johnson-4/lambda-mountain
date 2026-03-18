@@ -57,36 +57,53 @@ let .enrich-strong(base: Type): Type = (
 );
 
 let enrich-quick-prop(base: Type, pre: Type): Type = (
+   print("Enrich quick prop \{base} , \{pre}\n");
    match pre {
       TGround { tag=tag, parameters=parameters } => (
          for list row in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
             let lt = row.first;
             let rt = row.second;
+            print("Enrich quick prop 1\n");
             if base <: lt then (
+               print("Enrich quick prop 2\n");
                let post = if rt.is-open then (
+                  print("Enrich quick prop 3\n");
                   let tctx = unify(lt, base, ASTEOF);
+                  print("Enrich quick prop 4\n");
                   tctx.substitute(rt);
                ) else rt;
+               print("Enrich quick prop 6\n");
                if not(pre <: post) and not(base <: post) {
+                  print("Enrich quick prop 7\n");
                   pre = pre.extend(post);
+                  print("Enrich quick prop 8\n");
                };
             );
          };
+         print("Enrich quick prop 9\n");
          if tag==c"Array" and parameters.length==2 {
             for list row in quick-prop.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
                let lt = row.first;
                let rt = row.second;
+               print("Enrich quick prop 10\n");
                if base <: lt then (
+                  print("Enrich quick prop 11\n");
                   let post = if rt.is-open then (
+                     print("Enrich quick prop 12\n");
                      let tctx = unify(lt, base, ASTEOF);
+                     print("Enrich quick prop 13\n");
                      tctx.substitute(rt);
                   ) else rt;
+                  print("Enrich quick prop 15\n");
                   if not(pre <: post) and not(base <: post) {
+                     print("Enrich quick prop 16\n");
                      pre = pre.extend(post);
+                     print("Enrich quick prop 17\n");
                   };
                );
             };
          };
+         print("Enrich quick prop 18\n");
       );
       TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type));
