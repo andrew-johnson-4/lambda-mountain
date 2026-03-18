@@ -4,8 +4,5 @@ let denormalize(tt: Type): Type = (
 );
 
 let denormalize-strong(tt: Type): Type = (
-   print("Denormalize Strong Begin\n");
-   let return = tt.rewrite-type-alias.enrich-strong;
-   print("Denormalize Strong End\n");
-   return
+   tt.rewrite-type-alias.enrich-strong;
 );

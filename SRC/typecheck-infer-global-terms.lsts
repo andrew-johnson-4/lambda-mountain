@@ -72,27 +72,18 @@ let infer-global-context-td(term: AST): Nil = (
 let infer-global-context(term: AST): Nil = (
    match term {
       Seq{seq=seq} => (
-         print("Infer Seq\n");
          for vector s in seq { infer-global-context(s) };
-         print("Inferred Seq\n");
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
          if k.key.has-prefix(c"primitive::") then ()
          else if misc-tt.is-t(c"TypedMacro",0) then bind-new-macro(k.key, frhs)
          else {
-            print("Infer context 1\n");
             let ft = t2(c"Arrow", typeof-lhs(lhs), return-type.rewrite-type-alias.expand-implied-phi.without-modifiers).without-phi-keep-state && misc-tt;
-            print("Infer context 2\n");
             if not(global-is-seen(k.key, ft)) {
-               print("Infer context 3\n");
                mark-global-as-seen(k.key, ft, misc-tt);
-               print("Infer context 4\n");
                Some(mk-tctx()).ascript(term, ft);
-               print("Infer context 5\n");
                Some(mk-tctx()).ascript(frhs, ft);
-               print("Infer context 6\n");
                Some(mk-tctx()).bind-global(k.key, ft, denormalize-strong(ft), term);
-               print("Infer context 7\n");
             }
          };
       );

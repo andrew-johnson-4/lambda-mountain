@@ -19,23 +19,15 @@ let .bind(tctx: TypeContext?, k: CString, nt: Type, dt: Type, blame: AST): TypeC
 );
 
 let .bind-global(tctx: TypeContext?, k: CString, kt: Type, blame: AST): TypeContext? = (
-   print("Bind Global 1\n");
    let found = global-tctx.lookup(k, [] : List<TypeContextRow>);
-   print("Bind Global 2\n");
    found = cons( TypeContextRow(k,kt,kt,blame), found );
-   print("Bind Global 3\n");
    global-tctx = global-tctx.bind(k, found);
-   print("Bind Global 4\n");
    tctx
 );
 let .bind-global(tctx: TypeContext?, k: CString, nt: Type, dt: Type, blame: AST): TypeContext? = (
-   print("Bind Global 1\n");
    let found = global-tctx.lookup(k, [] : List<TypeContextRow>);
-   print("Bind Global 2\n");
    found = cons( TypeContextRow(k,nt,dt,blame), found );
-   print("Bind Global 3\n");
    global-tctx = global-tctx.bind(k, found);
-   print("Bind Global 4\n");
    tctx
 );
 
