@@ -1,0 +1,6 @@
+
+import lib/core/default.lsts;
+
+type Type = TGround{ tag: CString, parameters: Vector<Type> };
+
+let a = TGround( c"a", close([] : List<Type>) );

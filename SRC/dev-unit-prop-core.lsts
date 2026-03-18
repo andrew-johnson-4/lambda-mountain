@@ -1,7 +1,7 @@
 
 import SRC/dev-unit-tctx-core.lsts;
-import SRC/prop-core.lsts;
-import SRC/prop-alias.lsts;
+import SRC/dev-prop-core.lsts;
+import SRC/dev-prop-alias.lsts;
 import SRC/prop-is-special.lsts;
 import SRC/prop-normalize.lsts;
 import SRC/prop-denormalize.lsts;
@@ -11,14 +11,14 @@ import SRC/prop-tctx-find-callable.lsts;
 import SRC/prop-stack-to-specialize.lsts;
 import SRC/prop-tctx-apply-callable.lsts;
 import SRC/prop-tctx-phi-merge.lsts;
-import SRC/prop-tctx-least-upper-bound.lsts;
+import SRC/dev-prop-tctx-least-upper-bound.lsts;
 import SRC/prop-tctx-definition.lsts;
 import SRC/prop-expand-implied-phi.lsts;
 import SRC/prop-is-phi-type.lsts;
 import SRC/prop-phi-as-state.lsts;
 import SRC/prop-phi-override.lsts;
 import SRC/prop-misc-todo-remove-or-stabilize.lsts;
-import SRC/prop-tctx-substitute.lsts;
+import SRC/dev-prop-tctx-substitute.lsts;
 import SRC/prop-typeof-var-raw.lsts;
 import SRC/prop-typeof-tag.lsts;
 import SRC/prop-type-datatype.lsts;

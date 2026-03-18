@@ -12,6 +12,30 @@ let can-unify(fpt: List<Type>, pt: List<Type>): Bool = (
    } else false
 );
 
+let can-unify(fpt: Vector<Type>, pt: Vector<Type>): Bool = (
+   let fptv = fpt[:];
+   let ptv = pt[:];
+   if fptv.length == ptv.length {
+      let ok = true;
+      while ok and non-zero(fptv) {
+         if not(can-unify(head(fptv), head(ptv))) then (ok = false);
+         fptv = tail(fptv); ptv = tail(ptv);
+      };
+      ok
+   } else false
+);
+
+let can-unify(fpt: VectorView<Type>, pt: VectorView<Type>): Bool = (
+   if fpt.length == pt.length {
+      let ok = true;
+      while ok and non-zero(fpt) {
+         if not(can-unify(head(fpt), head(pt))) then (ok = false);
+         fpt = tail(fpt); pt = tail(pt);
+      };
+      ok
+   } else false
+);
+
 let can-unify(fpt: Type, pt: Type): Bool = (
    match Tuple(fpt, pt) {
       Tuple{ first:TAny{} } => true;

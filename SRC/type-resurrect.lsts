@@ -18,3 +18,11 @@ let .resurrect(tt: List<Type>): List<Type> = (
    }
 );
 
+let .resurrect(tt: Vector<Type>): Vector<Type> = (
+   let next = mk-vector(type(Type));
+   for vector t in tt {
+      next = next.push(t.resurrect);
+   };
+   next
+);
+

@@ -63,6 +63,9 @@ let .length(v: VectorView<t>): USize = (
    v.end-offset - v.start-offset
 );
 
+let non-zero(v: Vector<t>): Bool = v.length > 0;
+let non-zero(v: VectorView<t>): Bool = v.length > 0;
+
 # new allocations = 0
 let $"[]"(v: Vector<t>, idx: USize): t = (
    v.data[idx]
@@ -232,8 +235,14 @@ let .nth(tt: Vector<x>, idx: USize): x? = (
 );
 
 let .has-head(tt: Vector<x>): Bool = tt.length > 0;
+let .has-head(tt: VectorView<x>): Bool = tt.length > 0;
 
 let head(tt: Vector<t>): t = (
+   if tt.length==0 then fail(c"Vector Index Out of Bounds");
+   tt[0]
+);
+
+let head(tt: VectorView<t>): t = (
    if tt.length==0 then fail(c"Vector Index Out of Bounds");
    tt[0]
 );
@@ -268,3 +277,6 @@ let $"[:]"(s: VectorView<t>, begin: I64, end: I64): VectorView<t> = (
    let end-offset = ((s.start-offset as I64) + end) as USize;
    VectorView(s.data, start-offset, end-offset)
 );
+
+let tail(s: Vector<t>): VectorView<t> = s[1_i64:];
+let tail(s: VectorView<t>): VectorView<t> = s[1_i64:];

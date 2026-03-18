@@ -1,0 +1,22 @@
+
+# replace x with ReifiedTypeVariable_x
+let .reify-type-variables(tt: Type): Type = (
+   match tt {
+      TAny{} => ta;
+      TAnd{conjugate=conjugate} => (
+         let result = ta;
+         for vector c in conjugate { result = result && c.reify-type-variables };
+         result
+      );
+      TGround{tag=tag, parameters=parameters} => TGround(tag, parameters.reify-type-variables);
+      TVar{name=name} => t0(c"ReifiedTypeVariable_" + name);
+   }
+);
+
+let .reify-type-variables(tt: Vector<Type>): Vector<Type> = (
+   let next = mk-vector(type(Type));
+   for vector t in tt {
+      next = next.push(t.reify-type-variables);
+   };
+   next
+);

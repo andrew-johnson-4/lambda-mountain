@@ -309,15 +309,15 @@ let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
 let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
    let tt = if lsts-parse-head(tokens) == c"(" {
       lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-      let args = [] : List<Type>;
+      let args = mk-vector(type(Type));
       if lsts-parse-head(tokens)!=c")" {
          (let arg, tokens) = lsts-parse-type(tokens);
-         args = [ arg ];
+         args = args.push(arg);
       };
       while lsts-parse-head(tokens) == c"," {
          lsts-parse-expect(c",", tokens); tokens = tail(tokens);
          let tnext-rest = lsts-parse-type(tokens);
-         args = cons( tnext-rest.first, args );
+         args = args.push(tnext-rest.first);
          tokens = tnext-rest.second;
       };
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
@@ -353,16 +353,16 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          base = base + c"::" + lsts-substitute-type-aliases(lsts-parse-head(tokens));
          tokens = tail(tokens);
       };
-      let args = [] : List<Type>;
+      let args = mk-vector(type(Type));
       if lsts-parse-head(tokens) == c"<" {
          lsts-parse-expect(c"<", tokens); tokens = tail(tokens);
          let targs-rest = lsts-parse-type(tokens);
-         args = cons( targs-rest.first, args );
+         args = args.push(targs-rest.first);
          tokens = targs-rest.second;
          while lsts-parse-head(tokens) == c"," {
             lsts-parse-expect(c",", tokens); tokens = tail(tokens);
             let tnext-rest = lsts-parse-type(tokens);
-            args = cons( tnext-rest.first, args );
+            args = args.push(tnext-rest.first);
             tokens = tnext-rest.second;
          };
          lsts-parse-expect(c">", tokens); tokens = tail(tokens);
@@ -831,7 +831,7 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
    let typename = lsts-parse-head(tokens); tokens = tail(tokens);
    if typename.has-suffix(c"_ss") then typename = typename.remove-suffix(c"_ss").get-or(c"");
    let lhs-type = if lsts-parse-head(tokens)==c"<" {
-      let pars = [] : List<Type>;
+      let pars = mk-vector(type(Type));
       lsts-parse-expect(c"<", tokens); tokens = tail(tokens);
       let pt = ta;
       if lsts-is-enum-head(lsts-parse-head(tokens)) or lsts-parse-head(tokens).has-suffix(c"_ss") {
@@ -847,7 +847,7 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
             pt = pt && vt;
          };
       };
-      pars = cons(pt, pars);
+      pars = pars.push(pt);
       while lsts-parse-head(tokens)==c"," {
          lsts-parse-expect(c",", tokens); tokens = tail(tokens);
          if lsts-is-enum-head(lsts-parse-head(tokens)) or lsts-parse-head(tokens).has-suffix(c"_ss") {
@@ -863,7 +863,7 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
                pt = pt && vt;
             };
          };
-         pars = cons(pt, pars);
+         pars = pars.push(pt);
       };
       lsts-parse-expect(c">", tokens); tokens = tail(tokens);
       ts(typename, pars);

@@ -4,5 +4,8 @@ let .into(tctx: Maybe<TypeContext>, tt: Type<String>): String = (
    for list tr in tctx.get-or(mk-tctx()).tctx {
       result = result + "\{tr.key-or-zero} : \{tr.direct-type}\n";
    };
+   for list tr in tctx.get-or(mk-tctx()).pctx {
+      result = result + "\{tr.phi-id-or-zero} : \{tr.phi-tt-or-zero}\n";
+   };
    result
 );

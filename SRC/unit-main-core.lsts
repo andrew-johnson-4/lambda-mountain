@@ -99,10 +99,12 @@ let main(argc: C_int, argv: CString[]): Nil = (
          print("\{ast-parsed-program}\n");
       );
       _ => (
+         print("Begin Parse\n");
          for list fp4 in input.reverse { frontend(fp4); };
+         print("End Parse, Begin Preprocess\n");
          match config-mode {
             ModeTypecheck{} => (preprocess(); typecheck(););
-            ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(); );
+            ModeCompile{} => (preprocess(); print("End Preprocess, Begin Typecheck\n"); typecheck(); print("End Typecheck, Begin Backend\n"); plugin-current-backend(); );
          };
       );
    };

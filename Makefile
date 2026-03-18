@@ -8,14 +8,14 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm SRC/dev-index.lsts
+	lm --v23 tests/promises/vector/constructor.lsts
 	$(CC) $(CFLAGS) tmp.c
 	./a.out
 
 build: compile-production
-	time env $(LSTSFLAGS) ./production --v23 --c -o deploy1.c SRC/index.lsts
+	time env $(LSTSFLAGS) ./production --v23 --c -o deploy1.c SRC/dev-index.lsts
 	$(CC) $(CFLAGS) deploy1.c -o deploy1
-	time env $(LSTSFLAGS) ./deploy1 --v23 --c -o deploy2.c SRC/index.lsts
+	time env $(LSTSFLAGS) ./deploy1 --v23 --c -o deploy2.c SRC/dev-index.lsts
 	diff deploy1.c deploy2.c
 	mv deploy1.c BOOTSTRAP/cli.c
 	rm -f deploy1 deploy1.c deploy2.c
@@ -50,7 +50,7 @@ compile-bootstrap:
 
 compile-production: compile-bootstrap
 	rm -f production
-	$(LSTSFLAGS) ./bootstrap.exe --v23 --c -o production.c SRC/index.lsts
+	$(LSTSFLAGS) ./bootstrap.exe --v23 --c -o production.c SRC/dev-index.lsts
 	$(CC) $(CFLAGS) -o production production.c
 	rm -f production.c
 

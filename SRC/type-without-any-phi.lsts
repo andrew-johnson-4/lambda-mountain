@@ -30,3 +30,11 @@ let .without-any-phi(tt: List<Type>): List<Type> = (
       tl => tl;
    }
 );
+
+let .without-any-phi(tt: Vector<Type>): Vector<Type> = (
+   let next = mk-vector(type(Type));
+   for vector t in tt {
+      next = next.push(t.without-any-phi);
+   };
+   next
+);

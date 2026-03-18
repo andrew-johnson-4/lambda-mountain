@@ -21,6 +21,5 @@ import SRC/tctx-with-phi-id-if-phi-state.lsts;
 import SRC/tctx-into-string.lsts;
 import SRC/tctx-phi-move-all.lsts;
 import SRC/tctx-phi-initialize.lsts;
-import SRC/tctx-substitute.lsts;
 import SRC/tctx-misc-globals.lsts;
 import SRC/typecheck-infer-tctx.lsts;
