@@ -395,7 +395,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.phi-move(typeof-term(term),term);
       }
    }};
-   print("Inferred \{term} : \{typeof-term(term)}\n");
    (tctx, term);
 );
 
