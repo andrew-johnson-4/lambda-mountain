@@ -1,6 +1,6 @@
 
 let .move-linear(tt: Type): Type = (
-   match tt {
+   let return = match tt {
       TAnd{conjugate=conjugate} => (
          let new-conjugate = mk-vector(type(Type));
          for vector c in conjugate {
@@ -12,10 +12,11 @@ let .move-linear(tt: Type): Type = (
       TGround{tag=tag, parameters=parameters} => (
          let new-parameters = mk-vector(type(Type));
          for vector p in parameters {
-            new-parameters = new-parameters.push(p);
+            new-parameters = new-parameters.push(p.move-linear);
          };
          ts(tag,new-parameters);
       );
       _ => tt;
-   }
+   };
+   return
 );
