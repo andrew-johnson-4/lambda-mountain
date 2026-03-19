@@ -58,12 +58,12 @@ assert( safe-alloc-block-count == 0 );
 assert( safe-alloc-block-count-monotonic <= 12 );
 safe-alloc-block-count-monotonic = 0;
 
-assert( ts(c"A",[ta]) == ts(c"A",[ta]) );
+assert( ts(c"A",mk-vector(type(Type)).push(ta)) == ts(c"A",mk-vector(type(Type)).push(ta)) );
 assert( safe-alloc-block-count == 0 );
 assert( safe-alloc-block-count-monotonic <= 4 );
 safe-alloc-block-count-monotonic = 0;
 
-assert( ts(c"A",[ta,ta]) == ts(c"A",[ta,ta]) );
+assert( ts(c"A",mk-vector(type(Type)).push(ta).push(ta)) == ts(c"A",mk-vector(type(Type)).push(ta).push(ta)) );
 assert( safe-alloc-block-count == 0 );
 assert( safe-alloc-block-count-monotonic <= 6 );
 safe-alloc-block-count-monotonic = 0;
