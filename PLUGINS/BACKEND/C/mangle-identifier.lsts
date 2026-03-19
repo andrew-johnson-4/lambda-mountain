@@ -40,7 +40,7 @@ let mangle-identifier(kt: Type): S = (
          let r = mangle-identifier(tag);
          if parameters.length > 0 then r = r + mangle-identifier(c"<");
          let c-has-prev = false;
-         for list c in parameters {
+         for vector c in parameters {
             if c-has-prev { r = r + mangle-identifier(c",") };
             r = r + mangle-identifier(c);
             c-has-prev = true;

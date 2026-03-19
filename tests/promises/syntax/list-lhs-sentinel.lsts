@@ -1,0 +1,19 @@
+
+import lib/core/bedrock.lsts;
+
+match [] : List<U8> {
+   [] => ();
+};
+
+match mk-vector(type(U8)) {
+   [] => ();
+};
+
+match [1] {
+   [_..] => ();
+};
+
+match mk-vector(type(U8)).push(1) {
+   [_..] => ();
+};
+

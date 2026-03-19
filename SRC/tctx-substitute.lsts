@@ -1,7 +1,7 @@
 
 let .substitute(tctx: TypeContext?, tt: Vector<Type>): Vector<Type> = (
    let next = mk-vector(type(Type));
-   for vector t in tt {
+   for t in tt {
       next = next.push(tctx.substitute(t));
    };
    next

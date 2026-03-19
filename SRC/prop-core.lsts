@@ -178,9 +178,9 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
    };
    match base {
       TGround { tag2=tag, parameters=parameters } => (
-         let new-parameters = [] : List<Type>;
-         for list p in parameters.reverse {
-            new-parameters = cons( p.weaken , new-parameters );
+         let new-parameters = mk-vector(type(Type));
+         for vector p in parameters {
+            new-parameters = new-parameters.push(p.weaken);
          };
          base = ts(tag2,new-parameters);
       );
@@ -189,9 +189,9 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
          for vector c in conjugate {
             match c {
                TGround { tag3=tag, parameters=parameters } => (
-                  let new-parameters = [] : List<Type>;
-                  for list p in parameters.reverse {
-                     new-parameters = cons( p.weaken , new-parameters );
+                  let new-parameters = mk-vector(type(Type));
+                  for vector p in parameters {
+                     new-parameters = new-parameters.push(p.weaken);
                   };
                   result = result.push(ts(tag3,new-parameters));
                );
@@ -257,9 +257,9 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
    };
    match base {
       TGround { tag2=tag, parameters=parameters } => (
-         let new-parameters = [] : List<Type>;
-         for list p in parameters.reverse {
-            new-parameters = cons( p.unenrich , new-parameters );
+         let new-parameters = mk-vector(type(Type));
+         for vector p in parameters {
+            new-parameters = new-parameters.push(p.unenrich);
          };
          base = ts(tag2,new-parameters);
       );
@@ -268,9 +268,9 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
          for vector c in conjugate {
             match c {
                TGround { tag3=tag, parameters=parameters } => (
-                  let new-parameters = [] : List<Type>;
-                  for list p in parameters.reverse {
-                     new-parameters = cons( p.unenrich , new-parameters );
+                  let new-parameters = mk-vector(type(Type));
+                  for vector p in parameters {
+                     new-parameters = new-parameters.push(p.unenrich);
                   };
                   result = result.push(ts(tag3,new-parameters));
                );

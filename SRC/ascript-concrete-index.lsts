@@ -19,7 +19,7 @@ let add-concrete-type-instance(tt: Type, blame: AST): Nil = (
             if not(row.contains(tt)) then row = row.push(tt);
             concrete-type-instances-index = concrete-type-instances-index.bind(gta, row);
          };
-         for list p in parameters {
+         for vector p in parameters {
             add-concrete-type-instance(p, blame);
          };
       );

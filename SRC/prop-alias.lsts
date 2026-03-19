@@ -5,7 +5,7 @@ let add-type-alias(lt: Type, rt: Type): Nil = (
    type-alias-index = type-alias-index.bind( lt.ground-tag-and-arity, ( lt, rt ) );
 );
 let .rewrite-type-alias(lt: Type): Type = (
-   let return = match lt {
+   match lt {
       TGround{tag:c"Phi::State",parameters:[_..]} => lt;
       TGround{tag:c"Phi::Id",parameters:[_..]} => lt;
       TGround{tag:c"Phi::Transition",parameters:[_.._..]} => lt;
@@ -40,13 +40,13 @@ let .rewrite-type-alias(lt: Type): Type = (
       );
       _ => lt;
    };
-   return
 );
-let .rewrite-type-alias(lt: List<Type>): List<Type> = (
-   match lt {
-      LCons{ head=head, tail=tail } => cons( head.rewrite-type-alias, tail.rewrite-type-alias );
-      _ => lt;
-   }
+let .rewrite-type-alias(lt: Vector<Type>): Vector<Type> = (
+   let next = mk-vector(type(Type));
+   for vector t in lt {
+      next = next.push(t.rewrite-type-alias)
+   };
+   next
 );
 
 let opaque-type-alias-index = {} : Hashtable<Tuple<CString,U64>,Tuple<Type,Type>>;
@@ -82,9 +82,10 @@ let .rewrite-opaque-type-alias(lt: Type): Type = (
       _ => lt;
    }
 );
-let .rewrite-opaque-type-alias(lt: List<Type>): List<Type> = (
-   match lt {
-      LCons{ head=head, tail=tail } => cons( head.rewrite-opaque-type-alias, tail.rewrite-opaque-type-alias );
-      _ => lt;
-   }
+let .rewrite-opaque-type-alias(lt: Vector<Type>): Vector<Type> = (
+   let next = mk-vector(type(Type));
+   for vector t in lt {
+      next = next.push(t.rewrite-opaque-type-alias)
+   };
+   next
 );
