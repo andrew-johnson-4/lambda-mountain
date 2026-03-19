@@ -16,9 +16,9 @@ let .without-modifiers(tt: Type): Type = (
       );
       TGround { tag:c"C", parameters:[TGround{tag:c"extern"}..] } => ta;
       TGround { tag:tag, parameters:parameters } => (
-         let new-parameters = [] : List<Type>;
-         for list p in parameters.reverse {
-            new-parameters = cons(p.without-modifiers, new-parameters); 
+         let new-parameters = mk-vector(type(Type));
+         for vector p in parameters {
+            new-parameters = new-parameters.push(p.without-modifiers);
          };
          ts(tag,new-parameters)
       );

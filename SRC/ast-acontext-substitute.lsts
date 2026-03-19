@@ -16,7 +16,7 @@ let substitute(ctx: AContext, tt: Type): Type = (
          _ => tt;
       };
       TGround{tag=tag,parameters=parameters} => (
-         TGround( tag, close(substitute(ctx,parameters)) )
+         TGround( tag, substitute(ctx,parameters) )
       );
       TAnd{conjugate=conjugate} => (
          let result = mk-vector(type(Type), 0);
@@ -35,11 +35,12 @@ let substitute(ctx: AContext, tt: Type): Type = (
    }
 );
 
-let substitute(ctx: AContext, tt: List<Type>): List<Type> = (
-   match tt {
-      LCons{head=head,tail=tail} => cons( substitute(ctx,head), substitute(ctx,tail) );
-      _ => tt;
-   }
+let substitute(ctx: AContext, tt: Vector<Type>): Vector<Type> = (
+   let next = mk-vector(type(Type));
+   for t in tt {
+      next = next.push(substitute(ctx,t));
+   };
+   next
 );
 
 let substitute(ctx: AContext, term: AST): AST = (

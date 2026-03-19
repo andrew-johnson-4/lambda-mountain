@@ -85,7 +85,7 @@ let std-c-mangle-type-internal-internal(tt: Type, blame: AST): S = (
          if parameters.length > 0 {
             r = r + mangle-identifier(c"<");
             let pi = 0;
-            for list p in parameters {
+            for vector p in parameters {
                if pi > 0 then r = r + mangle-identifier(c",");
                r = r + std-c-mangle-type-simple(p, blame);
                pi = pi + 1;
@@ -120,7 +120,7 @@ let std-c-mangle-type-simple(tt: Type, blame: AST): S = (
          if parameters.length > 0 {
             r = r + mangle-identifier(c"<");
             let pi = 0;
-            for list p in parameters {
+            for vector p in parameters {
                if pi > 0 then r = r + mangle-identifier(c",");
                r = r + std-c-mangle-type-simple(p, blame);
                pi = pi + 1;

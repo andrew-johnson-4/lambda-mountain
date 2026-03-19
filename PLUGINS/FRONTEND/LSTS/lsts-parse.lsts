@@ -309,15 +309,15 @@ let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
 let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
    let tt = if lsts-parse-head(tokens) == c"(" {
       lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-      let args = [] : List<Type>;
+      let args = mk-vector(type(Type));
       if lsts-parse-head(tokens)!=c")" {
          (let arg, tokens) = lsts-parse-type(tokens);
-         args = [ arg ];
+         args = args.push(arg);
       };
       while lsts-parse-head(tokens) == c"," {
          lsts-parse-expect(c",", tokens); tokens = tail(tokens);
          let tnext-rest = lsts-parse-type(tokens);
-         args = cons( tnext-rest.first, args );
+         args = args.push(tnext-rest.first);
          tokens = tnext-rest.second;
       };
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
@@ -353,16 +353,16 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          base = base + c"::" + lsts-substitute-type-aliases(lsts-parse-head(tokens));
          tokens = tail(tokens);
       };
-      let args = [] : List<Type>;
+      let args = mk-vector(type(Type));
       if lsts-parse-head(tokens) == c"<" {
          lsts-parse-expect(c"<", tokens); tokens = tail(tokens);
          let targs-rest = lsts-parse-type(tokens);
-         args = cons( targs-rest.first, args );
+         args = args.push(targs-rest.first);
          tokens = targs-rest.second;
          while lsts-parse-head(tokens) == c"," {
             lsts-parse-expect(c",", tokens); tokens = tail(tokens);
             let tnext-rest = lsts-parse-type(tokens);
-            args = cons( tnext-rest.first, args );
+            args = args.push(tnext-rest.first);
             tokens = tnext-rest.second;
          };
          lsts-parse-expect(c">", tokens); tokens = tail(tokens);
@@ -442,6 +442,7 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
    tokens = tail(tokens);
    if lsts-parse-head(tokens) == c"]" {
       base = Lit ( c"MACRO::LHS-LIST-SENTINEL", with-location(mk-token("MACRO::LHS-LIST-SENTINEL"),loc) );
+      base = mk-app(base,base); # TODO FIX MACRO, this is for compatibility with macros 1.0
    } else {
       let base-rest = lsts-parse-lhs-one(tokens);
       base = base-rest.first;
@@ -451,7 +452,9 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
          lsts-parse-expect(c".", tokens); tokens = tail(tokens);
          lsts-parse-expect(c".", tokens); tokens = tail(tokens);
          if lsts-parse-head(tokens)==c"]" {
-            bases = cons( Lit( c"MACRO::LHS-LIST-SENTINEL", with-location(mk-token("MACRO::LHS-LIST-SENTINEL"),loc) ), bases );
+            let in-base = Lit ( c"MACRO::LHS-LIST-SENTINEL", with-location(mk-token("MACRO::LHS-LIST-SENTINEL"),loc) );
+            in-base = mk-app(in-base,in-base); # TODO FIX MACRO, this is for compatibility with macros 1.0
+            bases = cons( in-base, bases );
          } else {
             let next-rest = lsts-parse-lhs-one(tokens);
             let next = next-rest.first;
@@ -831,7 +834,7 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
    let typename = lsts-parse-head(tokens); tokens = tail(tokens);
    if typename.has-suffix(c"_ss") then typename = typename.remove-suffix(c"_ss").get-or(c"");
    let lhs-type = if lsts-parse-head(tokens)==c"<" {
-      let pars = [] : List<Type>;
+      let pars = mk-vector(type(Type));
       lsts-parse-expect(c"<", tokens); tokens = tail(tokens);
       let pt = ta;
       if lsts-is-enum-head(lsts-parse-head(tokens)) or lsts-parse-head(tokens).has-suffix(c"_ss") {
@@ -847,7 +850,7 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
             pt = pt && vt;
          };
       };
-      pars = cons(pt, pars);
+      pars = pars.push(pt);
       while lsts-parse-head(tokens)==c"," {
          lsts-parse-expect(c",", tokens); tokens = tail(tokens);
          if lsts-is-enum-head(lsts-parse-head(tokens)) or lsts-parse-head(tokens).has-suffix(c"_ss") {
@@ -863,7 +866,7 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
                pt = pt && vt;
             };
          };
-         pars = cons(pt, pars);
+         pars = pars.push(pt);
       };
       lsts-parse-expect(c">", tokens); tokens = tail(tokens);
       ts(typename, pars);
