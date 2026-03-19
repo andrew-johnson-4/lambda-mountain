@@ -78,7 +78,8 @@ let .least-upper-bound(tctx: TypeContext?, left: Vector<Type>, right: Vector<Typ
       let success = true;
       while rli < left.length {
          (tctx, let tt) = tctx.least-upper-bound(left[rli],right[rli],blame);
-         if non-zero(tt) then next = next.push(tt);
+         if not(non-zero(left[rli])) and not(non-zero(right[rli])) then next = next.push(ta);
+         else if non-zero(tt) then next = next.push(tt);
          else success = false;
          rli = rli + 1;
       };
