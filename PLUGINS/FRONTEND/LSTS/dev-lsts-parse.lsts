@@ -441,7 +441,7 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let loc = head(tokens).location;
    tokens = tail(tokens);
    if lsts-parse-head(tokens) == c"]" {
-      base = Lit ( c"LEOF", with-location(mk-token("LEOF"),loc) );
+      base = Lit ( c"MACRO::LHS-LIST-SENTINEL", with-location(mk-token("MACRO::LHS-LIST-SENTINEL"),loc) );
    } else {
       let base-rest = lsts-parse-lhs-one(tokens);
       base = base-rest.first;
@@ -451,7 +451,7 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
          lsts-parse-expect(c".", tokens); tokens = tail(tokens);
          lsts-parse-expect(c".", tokens); tokens = tail(tokens);
          if lsts-parse-head(tokens)==c"]" {
-            bases = cons( Lit( c"LEOF", with-location(mk-token("LEOF"),loc) ), bases );
+            bases = cons( Lit( c"MACRO::LHS-LIST-SENTINEL", with-location(mk-token("MACRO::LHS-LIST-SENTINEL"),loc) ), bases );
          } else {
             let next-rest = lsts-parse-lhs-one(tokens);
             let next = next-rest.first;
