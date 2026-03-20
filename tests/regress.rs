@@ -36,7 +36,7 @@ fn run_bootstrap(target: &str, leave_tmp: bool, is_v3: bool) -> String {
 
    //these exist because GC is slow atm
    let mut lm_protect = target.contains("lm-");
-   if target.contains("lm-type") { lm_protect = false; };
+   //if target.contains("lm-type") { lm_protect = false; };
    //if target.contains("lm-ast") { lm_protect = false; };
    //if target.contains("lm-tctx") { lm_protect = false; };
     
