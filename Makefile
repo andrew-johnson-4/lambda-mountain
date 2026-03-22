@@ -8,9 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm --showallocgen tests/promises/lm-type/bound-constructor.lsts
-	$(CC) $(CFLAGS) tmp.c
-	./a.out
+	sh profile-promises.sh
 
 build: compile-production
 	time env $(LSTSFLAGS) ./production --v23 --c -o deploy1.c SRC/index.lsts
