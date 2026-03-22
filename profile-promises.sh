@@ -9,7 +9,7 @@ do
 	echo "Processing promise file $fp" >> promises.prof
 	lm --showallocgen $fp
 	if [ -f tmp.c ]; then
-		gcc tmp.c -o a.out
+		gcc -w -O2 -march=native -mtune=native tmp.c -o a.out
 		if [ -f a.out ]; then
 			./a.out >> promises.prof
 		fi
