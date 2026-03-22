@@ -115,7 +115,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
                            mk-app(
                               mk-var(c".into"),
                               mk-cons(
-                                 mk-var(c"safe-alloc-block-count-monotonic"),
+                                 mk-var(c"safe-alloc-block-count-monotonic-history"),
                                  mk-atype(t1(c"Type",t0(c"String")))
                               )
                            ),

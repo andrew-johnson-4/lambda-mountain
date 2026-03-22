@@ -35,6 +35,7 @@ let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
 # safe-alloc-block-count-monotonic is an increment-only counter to track historical malloc blocks
 let safe-alloc-block-count = 0_u64;
 let safe-alloc-block-count-monotonic = 0_u64;
+let safe-alloc-block-count-monotonic-history = 0_u64;
 
 let safe-alloc-semaphore = false;
 
@@ -55,6 +56,7 @@ let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
    # TODO: wrap counter adjustments in conditional compilation
    safe-alloc-block-count = safe-alloc-block-count + 1;
    safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
+   safe-alloc-block-count-monotonic-history = safe-alloc-block-count-monotonic-history + 1;
 
    ptr
 );
@@ -72,6 +74,7 @@ let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
 
    # TODO: wrap counter adjustments in conditional compilation
    safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
+   safe-alloc-block-count-monotonic-history = safe-alloc-block-count-monotonic-history + 1;
 
    new-ptr
 );
