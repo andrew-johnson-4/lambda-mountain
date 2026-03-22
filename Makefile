@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm tests/promises/lm-type/bound-constructor.lsts
+	lm --showallocgen tests/promises/lm-type/bound-constructor.lsts
 	$(CC) $(CFLAGS) tmp.c
 	./a.out
 

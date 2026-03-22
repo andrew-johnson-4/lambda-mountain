@@ -27,6 +27,7 @@ let print-toks-json(fp: CString): Nil = (
 );
 
 let show-alloc-count = false;
+let show-alloc-count-in-program = false;
 
 let main(argc: C_int, argv: CString[]): Nil = (
    config-v23 = false;
@@ -57,6 +58,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          );
          c"--stripdebug" => config-strip-debug = true;
          c"--showalloc" => show-alloc-count = true;
+         c"--showallocgen" => show-alloc-count-in-program = true;
          c"--profile-ast" => config-profile-ast = true;
          c"-o" => (
             argi = argi + 1;
@@ -100,6 +102,30 @@ let main(argc: C_int, argv: CString[]): Nil = (
       );
       _ => (
          for list fp4 in input.reverse { frontend(fp4); };
+         if show-alloc-count-in-program {
+            ast-parsed-program = ast-parsed-program +
+            mk-app( mk-var(c"print"),
+               mk-app(
+                  mk-var(c"+"),
+                  mk-cons(
+                     mk-lit(c"TOTAL ALLOCATED: ").ascript(t0(c"String")),
+                     mk-app(
+                        mk-var(c"+"),
+                        mk-cons(
+                           mk-app(
+                              mk-var(c".into"),
+                              mk-cons(
+                                 mk-var(c"safe-alloc-block-count-monotonic"),
+                                 mk-atype(t1(c"Type",t0(c"String")))
+                              )
+                           ),
+                           mk-lit(c"\\n").ascript(t0(c"String"))
+                        )
+                     )
+                  )
+               )
+            );
+         };
          match config-mode {
             ModeTypecheck{} => (preprocess(); typecheck(););
             ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(); );
