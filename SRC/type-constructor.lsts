@@ -2,22 +2,16 @@
 # new allocations = 0
 let ta = TAny;
 
-# new allocations = 1
-#    1 from close
-#    0 from 0 length list
-# this is an upper bound, because the list implementation should be replaced with vector eventually
+# new allocations = 0
+#    0 from 0 length vector
 let t0(tag: CString): Type = TGround(tag, mk-vector(type(Type)));
 
-# new allocations = 2
-#    1 from close
-#    1 from 1 length list
-# this is an upper bound, because the list implementation should be replaced with vector eventually
+# new allocations = 1
+#    1 from 1 length vector
 let t1(tag: CString, p1: Type): Type = TGround(tag, mk-vector(type(Type)).push(p1));
 
-# new allocations = 3
-#    1 from close
-#    2 from 2 length list
-# this is an upper bound, because the list implementation should be replaced with vector eventually
+# new allocations = 1
+#    1 from 2 length vector
 let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, mk-vector(type(Type)).push(p2).push(p1));
 
 # new allocations = 0
@@ -61,6 +55,7 @@ let $"&&"(lt: Type, rt: Type): Type = (
 );
 
 # new allocations = 0 if either argument is ?
+#                 | 0 if able to reuse left conjugate
 #                 | 1
 let .extend(lt: Type, rt: Type): Type = (
    match (lt, rt) {
@@ -93,8 +88,7 @@ let .extend(lt: Type, rt: Type): Type = (
    };
 );
 
-# new allocations = 1
-# this is an upper bound, because the list implementation should be replaced with vector eventually
+# new allocations = 0
 let ts(tag: CString, ps: Vector<Type>): Type = TGround( tag, ps );
 
 # new allocations = 0
