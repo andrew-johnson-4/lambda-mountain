@@ -27,13 +27,6 @@ let .without-phi(tt: Type): Type = (
    }
 );
 
-let .without-phi(tt: List<Type>): List<Type> = (
-   match tt {
-      [hd..tl] => cons( hd.without-phi, tl.without-phi );
-      tl => tl;
-   }
-);
-
 let .without-phi(tt: Vector<Type>): Vector<Type> = (
    let next = mk-vector(type(Type));
    for vector t in tt {
