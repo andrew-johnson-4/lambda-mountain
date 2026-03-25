@@ -32,38 +32,17 @@ let t0(tag: CString): Type = TGround(tag, mk-vector(type(Type)));
 let t1(tag: CString, p1: Type): Type = TGround(tag, mk-vector(type(Type)).push(p1));
 let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, mk-vector(type(Type)).push(p2).push(p1));
 
-let can-unify(fpt: Vector<Type>, pt: Vector<Type>): Bool = (
-   let fptv = fpt[:];
-   let ptv = pt[:];
-   if fptv.length == ptv.length {
-      let ok = true;
-      while ok and non-zero(fptv) {
-         if not(can-unify(head(fptv), head(ptv))) then (ok = false);
-         fptv = tail(fptv); ptv = tail(ptv);
-      };
-      ok
-   } else false
-);
-
 let can-unify(fpt: Type, pt: Type): Bool = (
-   let return = match Tuple(fpt, pt) {
+   match Tuple(fpt, pt) {
       Tuple{
           first:TGround{tag:c"Arrow", parameters:[lrng.. ldom..]},
           second:TGround{tag:c"Arrow", parameters:[rrng.. rdom..]}
       } => (
-         let ra = if can-unify(rdom, ldom) {
-            can-unify(lrng, rrng)
-         } else false;
-         ra
+         false
       );
-
-      Tuple{
-          first:TGround{ltn=tag, lps=parameters},
-          second:TGround{rtn=tag, rps=parameters}
-      } => (ltn==rtn and can-unify(lps,rps));
-      _ => false;
    };
-   return
+   # fpt and pt are at 0 reference count here
 );
 
 can-unify(t2(c"Arrow", t0(c"A"), t0(c"A")), t2(c"Arrow", t0(c"A"), t0(c"A")));
+print(c"Unified\n");
