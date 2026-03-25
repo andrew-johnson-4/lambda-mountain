@@ -2,10 +2,7 @@
 import lib/core/bedrock.lsts;
 
 let f(): Nil = (
-   match mk-vector(type(U8)).push(1).push(2) {
-      [x.. y..] => ();
-   };
-   # fpt and pt are at 0 reference count here
+   let xs = tail(mk-vector(type(U8)).push(1).push(2));
 );
 
 f();
