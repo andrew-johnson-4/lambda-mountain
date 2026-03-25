@@ -95,13 +95,15 @@ let safe-realloc(ptr: t[], len: USize, ty: Type<t>): t[] = (
    safe-realloc-impl(ptr as ?[], nb) as t[]
 );
 
+# Disabling free here makes GC miscounts fail immediately due to lack of data overwrite
+# TODO: create a compiler option to disable free (--nofree)
 let safe-free(ptr: ?[]): Nil = (
    # BEFORE CHANGING THIS: talk to alex
 
    # TODO: wrap counter adjustments in conditional compilation
    safe-alloc-block-count = safe-alloc-block-count - 1;
 
-   free(ptr as C<"void">[]);
+   #free(ptr as C<"void">[]);
    ()
 );
 

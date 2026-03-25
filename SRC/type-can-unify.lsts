@@ -26,6 +26,8 @@ let can-unify(fpt: VectorView<Type>, pt: VectorView<Type>): Bool = (
 );
 
 let can-unify(fpt: Type, pt: Type): Bool = (
+   print(c"Can Unify\n");
+   print("Can Unify \{fpt} x \{pt}\n");
    match Tuple(fpt, pt) {
       Tuple{ first:TAny{} } => true;
       Tuple{ first:TGround{tag:c"Any"} } => true;
