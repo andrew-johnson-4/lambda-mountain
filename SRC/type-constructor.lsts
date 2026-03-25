@@ -49,7 +49,7 @@ let $"&&"(lt: Type, rt: Type): Type = (
          result = result.push(first);
          result = result.push(second);
          result = result.sort;
-         TAnd(result)
+         TAnd(result);
       );
    };
 );

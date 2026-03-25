@@ -1,17 +1,6 @@
 
 let $"<:"(pt: Type, fpt: Type): Bool = can-unify(fpt,pt);
 
-let can-unify(fpt: List<Type>, pt: List<Type>): Bool = (
-   if fpt.length == pt.length {
-      let ok = true;
-      while ok and non-zero(fpt) {
-         if not(can-unify(head(fpt), head(pt))) then (ok = false);
-         fpt = tail(fpt); pt = tail(pt);
-      };
-      ok
-   } else false
-);
-
 let can-unify(fpt: Vector<Type>, pt: Vector<Type>): Bool = (
    let fptv = fpt[:];
    let ptv = pt[:];
@@ -37,7 +26,7 @@ let can-unify(fpt: VectorView<Type>, pt: VectorView<Type>): Bool = (
 );
 
 let can-unify(fpt: Type, pt: Type): Bool = (
-   match Tuple(fpt, pt) {
+   let return = match Tuple(fpt, pt) {
       Tuple{ first:TAny{} } => true;
       Tuple{ first:TGround{tag:c"Any"} } => true;
       Tuple{ first:TGround{tag:c"MustNotRetain"} } => true;
@@ -156,9 +145,10 @@ let can-unify(fpt: Type, pt: Type): Bool = (
           first:TGround{tag:c"Arrow", parameters:[lrng.. ldom..]},
           second:TGround{tag:c"Arrow", parameters:[rrng.. rdom..]}
       } => (
-         if can-unify(rdom, ldom) {
+         let ra = if can-unify(rdom, ldom) {
             can-unify(lrng, rrng)
-         } else false
+         } else false;
+         ra
       );
 
       Tuple{
@@ -167,4 +157,5 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       } => (ltn==rtn or (ltn.has-suffix(c"::") and rtn.has-prefix(ltn))) and can-unify(lps,rps);
       _ => false;
    };
+   return
 );

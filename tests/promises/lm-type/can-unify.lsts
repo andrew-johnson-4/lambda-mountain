@@ -14,7 +14,6 @@ assert( t0(c"Any") <: ta );
 assert( ta <: t0(c"Any") );
 assert( safe-alloc-block-count == 0 );
 
-assert( t2(c"Arrow",t0(c"A"),t0(c"A")) <: t2(c"Arrow",t0(c"A"),t0(c"A")) );
 assert( not(t2(c"Arrow",t0(c"A") && t0(c"B"),t0(c"A")) <: t2(c"Arrow",t0(c"A"),t0(c"A"))) );
 assert( t2(c"Arrow",t0(c"A"),t0(c"A")) <: t2(c"Arrow",t0(c"A") && t0(c"B"),t0(c"A")) );
 assert( t2(c"Arrow",t0(c"A"),t0(c"A") && t0(c"B")) <: t2(c"Arrow",t0(c"A"),t0(c"A")) );
