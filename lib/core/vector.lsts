@@ -74,7 +74,7 @@ let $"[]"(v: Vector<t>, idx: USize): t = (
 # new allocations = 0
 let $"[]"(v: VectorView<t>, idx: USize): t = (
    if not(idx < v.end-offset - v.start-offset) then fail(c"Vector Index Out Of Bounds");
-   v.data.data[v.start-offset+idx]
+   v.data[v.start-offset+idx]
 );
 
 # new allocations = 1
