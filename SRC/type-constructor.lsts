@@ -12,11 +12,7 @@ let t1(tag: CString, p1: Type): Type = TGround(tag, mk-vector(type(Type)).push(p
 
 # new allocations = 1
 #    1 from 2 length vector
-let t2(tag: CString, p1: Type, p2: Type): Type = (
-   print(c"T2\n");
-   let t = TGround(tag, mk-vector(type(Type)).push(p2).push(p1));
-   t
-);
+let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, mk-vector(type(Type)).push(p2).push(p1));
 
 # new allocations = 0
 let tv(name: CString): Type = TVar(name);

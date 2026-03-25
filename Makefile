@@ -7,8 +7,8 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recursion is used fairly heavily
 # recommendation: ulimit -s unlimited
 
-dev: install-bootstrap
-	lm tests/promises/lm-type/can-unify.lsts
+dev: install-production
+	lm tests/promises/vector/view-destructor.lsts
 	gcc tmp.c
 	./a.out
 

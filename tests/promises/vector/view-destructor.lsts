@@ -1,5 +1,36 @@
 
-let $"<:"(pt: Type, fpt: Type): Bool = can-unify(fpt,pt);
+import lib/core/bedrock.lsts;
+
+type Type zero TAny implies MustRetain, MustRelease
+        = TGround { tag:CString, parameters:Vector<Type> }
+        | TAny
+        | TVar { name:CString }
+        | TAnd { conjugate:Vector<Type> };
+
+let .release(t: Type): Nil = (
+   if t.discriminator-case-tag==(t as Tag::TGround).discriminator-case-tag {
+      (t as Tag::TGround).parameters.release;
+   };
+   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
+      (t as Tag::TAnd).conjugate.release;
+   };
+   mark-as-released(t);
+);
+
+let .retain(t: Type): Type = (
+   if t.discriminator-case-tag==(t as Tag::TGround).discriminator-case-tag {
+      mark-as-released((t as Tag::TGround).parameters.retain);
+   };
+   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
+      mark-as-released((t as Tag::TAnd).conjugate.retain);
+   };
+   t
+);
+
+let ta = TAny;
+let t0(tag: CString): Type = TGround(tag, mk-vector(type(Type)));
+let t1(tag: CString, p1: Type): Type = TGround(tag, mk-vector(type(Type)).push(p1));
+let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, mk-vector(type(Type)).push(p2).push(p1));
 
 let can-unify(fpt: Vector<Type>, pt: Vector<Type>): Bool = (
    let fptv = fpt[:];
@@ -37,62 +68,6 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       Tuple{ first:TGround{tag:c"MustNotFresh"} } => true;
       Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => false;
       Tuple{ first:TVar{} } => true;
-      Tuple{ first:TAnd{ lconjugate=conjugate }, second:TAnd{ rconjugate=conjugate } } => (
-         let result = true;
-         let ri = 0_sz;
-         let phi-state-in = ta;
-         for vector lc in lconjugate {
-            if result then (match lc {
-               TGround{tag:c"Any"} => ();
-               TGround{tag:c"MustNotRetain"} => ();
-               TGround{tag:c"MustUse"} => ();
-               TGround{tag:c"MustNotMove"} => ();
-               TGround{tag:c"MustReleaseAfterCall"} => ();
-               TGround{tag:c"MustNotRewrite"} => ();
-               TGround{tag:c"MustNotFresh"} => ();
-               TGround{tag:c"Phi::Transition", parameters:[phi-to..phi-from..]} => (
-                  let skip-state-check = false;
-                  for vector st in rconjugate { match st {
-                     TGround{tag:c"Phi::State",parameters:[new-phi-state..]} => (
-                        phi-state-in = phi-state-in.extend(new-phi-state);
-                     );
-                     TGround{tag:c"Phi::Transition",parameters:[new-phi-to..new-phi-from..]} => (
-                        result = result and can-unify(phi-to, new-phi-to) and can-unify(phi-from, new-phi-from);
-                        skip-state-check = true;
-                     );
-                     _ => ();
-                  }};
-                  if not(skip-state-check) then result = result and can-unify(phi-from, phi-state-in);
-               );
-               TGround{ltag=tag} => (
-                  let this-result-ok = false;
-                  let rc = rconjugate[ri];
-                  let rtag = rc.simple-tag;
-                  if not(non-zero(rtag)) then () else (
-                     while ri<rconjugate.length and rtag < ltag {
-                        ri = ri + 1;
-                        if ri < rconjugate.length {
-                           rc = rconjugate[ri];
-                           rtag = rc.simple-tag;
-                        }
-                     };
-                     let scan-ri = ri;
-                     while scan-ri<rconjugate.length and rtag==ltag {
-                        this-result-ok = this-result-ok or can-unify(lc,rc);
-                        scan-ri = scan-ri + 1;
-                        if scan-ri < rconjugate.length {
-                           rc = rconjugate[scan-ri];
-                           rtag = rc.simple-tag;
-                        }
-                     };
-                  );
-                  result = result and this-result-ok;
-               );
-               _ => result = result and can-unify(lc,pt);
-            });
-         };
-         result;
-      );
       Tuple{ first:TAnd{ lconjugate=conjugate }, rt=second } => (
          let result = true;
          for vector c in lconjugate { result = result and can-unify(c,rt) };
@@ -159,3 +134,5 @@ let can-unify(fpt: Type, pt: Type): Bool = (
    };
    return
 );
+
+can-unify(t2(c"Arrow", t0(c"A"), t0(c"A")), t2(c"Arrow", t0(c"A"), t0(c"A")));
