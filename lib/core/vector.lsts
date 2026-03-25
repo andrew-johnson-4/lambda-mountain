@@ -27,7 +27,7 @@ let .release(x: VectorView<t>): Nil = (
 );
 
 let .retain(x: VectorView<t>): VectorView<t> = (
-   x.data.retain;
+   mark-as-released(x.data.retain);
    x
 );
 
