@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm tests/promises/vector/view-destructor.lsts
+	lm tests/promises/lm-type/can-unify.lsts
 	gcc tmp.c
 	./a.out
 

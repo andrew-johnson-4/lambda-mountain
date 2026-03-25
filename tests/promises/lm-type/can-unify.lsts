@@ -1,45 +1,29 @@
 
 import SRC/unit-type-core.lsts;
 
-print(c"CU 1\n");
-#assert( (t0(c"A") && t0(c"B")) <: t0(c"A") );
-#assert( (t0(c"A") && t0(c"B")) <: t0(c"B") );
-#assert( not((t0(c"A") && t0(c"B")) <: t0(c"C")) );
+assert( (t0(c"A") && t0(c"B")) <: t0(c"A") );
+assert( (t0(c"A") && t0(c"B")) <: t0(c"B") );
+assert( not((t0(c"A") && t0(c"B")) <: t0(c"C")) );
 assert( safe-alloc-block-count == 0 );
 
-print(c"CU 2\n");
-#assert( t0(c"A") <: (t0(c"A") && t0(c"A")) );
-#assert( not(t0(c"A") <: (t0(c"A") && t0(c"B"))) );
+assert( t0(c"A") <: (t0(c"A") && t0(c"A")) );
+assert( not(t0(c"A") <: (t0(c"A") && t0(c"B"))) );
 assert( safe-alloc-block-count == 0 );
 
-print(c"CU 3\n");
-#assert( t0(c"Any") <: ta );
-#assert( ta <: t0(c"Any") );
+assert( t0(c"Any") <: ta );
+assert( ta <: t0(c"Any") );
 assert( safe-alloc-block-count == 0 );
 
-print(c"CU 4.0\n");
-assert( t2(c"Arrow",t0(c"A"),t0(c"A")) <: t2(c"Arrow",t0(c"A"),t0(c"A")) );
-print(c"CU 4.1.1\n");
-t2(c"Arrow",t0(c"A") && t0(c"B"),t0(c"A"));
-print(c"CU 4.1.2\n");
-assert( t2(c"Arrow",t0(c"A") && t0(c"B"),t0(c"A")) <: t2(c"Arrow",t0(c"A"),t0(c"A")) );
-print(c"CU 4.1.3\n");
 assert( not(t2(c"Arrow",t0(c"A") && t0(c"B"),t0(c"A")) <: t2(c"Arrow",t0(c"A"),t0(c"A"))) );
-print(c"CU 4.2\n");
 assert( t2(c"Arrow",t0(c"A"),t0(c"A")) <: t2(c"Arrow",t0(c"A") && t0(c"B"),t0(c"A")) );
-print(c"CU 4.3\n");
 assert( t2(c"Arrow",t0(c"A"),t0(c"A") && t0(c"B")) <: t2(c"Arrow",t0(c"A"),t0(c"A")) );
-print(c"CU 4.4\n");
 assert( not(t2(c"Arrow",t0(c"A"),t0(c"A")) <: t2(c"Arrow",t0(c"A"),t0(c"A") && t0(c"B"))) );
-print(c"CU 4.5\n");
 assert( safe-alloc-block-count == 0 );
 
-print(c"CU 5\n");
 assert( t1(c"A",t0(c"A") && t0(c"B")) <: t1(c"A",t0(c"A")) );
 assert( not(t1(c"A",t0(c"B")) <: t1(c"A",t0(c"A") && t0(c"B"))) );
 assert( safe-alloc-block-count == 0 );
 
-print(c"CU 6\n");
 assert( t0(c"Nil") <: t1(c"...",t0(c"A")) );
 assert( t0(c"A") <: t1(c"...",t0(c"A")) );
 assert( not(t0(c"B") <: t1(c"...",t0(c"A"))) );
@@ -48,7 +32,6 @@ assert( not(t2(c"Cons",t0(c"B"),t0(c"A")) <: t1(c"...",t0(c"A"))) );
 assert( not(t2(c"Cons",t0(c"A"),t0(c"C")) <: t1(c"...",t0(c"A"))) );
 assert( safe-alloc-block-count == 0 );
 
-print(c"CU 7\n");
 assert( t2(c"Cons",t0(c"B"),t0(c"A")) <: t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A"))) );
 assert( not(t2(c"Cons",t0(c"A"),t0(c"A")) <: t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A")))) );
 assert( not(t2(c"Cons",t0(c"B"),t0(c"B")) <: t2(c"Cons",t0(c"B"),t1(c"...",t0(c"A")))) );
@@ -59,17 +42,14 @@ assert( t0(c"A") <: t2(c"Cons",t1(c"...",t0(c"B")),t1(c"...",t0(c"A"))) );
 assert( t0(c"Nil") <: t2(c"Cons",t1(c"...",t0(c"B")),t1(c"...",t0(c"A"))) );
 assert( safe-alloc-block-count == 0 );
 
-print(c"CU 8\n");
 assert( t0(c"B") <: tv(c"a") );
 assert( t1(c"A",t0(c"B")) <: t1(c"A",tv(c"a")) );
 assert( safe-alloc-block-count == 0 );
 
-print(c"CU 9\n");
 assert( t2(c"Array",t0(c"A"),ta) <: t2(c"Array",ta,ta) );
 assert( t2(c"Array",t0(c"A"),ta) <: t2(c"Array",t0(c"Any"),ta) );
 assert( safe-alloc-block-count == 0 );
 
-print(c"CU 10\n");
 assert( t0(c"A::B") <: t0(c"A::") );
 assert( t1(c"A::B",t0(c"A")) <: t1(c"A::",ta) );
 assert( safe-alloc-block-count == 0 );
