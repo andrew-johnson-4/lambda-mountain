@@ -2,7 +2,7 @@
 import lib/core/bedrock.lsts;
 
 let f(): Nil = (
-   let xs = tail(mk-vector(type(U8)).push(1).push(2));
+   head(tail(mk-vector(type(U8)).push(1).push(2))); ()
 );
 
 f();
