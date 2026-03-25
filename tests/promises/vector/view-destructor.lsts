@@ -1,45 +1,11 @@
 
 import lib/core/bedrock.lsts;
 
-type Type zero TAny implies MustRetain, MustRelease
-        = TGround { tag:CString, parameters:Vector<Type> }
-        | TAny
-        | TVar { name:CString }
-        | TAnd { conjugate:Vector<Type> };
-
-let .release(t: Type): Nil = (
-   if t.discriminator-case-tag==(t as Tag::TGround).discriminator-case-tag {
-      (t as Tag::TGround).parameters.release;
-   };
-   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
-      (t as Tag::TAnd).conjugate.release;
-   };
-   mark-as-released(t);
-);
-
-let .retain(t: Type): Type = (
-   if t.discriminator-case-tag==(t as Tag::TGround).discriminator-case-tag {
-      mark-as-released((t as Tag::TGround).parameters.retain);
-   };
-   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
-      mark-as-released((t as Tag::TAnd).conjugate.retain);
-   };
-   t
-);
-
-let ta = TAny;
-let t0(tag: CString): Type = TGround(tag, mk-vector(type(Type)));
-let t1(tag: CString, p1: Type): Type = TGround(tag, mk-vector(type(Type)).push(p1));
-let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, mk-vector(type(Type)).push(p2).push(p1));
-
-let can-unify(fpt: Type, pt: Type): Bool = (
-   match fpt {
-      TGround{tag:c"Arrow", parameters:[lrng.. ldom..]} => (
-         false
-      );
+let f(): Nil = (
+   match mk-vector(type(U8)).push(1).push(2) {
+      [x.. y..] => ();
    };
    # fpt and pt are at 0 reference count here
 );
 
-can-unify(t2(c"Arrow", t0(c"A"), t0(c"A")), t2(c"Arrow", t0(c"A"), t0(c"A")));
-print(c"Unified\n");
+f();
