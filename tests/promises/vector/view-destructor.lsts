@@ -45,77 +45,8 @@ let can-unify(fpt: Vector<Type>, pt: Vector<Type>): Bool = (
    } else false
 );
 
-let can-unify(fpt: VectorView<Type>, pt: VectorView<Type>): Bool = (
-   if fpt.length == pt.length {
-      let ok = true;
-      while ok and non-zero(fpt) {
-         if not(can-unify(head(fpt), head(pt))) then (ok = false);
-         fpt = tail(fpt); pt = tail(pt);
-      };
-      ok
-   } else false
-);
-
 let can-unify(fpt: Type, pt: Type): Bool = (
    let return = match Tuple(fpt, pt) {
-      Tuple{ first:TAny{} } => true;
-      Tuple{ first:TGround{tag:c"Any"} } => true;
-      Tuple{ first:TGround{tag:c"MustNotRetain"} } => true;
-      Tuple{ first:TGround{tag:c"MustUse"} } => true;
-      Tuple{ first:TGround{tag:c"MustNotMove"} } => true;
-      Tuple{ first:TGround{tag:c"MustReleaseAfterCall"} } => true;
-      Tuple{ first:TGround{tag:c"MustNotRewrite"} } => true;
-      Tuple{ first:TGround{tag:c"MustNotFresh"} } => true;
-      Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => false;
-      Tuple{ first:TVar{} } => true;
-      Tuple{ first:TAnd{ lconjugate=conjugate }, rt=second } => (
-         let result = true;
-         for vector c in lconjugate { result = result and can-unify(c,rt) };
-         result
-      );
-      Tuple{ lt=first, second:TAnd{ rconjugate=conjugate } } => (
-         let result = false;
-         for vector c in rconjugate { result = result or can-unify(lt,c) };
-         result
-      );
-
-      # Ignore C Access Modifiers For Now
-      Tuple{ first:TGround{tag:c"C", parameters:[TGround{tag:c"const"}..]} } => true;
-
-      # Varargs
-      Tuple{
-          first:TGround{tag:c"Cons", parameters:[
-             TGround{tag:c"...", parameters:[lp1..]}..
-             lpr..
-          ]},
-          second:TGround{tag:c"Cons", parameters:[rp1..rpr..]}
-      } => (
-         if can-unify(lp1,rp1) then can-unify(fpt,rpr) else can-unify(lpr,pt)
-      );
-      Tuple{
-          first:TGround{tag:c"Cons", parameters:[
-             TGround{tag:c"...", parameters:[lp1..]}..
-             lpr..
-          ]},
-          second:rp1
-      } => (
-         if can-unify(lp1,rp1) then can-unify(lpr,t0(c"Nil")) else can-unify(lpr,rp1)
-      );
-      Tuple{
-          first:TGround{tag:c"...", parameters:[lp1..]},
-          second:TGround{tag:c"Cons", parameters:[rp1..rpr..]}
-      } => (
-         can-unify(lp1,rp1) and can-unify(fpt,rpr)
-      );
-      Tuple{
-          first:TGround{tag:c"...", parameters:[lp1..]},
-          second:TGround{tag:c"Nil", parameters:[]}
-      } => true;
-      Tuple{
-          first:TGround{tag:c"...", parameters:[lp1..]},
-          second:rp1
-      } => can-unify(lp1,rp1);
-
       Tuple{
           first:TGround{tag:c"Arrow", parameters:[lrng.. ldom..]},
           second:TGround{tag:c"Arrow", parameters:[rrng.. rdom..]}
@@ -129,7 +60,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       Tuple{
           first:TGround{ltn=tag, lps=parameters},
           second:TGround{rtn=tag, rps=parameters}
-      } => (ltn==rtn or (ltn.has-suffix(c"::") and rtn.has-prefix(ltn))) and can-unify(lps,rps);
+      } => (ltn==rtn and can-unify(lps,rps));
       _ => false;
    };
    return
