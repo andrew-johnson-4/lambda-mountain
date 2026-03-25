@@ -33,11 +33,8 @@ let t1(tag: CString, p1: Type): Type = TGround(tag, mk-vector(type(Type)).push(p
 let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, mk-vector(type(Type)).push(p2).push(p1));
 
 let can-unify(fpt: Type, pt: Type): Bool = (
-   match Tuple(fpt, pt) {
-      Tuple{
-          first:TGround{tag:c"Arrow", parameters:[lrng.. ldom..]},
-          second:TGround{tag:c"Arrow", parameters:[rrng.. rdom..]}
-      } => (
+   match fpt {
+      TGround{tag:c"Arrow", parameters:[lrng.. ldom..]} => (
          false
       );
    };
