@@ -2,7 +2,7 @@
 
 rm -rf promises.prof
 
-for fp in `ls tests/promises/lm-type/*.lsts`;
+for fp in `ls tests/promises/lm-tctx/*.lsts`;
 do
 	echo "Processing promise file $fp"
 	rm -f tmp.c a.out

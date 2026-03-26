@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-bootstrap
-	lm tests/promises/lm-type/destructor.lsts
+	lm --showallocgen tests/promises/lm-typecheck/tc-misc-1.lsts
 	gcc tmp.c
 	./a.out
 
