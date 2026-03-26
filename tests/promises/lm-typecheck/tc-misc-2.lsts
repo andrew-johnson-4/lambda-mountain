@@ -4,6 +4,6 @@ import PLUGINS/FRONTEND/LSTS/index.lsts;
 import PLUGINS/BACKEND/C/index.lsts;
 import PLUGINS/FRONTEND/C/index.lsts;
 
-lsts-frontend(c"tests/promises/lm-typecheck/tc-misc-1-target.lsts");
+lsts-frontend(c"tests/promises/lm-typecheck/tc-misc-2-target.lsts");
 preprocess();
 typecheck();
