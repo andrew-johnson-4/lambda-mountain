@@ -153,21 +153,17 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
                );
             }
          };
-         if tag.contains(c"::") {
-            let tag-parts = tag.split(c"::").into(type(Vector<CString>));
-            let tag-base = tag-parts[0] + c"::";
-            let ti = 1_sz;
-            while ti < tag-parts.length {
-               let tag-part = tag-parts[ti];
-               for vector row in weaken-quick-prop-index.lookup( (tag-base, parameters.length as U64), mk-vector(type((Type,Type))) ) {
-                  let lt = row.first;
-                  let rt = row.second;
-                  if can-unify(lt, original-base) then (
-                     base = remove-info(base, rt);
-                  );
-               };
-               tag-base = tag-base + tag-part + c"::";
-               ti = ti + 1;
+         if tag.has-prefix(c"Tag::") or tag.has-prefix(c"Field::") {
+            # TODO: generalize to all :: types, temporary semantic regression
+            let tag-base = if tag.has-prefix(c"Tag::") then c"Tag::"
+                      else if tag.has-prefix(c"Field::") then c"Field::"
+                      else c"";
+            for vector row in weaken-quick-prop-index.lookup( (tag-base, parameters.length as U64), mk-vector(type((Type,Type))) ) {
+               let lt = row.first;
+               let rt = row.second;
+               if can-unify(lt, original-base) then (
+                  base = remove-info(base, rt);
+               );
             };
          };
       );
@@ -233,20 +229,15 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             }
          };
          if tag.contains(c"::") {
-            let tag-parts = tag.split(c"::").into(type(Vector<CString>));
-            let tag-base = tag-parts[0] + c"::";
-            let ti = 1_sz;
-            while ti < tag-parts.length {
-               let tag-part = tag-parts[ti];
-               for vector row in quick-prop.lookup( (tag-base, parameters.length as U64), mk-vector(type((Type,Type))) ) {
-                  let lt = row.first;
-                  let rt = row.second;
-                  if can-unify(lt, original-base) then (
-                     base = remove-info(base, rt);
-                  );
-               };
-               tag-base = tag-base + tag-part + c"::";
-               ti = ti + 1;
+            let tag-base = if tag.has-prefix(c"Tag::") then c"Tag::"
+                      else if tag.has-prefix(c"Field::") then c"Field::"
+                      else c"";
+            for vector row in quick-prop.lookup( (tag-base, parameters.length as U64), mk-vector(type((Type,Type))) ) {
+               let lt = row.first;
+               let rt = row.second;
+               if can-unify(lt, original-base) then (
+                  base = remove-info(base, rt);
+               );
             };
          };
       );
