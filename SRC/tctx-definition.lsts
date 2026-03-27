@@ -1,5 +1,5 @@
 
-let global-tctx = {} : Hashtable<CString,List<TypeContextRow>>;
+let global-tctx = {} : Hashtable<CString,Vector<TypeContextRow>>;
 let tctx-currently-processing-globals = true;
 
 type TypeContextRow zero NullTypeContextRow implies MustRetain, MustRelease = NullTypeContextRow | TypeContextRow { key: CString, nt: Type, dt: Type, blame: AST };

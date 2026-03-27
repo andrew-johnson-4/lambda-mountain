@@ -25,7 +25,7 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
    let match-set = mk-vector(type(TypeContextRow));
 
    # Find all accepting function candidates
-   for list tr in tctx.lookups(fname) {
+   for vector tr in tctx.lookups(fname) {
       # can-receive is an additional refinement on top of argument satisfaction
       # it is necessary for nullary or partial constructors that need a full type
       # like, None : TypeContext?
@@ -61,7 +61,7 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
    # Fail if function call is ambiguous
    if failable and not(non-zero(result)) then {
       eprint("Unable to find appropriate callable: \{fname} \{arg-types} return hint: \{return-type-hint}\nAt: \{blame.location}\n");
-      for list tr in tctx.lookups(fname) {
+      for vector tr in tctx.lookups(fname) {
          eprint("Candidate: \{tr.dt-or-zero}\n");
       };
       exit(1);

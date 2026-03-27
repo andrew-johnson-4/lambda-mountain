@@ -7,10 +7,11 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recursion is used fairly heavily
 # recommendation: ulimit -s unlimited
 
-dev: install-production
-	lm tests/promises/lm-type/can-unify.lsts
+dev: install-bootstrap
+	lm --v23 SRC/index.lsts
+	#lm --v23 --showallocgen tests/promises/lm-typecheck/tc-misc-2.lsts
 	gcc tmp.c
-	./a.out
+	./a.out --v23 SRC/index.lsts
 
 build: compile-production
 	time env $(LSTSFLAGS) ./production --v23 --c -o deploy1.c SRC/index.lsts

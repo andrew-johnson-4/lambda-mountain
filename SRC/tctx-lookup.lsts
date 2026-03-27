@@ -10,7 +10,7 @@ let .lookup(trs: List<TypeContextRow>, key: CString): TypeContextRow = (
       }
    }};
    if not(non-zero(default)) {
-      for list tr in global-tctx.lookup(key, [] : List<TypeContextRow>) {
+      for vector tr in global-tctx.lookup(key, mk-vector(type(TypeContextRow)) ) {
          if tr.key-or-zero == key {
             if non-zero(default) {
                eprint("Duplicate Global Symbol \{key}\n");
@@ -25,20 +25,20 @@ let .lookup(trs: List<TypeContextRow>, key: CString): TypeContextRow = (
    default
 );
 
-let .lookups(tctx: TypeContext?, key: CString): List<TypeContextRow> = tctx.get-or(mk-tctx()).tctx.lookups(key);
-let .lookups(trs: List<TypeContextRow>, key: CString): List<TypeContextRow> = (
-   let default = [] : List<TypeContextRow>;
+let .lookups(tctx: TypeContext?, key: CString): Vector<TypeContextRow> = tctx.get-or(mk-tctx()).tctx.lookups(key);
+let .lookups(trs: List<TypeContextRow>, key: CString): Vector<TypeContextRow> = (
+   let default = mk-vector(type(TypeContextRow));
    let continue = true;
    for list tr in trs { if continue {
       if tr.key-or-zero == key {
-         default = cons(tr, default);
+         default = default.push(tr);
          continue = false;
       }
    }};
    if continue {
-      for list tr in global-tctx.lookup(key, [] : List<TypeContextRow>) {
+      for vector tr in global-tctx.lookup(key, mk-vector(type(TypeContextRow)) ) {
          if tr.key-or-zero == key {
-            default = cons(tr, default);
+            default = default.push(tr);
          }
       };
    };

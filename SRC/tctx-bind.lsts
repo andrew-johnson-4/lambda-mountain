@@ -19,14 +19,14 @@ let .bind(tctx: TypeContext?, k: CString, nt: Type, dt: Type, blame: AST): TypeC
 );
 
 let .bind-global(tctx: TypeContext?, k: CString, kt: Type, blame: AST): TypeContext? = (
-   let found = global-tctx.lookup(k, [] : List<TypeContextRow>);
-   found = cons( TypeContextRow(k,kt,kt,blame), found );
+   let found = global-tctx.lookup(k, mk-vector(type(TypeContextRow)) );
+   found = found.push( TypeContextRow(k,kt,kt,blame) );
    global-tctx = global-tctx.bind(k, found);
    tctx
 );
 let .bind-global(tctx: TypeContext?, k: CString, nt: Type, dt: Type, blame: AST): TypeContext? = (
-   let found = global-tctx.lookup(k, [] : List<TypeContextRow>);
-   found = cons( TypeContextRow(k,nt,dt,blame), found );
+   let found = global-tctx.lookup(k, mk-vector(type(TypeContextRow)) );
+   found = found.push( TypeContextRow(k,nt,dt,blame) );
    global-tctx = global-tctx.bind(k, found);
    tctx
 );

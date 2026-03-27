@@ -34,7 +34,7 @@ let .apply-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: 
       if f-row.get-or-panic.dt-or-zero.is-open {
          let special-type = apply-tctx.substitute(f-row.get-or-panic.nt-or-zero).without-phi-keep-state;
          if not(is-special(fname,special-type)) {
-            stack-to-specialize = cons( StackToSpecialize(fname,apply-tctx,special-type,f-row.get-or-panic.blame-or-zero), stack-to-specialize );
+            stack-to-specialize = stack-to-specialize.push( StackToSpecialize(fname,apply-tctx,special-type,f-row.get-or-panic.blame-or-zero) );
          }
       }
    };
