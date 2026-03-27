@@ -193,6 +193,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          }};
       );
       Glb{key1=key, val=val} => (
+         let prev-count-history = safe-alloc-block-count-monotonic-history;
          let rough-tt = typeof-term(term);
          if rough-tt.is-arrow and not(rough-tt.is-open) and not(rough-tt.is-t(c"TypedMacro",0)) {
             let tctx-tctx = tctx.get-or(mk-tctx());
@@ -213,6 +214,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                term = new-term;
             };
          };
+         print("Typechecked NEWALLOCATIONS=\{safe-alloc-block-count-monotonic-history - prev-count-history} \{term}\n");
       );
       Var{key2=key, token=token} => (
          (tctx, let vt) = typeof-var(term, tctx, key2, hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));

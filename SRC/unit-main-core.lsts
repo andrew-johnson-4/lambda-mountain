@@ -138,6 +138,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
    if config-profile-ast then {
       profile-print-ast()
    };
+   print("TOTAL ALLOCATIONS \{safe-alloc-block-count-monotonic-history}\n");
 );
 
 let doby-say(): Nil = (
