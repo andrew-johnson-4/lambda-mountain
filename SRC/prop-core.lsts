@@ -1,10 +1,10 @@
 
-let quick-prop = {} : Hashtable<(CString,U64),List<(Type,Type)>>;
+let quick-prop = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
 
 let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
    let key = pre.ground-tag-and-arity;
-   let val = quick-prop.lookup(key, ([] : List<(Type,Type)>));
-   val = cons( (pat,post), val );
+   let val = quick-prop.lookup(key, mk-vector(type((Type,Type))) );
+   val = val.push( (pat,post) );
    quick-prop = quick-prop.bind( key, val );
 );
 
@@ -54,7 +54,7 @@ let .enrich-strong(base: Type): Type = (
 let enrich-quick-prop(base: Type, pre: Type): Type = (
    match pre {
       TGround { tag=tag, parameters=parameters } => (
-         for list row in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+         for vector row in quick-prop.lookup( pre.ground-tag-and-arity, mk-vector(type((Type,Type))) ) {
             let lt = row.first;
             let rt = row.second;
             if base <: lt then (
@@ -68,7 +68,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
             );
          };
          if tag==c"Array" and parameters.length==2 {
-            for list row in quick-prop.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
+            for vector row in quick-prop.lookup( (c"Array",2_u64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if base <: lt then (
@@ -101,7 +101,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
    pre
 );
 
-let weaken-quick-prop-index = {} : Hashtable<(CString,U64),List<(Type,Type)>>;
+let weaken-quick-prop-index = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
 
 # core implicit weakening rules
 add-weaken-quick-prop( t1(c"Constructor",ta), t1(c"Constructor",ta), t1(c"Constructor",ta) );
@@ -124,8 +124,8 @@ add-weaken-quick-prop( t0(c"Tag::"), ta, t0(c"Tag::") );
 
 let add-weaken-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
    let key = pre.ground-tag-and-arity;
-   let val = weaken-quick-prop-index.lookup(key, ([] : List<(Type,Type)>));
-   val = cons( (pat,post), val );
+   let val = weaken-quick-prop-index.lookup(key, mk-vector(type((Type,Type))) );
+   val = val.push( (pat,post) );
    weaken-quick-prop-index = weaken-quick-prop-index.bind( key, val );
 );
 
@@ -137,7 +137,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
    let early-base = base;
    match pre {
       TGround { tag=tag, parameters=parameters } => (
-         for list row in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+         for vector row in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, mk-vector(type((Type,Type))) ) {
             let lt = row.first;
             let rt = row.second;
             if can-unify(lt, original-base) then (
@@ -145,7 +145,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             );
          };
          if tag==c"Array" and parameters.length==2 {
-            for list row in weaken-quick-prop-index.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
+            for vector row in weaken-quick-prop-index.lookup( (c"Array",2_u64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (
@@ -159,7 +159,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             let ti = 1_sz;
             while ti < tag-parts.length {
                let tag-part = tag-parts[ti];
-               for list row in weaken-quick-prop-index.lookup( (tag-base, parameters.length as U64), ([] : List<(Type,Type)>) ) {
+               for vector row in weaken-quick-prop-index.lookup( (tag-base, parameters.length as U64), mk-vector(type((Type,Type))) ) {
                   let lt = row.first;
                   let rt = row.second;
                   if can-unify(lt, original-base) then (
@@ -216,7 +216,7 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
    let early-base = base;
    match pre {
       TGround { tag=tag, parameters=parameters } => (
-         for list row in quick-prop.lookup( pre.ground-tag-and-arity, ([] : List<(Type,Type)>) ) {
+         for vector row in quick-prop.lookup( pre.ground-tag-and-arity, mk-vector(type((Type,Type))) ) {
             let lt = row.first;
             let rt = row.second;
             if can-unify(lt, original-base) then (
@@ -224,7 +224,7 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             );
          };
          if tag==c"Array" and parameters.length==2 {
-            for list row in quick-prop.lookup( (c"Array",2_u64), ([] : List<(Type,Type)>) ) {
+            for vector row in quick-prop.lookup( (c"Array",2_u64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (
@@ -238,7 +238,7 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             let ti = 1_sz;
             while ti < tag-parts.length {
                let tag-part = tag-parts[ti];
-               for list row in quick-prop.lookup( (tag-base, parameters.length as U64), ([] : List<(Type,Type)>) ) {
+               for vector row in quick-prop.lookup( (tag-base, parameters.length as U64), mk-vector(type((Type,Type))) ) {
                   let lt = row.first;
                   let rt = row.second;
                   if can-unify(lt, original-base) then (
