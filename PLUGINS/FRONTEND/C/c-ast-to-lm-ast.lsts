@@ -19,7 +19,7 @@ let std-c-declare(t: CTerm): Nil = (
                   ))
                );
             );
-            CIdentifier{name2=value} => (if not(std-c-declare-dedup-index.has(name2)) {
+            CIdentifier{name2=value} => (if not(std-c-declare-dedup-index.has-key(name2)) {
                std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name2, true);
                if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
                   std-c-typedef-name-index = std-c-typedef-name-index.bind(name2, true);
@@ -36,7 +36,7 @@ let std-c-declare(t: CTerm): Nil = (
             });
             CUnaryPrefix{op:"Declarator(", arg=arg} => (
                (let name3, let body) = std-c-sig-of-declarator(return-type, arg, ta, (None : Maybe<CTerm>)());
-               if not(std-c-declare-dedup-index.has(name3.into(type(String)))) {
+               if not(std-c-declare-dedup-index.has-key(name3.into(type(String)))) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name3.into(type(String)), true);
                   if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
                      std-c-typedef-name-index = std-c-typedef-name-index.bind(name3.into(type(String)), true);
@@ -48,7 +48,7 @@ let std-c-declare(t: CTerm): Nil = (
             );
             CBinaryOp{op:"Declarator(", arg1=arg1, arg2=arg2 } => (
                (let name4, let body) = std-c-sig-of-declarator(return-type, arg1, ta, Some(arg2));
-               if not(std-c-declare-dedup-index.has(name4.into(type(String)))) {
+               if not(std-c-declare-dedup-index.has-key(name4.into(type(String)))) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name4.into(type(String)), true);
                   if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
                      std-c-typedef-name-index = std-c-typedef-name-index.bind(name4.into(type(String)), true);
@@ -61,7 +61,7 @@ let std-c-declare(t: CTerm): Nil = (
             CBinaryOp{op:"Declarator*", ptr=arg1, arg2:CBinaryOp{op:"Declarator(", arg1=arg1, arg2=arg2 } } => (
                return-type = std-c-decorate-pointer(return-type, ptr);
                (let name5, let body) = std-c-sig-of-declarator(return-type, arg1, ta, Some(arg2));
-               if not(std-c-declare-dedup-index.has(name5.into(type(String)))) {
+               if not(std-c-declare-dedup-index.has-key(name5.into(type(String)))) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name5.into(type(String)), true);
                   if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
                      std-c-typedef-name-index = std-c-typedef-name-index.bind(name5.into(type(String)), true);
@@ -72,7 +72,7 @@ let std-c-declare(t: CTerm): Nil = (
                }
             );
             CBinaryOp{op:"Declarator*", ptr=arg1, arg2:CIdentifier{name6=value} } => (
-               if not(std-c-declare-dedup-index.has(name6)) {
+               if not(std-c-declare-dedup-index.has-key(name6)) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name6, true);
                   if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
                      std-c-typedef-name-index = std-c-typedef-name-index.bind(name6, true);

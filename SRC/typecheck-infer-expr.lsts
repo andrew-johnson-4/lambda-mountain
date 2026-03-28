@@ -285,7 +285,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             tctx = tctx.ascript(term, if used.is-tail then typeof-term(r) else t2(c"Cons", typeof-term(l), typeof-term(r)));
          } else {
             let rt = ta;
-            if index-macro-table.has(var-name-if-var(l)) {
+            if index-macro-table.has-key(var-name-if-var(l)) {
                (tctx, term) = std-apply-macro(tctx, term, used);
                is-macro = true;
             } else {
