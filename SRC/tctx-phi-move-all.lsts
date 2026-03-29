@@ -2,7 +2,7 @@
 let .phi-move-all(tctx: TypeContext?): TypeContext? = (
    let seen = {} : Hashtable<CString,Bool>;
    for list pr in tctx.get-or(mk-tctx()).pctx {
-      if not(seen.has(pr.phi-id-or-zero)) {
+      if not(seen.has-key(pr.phi-id-or-zero)) {
          if pr.phi-tt-or-zero.is-linear-live {
             tctx = tctx.bind-phi(pr.phi-id-or-zero, pr.phi-tt-or-zero.move-linear, pr.blame-or-zero);
          };

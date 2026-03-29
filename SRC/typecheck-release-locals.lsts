@@ -50,7 +50,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    };
    while non-zero(tctx-after-pctx) and not(is(tctx-before-pctx, tctx-after-pctx)) {
       let tr = head(tctx-after-pctx);
-      if tr.dead-on-arrival-or-zero and not(pid-seen.has(tr.phi-id-or-zero)) and tr.phi-tt-or-zero.is-linear-live {
+      if tr.dead-on-arrival-or-zero and not(pid-seen.has-key(tr.phi-id-or-zero)) and tr.phi-tt-or-zero.is-linear-live {
          pid-seen = pid-seen.bind(tr.phi-id-or-zero,true);
          tctx-after = tctx-after.bind-phi(tr.phi-id-or-zero, tr.phi-tt-or-zero.move-linear, tr.blame-or-zero);
       };

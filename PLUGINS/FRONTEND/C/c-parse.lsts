@@ -157,7 +157,7 @@ let std-c-has-class(tks: String, cls: String): Bool = (
       "floating" => tk == r/^[0-9]+([.][0-9]+)?([eE][0-9]+)?[fF]?/                                        # decimal constant
                  or tk == r/^[0][x][0-9a-fA-F]+([.][0-9a-fA-F]+)?([eE][0-9a-fA-F]+)?([pP][0-9]+)[fF]?/;   # hexadecimal constant
       "string" => tk == r/^[RLuU8]*["]([^"\\]|([\\].))*["]/;
-      "enumeration" => std-c-enumeration-constant-index.has(tks);
+      "enumeration" => std-c-enumeration-constant-index.has-key(tks);
       _ => tks == cls;
    }
 );
@@ -704,7 +704,7 @@ std-c-typedef-name-index = std-c-typedef-name-index.bind("__builtin_va_list", tr
 
 let std-c-parse-typedef-name(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = (None : Maybe<CTerm>)();
-   if non-zero(tokens) and std-c-typedef-name-index.has(head(tokens).skey) {
+   if non-zero(tokens) and std-c-typedef-name-index.has-key(head(tokens).skey) {
       Tuple( Some(CType1(head(tokens).skey)), tail(tokens) )
    } else Tuple( no, tokens )
 );

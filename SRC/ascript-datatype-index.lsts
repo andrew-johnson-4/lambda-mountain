@@ -14,7 +14,7 @@ let .is-datatype(tt: Type): Bool = (
       );
       _ => (
          let gta = tt.ground-tag-and-arity;
-         datatype-index.has(gta)
+         datatype-index.has-key(gta)
       );
    }
 );

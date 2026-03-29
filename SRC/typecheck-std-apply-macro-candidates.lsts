@@ -54,7 +54,7 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                            } else (tctx, no)
                         );
                         _ => (
-                           if index-macro-meta.has(macro-helper) {
+                           if index-macro-meta.has-key(macro-helper) {
                               (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, margs, Used());
                               if non-zero(helped)
                               then (tctx, std-direct-destructure-macro(helped, mstruct))

@@ -65,7 +65,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
             config-target = argv[argi];
          );
          fp1 => (
-            if plugins-backends-index.has(fp1) {
+            if plugins-backends-index.has-key(fp1) {
                plugin-current-backend = plugins-backends-index.lookup(fp1,&plugin-null-backend);
             } else { input = cons(fp1, input); };
          );
@@ -138,6 +138,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
    if config-profile-ast then {
       profile-print-ast()
    };
+   #print-allocation-counts()
 );
 
 let doby-say(): Nil = (
