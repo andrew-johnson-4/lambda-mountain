@@ -1,35 +1,38 @@
 
-let escape-string(s: CString): CString = (
-   let e = SNil;
-   while head(s) != 0 {
-      if head(s) == 92 {
-         s = tail(s);
-         match head(s) {
-            58 => e = e + SAtom(c";");   # \: -> ;
-            91 => e = e + SAtom(c"(");   # \[ -> (
-            92 => e = e + SAtom(c"\\");  # \\ -> \
-            93 => e = e + SAtom(c")");   # \] -> )
-            96 => e = e + SAtom(c"'");   # \` -> '
-            110 => e = e + SAtom(c"\n"); # \n -> [newline]
-            111 => e = e + SAtom(c"#");  # \o -> #
-            116 => e = e + SAtom(c"\t"); # \t -> [tab]
-            115 => e = e + SAtom(c" ");  # \s -> [space]
+let escape-string(out: Vector<U8>, s: String): Vector<U8> = (
+   let oi = 0_sz;
+   while oi < s.length {
+      if s[oi] == 92 {
+         match s[oi] {
+            58 => out = out.push(c";");   # \: -> ;
+            91 => out = out.push(c"(");   # \[ -> (
+            92 => out = out.push(c"\\");  # \\ -> \
+            93 => out = out.push(c")");   # \] -> )
+            96 => out = out.push(c"'");   # \` -> '
+            110 => out = out.push(c"\n"); # \n -> [newline]
+            111 => out = out.push(c"#");  # \o -> #
+            116 => out = out.push(c"\t"); # \t -> [tab]
+            115 => out = out.push(c" ");  # \s -> [space]
             c => fail("Illegal Escape Sequence In String: \{c}\n");
          };
-         s = tail(s);
       } else {
-         e = e + SAtom(clone-rope(head(s)));
-         s = tail(s);
-      }
+         out = out.push(s[oi]);
+      };
+      oi = oi + 1;
    };
-   clone-rope(e)
+   out
 );
 
-let escape-string(s: S): S = (
+let escape-string(out: Vector<U8>, s: S): Vector<U8> = (
    match s {
-      SAtom{atom=atom} => SAtom(escape-string(atom.into(type(CString))));
-      SCons{left=left, right=right} => escape-string(left) + escape-string(right);
-      _ => SNil;
+      SAtom{atom=atom} => escape-string(out, atom);
+      SCons{left=left, right=right} => escape-string(escape-string(out,left),right);
+      _ => out;
    }
 );
 
+let escape-string(s: S): S = (
+   let out = mk-vector(type(U8));
+   out = escape-string(out, s);
+   SAtom(out.buffer-into-cstring)
+);

@@ -29,7 +29,7 @@ let mangle-identifier(k: CString): S = (
       126 => cs = cs.push(c"_TL_"); # ~
       c => cs = cs.push(c);
    }; k = tail(k); };
-   SAtom(cs.buffer-into-cstring)
+   SAtom(cs.buffer-into-string)
 );
 
 let mangle-identifier(kt: Type): S = (
