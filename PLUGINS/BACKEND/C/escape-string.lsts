@@ -3,6 +3,7 @@ let escape-string(out: Vector<U8>, s: String): Vector<U8> = (
    let oi = 0_sz;
    while oi < s.length {
       if s[oi] == 92 {
+         oi = oi + 1;
          match s[oi] {
             58 => out = out.push(c";");   # \: -> ;
             91 => out = out.push(c"(");   # \[ -> (
