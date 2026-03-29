@@ -39,7 +39,7 @@ let safe-alloc-block-count-monotonic-history = 0_u64;
 
 let safe-alloc-semaphore = false;
 
-let alloc-type-counter = {} : Hashtable<CString,U64>;
+#let alloc-type-counter = {} : Hashtable<CString,U64>;
 
 let print-allocation-counts() = (
    print("Allocation Counts\n");
@@ -55,10 +55,10 @@ let print-allocation-counts() = (
 );
 
 let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
-   let tk = type(t).into(type(CString));
-   if tk != c"SparseOwnedData<Tuple<U64,C<\"char\">[],HashtableRowExists>>" {
-      alloc-type-counter = alloc-type-counter.bind(tk, alloc-type-counter.lookup(tk,0_u64) + 1);
-   };
+   #let tk = type(t).into(type(CString));
+   #if tk != c"SparseOwnedData<Tuple<U64,C<\"char\">[],HashtableRowExists>>" {
+   #   alloc-type-counter = alloc-type-counter.bind(tk, alloc-type-counter.lookup(tk,0_u64) + 1);
+   #};
    # TODO: config flag or remove
 
    # BEFORE CHANGING THIS: talk to alex
