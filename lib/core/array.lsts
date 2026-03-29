@@ -41,18 +41,18 @@ let safe-alloc-semaphore = false;
 
 #let alloc-type-counter = {} : Hashtable<CString,U64>;
 
-let print-allocation-counts() = (
-   print("Allocation Counts\n");
-   let h-capacity = alloc-type-counter.data.capacity;
-   let h-i = 0_sz;
-   while h-i < h-capacity {
-      let h-row = alloc-type-counter.data[h-i];
-      if mem-is-non-zero(h-row) {
-         print("\{h-row.second} : \{h-row.third}\n");
-      };
-      h-i = h-i + 1;
-   };
-);
+#let print-allocation-counts() = (
+#   print("Allocation Counts\n");
+#   let h-capacity = alloc-type-counter.data.capacity;
+#   let h-i = 0_sz;
+#   while h-i < h-capacity {
+#      let h-row = alloc-type-counter.data[h-i];
+#      if mem-is-non-zero(h-row) {
+#         print("\{h-row.second} : \{h-row.third}\n");
+#      };
+#      h-i = h-i + 1;
+#   };
+#);
 
 let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
    #let tk = type(t).into(type(CString));
