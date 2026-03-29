@@ -138,7 +138,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
    if config-profile-ast then {
       profile-print-ast()
    };
-   #print-allocation-counts()
+   print-allocation-counts()
 );
 
 let doby-say(): Nil = (
