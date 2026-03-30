@@ -1,8 +1,12 @@
 
+let config-hot-path = false;
+
 let var-to-def-index = mk-hashtable-is(type(AST), type(AST));
 
 let var-to-def(k: AST): AST = (
+   if config-hot-path then print("Var to Def 1 \{k}\n");
    let def = var-to-def-index.lookup(k, mk-eof());
+   if config-hot-path then print("Var to Def 2 \{k}\n");
    if not(non-zero(def)) {
       exit-error( "Unable to Find Symlink in Context: \{k}".into(type(CString)), k );
    };
@@ -10,7 +14,9 @@ let var-to-def(k: AST): AST = (
 );
 
 let def-to-sym(k: AST): AST = (
+   if config-hot-path then print("Def to Sym 1 \{k}\n");
    let sym = var-to-def-index.lookup(k, mk-eof());
+   if config-hot-path then print("Def to Sym 2 \{k}\n");
    if non-zero(sym) then sym else k
 );
 

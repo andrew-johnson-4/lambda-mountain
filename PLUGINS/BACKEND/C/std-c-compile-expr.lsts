@@ -66,15 +66,22 @@ let .rewrite-if-reserved(s: CString): CString = (
 );
 
 let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
+   if config-hot-path then print("Compile Expression \{t}\n");
    let f = match t {
       Var{ key=key } => (
+         if config-hot-path then print("Compile Var 1\n");
          if typeof-term(t) <: t1(c"C",t0(c"void")) {
+            if config-hot-path then print("Compile Var 2\n");
             mk-fragment().set(c"expression",SAtom(c"({})"));
          } else if typeof-term(t).is-t(c"C-FFI",0) {
+            if config-hot-path then print("Compile Var 3\n");
             mk-fragment().set(c"expression",SAtom(key.replace(c"-",c"_").rewrite-if-reserved));
          } else {
+            if config-hot-path then print("Compile Var 4\n");
             let def = var-to-def(t);
+            if config-hot-path then print("Compile Var 5\n");
             let e = std-c-fragment-context.lookup(def, mk-fragment());
+            if config-hot-path then print("Compile Var 6\n");
             if not(non-zero(e)) {
                exit-error("Unable to Find Variable Fragment in Context: \{key}", t );
             }; e
@@ -307,9 +314,14 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          mk-fragment();
       );
    };
+   if config-hot-path then print("Compile Expression End 10\n");
    if is-stmt and non-zero(f.get(c"expression")) then f = f.set(c"expression", f.get(c"expression") + SAtom(c";"));
+   if config-hot-path then print("Compile Expression End 11\n");
    f.context = close(ctx);
-   f.type = typeof-term(t); f
+   if config-hot-path then print("Compile Expression End 12\n");
+   f.type = typeof-term(t);
+   if config-hot-path then print("Compile Expression End 13\n");
+   f
 );
 
 

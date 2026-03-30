@@ -1,6 +1,7 @@
 
 let plugins-backend-c-compile(): Nil = (
    print("Compile Backend 1\n");
+   print("Allocated blocks \{safe-alloc-block-count-monotonic}, total memory = \{current_allocated_memory()}\n");
    for vector program-term in ast-parsed-program.unroll-seq { match program-term {
       Glb{ key=key, rhs=val } => (
          print("Compile Backend \{program-term}\n");
@@ -31,13 +32,16 @@ let plugins-backend-c-compile(): Nil = (
       _ => ();
    }};
    print("Compile Backend 2\n");
+   print("Allocated blocks \{safe-alloc-block-count-monotonic}, total memory = \{current_allocated_memory()}\n");
    for vector program-term in ast-parsed-program.unroll-seq { match program-term {
       Typedef{} => std-c-compile-type-typedef(program-term);
       _ => ();
    }};
    print("Compile Backend 3\n");
+   print("Allocated blocks \{safe-alloc-block-count-monotonic}, total memory = \{current_allocated_memory()}\n");
    try-continue-compile-c-typedefs();
    print("Compile Backend 4\n");
+   print("Allocated blocks \{safe-alloc-block-count-monotonic}, total memory = \{current_allocated_memory()}\n");
    compile-program-ordered(global-ctx, ast-parsed-program);
    print("Compile Backend 5\n");
    std-c-compile-finish();

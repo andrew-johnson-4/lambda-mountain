@@ -17,6 +17,8 @@ let std-c-finish-forced-imports(): S = (
 let compile-global-c-main-term = mk-eof();
 
 let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
+   print("Compile Global \{k} = \{term}\n");
+   print("Allocated blocks \{safe-alloc-block-count-monotonic}, total memory = \{current_allocated_memory()}\n");
    let kt = typeof-term(term);
    std-c-force-import-clib(c"string.h");
    if k==c"" then ()
@@ -106,15 +108,19 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          }
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => (
+         print("Compile Global 3.1\n");
          if k!=c"main" and not(kt.is-t(c"C-FFI_s",0)) {
             k = mangle-identifier-function(k, kt.without-phi);
          };
+         print("Compile Global 3.2\n");
          ctx = std-c-compile-destructure-args( ctx, lhs, false );
+         print("Compile Global 3.3\n");
          let loc = term.location;
          let initialized = match rhs {
             App{ left:Lit{key:c":"}, right:App{ left:ASTNil{}, right:AType{asc-tt=tt} } } => asc-tt.is-t(c"Nil",0);
             _ => true;
          };
+         print("Compile Global 3.4\n");
          if initialized or can-unify(t1(c"C",t0(c"typedef")), tt) {
             let text = SNil();
             if not(config-strip-debug) and loc.filename != c"Unknown" {
@@ -137,8 +143,10 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
                assemble-gdecl-section = assemble-gdecl-section + text;
             }
          };
+         print("Compile Global 3.5\n");
 
          if initialized {
+            print("Compile Global 3.5.1\n");
             let text = SNil();
             if not(config-strip-debug) and loc.filename != c"Unknown" {
                text = text + SAtom(c"\n#line ");
@@ -147,29 +155,39 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
                text = text + SAtom(loc.filename);
                text = text + SAtom(c"\"\n");
             };
+            print("Compile Global 3.5.2\n");
             if k==c"main" then text = text + SAtom(c"int")
             else text = text + std-c-mangle-type(typeof-term(rhs), term);
+            print("Compile Global 3.5.3\n");
             text = text + SAtom(c" ");
             text = text + SAtom(k);
             text = text + SAtom(c"(");
             text = text + std-c-compile-function-args(ctx, lhs);
             text = text + SAtom(c")");
+            print("Compile Global 3.5.4\n");
             
             let e = std-c-compile-call(ctx, c"cdecl::return", rhs);
+            print("Compile Global 3.5.5\n");
             text = text + SAtom(c"{");
             if k==c"main" then text = text + assemble-string-initializer-section + assemble-global-initializer-section;
             text = text + e.get(c"frame") + e.get(c"expression") + SAtom(c"}");
+            print("Compile Global 3.5.6\n");
 
             assemble-text-section = assemble-text-section + text + SAtom(c"\n");
+            print("Compile Global 3.5.7\n");
          };
+         print("Compile Global 3.6\n");
       );
       t => (
+         print("Compile Global 4.1\n");
          let tt = kt;
          if not(kt.is-t(c"C-FFI",0)) and not(tt.is-t(c"C-Fragment",0)) {
             k = mangle-identifier(k, tt.without-phi);
          };
+         print("Compile Global 4.2\n");
 
          (let pre-decl, let post-decl) = std-c-mangle-declaration(tt, term);
+         print("Compile Global 4.3\n");
          let text = SNil();
          text = text + pre-decl;
          text = text + SAtom(c" ");
@@ -178,15 +196,18 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom(c";\n");
          if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: t1(c"C",t0(c"void")) then ()
          else assemble-gdecl-section = assemble-gdecl-section + text;
+         print("Compile Global 4.4\n");
 
          let inner-expr = std-c-compile-expr( ctx, t, false );
+         print("Compile Global 4.5\n");
          if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: t1(c"C",t0(c"void")) {
             text = inner-expr.get(c"expression") + SAtom(c";\n");
             assemble-global-initializer-section = assemble-global-initializer-section + text;
          } else {
             text = SAtom(k) + SAtom(c" = ") + inner-expr.get(c"expression") + SAtom(c";\n");
             assemble-global-initializer-section = assemble-global-initializer-section + text;
-         }
+         };
+         print("Compile Global 4.6\n");
       );
    }
 );
