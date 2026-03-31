@@ -1,0 +1,6 @@
+
+import lib/core/bedrock.lsts;
+
+let f(): Nil = (
+   if true then "";
+);
