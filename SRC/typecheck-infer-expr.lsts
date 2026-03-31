@@ -173,6 +173,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             };
             if non-zero(term-phi-id) and term-phi-id != t-phi-id then tctx = tctx.phi-move(typeof-term(t), t);
             if non-zero(term-phi-id) and term-phi-id != f-phi-id then tctx = tctx.phi-move(typeof-term(f), f);
+            if (typeof-term(term).is-t(c"Nil",0) or typeof-term(term).is-t(c"Never",0)) and non-zero(t-phi-id) then tctx = tctx.phi-move(typeof-term(t), t);
+            if (typeof-term(term).is-t(c"Nil",0) or typeof-term(term).is-t(c"Never",0)) and non-zero(f-phi-id) then tctx = tctx.phi-move(typeof-term(f), f);
          }
       );
       ASTEOF{} => tctx = tctx.ascript(term, t0(c"Nil"));
