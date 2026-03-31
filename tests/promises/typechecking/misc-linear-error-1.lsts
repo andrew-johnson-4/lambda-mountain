@@ -4,3 +4,13 @@ import lib/core/bedrock.lsts;
 let f(): Nil = (
    if true then "";
 );
+
+let g(): Nil = (
+   if false then () else "";
+);
+
+f();
+assert( safe-alloc-block-count == 0 );
+
+g();
+assert( safe-alloc-block-count == 0 );
