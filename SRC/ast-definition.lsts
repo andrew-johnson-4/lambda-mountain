@@ -14,6 +14,16 @@ let $"Typedef"(location: SourceLocation, lhs-type: Type, implies: Vector<Type>, 
    Typedef(close(ASTTypedef(location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi)))
 );
 
+let .lhs-type(t: AST+Tag::Typedef): Type = open((t as Tag::Typedef).td).lhs-type;
+let .implies(t: AST+Tag::Typedef): Vector<Type> = open((t as Tag::Typedef).td).implies;
+let .implements(t: AST+Tag::Typedef): Vector<Type> = open((t as Tag::Typedef).td).implements;
+let .size(t: AST+Tag::Typedef): Type = open((t as Tag::Typedef).td).size;
+let .alias(t: AST+Tag::Typedef): Type = open((t as Tag::Typedef).td).alias;
+let .opaque-alias(t: AST+Tag::Typedef): Type = open((t as Tag::Typedef).td).opaque-alias;
+let .cases(t: AST+Tag::Typedef): Vector<(CString,Vector<(CString,Type)>)> = open((t as Tag::Typedef).td).cases;
+let .misc-type(t: AST+Tag::Typedef): Type = open((t as Tag::Typedef).td).misc-type;
+let .implied-phi(t: AST+Tag::Typedef): Type = open((t as Tag::Typedef).td).implied-phi;
+
 type AST zero ASTEOF implies MustRetain, MustRelease
          = Meta { val: OwnedData<AST>[] }
          | ASTEOF
