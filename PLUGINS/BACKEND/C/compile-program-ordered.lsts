@@ -2,6 +2,7 @@
 let compile-program-ordered(global-ctx: FContext, program: AST): Nil = (
    for vector g in program.unroll-seq { match g {
       Glb{ key=key, val=val } => (
+         config-hot-path = key.key == c"std-bind-term";
          if not(typeof-term(def-to-sym(g)).is-open)
          or not(typeof-term(val).is-open) then {
             std-c-compile-global(global-ctx, key.key, val);

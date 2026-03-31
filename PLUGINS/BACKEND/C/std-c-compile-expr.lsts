@@ -309,7 +309,8 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
    };
    if is-stmt and non-zero(f.get(c"expression")) then f = f.set(c"expression", f.get(c"expression") + SAtom(c";"));
    f.context = close(ctx);
-   f.type = typeof-term(t); f
+   f.type = typeof-term(t);
+   f
 );
 
 

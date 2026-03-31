@@ -11,7 +11,7 @@ let .location(term: AST): SourceLocation = (
          for vector s in seq { loc = loc || s.location };
          loc
       );
-      Typedef{ location=location } => location;
+      Typedef{ td=td } => open(td).location;
       _ => mk-location();
    }
 );

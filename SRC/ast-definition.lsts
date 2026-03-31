@@ -2,6 +2,28 @@
 type SourceLocation = { filename: CString, line: U64, column: U64 };
 type Token = { key: CString, nonce: U64, location: SourceLocation };
 
+# This AST row is very fat, so we move it into an indirect data
+# TODO: do this optimization automatically or with a simple annotation
+type ASTTypedef = { location: SourceLocation, lhs-type: Type, implies: Vector<Type>, implements: Vector<Type>,
+                    size: Type, alias: Type, opaque-alias: Type, cases: Vector<(CString,Vector<(CString,Type)>)>,
+                    misc-type: Type, implied-phi: Type };
+
+let $"Typedef"(location: SourceLocation, lhs-type: Type, implies: Vector<Type>, implements: Vector<Type>,
+                    size: Type, alias: Type, opaque-alias: Type, cases: Vector<(CString,Vector<(CString,Type)>)>,
+                    misc-type: Type, implied-phi: Type): AST = (
+   Typedef(close(ASTTypedef(location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi)))
+);
+
+let .lhs-type(t: AST+Tag::Typedef): Type = open((t as Tag::Typedef).td).lhs-type;
+let .implies(t: AST+Tag::Typedef): Vector<Type> = open((t as Tag::Typedef).td).implies;
+let .implements(t: AST+Tag::Typedef): Vector<Type> = open((t as Tag::Typedef).td).implements;
+let .size(t: AST+Tag::Typedef): Type = open((t as Tag::Typedef).td).size;
+let .alias(t: AST+Tag::Typedef): Type = open((t as Tag::Typedef).td).alias;
+let .opaque-alias(t: AST+Tag::Typedef): Type = open((t as Tag::Typedef).td).opaque-alias;
+let .cases(t: AST+Tag::Typedef): Vector<(CString,Vector<(CString,Type)>)> = open((t as Tag::Typedef).td).cases;
+let .misc-type(t: AST+Tag::Typedef): Type = open((t as Tag::Typedef).td).misc-type;
+let .implied-phi(t: AST+Tag::Typedef): Type = open((t as Tag::Typedef).td).implied-phi;
+
 type AST zero ASTEOF implies MustRetain, MustRelease
          = Meta { val: OwnedData<AST>[] }
          | ASTEOF
@@ -13,11 +35,22 @@ type AST zero ASTEOF implies MustRetain, MustRelease
          | AType { tt: Type }
          | Seq { seq: Vector<AST> }
          | Glb { key: Token , val: OwnedData<AST>[] }
-         | Typedef { location: SourceLocation, lhs-type: Type, implies: Vector<Type>, implements: Vector<Type>,
-                      size: Type, alias: Type, opaque-alias: Type, cases: Vector<(CString,Vector<(CString,Type)>)>,
-                      misc-type: Type, implied-phi: Type };
+         | Typedef { td: OwnedData<ASTTypedef>[] };
 
 let $"App"(left: OwnedData<AST>[], right: OwnedData<AST>[]): AST = App ( false, left, right );
+
+let .retain(t: ASTTypedef): ASTTypedef = (
+   mark-as-released(t.lhs-type.retain);
+   mark-as-released(t.implies.retain);
+   mark-as-released(t.implements.retain);
+   mark-as-released(t.size.retain);
+   mark-as-released(t.alias.retain);
+   mark-as-released(t.opaque-alias.retain);
+   mark-as-released(t.cases.retain);
+   mark-as-released(t.misc-type.retain);
+   mark-as-released(t.implied-phi.retain);
+   t
+);
 
 let .retain(t: AST): AST = (
    if t.discriminator-case-tag==(t as Tag::Meta).discriminator-case-tag {
@@ -42,17 +75,21 @@ let .retain(t: AST): AST = (
       (t as Tag::Glb).val.retain;
    };
    if t.discriminator-case-tag==(t as Tag::Typedef).discriminator-case-tag {
-      mark-as-released((t as Tag::Typedef).lhs-type.retain);
-      mark-as-released((t as Tag::Typedef).implies.retain);
-      mark-as-released((t as Tag::Typedef).implements.retain);
-      mark-as-released((t as Tag::Typedef).size.retain);
-      mark-as-released((t as Tag::Typedef).alias.retain);
-      mark-as-released((t as Tag::Typedef).opaque-alias.retain);
-      mark-as-released((t as Tag::Typedef).cases.retain);
-      mark-as-released((t as Tag::Typedef).misc-type.retain);
-      mark-as-released((t as Tag::Typedef).implied-phi.retain);
+      mark-as-released((t as Tag::Typedef).td.retain);
    };
    t
+);
+
+let .release(t: ASTTypedef): Nil = (
+   t.lhs-type.release;
+   t.implies.release;
+   t.implements.release;
+   t.size.release;
+   t.alias.release;
+   t.opaque-alias.release;
+   t.cases.release;
+   t.misc-type.release;
+   t.implied-phi.release;
 );
 
 let .release(t: AST): Nil = (
@@ -78,15 +115,7 @@ let .release(t: AST): Nil = (
       (t as Tag::Glb).val.release;
    };
    if t.discriminator-case-tag==(t as Tag::Typedef).discriminator-case-tag {
-      (t as Tag::Typedef).lhs-type.release;
-      (t as Tag::Typedef).implies.release;
-      (t as Tag::Typedef).implements.release;
-      (t as Tag::Typedef).size.release;
-      (t as Tag::Typedef).alias.release;
-      (t as Tag::Typedef).opaque-alias.release;
-      (t as Tag::Typedef).cases.release;
-      (t as Tag::Typedef).misc-type.release;
-      (t as Tag::Typedef).implied-phi.release;
+      (t as Tag::Typedef).td.release;
    };
    mark-as-released(t);
 );

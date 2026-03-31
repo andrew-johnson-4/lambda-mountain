@@ -1,4 +1,6 @@
 
+let config-hot-path = false;
+
 let var-to-def-index = mk-hashtable-is(type(AST), type(AST));
 
 let var-to-def(k: AST): AST = (
