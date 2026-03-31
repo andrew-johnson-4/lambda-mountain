@@ -1,11 +1,6 @@
 
 import lib/core/bedrock.lsts;
 
-let f(tokens: List<Token>, cls: String): List<Token> = (
-   tokens
-);
-
-let g(tokens: List<Token>): Nil = (
-   let initializer = (Some(0), Some(0));
-   if initializer.first.is-none then f(tokens, "[Initializer]");
+let f(): Nil = (
+   if true then "";
 );
