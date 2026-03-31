@@ -3,7 +3,6 @@ let compile-program-ordered(global-ctx: FContext, program: AST): Nil = (
    for vector g in program.unroll-seq { match g {
       Glb{ key=key, val=val } => (
          config-hot-path = key.key == c"std-bind-term";
-         print("Compile glb \{g}\n");
          if not(typeof-term(def-to-sym(g)).is-open)
          or not(typeof-term(val).is-open) then {
             std-c-compile-global(global-ctx, key.key, val);
@@ -14,14 +13,10 @@ let compile-program-ordered(global-ctx: FContext, program: AST): Nil = (
       AType{} => ();
       Meta{} => ();
       t => (
-         print("Compile glb \{g}\n");
          let e = std-c-compile-expr(global-ctx, t, false);
          let text = e.get(c"frame") + e.get(c"expression") + SAtom(c";\n");
          assemble-global-initializer-section = assemble-global-initializer-section + text;
       );
    }};
-   print(c"Compiled All Terms\n");
-   print("Compile glb \{compile-global-c-main-term}\n");
    if non-zero(compile-global-c-main-term) then std-c-compile-global(global-ctx, c"main", compile-global-c-main-term);
-   print("Compiled ordered\n");
 );

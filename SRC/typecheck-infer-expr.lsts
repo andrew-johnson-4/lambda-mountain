@@ -193,7 +193,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          }};
       );
       Glb{key1=key, val=val} => (
-         print("Typecheck Glb \{safe-alloc-block-count-monotonic}, total memory = \{current_allocated_memory()} \{term}\n");
          let prev-count-history = safe-alloc-block-count-monotonic-history;
          let rough-tt = typeof-term(term);
          if rough-tt.is-arrow and not(rough-tt.is-open) and not(rough-tt.is-t(c"TypedMacro",0)) {
