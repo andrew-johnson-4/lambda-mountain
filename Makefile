@@ -12,7 +12,9 @@ dev: install-production
 	#lm --showalloc SRC/unit-prop-core.lsts > out.txt
 	#lm --showalloc SRC/unit-ascript-core.lsts > out.txt
 	#lm --showalloc SRC/index.lsts > out.txt
-	lm tests/promises/typechecking/misc-linear-error-1.lsts
+	lm tests/promises/typechecking/misc-linear-error-1.lsts > out.txt
+	gcc tmp.c;
+	./a.out
 
 build: compile-production
 	time env $(LSTSFLAGS) ./production --v23 --c -o deploy1.c SRC/index.lsts
