@@ -11,7 +11,7 @@ dev: install-production
 	#lm --showalloc SRC/unit-tctx-core.lsts > out.txt
 	#lm --showalloc SRC/unit-prop-core.lsts > out.txt
 	#lm --showalloc SRC/unit-ascript-core.lsts > out.txt
-	lm --showalloc SRC/unit-typecheck-core.lsts > out.txt
+	lm --showalloc --v23 SRC/index.lsts > out.txt
 
 build: compile-production
 	time env $(LSTSFLAGS) ./production --v23 --c -o deploy1.c SRC/index.lsts
