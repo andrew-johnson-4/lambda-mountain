@@ -40,3 +40,4 @@ import SRC/type-cons-tail-or-self.lsts;
 import SRC/type-without-modifiers.lsts;
 import SRC/type-with-only-phi.lsts;
 import SRC/type-reify-type-variables.lsts;
+import SRC/type-is-linear.lsts;

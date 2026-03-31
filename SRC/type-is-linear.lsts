@@ -1,0 +1,2 @@
+
+let .is-linear(tt: Type): Bool = non-zero(tt.slot(c"Phi::Id",1));
