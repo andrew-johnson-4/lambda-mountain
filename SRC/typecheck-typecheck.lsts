@@ -17,4 +17,5 @@ let typecheck(): Nil = (
    validate-interfaces();
    assert-well-typed(ast-parsed-program);
    decorate-var-to-def();
+   print-allocation-counts();
 );

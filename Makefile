@@ -12,7 +12,7 @@ dev: install-production
 	#lm --showalloc SRC/unit-prop-core.lsts > out.txt
 	#lm --showalloc SRC/unit-ascript-core.lsts > out.txt
 	#lm --showalloc SRC/index.lsts > out.txt
-	lm tests/promises/typechecking/misc-linear-error-1.lsts > out.txt
+	lm --showalloc --typecheck SRC/index.lsts
 	gcc tmp.c;
 	./a.out
 
