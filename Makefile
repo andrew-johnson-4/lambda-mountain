@@ -12,7 +12,7 @@ dev: install-production
 	#lm --showalloc SRC/unit-prop-core.lsts > out.txt
 	#lm --showalloc SRC/unit-ascript-core.lsts > out.txt
 	#lm --showalloc SRC/index.lsts > out.txt
-	lm --showalloc --typecheck SRC/index.lsts
+	lm --showalloc SRC/dev-index.lsts > out.txt
 	gcc tmp.c;
 	./a.out
 
