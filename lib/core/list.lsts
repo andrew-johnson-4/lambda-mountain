@@ -70,18 +70,6 @@ let .nth(tt: List<x>, idx: USize): Maybe<x> = (
    }
 );
 
-# new allocations = 0
-let $"[]"(tt: List<x>, idx: USize): x = (
-   while idx > 0 {
-      if not(tt.has-head()) {
-         fail(c"list index out of bounds");
-      };
-      tt = tail(tt);
-      idx = idx - 1;
-   };
-   head(tt)
-);
-
 # new allocations = l.length
 let .reverse(l: List<x>): List<x> = (
    let r = [] : List<x>;
