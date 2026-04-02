@@ -28,8 +28,15 @@ build: compile-production
 deploy: build smoke-test
 deploy-lite: build smoke-test-lite
 
-valgrind: install-bootstrap
-	valgrind --tool=callgrind lm --v2 SRC/index.lsts
+gprofng: install-production
+	gprofng collect app lm SRC/dev-index.lsts
+
+gprofng-view:
+	gprofng display text -functions test.1.er > gprofng.view
+	nano gprofng.view
+
+valgrind: install-production
+	valgrind --tool=callgrind lm SRC/dev-index.lsts
 
 valgrind-view:
 	callgrind_annotate callgrind.out.18778
