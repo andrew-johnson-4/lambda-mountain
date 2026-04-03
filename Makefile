@@ -12,7 +12,8 @@ dev: install-production
 	#lm --showalloc SRC/unit-prop-core.lsts > out.txt
 	#lm --showalloc SRC/unit-ascript-core.lsts > out.txt
 	#lm --showalloc SRC/index.lsts > out.txt
-	lm --showalloc SRC/dev-index.lsts > out.txt
+	time lm-bootstrap --showalloc SRC/dev-index.lsts > bootstrap-out.txt
+	time lm --showalloc SRC/dev-index.lsts > out.txt
 	gcc tmp.c;
 	./a.out
 
@@ -67,6 +68,7 @@ compile-production: compile-bootstrap
 
 install-production: compile-production
 ifeq ($(shell test -w /usr/local/bin; echo $$?), 0)
+	cp production /usr/local/bin/lm-production
 	mv production /usr/local/bin/lm
 else
 	mkdir -p $${HOME}/.local/bin
@@ -75,6 +77,7 @@ endif
 
 install-bootstrap: compile-bootstrap
 ifeq ($(shell test -w /usr/local/bin; echo $$?), 0)
+	cp bootstrap.exe /usr/local/bin/lm-bootstrap
 	mv bootstrap.exe /usr/local/bin/lm
 else
 	mkdir -p $${HOME}/.local/bin
