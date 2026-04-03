@@ -6,8 +6,8 @@ license = "MIT"
 description = "Typed Macro Assembler (backed by Coq proofs-of-correctness)"
 edition = "2018"
 readme = "README.md"
-repository = "https://github.com/andrew-johnson-4/-"
-documentation = "https://andrew-johnson-4.github.io/lambda-mountain/"
+repository = "https://github.com/andrew4328/-"
+documentation = "https://andrew4328.github.io/lambda-mountain/"
 keywords = ["programming-language","interpreter","compiler"]
 
 [dependencies]
