@@ -41,7 +41,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       then mk-var(return-id)
       else mk-nil();
       (tctx-after, return-term) = std-infer-expr(tctx-after, return-term, false, Used, t0(c"MustNotRetain"));
-      tctx-after = tctx-after.phi-move(typeof-term(return-term), term);
+      if typeof-term(return-term).is-linear-live then tctx-after = tctx-after.phi-move(typeof-term(return-term), term);
       term = mk-cons(term, return-term); tctx-after = tctx-after.ascript(term,return-type);
    };
    for list nd in needs-mark-release {
