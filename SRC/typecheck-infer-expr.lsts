@@ -111,11 +111,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          let inner-tt = typeof-term(t).normalize;
          if tt.simple-tag.has-prefix(c"Tag::") then tt = tt && inner-tt
          else tt = tt && inner-tt.with-only-datatype;
-         if original-tt.is-t(c"Phi::State",1) {
-            (tctx, tt) = tctx.phi-initialize(tt, term);
-            if typeof-term(t).is-linear-live
-            then tctx = tctx.phi-move(typeof-term(t), term);
-         };
+         # No need for new Phi types here
+         tt = tt && original-tt.slot(c"Phi::State",1) && original-tt.slot(c"Phi::id",1);
          tctx = tctx.ascript(term, tt);
       );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
