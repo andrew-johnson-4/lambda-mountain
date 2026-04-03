@@ -72,6 +72,7 @@ ifeq ($(shell test -w /usr/local/bin; echo $$?), 0)
 	mv production /usr/local/bin/lm
 else
 	mkdir -p $${HOME}/.local/bin
+	cp production $${HOME}/.local/bin/lm-production
 	mv production $${HOME}/.local/bin/lm
 endif
 
@@ -81,6 +82,7 @@ ifeq ($(shell test -w /usr/local/bin; echo $$?), 0)
 	mv bootstrap.exe /usr/local/bin/lm
 else
 	mkdir -p $${HOME}/.local/bin
+	cp bootstrap.exe $${HOME}/.local/bin/lm-bootstrap
 	mv bootstrap.exe $${HOME}/.local/bin/lm
 endif
 
