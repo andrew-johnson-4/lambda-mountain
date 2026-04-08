@@ -22,6 +22,8 @@ declare-binop( $">>", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"
 
 declare-unop( $"~", raw-type(U64), raw-type(U64), ( l"((uint64_t)(~"; x; l"))"; ) );
 
+let non-zero(x: U64): Bool = x != 0;
+
 let min(l: U64, r: U64): U64 = (
    if l < r then l else r
 );

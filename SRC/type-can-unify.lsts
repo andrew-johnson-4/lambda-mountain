@@ -155,6 +155,9 @@ let can-unify(fpt: Type, pt: Type): Bool = (
           first:TGround{ltn=tag, lps=parameters},
           second:TGround{rtn=tag, rps=parameters}
       } => (ltn==rtn or (ltn.has-suffix(c"::") and rtn.has-prefix(ltn))) and can-unify(lps,rps);
+
+      Tuple{ first:TId{lid=id}, second:TId{rid=id} } => lid == rid;
+
       _ => false;
    };
    return

@@ -62,7 +62,7 @@ let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST):
       tctx = tctx.bind-phi(right.slot(c"Phi::Id",1).l1.simple-id, right.slot(c"Phi::State",1).l1.move-linear, blame);
 
       # Add Phi::Id to least-upper-bound
-      rt = rt && t1(c"Phi::Id",t0(new-phi-id));
+      rt = rt && t1(c"Phi::Id",ti(new-phi-id));
    };
 
    if left.is-t(c"Phi::State",1) or right.is-t(c"Phi::State",1) and not(rt.is-t(c"Phi::Id",1))

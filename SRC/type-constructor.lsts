@@ -6,6 +6,9 @@ let ta = TAny;
 #    0 from 0 length vector
 let t0(tag: CString): Type = TGround(tag, mk-vector(type(Type)));
 
+# new allocations = 0
+let ti(id: U64): Type = TId(id);
+
 # new allocations = 1
 #    1 from 1 length vector
 let t1(tag: CString, p1: Type): Type = TGround(tag, mk-vector(type(Type)).push(p1));

@@ -9,10 +9,10 @@ let .phi-fresh(tctx: TypeContext?, tr: TypeContextRow): (TypeContext?, TypeConte
          let phi-state = nt.slot(c"Phi::State",1).l1;
          if not(non-zero(phi-state)) then phi-state = dt.slot(c"Phi::State",1).l1;
          if non-zero(phi-id) and non-zero(phi-state) {
-            let new-phi-id = uuid();
+            let new-phi-id = iuid();
             tctx = tctx.bind-phi(new-phi-id, phi-state, blame);
-            nt = nt.without-slot(c"Phi::Id",1).extend( t1(c"Phi::Id",t0(new-phi-id)) );
-            dt = dt.without-slot(c"Phi::Id",1).extend( t1(c"Phi::Id",t0(new-phi-id)) );
+            nt = nt.without-slot(c"Phi::Id",1).extend( t1(c"Phi::Id",ti(new-phi-id)) );
+            dt = dt.without-slot(c"Phi::Id",1).extend( t1(c"Phi::Id",ti(new-phi-id)) );
          };
          (tctx, TypeContextRow(key,nt,dt,blame))
       );
@@ -25,9 +25,9 @@ let .phi-fresh(tctx: TypeContext?, nt: Type, blame: AST): (TypeContext?, Type) =
    let phi-id = nt.slot(c"Phi::Id",1).l1.simple-id;
    let phi-state = nt.slot(c"Phi::State",1).l1;
    if non-zero(phi-id) and non-zero(phi-state) {
-      let new-phi-id = uuid();
+      let new-phi-id = iuid();
       tctx = tctx.bind-phi(new-phi-id, phi-state, blame);
-      nt = nt.without-slot(c"Phi::Id",1).extend( t1(c"Phi::Id",t0(new-phi-id)) );
+      nt = nt.without-slot(c"Phi::Id",1).extend( t1(c"Phi::Id",ti(new-phi-id)) );
    };
    (tctx, nt)
 );
