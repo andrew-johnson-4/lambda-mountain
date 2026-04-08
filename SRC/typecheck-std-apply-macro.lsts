@@ -53,7 +53,7 @@ let std-apply-macro-constant(tctx: Maybe<TypeContext>, mname: CString, margs: AS
 );
 
 let std-apply-macro-location(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
-   (tctx, mk-lit(margs.location.into(type(String))).ascript(t0(c"String") && t0(c"Literal")))
+   (tctx, mk-lit(margs.location.into(type(String))).ascript(t0(c"CString") && t0(c"Literal")))
 );
 
 let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed, strong: Bool): (TypeContext?, AST) = (

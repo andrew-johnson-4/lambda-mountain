@@ -8,8 +8,9 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
+	lm tests/promises/vector/constructor.lsts
 	#time lm --showalloc SRC/unit-type-core.lsts > out.txt
-	time lm --showalloc SRC/unit-tctx-core.lsts > out.txt
+	#time lm --showalloc SRC/unit-tctx-core.lsts > out.txt
 	#time lm --showalloc SRC/unit-prop-core.lsts > out.txt
 	#time lm --showalloc SRC/unit-ascript-core.lsts > out.txt
 	#time lm --showalloc SRC/index.lsts > out.txt

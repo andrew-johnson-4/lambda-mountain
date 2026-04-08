@@ -1,10 +1,4 @@
 
-#deprecated macro ( rl".ascript"(tctx, t, tt) ) (
-#   let with-tt = tctx.with-phi(tt, t);
-#   if tt != with-tt then fail(c"Dynamic phi inserted at ", p(rl":Location:") : Constant+Literal+CString)
-#   tctx.ascript-impl(tctx, t, with-tt);
-#);
-
 let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
    if non-zero(tt) {
       let prev-tt = typeof-term(t);
@@ -27,5 +21,11 @@ let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
 let ascript-force(t: AST, tt: Type): Nil = (
    add-concrete-type-instance(tt, t);
    ascript-natural(t, tt);
+
+   # these initializations are necessary to prevent stale phi types
+   # I don't remember why that is, but just try removing them and debug from there
+   type-index-normal = type-index-normal.bind(t, ta);
+   type-index-denormal = type-index-denormal.bind(t, ta);
+
    types-have-changed = true;
 );
