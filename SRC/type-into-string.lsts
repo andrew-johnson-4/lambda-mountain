@@ -3,6 +3,7 @@ let .into(tt: Type, tgt: Type<String>): String = (
    match tt {
       TAny{} => "?";
       TVar{name=name} => intern(name);
+      TId{id=id} => id.into(type(String));
       TGround{tag:c"Array",parameters:[TAny{}.. base-type..]} => "\{base-type}[]";
       TGround{tag:c"Array",parameters:[idx-type.. base-type..]} => "\{base-type}[\{idx-type}]";
       TGround{tag=tag,parameters=parameters} => (

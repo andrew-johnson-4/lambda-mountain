@@ -4,7 +4,7 @@ let worst-phi-length = 0_sz;
 let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>, blame: AST): List<PhiContextRow> = (
    let tctx-left-count = tctx-primary.length;
    let tctx-right-count = tctx-secondary.length;
-   let seen = mk-vector(type(CString));
+   let seen = mk-vector(type(U64));
    let tctx-globals-pctx = tctx-globals.get-or(mk-tctx()).pctx;
    while non-zero(tctx-secondary) and not(is(tctx-globals-pctx,tctx-secondary)) {
       let tr = head(tctx-secondary); tctx-secondary = tail(tctx-secondary);
