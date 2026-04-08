@@ -2,4 +2,4 @@
 import lib/core/bedrock.lsts;
 
 assert( "ABC".into(type(CString)) == c"ABC" );
-if not(config-v23) then assert( safe-alloc-block-count == 1 );
+assert( safe-alloc-block-count == 1 );
