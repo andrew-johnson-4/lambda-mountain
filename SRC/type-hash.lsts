@@ -9,5 +9,6 @@ let hash(tt: Type): U64 = (
          result
       );
       TGround{tag=tag,parameters=parameters} => hash(tag) + hash(parameters);
+      TId{id=id} => id;
    }
 );

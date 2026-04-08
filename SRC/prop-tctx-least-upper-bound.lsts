@@ -47,6 +47,7 @@ let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST):
             if ps.is-some then rt = ts(ltag,ps.get-or-panic);
          }
       );
+      Tuple{ first:TId{lid=id}, second:TId{rid=id} } => if lid==rid then rt = left;
       Tuple{ first:TAny{}, second:TAny{} } => ();
       _ => ();
    };
