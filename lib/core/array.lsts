@@ -39,27 +39,27 @@ let safe-alloc-block-count-monotonic-history = 0_u64;
 
 let safe-alloc-semaphore = false;
 
-let alloc-type-counter = {} : Hashtable<CString,U64>;
+#let alloc-type-counter = {} : Hashtable<CString,U64>;
 
-let print-allocation-counts() = (
-   print("Allocation Counts\n");
-   print("Total memory usage: \{current_allocated_memory()}\n");
-   let h-capacity = alloc-type-counter.data.capacity;
-   let h-i = 0_sz;
-   while h-i < h-capacity {
-      let h-row = alloc-type-counter.data[h-i];
-      if mem-is-non-zero(h-row) {
-         print("\{h-row.second} : \{h-row.third}\n");
-      };
-      h-i = h-i + 1;
-   };
-);
+#let print-allocation-counts() = (
+#   print("Allocation Counts\n");
+#   print("Total memory usage: \{current_allocated_memory()}\n");
+#   let h-capacity = alloc-type-counter.data.capacity;
+#   let h-i = 0_sz;
+#   while h-i < h-capacity {
+#      let h-row = alloc-type-counter.data[h-i];
+#      if mem-is-non-zero(h-row) {
+#         print("\{h-row.second} : \{h-row.third}\n");
+#      };
+#      h-i = h-i + 1;
+#   };
+#);
 
 let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
    # TODO: wrap counter adjustments in conditional compilation
-   safe-alloc-block-count = safe-alloc-block-count + 1;
-   safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
-   safe-alloc-block-count-monotonic-history = safe-alloc-block-count-monotonic-history + 1;
+   #safe-alloc-block-count = safe-alloc-block-count + 1;
+   #safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
+   #safe-alloc-block-count-monotonic-history = safe-alloc-block-count-monotonic-history + 1;
 
    #let tk = type(t).into(type(CString));
    #if tk != c"SparseOwnedData<Tuple<U64,C<\"char\">[],HashtableRowExists>>" {
