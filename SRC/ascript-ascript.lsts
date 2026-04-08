@@ -1,5 +1,12 @@
 
-let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
+#deprecated macro ( rl".ascript"(tctx, t, tt) ) (
+#   let with-tt = tctx.with-phi(tt, t);
+#   if tt != with-tt then fail(c"Dynamic phi inserted at ", p(rl":Location:") : Constant+Literal+CString)
+#   tctx.ascript-impl(tctx, t, with-tt);
+#);
+
+let .ascript-impl(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
+   tt = tctx.with-phi(tt, t);
    if non-zero(tt) {
       let prev-tt = typeof-term(t);
       if non-zero(prev-tt) {

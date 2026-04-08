@@ -116,16 +116,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             (tctx, tt) = tctx.phi-initialize(tt, term);
             if typeof-term(t).is-linear-live
             then tctx = tctx.phi-move(typeof-term(t), term);
-            print("Phi working from \{typeof-term(t)}\n");
-            print("Phi working to \{typeof-term(t)}\n");
-            let possible-tt = tt;
-            if not(tt.is-t(c"Phi::State",1)) then possible-tt = tt && inner-tt.slot(c"Phi::State",1);
-            if tt.is-t(c"Phi::State",1) {
-               if inner-tt.is-t(c"Phi::Id",1) then possible-tt = tt && inner-tt.slot(c"Phi::Id",1);
-               else (tctx, possible-tt) = tctx.phi-initialize(tt, term);
-            };
-            print("Phi broken from \{typeof-term(t)}\n");
-            print("Phi broken to \{possible-tt}\n");
          };
          tctx = tctx.ascript(term, tt);
       );

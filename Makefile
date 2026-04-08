@@ -7,7 +7,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recursion is used fairly heavily
 # recommendation: ulimit -s unlimited
 
-dev: install-production
+dev: install-bootstrap
 	#lm --showalloc SRC/unit-tctx-core.lsts > out.txt
 	#lm --showalloc SRC/unit-prop-core.lsts > out.txt
 	#lm --showalloc SRC/unit-ascript-core.lsts > out.txt
