@@ -47,8 +47,8 @@ let .lookups(trs: List<TypeContextRow>, key: CString): Vector<TypeContextRow> = 
    default
 );
 
-let .lookup-phi(tctx: TypeContext?, key: CString): PhiContextRow = tctx.get-or(mk-tctx()).pctx.lookup(key);
-let .lookup(trs: List<PhiContextRow>, key: CString): PhiContextRow = (
+let .lookup-phi(tctx: TypeContext?, key: U64): PhiContextRow = tctx.get-or(mk-tctx()).pctx.lookup(key);
+let .lookup(trs: List<PhiContextRow>, key: U64): PhiContextRow = (
    let default = NullPhiContextRow;
    let continue = true;
    while non-zero(trs) and continue {

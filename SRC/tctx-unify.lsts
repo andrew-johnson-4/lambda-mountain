@@ -30,7 +30,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       Tuple{ first:TAnd{ lconjugate=conjugate }, second:TAnd{ rconjugate=conjugate } } => (
          let result = yes;
          let ri = 0_sz;
-         let phi-id = c"";
+         let phi-id = 0_u64;
          let phi-state-in = ta;
          let phi-state-out = ta;
          for vector lc in lconjugate {
@@ -44,7 +44,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
                TGround{tag:c"MustNotFresh"} => ();
                TGround{tag:c"Phi::Transition", parameters:[phi-to..phi-from..]} => (
                   for vector st in rconjugate { match st {
-                     TGround{tag:c"Phi::Id",parameters:[TGround{new-phi-id=tag}..]} => (
+                     TGround{tag:c"Phi::Id",parameters:[TId{new-phi-id=id}..]} => (
                         phi-id = new-phi-id;
                      );
                      TGround{tag:c"Phi::State",parameters:[new-phi-state..]} => (
