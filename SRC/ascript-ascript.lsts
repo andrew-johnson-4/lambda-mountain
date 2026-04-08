@@ -10,7 +10,7 @@ let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
                exit-error("Type Ascription Inequality\n\{typeof-term-normal(t)} does not imply \{norm-tt}", t);
             }
          };
-         if tt.slot(c"Phi::Id",1).l1.simple-tag != prev-tt.slot(c"Phi::Id",1).l1.simple-tag {
+         if tt.slot(c"Phi::Id",1).l1.simple-id != prev-tt.slot(c"Phi::Id",1).l1.simple-id {
             tctx = tctx.phi-move(prev-tt, t);
          }
       };

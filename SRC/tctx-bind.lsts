@@ -33,7 +33,7 @@ let .bind-global(tctx: TypeContext?, k: CString, nt: Type, dt: Type, blame: AST)
 
 let trace-count = 0_u64;
 
-let .bind-phi(tctx: TypeContext?, k: CString, kt: Type, blame: AST): TypeContext? = (
+let .bind-phi(tctx: TypeContext?, k: U64, kt: Type, blame: AST): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
       cons( PhiContextRow(k,kt,blame,false,tctx-currently-processing-globals) , tctx.get-or(mk-tctx()).pctx ),
@@ -43,7 +43,7 @@ let .bind-phi(tctx: TypeContext?, k: CString, kt: Type, blame: AST): TypeContext
    ));
 );
 
-let .bind-phi(tctx: TypeContext?, k: CString, kt: Type, blame: AST, is-global: Bool): TypeContext? = (
+let .bind-phi(tctx: TypeContext?, k: U64, kt: Type, blame: AST, is-global: Bool): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
       cons( PhiContextRow(k,kt,blame,false,is-global) , tctx.get-or(mk-tctx()).pctx ),
