@@ -31,8 +31,6 @@ let .bind-global(tctx: TypeContext?, k: CString, nt: Type, dt: Type, blame: AST)
    tctx
 );
 
-let trace-count = 0_u64;
-
 let .bind-phi(tctx: TypeContext?, k: U64, kt: Type, blame: AST): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
