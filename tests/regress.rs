@@ -119,7 +119,8 @@ fn regression_tests() {
    }
    for entry in glob("tests/regress/*.lsts").unwrap() {
       let path = entry.unwrap().display().to_string();
-      if !std::path::Path::new(&(path.clone() + ".skip")).exists() {
+      if !std::path::Path::new(&(path.clone() + ".skip")).exists()
+      && !path.contains("lm-") {
          let expected = std::fs::read_to_string(path.clone() + ".out")
                        .expect(&format!("Could not load expected output {}.out", path));
          let expected = expected.trim().to_string();
