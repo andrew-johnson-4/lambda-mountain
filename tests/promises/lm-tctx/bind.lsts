@@ -23,17 +23,17 @@ assert( tctx4.lookup(c"x").nt-or-zero == t0(c"XN") );
 assert( tctx4.lookup(c"x").dt-or-zero == t0(c"XD") );
 
 let pctx0 = Some(mk-tctx());
-let pctx1 = pctx0.bind-phi(c"a", t0(c"A"), mk-eof());
-let pctx2 = pctx1.bind-phi(c"b", t0(c"B"), mk-eof());
-let pctx3 = pctx2.bind-phi(c"a", t0(c"AB"), mk-eof());
+let pctx1 = pctx0.bind-phi(0, t0(c"A"), mk-eof());
+let pctx2 = pctx1.bind-phi(1, t0(c"B"), mk-eof());
+let pctx3 = pctx2.bind-phi(0, t0(c"AB"), mk-eof());
 
-assert( pctx0.lookup-phi(c"a").phi-tt-or-zero == ta );
-assert( pctx1.lookup-phi(c"a").phi-id-or-zero == c"a" );
-assert( pctx1.lookup-phi(c"a").phi-tt-or-zero == t0(c"A") );
-assert( pctx2.lookup-phi(c"b").phi-id-or-zero == c"b" );
-assert( pctx2.lookup-phi(c"b").phi-tt-or-zero == t0(c"B") );
-assert( pctx3.lookup-phi(c"a").phi-id-or-zero == c"a" );
-assert( pctx3.lookup-phi(c"a").phi-tt-or-zero == t0(c"AB") );
+assert( pctx0.lookup-phi(0).phi-tt-or-zero == ta );
+assert( pctx1.lookup-phi(0).phi-id-or-zero == 0 );
+assert( pctx1.lookup-phi(0).phi-tt-or-zero == t0(c"A") );
+assert( pctx2.lookup-phi(1).phi-id-or-zero == 1 );
+assert( pctx2.lookup-phi(1).phi-tt-or-zero == t0(c"B") );
+assert( pctx3.lookup-phi(0).phi-id-or-zero == 0 );
+assert( pctx3.lookup-phi(0).phi-tt-or-zero == t0(c"AB") );
 
 tctx0 = tctx0.bind-global(c"c", t0(c"C"), mk-eof());
 tctx0 = tctx0.bind-global(c"d", t0(c"D"), mk-eof());

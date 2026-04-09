@@ -8,12 +8,14 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	#lm --showalloc SRC/unit-tctx-core.lsts > out.txt
-	#lm --showalloc SRC/unit-prop-core.lsts > out.txt
-	#lm --showalloc SRC/unit-ascript-core.lsts > out.txt
-	#lm --showalloc SRC/index.lsts > out.txt
-	lm tests/promises/typechecking/misc-linear-error-1.lsts > out.txt
-	gcc tmp.c;
+	lm tests/promises/vector/constructor.lsts
+	#time lm --showalloc SRC/unit-type-core.lsts > out.txt
+	#time lm --showalloc SRC/unit-tctx-core.lsts > out.txt
+	#time lm --showalloc SRC/unit-prop-core.lsts > out.txt
+	#time lm --showalloc SRC/unit-ascript-core.lsts > out.txt
+	#time lm --showalloc SRC/index.lsts > out.txt
+	#time lm --showalloc SRC/dev-index.lsts > out.txt
+	gcc tmp.c
 	./a.out
 
 build: compile-production
@@ -28,8 +30,15 @@ build: compile-production
 deploy: build smoke-test
 deploy-lite: build smoke-test-lite
 
-valgrind: install-bootstrap
-	valgrind --tool=callgrind lm --v2 SRC/index.lsts
+gprofng: install-production
+	gprofng collect app lm SRC/dev-index.lsts
+
+gprofng-view:
+	gprofng display text -functions test.1.er > gprofng.view
+	nano gprofng.view
+
+valgrind: install-production
+	valgrind --tool=callgrind lm SRC/dev-index.lsts
 
 valgrind-view:
 	callgrind_annotate callgrind.out.18778
@@ -60,17 +69,21 @@ compile-production: compile-bootstrap
 
 install-production: compile-production
 ifeq ($(shell test -w /usr/local/bin; echo $$?), 0)
+	cp production /usr/local/bin/lm-production
 	mv production /usr/local/bin/lm
 else
 	mkdir -p $${HOME}/.local/bin
+	cp production $${HOME}/.local/bin/lm-production
 	mv production $${HOME}/.local/bin/lm
 endif
 
 install-bootstrap: compile-bootstrap
 ifeq ($(shell test -w /usr/local/bin; echo $$?), 0)
+	cp bootstrap.exe /usr/local/bin/lm-bootstrap
 	mv bootstrap.exe /usr/local/bin/lm
 else
 	mkdir -p $${HOME}/.local/bin
+	cp bootstrap.exe $${HOME}/.local/bin/lm-bootstrap
 	mv bootstrap.exe $${HOME}/.local/bin/lm
 endif
 

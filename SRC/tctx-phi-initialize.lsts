@@ -10,9 +10,9 @@ let .phi-initialize(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Ty
          (tctx, tand(new-conjugate))
       );
       TGround{tag:c"Phi::State",parameters:[init-tt..]} => (
-         let phi-id = uuid();
+         let phi-id = iuid();
          tctx = tctx.bind-phi(phi-id, init-tt, blame);
-         (tctx, t1(c"Phi::Id",t0(phi-id)))
+         (tctx, t1(c"Phi::Id",ti(phi-id)))
       );
       TGround{tag:c"Cons",parameters:[p2..p1..]} => (
          (tctx, p1) = tctx.phi-initialize(p1, blame);

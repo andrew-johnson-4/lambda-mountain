@@ -43,6 +43,7 @@ let safe-alloc-semaphore = false;
 
 #let print-allocation-counts() = (
 #   print("Allocation Counts\n");
+#   print("Total memory usage: \{current_allocated_memory()}\n");
 #   let h-capacity = alloc-type-counter.data.capacity;
 #   let h-i = 0_sz;
 #   while h-i < h-capacity {

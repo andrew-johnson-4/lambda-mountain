@@ -6,5 +6,5 @@ import SRC/ascript-type-index.lsts;
 import SRC/dev-ascript-concrete-index.lsts;
 import SRC/ascript-datatype-index.lsts;
 import SRC/ascript-with-only-datatype.lsts;
-import SRC/ascript-ascript-integrated.lsts;
+import SRC/ascript-ascript.lsts;
 import SRC/ascript-tctx-resurrect.lsts;

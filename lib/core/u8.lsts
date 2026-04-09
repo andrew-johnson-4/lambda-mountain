@@ -38,3 +38,5 @@ let cmp(l: U8, r: U8): Ord = (
 );
 
 let hash(x: U8): U64 = x as U64;
+
+let non-zero(x: U8): Bool = x != 0;

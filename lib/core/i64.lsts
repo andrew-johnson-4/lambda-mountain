@@ -49,3 +49,5 @@ let to-i64(s: CString): I64 = (
    if negative then base = 0_i64 - base;
    base
 );
+
+let non-zero(x: I64): Bool = x != 0;

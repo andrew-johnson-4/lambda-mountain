@@ -14,3 +14,4 @@ import lib/core/list.lsts;
 import lib/core/s.lsts;
 import lib/core/hashtable.lsts;
 import lib/core/regex.lsts;
+import lib/core/functional.lsts;

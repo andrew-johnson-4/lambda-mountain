@@ -58,7 +58,7 @@ typed macro macro::while(cond: lazy, body: lazy): lazy = (
 );
 
 deprecated macro ( rl"for-each"(item(rl"in")(iterable))(loop) ) ((
-   let uuid(iter-term) = iterable;
+   let uuid(iter-term) = iterable : Vector<?>; # assert that type is vector to prevent accidental application (will be fixed with full transition to typed macros)
    let uuid(iter-i) = 0_sz;
    while uuid(iter-i) < uuid(iter-term).length {
       match uuid(iter-term)[uuid(iter-i)] {
@@ -69,7 +69,7 @@ deprecated macro ( rl"for-each"(item(rl"in")(iterable))(loop) ) ((
 ));
 
 deprecated macro ( rl"for-each-list"(item(rl"in")(iterable))(loop) ) ((
-   let uuid(iter-term) = iterable;
+   let uuid(iter-term) = iterable : List<?>; # assert type is list to prevent accidental application (will be fixed with full transition to typed macros)
    while non-zero(uuid(iter-term)) {
       match head(uuid(iter-term)) {
          item => loop;

@@ -1,13 +1,15 @@
 
 # TGround needs an ordered enum or else unification may not work right
 # TGround = 0
-# TAny = 1
-# TVar = 2
-# TAnd = 3
+# TId     = 1
+# TAny    = 2
+# TVar    = 3
+# TAnd    = 4
 # TODO: replace TGround List implementation with Vector which is much more efficient
 # for this reason allocation counts only have an upper bound rather than exact bound
 type Type zero TAny implies MustRetain, MustRelease
         = TGround { tag:CString, parameters:Vector<Type> }
+        | TId { id:U64 } # for fast TGround in fixed positions like Phi::Id<231>
         | TAny
         | TVar { name:CString }
         | TAnd { conjugate:Vector<Type> };

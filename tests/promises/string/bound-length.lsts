@@ -3,4 +3,4 @@ import lib/core/bedrock.lsts;
 
 assert( "a".length == 1 );
 assert( safe-alloc-block-count == 0 );
-if not(config-v23) then assert( safe-alloc-block-count-monotonic == 1 );
+assert( safe-alloc-block-count-monotonic == 1 );

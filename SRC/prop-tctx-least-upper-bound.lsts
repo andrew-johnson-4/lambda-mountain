@@ -47,6 +47,7 @@ let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST):
             if ps.is-some then rt = ts(ltag,ps.get-or-panic);
          }
       );
+      Tuple{ first:TId{lid=id}, second:TId{rid=id} } => if lid==rid then rt = left;
       Tuple{ first:TAny{}, second:TAny{} } => ();
       _ => ();
    };
@@ -54,15 +55,15 @@ let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST):
    if non-zero(rt) and left.is-t(c"Phi::State",1) and right.is-t(c"Phi::State",1) {
       # Merge and bind new phi state
       let new-phi-state = tctx.phi-merge(left.slot(c"Phi::State",1).l1, right.slot(c"Phi::State",1).l1, blame);
-      let new-phi-id = uuid();
+      let new-phi-id = iuid();
       tctx = tctx.bind-phi(new-phi-id, new-phi-state, blame);
 
       # Move linear variables in left and right types
-      tctx = tctx.bind-phi(left.slot(c"Phi::Id",1).l1.simple-tag, left.slot(c"Phi::State",1).l1.move-linear, blame);
-      tctx = tctx.bind-phi(right.slot(c"Phi::Id",1).l1.simple-tag, right.slot(c"Phi::State",1).l1.move-linear, blame);
+      tctx = tctx.bind-phi(left.slot(c"Phi::Id",1).l1.simple-id, left.slot(c"Phi::State",1).l1.move-linear, blame);
+      tctx = tctx.bind-phi(right.slot(c"Phi::Id",1).l1.simple-id, right.slot(c"Phi::State",1).l1.move-linear, blame);
 
       # Add Phi::Id to least-upper-bound
-      rt = rt && t1(c"Phi::Id",t0(new-phi-id));
+      rt = rt && t1(c"Phi::Id",ti(new-phi-id));
    };
 
    if left.is-t(c"Phi::State",1) or right.is-t(c"Phi::State",1) and not(rt.is-t(c"Phi::Id",1))

@@ -1,7 +1,18 @@
 
+let worst-phi-length = 0_sz;
+
 let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>, blame: AST): List<PhiContextRow> = (
-   let seen = mk-vector(type(CString));
-   for list Tuple{ sid=phi-id-or-zero, st=phi-tt-or-zero, pblame=blame-or-zero, sdead-on-arrival=dead-on-arrival-or-zero, sis-global=is-global-or-zero } in tctx-secondary {
+   let tctx-left-count = tctx-primary.length;
+   let tctx-right-count = tctx-secondary.length;
+   let seen = mk-vector(type(U64));
+   let tctx-globals-pctx = tctx-globals.get-or(mk-tctx()).pctx;
+   while non-zero(tctx-secondary) and not(is(tctx-globals-pctx,tctx-secondary)) {
+      let tr = head(tctx-secondary); tctx-secondary = tail(tctx-secondary);
+      let sid = tr.phi-id-or-zero;
+      let st = tr.phi-tt-or-zero;
+      let pblame = tr.blame-or-zero;
+      let sdead-on-arrival = tr.dead-on-arrival-or-zero;
+      let sis-global = tr.is-global-or-zero;
       if not(seen.contains(sid)) {
          let pt = tctx-primary.lookup(sid);
          if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,pblame,sdead-on-arrival,sis-global), tctx-primary )
@@ -17,5 +28,6 @@ let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tct
          seen = seen.push(sid);
       };
    };
+   worst-phi-length = tctx-primary.length;
    tctx-primary
 );
