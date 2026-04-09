@@ -57,9 +57,9 @@ let safe-alloc-semaphore = false;
 
 let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
    # TODO: wrap counter adjustments in conditional compilation
-   #safe-alloc-block-count = safe-alloc-block-count + 1;
-   #safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
-   #safe-alloc-block-count-monotonic-history = safe-alloc-block-count-monotonic-history + 1;
+   safe-alloc-block-count = safe-alloc-block-count + 1;
+   safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
+   safe-alloc-block-count-monotonic-history = safe-alloc-block-count-monotonic-history + 1;
 
    #let tk = type(t).into(type(CString));
    #if tk != c"SparseOwnedData<Tuple<U64,C<\"char\">[],HashtableRowExists>>" {
