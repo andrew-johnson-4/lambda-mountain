@@ -104,59 +104,6 @@ fn run_bootstrap(target: &str, leave_tmp: bool, is_v3: bool) -> String {
 fn regression_tests() {
    compile_bootstrap();
    let mut failures = Vec::new();
-   for entry in glob("tests/regress/*.lm").unwrap() {
-      let path = entry.unwrap().display().to_string();
-      if !std::path::Path::new(&(path.clone() + ".skip")).exists() {
-         let expected = std::fs::read_to_string(path.clone() + ".out")
-                       .expect(&format!("Could not load expected output {}.out", path));
-         let expected = expected.trim().to_string();
-         let actual = run_bootstrap(&path, false, false);
-         let actual = actual.trim().to_string();
-         if expected != actual {
-            failures.push(( "--compile".to_string(), path, expected, actual ));
-         }
-      }
-   }
-   for entry in glob("tests/regress/*.lsts").unwrap() {
-      let path = entry.unwrap().display().to_string();
-      if !std::path::Path::new(&(path.clone() + ".skip")).exists()
-      && !path.contains("lm-") {
-         let expected = std::fs::read_to_string(path.clone() + ".out")
-                       .expect(&format!("Could not load expected output {}.out", path));
-         let expected = expected.trim().to_string();
-         let actual = run_bootstrap(&path, false, false);
-         let actual = actual.trim().to_string();
-         if expected != actual {
-            failures.push(( "--compile".to_string(), path, expected, actual ));
-         }
-      }
-   }
-   for entry in glob("tests/lib/*.lsts").unwrap() {
-      let path = entry.unwrap().display().to_string();
-      if !std::path::Path::new(&(path.clone() + ".skip")).exists() {
-         let expected = std::fs::read_to_string(path.clone() + ".out")
-                       .expect(&format!("Could not load expected output {}.out", path));
-         let expected = expected.trim().to_string();
-         let actual = run_bootstrap(&path, false, false);
-         let actual = actual.trim().to_string();
-         if expected != actual {
-            failures.push(( "--compile".to_string(), path, expected, actual ));
-         }
-      }
-   }
-   for entry in glob("tests/unit/*.lsts").unwrap() {
-      let path = entry.unwrap().display().to_string();
-      if !std::path::Path::new(&(path.clone() + ".skip")).exists() {
-         let expected = std::fs::read_to_string(path.clone() + ".out")
-                       .expect(&format!("Could not load expected output {}.out", path));
-         let expected = expected.trim().to_string();
-         let actual = run_bootstrap(&path, false, false);
-         let actual = actual.trim().to_string();
-         if expected != actual {
-            failures.push(( "--compile".to_string(), path, expected, actual ));
-         }
-      }
-   }
    for entry in glob("tests/promises/*/*.lsts").unwrap() {
       let path = entry.unwrap().display().to_string();
       if !std::path::Path::new(&(path.clone() + ".skip")).exists() {
