@@ -34,7 +34,7 @@ let cmp(left: Type, right: Type): Ord = (
          );
          _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
       });
-      TId{ lid=id } =< (match right {
+      TId{ lid=id } => (match right {
          TId{ rid=id } => cmp(lid,rid);
          _ => cmp($".discriminator-case-tag"(left), $".discriminator-case-tag"(right));
       });

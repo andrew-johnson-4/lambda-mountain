@@ -15,5 +15,6 @@ let .is-open(tt: Type): Bool = (
          for vector p in parameters { is-open = is-open or p.is-open; };
          is-open;
       );
+      TId{} => false;
    }
 );
