@@ -159,7 +159,7 @@ let std-c-paramstype-of-params-list(params: List<CTerm>, is-vararg: Bool): Type 
          return = tt;
       }
    };
-   if non-zero(return) then return else t1(c"C",t0(c"void"))
+   if non-zero(return) then return else type-c-void
 );
 
 let std-c-type-of-arrow(spec: CTerm, decl: CTerm, params: List<CTerm>): (CString, Type) = (

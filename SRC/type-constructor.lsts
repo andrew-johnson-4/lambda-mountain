@@ -27,6 +27,15 @@ let type-nil = t0(c"Nil");
 let type-any = t0(c"Any");
 
 # new allocations = 0 (constant)
+let type-linear-moved = t1(c"Linear",t0(c"Phi::Moved"));
+
+# new allocations = 0 (constant)
+let type-linear-live = t1(c"Linear",t0(c"Phi::Live"));
+
+# new allocations = 0 (constant)
+let type-c-void = t1(c"C",t0(c"void"));
+
+# new allocations = 0 (constant)
 let type-any-arrow = t2(c"Arrow", type-any, type-any);
 
 # new allocations = 0 if either argument is ?
