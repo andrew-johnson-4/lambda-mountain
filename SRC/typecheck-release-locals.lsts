@@ -24,7 +24,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       let rhs = term;
       let def = mk-var(return-id);
       if not(return-type.is-t(c"Nil",0)) and not(return-type.is-t(c"Never",0)) {
-         term = mk-app( mk-abs(def, mk-nil(), ta), term ); tctx-after = tctx-after.ascript(term, t0(c"Nil"));
+         term = mk-app( mk-abs(def, mk-nil(), ta), term ); tctx-after = tctx-after.ascript(term, type-nil);
          (tctx-after, let binding-type) = std-bind-term(tctx-after, return-id, rhs, def, term, hint);
          tctx-after = tctx-after.ascript(def, binding-type);
       };
@@ -35,7 +35,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
             mk-app(mk-var(c"destroy"),mk-var(nd.key-or-zero))
          );
          (tctx-after, do-release) = std-infer-expr(tctx-after, do-release, false, Used, ta);
-         term = mk-cons(term, do-release); tctx-after = tctx-after.ascript(term, t0(c"Nil"));
+         term = mk-cons(term, do-release); tctx-after = tctx-after.ascript(term, type-nil);
       };
       let return-term = if not(return-type.is-t(c"Nil",0)) and not(return-type.is-t(c"Never",0))
       then mk-var(return-id)

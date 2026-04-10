@@ -2,7 +2,7 @@
 let .resurrect(tt: Type): Type = (
    match tt {
       TGround{tag:c"Linear", parameters:[TGround{tag:c"Phi::Moved",parameters:[]}..]} => (
-         t1(c"Linear", t0(c"Phi::Live"))
+         type-linear-live
       );
       TGround{tag=tag, parameters=parameters} => (
          ts(tag, parameters.resurrect);

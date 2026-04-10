@@ -321,7 +321,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          tokens = tnext-rest.second;
       };
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-      if args.length==0 then t0(c"Nil")
+      if args.length==0 then type-nil
       else if args.length==1 then head(args)
       else ts( c"Tuple", args );
    } else if lsts-parse-head(tokens)==c"?" {
@@ -331,7 +331,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
       lsts-parse-expect(c"_", tokens); tokens = tail(tokens);
       ta
    } else if lsts-parse-head(tokens).has-prefix(c"'") and not(lsts-parse-head(tokens).has-suffix(c"'")) {
-      let new-tt = t1(c"Linear",t0(c"Phi::Live"));
+      let new-tt = type-linear-live;
       tokens = tail(tokens);
       new-tt
    } else if lsts-is-ident-head(lsts-parse-head(tokens)) and not(lsts-is-type-tag(lsts-parse-head(tokens))) {
@@ -952,7 +952,7 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
    for vector i in infers {
       if i.is-t(c"MustRelease",0) and not(implied-phi.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1))
       then {
-         let mt = t1(c"MustRelease::ToRelease",t1(c"Linear",t0(c"Phi::Live")));
+         let mt = t1(c"MustRelease::ToRelease",type-linear-live);
          implied-phi = implied-phi && mt;
          implied-phi-index = implied-phi-index.bind(lhs-type.ground-tag-and-arity, mt);
       };
@@ -1025,7 +1025,7 @@ let lsts-parse-function-signature(fname: CString, tokens: List<Token>, loc: Sour
    let out = LstsFnSignature ( mk-nil(), ta, ta );
 
    lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-   out.args-type = t0(c"Nil");
+   out.args-type = type-nil;
    while non-zero(tokens) and lsts-parse-head(tokens)!=c")" {
       lsts-parse-expect(c"Identifier", lsts-is-ident-head(lsts-parse-head(tokens)), tokens);
       let arg-name = head(tokens); tokens = tail(tokens);
@@ -1059,7 +1059,7 @@ let lsts-parse-function-signature(fname: CString, tokens: List<Token>, loc: Sour
        if fname!=c"phi" then out.return-type = phi-as-state(out.return-type);
        tokens = rtype-rest.second;
    } else if non-zero(out.args-type) {
-       out.return-type = t0(c"Nil");
+       out.return-type = type-nil;
    };
 
    Tuple ( out, tokens )
@@ -1637,7 +1637,7 @@ let lsts-make-lit(t: Token): AST = (
                Var( c".into", with-location(mk-token(".into"),loc) ),
                mk-cons(
                   se-rest.first,
-                  mk-atype(t1(c"Type",t0(c"String")))
+                  mk-atype(type-type-string)
                )
             );
             if non-zero(base) {

@@ -124,7 +124,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
           ]},
           second:rp1
       } => (
-         if can-unify(lp1,rp1) then can-unify(lpr,t0(c"Nil")) else can-unify(lpr,rp1)
+         if can-unify(lp1,rp1) then can-unify(lpr,type-nil) else can-unify(lpr,rp1)
       );
       Tuple{
           first:TGround{tag:c"...", parameters:[lp1..]},

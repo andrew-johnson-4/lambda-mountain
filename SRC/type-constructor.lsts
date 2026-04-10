@@ -20,8 +20,65 @@ let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, mk-vector(type(Typ
 # new allocations = 0
 let tv(name: CString): Type = TVar(name);
 
-# new allocations = 0
-let type-any-arrow = t2(c"Arrow", t0(c"Any"), t0(c"Any"));
+# new allocations = 0 (constant)
+let type-nil = t0(c"Nil");
+
+# new allocations = 0 (constant)
+let type-any = t0(c"Any");
+
+# new allocations = 0 (constant)
+let type-type-string = t1(c"Type",t0(c"String"));
+
+# new allocations = 0 (constant)
+let type-linear-moved = t1(c"Linear",t0(c"Phi::Moved"));
+
+# new allocations = 0 (constant)
+let type-linear-live = t1(c"Linear",t0(c"Phi::Live"));
+
+# new allocations = 0 (constant)
+let type-c-void = t1(c"C",t0(c"void"));
+
+# new allocations = 0 (constant)
+let type-c-label = t1(c"C",t0(c":Label"));
+
+# new allocations = 0 (constant)
+let type-c-vararg = t1(c"C",t0(c"..."));
+
+# new allocations = 0 (constant)
+let type-c-tany = t1(c"C",ta);
+
+# new allocations = 0 (constant)
+let type-c-typedef = t1(c"C",t0(c"typedef"));
+
+# new allocations = 0 (constant)
+let type-array-c-typedef = t2(c"Array",t1(c"C",t0(c"typedef")),ta);
+
+# new allocations = 0 (constant)
+let type-c-int8 = t1(c"C",t0(c"int8_t"));
+
+# new allocations = 0 (constant)
+let type-c-int16 = t1(c"C",t0(c"int16_t"));
+
+# new allocations = 0 (constant)
+let type-c-int32 = t1(c"C",t0(c"int32_t"));
+
+# new allocations = 0 (constant)
+let type-c-int64 = t1(c"C",t0(c"int64_t"));
+
+# new allocations = 0 (constant)
+let type-c-uint8 = t1(c"C",t0(c"uint8_t"));
+
+# new allocations = 0 (constant)
+let type-c-uint16 = t1(c"C",t0(c"uint16_t"));
+
+# new allocations = 0 (constant)
+let type-c-uint32 = t1(c"C",t0(c"uint32_t"));
+
+# new allocations = 0 (constant)
+let type-c-uint64 = t1(c"C",t0(c"uint64_t"));
+
+# new allocations = 0 (constant)
+let type-any-arrow = t2(c"Arrow", type-any, type-any);
 
 # new allocations = 0 if either argument is ?
 #                 | 1

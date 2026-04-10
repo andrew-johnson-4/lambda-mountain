@@ -56,8 +56,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom(k);
          text = text + post-decl;
          text = text + SAtom(c";\n");
-         if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: t1(c"C",t0(c"void")) then ()
-         else if can-unify(t1(c"C",t0(c"typedef")), tt) or can-unify(t2(c"Array",t1(c"C",t0(c"typedef")),ta), tt) {
+         if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void then ()
+         else if can-unify(type-c-typedef, tt) or can-unify(type-array-c-typedef, tt) {
             assemble-header-typedef-section = assemble-header-typedef-section + text;
          } else {
             assemble-gdecl-section = assemble-gdecl-section + text;
@@ -72,14 +72,14 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          if tt.is-t(c"C-Fragment",0) {
             match t {
                Lit{key=key} => (
-                  if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: t1(c"C",t0(c"void")) then ()
+                  if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void then ()
                   else assemble-gdecl-section = assemble-gdecl-section + SAtom(key);
                   gend = true;
                );
                _ => ();
             }
          };
-         if not(gend) and (kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: t1(c"C",t0(c"void"))) {
+         if not(gend) and (kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void) {
             let inner-expr = std-c-compile-expr( ctx, t, false );
             let text = inner-expr.get(c"expression") + SAtom(c";\n");
             assemble-global-initializer-section = assemble-global-initializer-section + text;
@@ -93,10 +93,10 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             text = text + SAtom(c";\n");
 
             let inner-expr = std-c-compile-expr( ctx, t, false );
-            if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: t1(c"C",t0(c"void")) then {
+            if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void then {
                text = SNil;
                text = SAtom(k) + SAtom(c" = ") + inner-expr.get(c"expression") + SAtom(c";\n");
-            } else if can-unify(t1(c"C",t0(c"typedef")), tt) or can-unify(t2(c"Array",t1(c"C",t0(c"typedef")),ta), tt) {
+            } else if can-unify(type-c-typedef, tt) or can-unify(type-array-c-typedef, tt) {
                assemble-header-typedef-section = assemble-header-typedef-section + text;
             } else {
                assemble-gdecl-section = assemble-gdecl-section + text;
@@ -115,7 +115,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             App{ left:Lit{key:c":"}, right:App{ left:ASTNil{}, right:AType{asc-tt=tt} } } => asc-tt.is-t(c"Nil",0);
             _ => true;
          };
-         if initialized or can-unify(t1(c"C",t0(c"typedef")), tt) {
+         if initialized or can-unify(type-c-typedef, tt) {
             let text = SNil();
             if not(config-strip-debug) and loc.filename != c"Unknown" {
                text = text + SAtom(c"\n#line ");
@@ -131,7 +131,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             text = text + SAtom(c"(");
             text = text + std-c-compile-function-args(ctx, lhs);
             text = text + SAtom(c");\n");
-            if can-unify(t1(c"C",t0(c"typedef")), tt) {
+            if can-unify(type-c-typedef, tt) {
                assemble-header-typedef-section = assemble-header-typedef-section + text;
             } else {
                assemble-gdecl-section = assemble-gdecl-section + text;
@@ -176,11 +176,11 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom(k);
          text = text + post-decl;
          text = text + SAtom(c";\n");
-         if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: t1(c"C",t0(c"void")) then ()
+         if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void then ()
          else assemble-gdecl-section = assemble-gdecl-section + text;
 
          let inner-expr = std-c-compile-expr( ctx, t, false );
-         if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: t1(c"C",t0(c"void")) {
+         if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void {
             text = inner-expr.get(c"expression") + SAtom(c";\n");
             assemble-global-initializer-section = assemble-global-initializer-section + text;
          } else {
