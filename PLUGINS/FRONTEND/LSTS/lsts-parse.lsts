@@ -1838,41 +1838,19 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
          tokens = rhs-rest.second;
       };
       lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-      if list {
-         term = mk-app(
-            mk-app(
-               Var( c"for-each-list", with-location(mk-token("for-each-list"),loc) ),
-               mk-cons(
-                  mk-cons(
-                     lhs-rest.first,
-                     Var( c"in", with-location(mk-token("in"),loc) )
-                  ),
-                  iter-rest.first
-               )
+      term = mk-app(
+         Var( c"macro::for", with-location(mk-token("macro::for"),loc) ),
+         mk-cons(
+            mk-cons(
+               lhs-rest.first,
+               iter-rest.first
             ),
             mk-app(
                Var( c"scope", with-location(mk-token("scope"),loc) ),
                rhs
             )
-         );
-      } else {
-         term = mk-app(
-            mk-app(
-               Var( c"for-each", with-location(mk-token("for-each"),loc) ),
-               mk-cons(
-                  mk-cons(
-                     lhs-rest.first,
-                     Var( c"in", with-location(mk-token("in"),loc) )
-                  ),
-                  iter-rest.first
-               )
-            ),
-            mk-app(
-               Var( c"scope", with-location(mk-token("scope"),loc) ),
-               rhs
-            )
-         );
-      }         
+         )
+      );
    } else if lsts-parse-head(tokens)==c"while" {
       let loc = head(tokens).location; tokens = tail(tokens);
       let c-rest = lsts-parse-small-expression(tokens);

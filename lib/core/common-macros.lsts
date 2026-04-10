@@ -55,6 +55,27 @@ typed macro macro::while(cond: Bool, body: lazy): lazy = (
    primitive::while( cond, body as Nil )
 );
 
+typed macro for(item: lazy, iterable: Vector<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iterable;
+   let uuid(iter-i) = 0_sz;
+   while uuid(iter-i) < uuid(iter-term).length {
+      match uuid(iter-term)[uuid(iter-i)] {
+         item => loop;
+      };
+      uuid(iter-i) = uuid(iter-i) + 1;
+   };
+);
+
+typed macro macro::for(item: lazy, iterable: List<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iterable;
+   while non-zero(uuid(iter-term)) {
+      match head(uuid(iter-term)) {
+         item => loop;
+      };
+      uuid(iter-term) = tail(uuid(iter-term));
+   };
+);
+
 deprecated macro ( rl"for-each"(item(rl"in")(iterable))(loop) ) ((
    let uuid(iter-term) = iterable : Vector<?>; # assert that type is vector to prevent accidental application (will be fixed with full transition to typed macros)
    let uuid(iter-i) = 0_sz;
