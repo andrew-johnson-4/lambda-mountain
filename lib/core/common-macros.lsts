@@ -1,6 +1,6 @@
 
 typed macro $"assert"(c: lazy): lazy = (
-   if not c then fail(c"Assertion Failed At ", $"macro::location"(c));
+   if not c then fail(c"Assertion Failed At ", macro::location(c));
 );
 
 deprecated macro ( rl"macro::define-zero"(base-type,constructor,con-tag) ) (

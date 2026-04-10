@@ -20,6 +20,9 @@ let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, mk-vector(type(Typ
 # new allocations = 0
 let tv(name: CString): Type = TVar(name);
 
+# new allocations = 0
+let type-any-arrow = t2(c"Arrow", t0(c"Any"), t0(c"Any"));
+
 # new allocations = 0 if either argument is ?
 #                 | 1
 let $"&&"(lt: Type, rt: Type): Type = (
