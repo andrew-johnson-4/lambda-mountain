@@ -47,12 +47,12 @@ let std-release-after-call(tctx: TypeContext?, function-type: Type, param-types:
             let tmp-var2 = mk-var(tmp-id1); ascript-force(tmp-var2, args-type);
             tctx = tctx.bind(tmp-id1, ta, args-type, tmp-def);
             mark-var-to-def-todo(tctx, tmp-id1, ta, tmp-var2);
-            let tmp-nil = mk-nil(); ascript-force(tmp-nil, t0(c"Nil"));
-            let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, t0(c"Nil"));
-            let bind = mk-app(declare, args); ascript-force(bind, t0(c"Nil"));
+            let tmp-nil = mk-nil(); ascript-force(tmp-nil, type-nil);
+            let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, type-nil);
+            let bind = mk-app(declare, args); ascript-force(bind, type-nil);
 
             if non-zero(prefix)
-            then (prefix = mk-cons( prefix, bind ); ascript-force(prefix, t0(c"Nil"));)
+            then (prefix = mk-cons( prefix, bind ); ascript-force(prefix, type-nil);)
             else prefix = bind;
 
             (tmp-var2, args)
@@ -64,12 +64,12 @@ let std-release-after-call(tctx: TypeContext?, function-type: Type, param-types:
             tctx = tctx.bind(tmp-id2, ta, args-type, tmp-def);
             mark-var-to-def-todo(tctx, tmp-id2, ta, tmp-var2);
             mark-var-to-def-todo(tctx, tmp-id2, ta, tmp-direct);
-            let tmp-nil = mk-nil(); ascript-force(tmp-nil, t0(c"Nil"));
-            let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, t0(c"Nil"));
-            let bind = mk-app(declare, args); ascript-force(bind, t0(c"Nil"));
+            let tmp-nil = mk-nil(); ascript-force(tmp-nil, type-nil);
+            let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, type-nil);
+            let bind = mk-app(declare, args); ascript-force(bind, type-nil);
 
             if non-zero(prefix)
-            then (prefix = mk-cons( prefix, bind ); ascript-force(prefix, t0(c"Nil"));)
+            then (prefix = mk-cons( prefix, bind ); ascript-force(prefix, type-nil);)
             else prefix = bind;
 
             (tmp-var2, tmp-direct)
@@ -81,7 +81,7 @@ let std-release-after-call(tctx: TypeContext?, function-type: Type, param-types:
          let do-release = mk-app(release-var, tmp-release); ascript-force(do-release, release-return);
  
          if non-zero(postfix)
-         then (postfix = mk-cons( postfix, do-release ); ascript-force(postfix, t0(c"Nil"));)
+         then (postfix = mk-cons( postfix, do-release ); ascript-force(postfix, type-nil);)
          else postfix = do-release;
       };
 

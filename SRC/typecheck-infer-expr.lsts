@@ -18,7 +18,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          if not(is(rhs,new-rhs)) then { rhs = new-rhs; term = mk-app(mk-abs(def,mk-nil(),misc-tt),rhs); };
          (tctx, let tt) = std-bind-term(tctx, lname, rhs, def, term, hint);
          tctx = tctx.ascript(def, tt);
-         tctx = tctx.ascript(term, t0(c"Nil"));
+         tctx = tctx.ascript(term, type-nil);
       );
       App{o-t=left:Var{key:c"typeof"}, r=right} => (
          (tctx, let new-r) = std-infer-expr(tctx, r, is-scoped, Used, ta);
@@ -63,7 +63,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{asc=left:Lit{key:c":"}, right:App{inner=left:ASTNil{},right:AType{tt=tt}}} => (
          tt = tt.rewrite-type-alias;
          add-concrete-type-instance(tt, term);
-         tctx = tctx.ascript(inner, t0(c"Nil"));
+         tctx = tctx.ascript(inner, type-nil);
          tctx = tctx.ascript(term, tt);
       );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
@@ -88,7 +88,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             let is-nullary = false;
             if typeof-term(t).is-arrow and not(tt.is-arrow) and non-zero(var-name-if-var-or-lit(t)) {
                # This case exists for nullary constructors like TAny : Type
-               let ftype = tctx.find-callable( var-name-if-var-or-lit(t), t0(c"Nil"), term, tt ).direct-type;
+               let ftype = tctx.find-callable( var-name-if-var-or-lit(t), type-nil, term, tt ).direct-type;
                tctx = tctx.ascript(term, ftype);
                is-nullary = true;
             } else if typeof-term(t) == type-any-arrow {
@@ -175,7 +175,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             };
             let lub = if typeof-term(f).is-t(c"Never",0) then typeof-term(t)
             else if typeof-term(t).is-t(c"Never",0) then typeof-term(f)
-            else if typeof-term(f).is-t(c"Nil",0) or typeof-term(t).is-t(c"Nil",0) then t0(c"Nil")
+            else if typeof-term(f).is-t(c"Nil",0) or typeof-term(t).is-t(c"Nil",0) then type-nil
             else { (tctx, let lub) = tctx.least-upper-bound(typeof-term(t), typeof-term(f), term); lub };
             tctx = tctx.ascript(term, lub);
             let term-phi-id = typeof-term(term).slot(c"Phi::Id",1).l1.simple-id;
@@ -189,9 +189,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             if non-zero(term-phi-id) and term-phi-id != f-phi-id then tctx = tctx.phi-move(typeof-term(f), f);
          }
       );
-      ASTEOF{} => tctx = tctx.ascript(term, t0(c"Nil"));
-      ASTNil{} => tctx = tctx.ascript(term, t0(c"Nil"));
-      Meta{} => tctx = tctx.ascript(term, t0(c"Nil"));
+      ASTEOF{} => tctx = tctx.ascript(term, type-nil);
+      ASTNil{} => tctx = tctx.ascript(term, type-nil);
+      Meta{} => tctx = tctx.ascript(term, type-nil);
       Typedef{} => ();
       AType{tt:TGround{tag:c"Type",parameters:[p1..]}} => tctx = tctx.ascript(term, t1(c"Type",p1.sanitize-phi));
       AType{tt=tt} => tctx = tctx.ascript(term, tt.sanitize-phi);
@@ -274,7 +274,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             } else if not(non-zero(typeof-term(term))) {
                if hint.is-t(c"HashtableEq",2) and hint.is-datatype and key3==c"HashtableEqEOF"
                then {
-                  (tctx, let lit-tt) = tctx.apply-callable(key3, t0(c"Nil"), term, hint);
+                  (tctx, let lit-tt) = tctx.apply-callable(key3, type-nil, term, hint);
                   tctx = tctx.ascript(term, lit-tt);
                } else {
                   tctx = tctx.ascript(term, type-any-arrow);
@@ -340,7 +340,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   let pre-retain-tctx = tctx;
                   (tctx, let new-r) = std-infer-call-arg(tctx, r, var-name-if-var-or-lit(l), rr-args-hint);
                   let ftype = tctx.find-callable( var-name-if-var-or-lit(l), typeof-term(new-r), term, direct-hint ).direct-type;
-                  if typeof-term(l) == t2(c"Arrow",t0(c"Any"),t0(c"Any")) {
+                  if typeof-term(l) == type-any-arrow {
                      tctx = tctx.ascript(l, ftype);
                   };
                   if ftype.domain.is-any-arg-t(c"MustNotRetain",0) {
@@ -398,16 +398,16 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      let tmp-var = mk-var(tmp-id); ascript-force(tmp-var, typeof-term(term));
                      tctx = tctx.bind(tmp-id, ta, typeof-term(term), tmp-def);
                      mark-var-to-def-todo(tctx, tmp-id, ta, tmp-var);
-                     let tmp-nil = mk-nil(); ascript-force(tmp-nil, t0(c"Nil"));
-                     let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, t0(c"Nil"));
+                     let tmp-nil = mk-nil(); ascript-force(tmp-nil, type-nil);
+                     let declare = mk-abs(tmp-def, tmp-nil, ta); ascript-force(declare, type-nil);
                      if function-type.is-t(c"MustRetainOnCall",0) and not(hint.is-t(c"MustNotRetain",0)) and not(tctx.get-or(mk-tctx()).is-blob) {
                         (tctx, term) = maybe-retain(tctx, term);
                      };
-                     let bind = mk-app(declare, term); ascript-force(bind, t0(c"Nil"));
+                     let bind = mk-app(declare, term); ascript-force(bind, type-nil);
 
                      let new-term = bind;
                      if non-zero(prefix) {
-                        new-term = mk-cons(prefix, new-term); ascript-force(new-term, t0(c"Nil"));
+                        new-term = mk-cons(prefix, new-term); ascript-force(new-term, type-nil);
                      };
                      new-term = mk-cons(new-term, postfix); ascript-force(new-term, typeof-term(postfix));
                      new-term = mk-cons(new-term, tmp-var); ascript-force(new-term, typeof-term(term));
