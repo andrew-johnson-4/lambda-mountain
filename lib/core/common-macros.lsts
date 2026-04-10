@@ -1,8 +1,6 @@
 
-deprecated macro ( rl"assert"(c) ) (
-   $"if"( not(c) )
-        ( fail(c"Assertion Failed At ", p(rl":Location:") : Constant+Literal+CString) )
-        ()
+typed macro $"assert"(c: lazy): lazy = (
+   if not c then fail(c"Assertion Failed At ", $"macro::location"(c));
 );
 
 deprecated macro ( rl"macro::define-zero"(base-type,constructor,con-tag) ) (
