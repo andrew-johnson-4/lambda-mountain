@@ -144,20 +144,40 @@ typed macro macro::pats-none(ignore: lazy): lazy = (
    ()
 );
 
+typed macro macro::match-pats-arm(term: lazy, v: macro::variable): lazy = (
+   macro::let(v, term); branchtrue()
+);
+
 deprecated macro (rl"match-pats-arm"(term,rl":Variable:"(v))) (
    ($"macro::let"(v, term); branchtrue())
+);
+
+typed macro macro::match-pats-arm(term: lazy, v pat: macro::match-lhs-binding): lazy = (
+   macro::let(v, term); match-pats-arm(v, pat)
 );
 
 deprecated macro (rl"match-pats-arm"(term,rl"@"(v,more))) (
    ($"macro::let"(v, term); match-pats-arm(v,more))
 );
 
+typed macro macro::match-pats-arm(term: lazy, ignore: macro::underscore): lazy = (
+   branchtrue()
+);
+
 deprecated macro (rl"match-pats-arm"(term,rl":Any:")) (
    branchtrue()
 );
 
+typed macro macro::match-pats-arm(term: lazy, c: macro::constant): lazy = (
+   macro::let(uuid(v), term); uuid(v)==c
+);
+
 deprecated macro (rl"match-pats-arm"(term,rl":Literal:"(l))) (
    ( $"macro::let"(uuid(v), term); uuid(v)==l )
+);
+
+typed macro macro::match-pats-arm(term: lazy, tag-name tag-ordinal tag-type: macro::tag): lazy = (
+   macro::let(uuid(v), term); uuid(v).discriminator-case-tag==(uuid(v) as tag-type).discriminator-case-tag
 );
 
 deprecated macro (rl"match-pats-arm"(term,rl":Tag:"(l)(lt))) (
