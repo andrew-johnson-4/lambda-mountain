@@ -1776,7 +1776,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
       };
       if not(non-zero(des-args)) { des-args = mk-nil(); };
       lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-      let lhs-tag = if tag==c"_"
+      let lhs-tag = if tag!=c"_"
       then mk-lit(tag).with-location(loc)
       else mk-nil();
       mk-app(
