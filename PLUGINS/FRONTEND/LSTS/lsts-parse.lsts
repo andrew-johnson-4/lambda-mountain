@@ -1637,7 +1637,7 @@ let lsts-make-lit(t: Token): AST = (
                Var( c".into", with-location(mk-token(".into"),loc) ),
                mk-cons(
                   se-rest.first,
-                  mk-atype(t1(c"Type",t0(c"String")))
+                  mk-atype(type-type-string)
                )
             );
             if non-zero(base) {

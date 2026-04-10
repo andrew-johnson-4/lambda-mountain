@@ -15,7 +15,7 @@ let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
 let std-c-mangle-type-internal-internal(tt: Type, blame: AST): S = (
    match tt {
       TAnd{ conjugate=conjugate } => (
-         let is-c = can-unify(t1(c"C",ta), tt);
+         let is-c = can-unify(type-c-tany, tt);
          let modifiers = SNil;
          let result = SNil;
          for vector c in conjugate {
@@ -101,7 +101,7 @@ let std-c-mangle-type-internal-internal(tt: Type, blame: AST): S = (
 let std-c-mangle-type-simple(tt: Type, blame: AST): S = (
    match tt {
       TAnd{ conjugate=conjugate } => (
-         let is-c = can-unify(t1(c"C",ta), tt);
+         let is-c = can-unify(type-c-tany, tt);
          let result = SNil();
          for vector c in conjugate {
             if is-c and c.simple-tag != c"C" {} else {

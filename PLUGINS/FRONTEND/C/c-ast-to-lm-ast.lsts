@@ -21,7 +21,7 @@ let std-c-declare(t: CTerm): Nil = (
             );
             CIdentifier{name2=value} => (if not(std-c-declare-dedup-index.has-key(name2)) {
                std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name2, true);
-               if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
+               if can-unify( type-c-typedef, return-type ) {
                   std-c-typedef-name-index = std-c-typedef-name-index.bind(name2, true);
                };
                ast-parsed-program = ast-parsed-program + Glb(
@@ -38,7 +38,7 @@ let std-c-declare(t: CTerm): Nil = (
                (let name3, let body) = std-c-sig-of-declarator(return-type, arg, ta, (None : Maybe<CTerm>)());
                if not(std-c-declare-dedup-index.has-key(name3.into(type(String)))) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name3.into(type(String)), true);
-                  if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
+                  if can-unify( type-c-typedef, return-type ) {
                      std-c-typedef-name-index = std-c-typedef-name-index.bind(name3.into(type(String)), true);
                   };
                   ast-parsed-program = ast-parsed-program + Glb(
@@ -50,7 +50,7 @@ let std-c-declare(t: CTerm): Nil = (
                (let name4, let body) = std-c-sig-of-declarator(return-type, arg1, ta, Some(arg2));
                if not(std-c-declare-dedup-index.has-key(name4.into(type(String)))) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name4.into(type(String)), true);
-                  if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
+                  if can-unify( type-c-typedef, return-type ) {
                      std-c-typedef-name-index = std-c-typedef-name-index.bind(name4.into(type(String)), true);
                   };
                   ast-parsed-program = ast-parsed-program + Glb(
@@ -63,7 +63,7 @@ let std-c-declare(t: CTerm): Nil = (
                (let name5, let body) = std-c-sig-of-declarator(return-type, arg1, ta, Some(arg2));
                if not(std-c-declare-dedup-index.has-key(name5.into(type(String)))) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name5.into(type(String)), true);
-                  if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
+                  if can-unify( type-c-typedef, return-type ) {
                      std-c-typedef-name-index = std-c-typedef-name-index.bind(name5.into(type(String)), true);
                   };
                   ast-parsed-program = ast-parsed-program + Glb(
@@ -74,7 +74,7 @@ let std-c-declare(t: CTerm): Nil = (
             CBinaryOp{op:"Declarator*", ptr=arg1, arg2:CIdentifier{name6=value} } => (
                if not(std-c-declare-dedup-index.has-key(name6)) {
                   std-c-declare-dedup-index = std-c-declare-dedup-index.bind(name6, true);
-                  if can-unify( t1(c"C",t0(c"typedef")), return-type ) {
+                  if can-unify( type-c-typedef, return-type ) {
                      std-c-typedef-name-index = std-c-typedef-name-index.bind(name6, true);
                   };
                   return-type = std-c-decorate-pointer(return-type, ptr);
@@ -130,7 +130,7 @@ let std-c-nametypes-of-params-list(params: List<CTerm>, is-vararg: Bool): List<(
       _ => print("std-c-sig-of-params-list: Unexpected Parameter \{p}\n");
    }};
    if is-vararg {
-      nametypes = cons((uuid(), t1(c"C",t0(c"..."))), nametypes);
+      nametypes = cons((uuid(), type-c-vararg), nametypes);
    };
    nametypes.reverse
 );
@@ -414,7 +414,7 @@ let std-c-expr-of-statement(t: CTerm): AST = (
          match std-c-expr-of-statement(arg1) {
             Var{key=key} => (
                mk-cons(
-                  mk-app( mk-app( mk-var("let"), mk-var(key) ), mk-nil().ascript(t1(c"C",t0(c":Label"))) ),
+                  mk-app( mk-app( mk-var("let"), mk-var(key) ), mk-nil().ascript(type-c-label) ),
                   std-c-expr-of-statement(arg2)
                )
             );
@@ -609,15 +609,15 @@ let std-c-decorate-pointer(tt: Type, ptr: CTerm): Type = (
 let std-c-type-of-integer(i: String): Type = (
    if i.has-prefix("-") {
       let n = to-u64(tail(i).into(type(CString)));
-      if n <= 128 then t1(c"C",t0(c"uint8_t")) else
-      if n <= 32768 then t1(c"C",t0(c"uint06_t")) else
-      if n <= 2147483648 then t1(c"C",t0(c"uint22_t")) else
-      t1(c"C",t0(c"uint64_t"))
+      if n <= 128 then type-c-uint8 else
+      if n <= 32768 then type-c-uint16 else
+      if n <= 2147483648 then type-c-uint32 else
+      type-c-uint64
    } else {
       let n = to-u64(i.into(type(CString)));
-      if n <= 255 then t1(c"C",t0(c"int8_t")) else
-      if n <= 65535 then t1(c"C",t0(c"int06_t")) else
-      if n <= 4294967295 then t1(c"C",t0(c"int22_t")) else
-      t1(c"C",t0(c"int64_t"))
+      if n <= 255 then type-c-int8 else
+      if n <= 65535 then type-c-int16 else
+      if n <= 4294967295 then type-c-int32 else
+      type-c-int64
    };
 );

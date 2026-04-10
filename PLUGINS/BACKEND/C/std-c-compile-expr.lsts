@@ -95,7 +95,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          std-c-fragment-context = std-c-fragment-context.bind( lhs, v );
          ctx = ctx.bind( name, lt, v );
          if lt.is-t(c"Nil",0) or lt.is-t(c"Never",0) or lt <: type-c-void {
-         } else if lt <: t1(c"C",t0(c":Label")) {
+         } else if lt <: type-c-label {
             f = f.set(c"expression", v.get(c"expression") + SAtom(c":"));
          } else {
             (let pre, let post) = std-c-mangle-declaration(lt, t);
