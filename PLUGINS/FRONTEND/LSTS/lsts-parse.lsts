@@ -1184,11 +1184,11 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             ));
          };
          base = mk-cons(
+            Var( c"macro::match", with-location(mk-token("macro::match"),loc) ),
             mk-cons(
-               Var( c"match", with-location(mk-token("match"),loc) ),
-               expr-rest.first
-            ),
-            cases
+               expr-rest.first,
+               cases
+            )
          );
       );
       [Token{key:c"if"}.. rest] => (
@@ -1884,7 +1884,7 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
             e-rest.first
          );
       };
-      let pats = mk-nil();
+      let pats = mk-app( mk-var(c"macro::pats-none").with-location(loc), mk-nil() );
       lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
       while non-zero(tokens) and lsts-parse-head(tokens)!=c"}" {
          let lhs-rest = lsts-parse-lhs(tokens);
@@ -1897,15 +1897,18 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
          let rhs-rest = lsts-parse-small-expression(tokens);
          tokens = rhs-rest.second;
          lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-         pats = mk-cons(pats, mk-cons(lhs-rest.first, rhs-rest.first));
+         pats = mk-app(
+            mk-var(c"macro::pats-some").with-location(lhs-rest.first.location),
+            mk-cons(pats, mk-cons(lhs-rest.first, rhs-rest.first))
+         );
       };
       lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
       term = mk-app(
+         Var( c"macro::match", with-location(mk-token("macro::match"),loc) ),
          mk-app(
-            Var( c"match", with-location(mk-token("match"),loc) ),
-            e-rest.first
-         ),
-         pats
+            e-rest.first,
+            pats
+         )
       );
    } else if lsts-parse-head(tokens).has-suffix(c"_ss") {
       (term, tokens) = lsts-parse-lit(tokens);

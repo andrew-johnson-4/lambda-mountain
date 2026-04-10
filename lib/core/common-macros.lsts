@@ -55,17 +55,6 @@ typed macro macro::while(cond: Bool, body: lazy): lazy = (
    primitive::while( cond, body as Nil )
 );
 
-typed macro for(item: lazy, iterable: Vector<?>, loop: lazy): lazy = (
-   let uuid(iter-term) = iterable;
-   let uuid(iter-i) = 0_sz;
-   while uuid(iter-i) < uuid(iter-term).length {
-      match uuid(iter-term)[uuid(iter-i)] {
-         item => loop;
-      };
-      uuid(iter-i) = uuid(iter-i) + 1;
-   };
-);
-
 typed macro macro::for(item: lazy, iterable: List<?>, loop: lazy): lazy = (
    let uuid(iter-term) = iterable;
    while non-zero(uuid(iter-term)) {
@@ -97,17 +86,29 @@ deprecated macro ( rl"for-each-list"(item(rl"in")(iterable))(loop) ) ((
    };
 ));
 
-deprecated macro ( rl"while"(cond)(body) )
-      ( $"primitive::while"( cond, body as Nil ) );
+typed macro macro::match(t: lazy, ps: lazy): lazy = (scope(
+   let uuid(term) = open(t);
+   macro::match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
+));
 
 deprecated macro (rl"match"(t)(ps)) (scope(
    let uuid(term) = open(t);
    match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", p(rl":Location:") : Constant+Literal+CString) );
 ));
 
+typed macro macro::match(t: macro::bind-raw, ps: lazy): lazy = (scope(
+   let uuid(term) = t;
+   macro::match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
+));
+
 deprecated macro (rl"match"(rl"macro::bind-raw"(t))(ps)) (scope(
    let uuid(term) = t;
    match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", p(rl":Location:") : Constant+Literal+CString) );
+));
+
+typed macro macro::match(f t: macro::bind-raw-field, ps: lazy): lazy = (scope(
+   let uuid(term) = f($"raw"(t));
+   macro:: match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
 ));
 
 deprecated macro (rl"match"(
@@ -118,13 +119,29 @@ deprecated macro (rl"match"(
    match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", p(rl":Location:") : Constant+Literal+CString) );
 ));
 
+typed macro macro::match-pats(term: lazy, cases: macro::pats-none, remainder: lazy): lazy = (
+   remainder
+);
+
 deprecated macro (rl"match-pats"(term,(),remainder))
                  (remainder);
+
+typed macro macro::match-pats(term: lazy, ps lhs rhs: macro::pats-some, remainder: lazy): lazy = (
+   macro::match-pats(term, ps, scope($"if"(macro::match-pats-arm(term,lhs))(rhs)(remainder)));
+);
 
 deprecated macro (rl"match-pats"(term,ps(lhs,rhs),remainder)) (
    match-pats(term,ps,
       scope($"if"(match-pats-arm(term,lhs))(rhs)(remainder))
    )
+);
+
+typed macro macro::pats-some(ps: lazy, lhs: lazy, rhs: lazy): lazy = (
+   ps; lhs; rhs
+);
+
+typed macro macro::none(): lazy = (
+   ()
 );
 
 deprecated macro (rl"match-pats-arm"(term,rl":Variable:"(v))) (
