@@ -1899,7 +1899,7 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
          lsts-parse-expect(c";", tokens); tokens = tail(tokens);
          pats = mk-app(
             mk-var(c"macro::pats-some").with-location(lhs-rest.first.location),
-            mk-cons(pats, mk-cons(lhs-rest.first, rhs-rest.first))
+            mk-cons(mk-cons(pats, lhs-rest.first), rhs-rest.first)
          );
       };
       lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
