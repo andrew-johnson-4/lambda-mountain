@@ -140,7 +140,7 @@ typed macro macro::pats-some(ps: lazy, lhs: lazy, rhs: lazy): lazy = (
    ps; lhs; rhs
 );
 
-typed macro macro::none(): lazy = (
+typed macro macro::pats-none(ignore: lazy): lazy = (
    ()
 );
 
