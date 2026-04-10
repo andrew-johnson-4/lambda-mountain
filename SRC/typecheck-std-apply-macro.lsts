@@ -31,6 +31,13 @@ let std-apply-macro-underscore(tctx: Maybe<TypeContext>, mname: CString, margs: 
    }
 );
 
+let std-apply-macro-nil(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      ASTNil{} => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+
 let std-apply-macro-tag(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
       Lit{key=key} => (
@@ -63,6 +70,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
    else if mname==c"macro::location" then (tctx, result) = std-apply-macro-location(tctx, mname, margs)
    else if mname==c"macro::variable" then (tctx, result) = std-apply-macro-variable(tctx, mname, margs)
    else if mname==c"macro::underscore" then (tctx, result) = std-apply-macro-underscore(tctx, mname, margs)
+   else if mname==c"macro::nil" then (tctx, result) = std-apply-macro-nil(tctx, mname, margs)
    else if mname==c"macro::constant" then (tctx, result) = std-apply-macro-constant(tctx, mname, margs)
    else if mname==c"macro::tag" then (tctx, result) = std-apply-macro-tag(tctx, mname, margs)
    else {

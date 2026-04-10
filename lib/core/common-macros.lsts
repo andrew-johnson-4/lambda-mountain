@@ -176,8 +176,28 @@ deprecated macro (rl"match-pats-arm"(term,rl":Literal:"(l))) (
    ( $"macro::let"(uuid(v), term); uuid(v)==l )
 );
 
-typed macro macro::match-pats-arm(term: lazy, tag-name tag-ordinal tag-type: macro::tag): lazy = (
-   macro::let(uuid(v), term); uuid(v).discriminator-case-tag==(uuid(v) as tag-type).discriminator-case-tag
+typed macro macro::lhs-tag(tag-name tag-ordinal tag-type: macro::tag): lazy = (
+   uuid(v).discriminator-case-tag==(uuid(v) as tag-type).discriminator-case-tag
+);
+
+typed macro macro::lhs-tag(ignore: macro::underscore): lazy = (
+   branchtrue()
+);
+
+typed macro macro::lhs-fields(ignore: macro::nil): lazy = (
+   branchtrue()
+);
+
+typed macro macro::lhs-tagged(tag-guard: macro::lhs-tag, fields-guard: macro::lhs-fields): lazy = (
+   tag-guard and fields-guard
+);
+
+typed macro macro::lhs-tagged(tag-guard: macro::nil, fields-guard: macro::lhs-fields): lazy = (
+   fields-guard
+);
+
+typed macro macro::lhs-tagged(tag-guard: macro::lhs-tag, fields-guard: macro::nil): lazy = (
+   tag-guard
 );
 
 deprecated macro (rl"match-pats-arm"(term,rl":Tag:"(l)(lt))) (

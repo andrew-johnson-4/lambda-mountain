@@ -5,6 +5,7 @@ index-macro-table = index-macro-table.bind(c"macro::concat", [] : List<(Type,Typ
 index-macro-table = index-macro-table.bind(c"macro::location", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::variable", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::underscore", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::nil", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::constant", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::tag", [] : List<(Type,Type,AST)>);
 
@@ -13,6 +14,7 @@ let index-macro-meta = {} : Hashtable<CString,List<(Type,Type,AST)>>;
 
 index-macro-meta = index-macro-meta.bind(c"macro::variable", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::underscore", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::nil", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::constant", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::tag", [] : List<(Type,Type,AST)>);
 
