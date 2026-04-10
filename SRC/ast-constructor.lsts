@@ -1,25 +1,33 @@
 
+let ast-count = 0_sz;
+
 let mk-app(f: AST, a: AST): AST = (
+   ast-count = ast-count + 1;
    App( close(f), close(a) )
 );
 
 let mk-cons-or-app(is-cons: Bool, f: AST, a: AST): AST = (
+   ast-count = ast-count + 1;
    App( is-cons, close(f), close(a) )
 );
 
 let mk-cons(f: AST, a: AST): AST = (
+   ast-count = ast-count + 1;
    App( true, close(f), close(a) )
 );
 
 let mk-glb(k: Token, v: AST): AST = (
+   ast-count = ast-count + 1;
    Glb( k, close(v) )
 );
 
 let mk-seq(): AST = (
+   ast-count = ast-count + 1;
    Seq( mk-vector(type(AST)) )
 );
 
 let mk-typedef(loc: SourceLocation, lhs-type: Type): AST = (
+   ast-count = ast-count + 1;
    Typedef( loc, lhs-type, mk-vector(type(Type)), mk-vector(type(Type)),
              ta, ta, ta, mk-vector(type((CString,Vector<(CString,Type)>))), ta, ta )
 );
@@ -185,10 +193,12 @@ let .with-implied-phi(term: AST, implied-phi: Type): AST = (
 );
 
 let mk-abs(l: AST, r: AST, t: Type): AST = (
+   ast-count = ast-count + 1;
    Abs( close(l), close(r), t )
 );
 
 let mk-meta(l: AST): AST = (
+   ast-count = ast-count + 1;
    Meta( close(l) )
 );
 
@@ -204,34 +214,47 @@ let .is-ascript(t: AST): Bool = (
 );
 
 let mk-var(val: CString): AST = (
+   ast-count = ast-count + 1;
    Var( val, mk-token(val) )
 );
 
 let mk-var(val: String): AST = (
+   ast-count = ast-count + 1;
    Var( val.into(type(CString)), mk-token(val) )
 );
 
 let mk-var(val: Token): AST = (
+   ast-count = ast-count + 1;
    Var( val.key, val )
 );
 
-let mk-var(v: CString, vtk: Token): AST = Var(v,vtk);
+let mk-var(v: CString, vtk: Token): AST = (
+   ast-count = ast-count + 1;
+   Var(v,vtk);
+);
 
 let mk-lit(val: CString): AST = (
+   ast-count = ast-count + 1;
    Lit( val, mk-token(val) )
 );
 
 let mk-lit(val: String): AST = (
+   ast-count = ast-count + 1;
    Lit( val.into(type(CString)), mk-token(val) )
 );
 
 let mk-lit(val: Token): AST = (
+   ast-count = ast-count + 1;
    Lit( val.key, val )
 );
 
-let mk-lit(v: CString, vtk: Token): AST = Lit(v,vtk);
+let mk-lit(v: CString, vtk: Token): AST = (
+   ast-count = ast-count + 1;
+   Lit(v,vtk);
+);
 
 let mk-atype(tt: Type): AST = (
+   ast-count = ast-count + 1;
    AType(tt)
 );
 

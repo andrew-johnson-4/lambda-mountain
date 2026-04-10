@@ -58,6 +58,7 @@ let std-apply-macro-location(tctx: Maybe<TypeContext>, mname: CString, margs: AS
 
 let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed, strong: Bool): (TypeContext?, AST) = (
    let result = mk-eof();
+   let peeped-type = ta;
    if mname==c"macro::concat" then (tctx, result) = std-apply-macro-concat(tctx, mname, margs)
    else if mname==c"macro::location" then (tctx, result) = std-apply-macro-location(tctx, mname, margs)
    else if mname==c"macro::variable" then (tctx, result) = std-apply-macro-variable(tctx, mname, margs)
@@ -76,7 +77,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
             peeped = mtype;
          };
       };
-      (tctx, let peeped-type, margs) = std-infer-peeped-arguments(tctx, margs, peep-holes);
+      (tctx, peeped-type, margs) = std-infer-peeped-arguments(tctx, margs, peep-holes);
 
       let matched = [] : List<(Type,AST)>;
       for list Tuple{mtype=first, mterm=third} in row {
@@ -102,7 +103,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
       (tctx, result) = std-apply-macro-candidates(tctx, mname, margs, candidates);
    };
 
-   if strong and not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs}\n", margs);
+   if strong and not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs} : \{peeped-type}\n", margs);
    if strong {
       (tctx, result) = std-infer-expr(tctx, result, false, used, ta);
       mark-free-and-seen(result);

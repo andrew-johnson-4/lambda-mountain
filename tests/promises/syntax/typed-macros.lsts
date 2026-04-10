@@ -1,0 +1,20 @@
+
+import lib/core/baremetal.lsts;
+
+# This test case is also a beginning to profile the possibility of burning through to many intermediate terms during macro expansion
+# This does not seem to be a current problem, but caution is still warranted
+
+typed macro macro::a(x: lazy, y: lazy): lazy = (
+   x; y
+);
+
+typed macro macro::b(x y: macro::a, z: lazy): lazy = (
+   $"macro::c"(x, y, z);
+);
+
+typed macro macro::c(x: lazy, y: lazy, z: lazy): lazy = (
+   x = y + z;
+);
+
+let xyz = 0;
+$"macro::b"( $"macro::a"(xyz, 1), 2 );

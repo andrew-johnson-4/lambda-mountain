@@ -8,15 +8,13 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm tests/promises/vector/constructor.lsts
+	lm --v23 --showastcount SRC/index.lsts
 	#time lm --showalloc SRC/unit-type-core.lsts > out.txt
 	#time lm --showalloc SRC/unit-tctx-core.lsts > out.txt
 	#time lm --showalloc SRC/unit-prop-core.lsts > out.txt
 	#time lm --showalloc SRC/unit-ascript-core.lsts > out.txt
 	#time lm --showalloc SRC/index.lsts > out.txt
 	#time lm --showalloc SRC/dev-index.lsts > out.txt
-	gcc tmp.c
-	./a.out
 
 build: compile-production
 	time env $(LSTSFLAGS) ./production --v23 --c -o deploy1.c SRC/index.lsts

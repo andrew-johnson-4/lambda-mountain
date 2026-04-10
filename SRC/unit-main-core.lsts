@@ -31,6 +31,10 @@ let print-toks-json(fp: CString): Nil = (
 let show-alloc-count = false;
 let show-alloc-count-in-program = false;
 
+let show-ast-count = false;
+let ast-parsed-count = 0_sz;
+let ast-typed-count = 0_sz;
+
 let main(argc: C_int, argv: CString[]): Nil = (
    config-v23 = false;
    let argi = 1_sz;
@@ -61,6 +65,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          c"--stripdebug" => config-strip-debug = true;
          c"--showalloc" => show-alloc-count = true;
          c"--showallocgen" => show-alloc-count-in-program = true;
+         c"--showastcount" => show-ast-count = true;
          c"--profile-ast" => config-profile-ast = true;
          c"-o" => (
             argi = argi + 1;
@@ -128,10 +133,12 @@ let main(argc: C_int, argv: CString[]): Nil = (
                )
             );
          };
+         ast-parsed-count = ast-count;
          match config-mode {
             ModeTypecheck{} => (preprocess(); typecheck(););
             ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(); );
          };
+         ast-typed-count = ast-count;
       );
    };
    if show-alloc-count then {
@@ -139,6 +146,10 @@ let main(argc: C_int, argv: CString[]): Nil = (
    };
    if config-profile-ast then {
       profile-print-ast()
+   };
+   if show-ast-count then {
+      print("AST Count After Parse = \{ast-parsed-count}\n");
+      print("AST Count After Typecheck = \{ast-typed-count}\n");
    };
    #print("Worse Phi Length \{worst-phi-length}\n");
    #print-allocation-counts()
