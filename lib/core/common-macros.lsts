@@ -176,12 +176,31 @@ deprecated macro (rl"match-pats-arm"(term,rl":Literal:"(l))) (
    ( $"macro::let"(uuid(v), term); uuid(v)==l )
 );
 
-typed macro macro::lhs-fields(ignore: macro::nil): lazy = (
-   branchtrue()
-);
-
 typed macro macro::lhs-tagged(tag-guard: lazy, fields-guard: lazy): lazy = (
    tag-guard; fields-guard;
+);
+
+typed macro macro::lhs-bind(bind-key: macro::variable, val: lazy): lazy = (
+   bind-key; val;
+);
+
+typed macro macro::lhs-field(field-key: macro::variable, bind-key val: macro::lhs-bind): lazy = (
+   bind-key; 
+);
+
+typed macro macro::lhs-fields(prefix: lazy, field-key pat: macros::lhs-field): lazy = (
+   prefix; field-key; pat;
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, prefix: macro::nil, field-key: macro::variable, pat: lazy): lazy = (
+   let uuid(f) = field-key(term);
+   pat(uuid(f));
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, prefix prefix-field-key prefix-pat: macro::lhs-fields, field-key: macro::variable, pat: lazy): lazy = (
+   let uuid(f) = field-key(term);
+   pat(uuid(f)) and
+   macro::lhs-fields-with-term(term, prefix, prefix-field-key, prefix-pat);
 );
 
 typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::lhs-tag, fields-guard: macro::lhs-fields): lazy = (
@@ -189,15 +208,12 @@ typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-typ
    and fields-guard(term)
 );
 
-typed macro macro::lhs-tagged-with-term(term: lazy, tag-guard: macro::nil, fields-guard: macro::lhs-fields): lazy = (
-   fields-guard(term)
+typed macro macro::lhs-tagged-with-term(term: lazy, tag-guard: macro::nil, prefix key pat: macro::lhs-fields): lazy = (
+   macro::lhs-fields-with-term(term, prefix, key, pat)
 );
 
 typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields-guard: macro::nil): lazy = (
    term.discriminator-case-tag==(term as tag-type).discriminator-case-tag
-);
-
-typed macro macro::lhs-fields(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields-guard: macro::nil): lazy = (
 );
 
 typed macro macro::match-pats-arm(term: lazy, tag-guard fields-guard: macro::lhs-tagged): lazy = (

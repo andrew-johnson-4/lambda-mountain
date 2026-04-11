@@ -1740,7 +1740,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
          };
          if non-zero(binding) {
             val = mk-app(
-               Var( c"macro::lhs-binding", with-location(mk-token("macro::lhs-binding"),attr-loc) ),
+               Var( c"macro::lhs-bind", with-location(mk-token("macro::lhs-bind"),attr-loc) ),
                mk-cons(
                   Var( binding, with-location(mk-token(binding),attr-loc) ),
                   val
@@ -1748,7 +1748,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
             );
             if raw {
                val = mk-app(
-                  Var( c"macro::lhs-binding-raw", with-location(mk-token("macro::lhs-binding-raw"),attr-loc) ),
+                  Var( c"macro::lhs-bind-raw", with-location(mk-token("macro::lhs-bind-raw"),attr-loc) ),
                   val
                );
             };
@@ -1756,7 +1756,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
          if non-zero(attr-key) {
             attr-key = c"." + attr-key;
             val = mk-app(
-               Var( c"macro::lhs-binding-field-by-key", with-location(mk-token("macro::lhs-binding-field-by-key"),attr-loc) ),
+               Var( c"macro::lhs-field", with-location(mk-token("macro::lhs-field"),attr-loc) ),
                mk-cons(
                   Var( attr-key, with-location(mk-token(attr-key),attr-loc) ),
                   val
