@@ -180,26 +180,30 @@ typed macro macro::lhs-tagged(tag-guard: lazy, fields-guard: lazy): lazy = (
    tag-guard; fields-guard;
 );
 
+typed macro macro::lhs-fields-field(field-key: macro::variable, bind-key pat: macro::lhs-bind): lazy = (
+   field-key; bind-key; pat;
+);
+
 typed macro macro::lhs-bind(bind-key: macro::variable, pat: lazy): lazy = (
    bind-key; pat;
 );
 
-typed macro macro::lhs-fields-field(field-key: macro::variable, field-pat: lazy): lazy = (
-   field-key; field-pat;
-);
-
-typed macro macro::lhs-fields(prefix: lazy, field-key field-pat: macro::lhs-fields-field): lazy = (
-   prefix; field-key; field-pat;
+typed macro macro::lhs-fields(prefix: lazy, field-key field-bind field-pat: macro::lhs-fields-field): lazy = (
+   prefix; field-key; field-bind; field-pat;
 );
 
 typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::nil): lazy = (
    true
 );
 
-typed macro macro::lhs-fields-with-term(term: lazy, prefix field-key field-pat: macro::lhs-fields): lazy = (
-   let uuid(f) = field-key(term);
+typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::underscore): lazy = (
+   true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, prefix field-key bind-key field-pat: macro::lhs-fields): Bool = (
+   let bind-key = field-key(term);
    macro::lhs-fields-with-term(term, prefix) and
-   fields-pat(term)
+   macro::lhs-fields-with-term(term, field-pat)
 );
 
 typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields: lazy): lazy = (

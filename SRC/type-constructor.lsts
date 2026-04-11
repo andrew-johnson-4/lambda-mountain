@@ -27,6 +27,9 @@ let type-nil = t0(c"Nil");
 let type-any = t0(c"Any");
 
 # new allocations = 0 (constant)
+let type-lazy = tv(c"lazy");
+
+# new allocations = 0 (constant)
 let type-type-string = t1(c"Type",t0(c"String"));
 
 # new allocations = 0 (constant)

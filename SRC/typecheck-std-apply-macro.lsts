@@ -69,6 +69,7 @@ type MacroStrength = MacroTerm | MacroHelper | MacroWeak;
 let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed, strong: MacroStrength): (TypeContext?, AST) = (
    let result = mk-eof();
    let peeped-type = ta;
+   let return-type = ta;
    if mname==c"macro::concat" then (tctx, result) = std-apply-macro-concat(tctx, mname, margs)
    else if mname==c"macro::location" then (tctx, result) = std-apply-macro-location(tctx, mname, margs)
    else if mname==c"macro::variable" then (tctx, result) = std-apply-macro-variable(tctx, mname, margs)
@@ -111,12 +112,12 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
             candidates = [(mtype,mterm)];
          }
       };
-      (tctx, result) = std-apply-macro-candidates(tctx, mname, margs, candidates);
+      (tctx, result, return-type) = std-apply-macro-candidates(tctx, mname, margs, candidates);
    };
 
    if not(is(strong,MacroWeak)) and not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs} : \{peeped-type}\n", margs);
    if is(strong,MacroTerm) {
-      (tctx, result) = std-infer-expr(tctx, result, false, used, ta);
+      (tctx, result) = std-infer-expr(tctx, result, false, if return-type==type-lazy then used else Tail, ta);
       mark-free-and-seen(result);
    };
    (tctx, result)
