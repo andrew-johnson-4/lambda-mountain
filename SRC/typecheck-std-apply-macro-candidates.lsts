@@ -47,14 +47,8 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                      match margs {
                         App{left:Var{maybe-helper=key}, helper-args=right} => (
                            if macro-helper==maybe-helper {
-                              (tctx, let helped) = match helper-args {
-                                 App{left:Var{helper-arg-key1=key}} => (
-                                    if helper-arg-key1==macro-helper
-                                    then std-apply-macro(tctx, macro-helper, helper-args, Used());
-                                    else std-apply-macro-weak(tctx, macro-helper, helper-args, Used());
-                                 );
-                                 _ => std-apply-macro-weak(tctx, macro-helper, helper-args, Used());
-                              };
+                              # infallible, like matching macro::a(x) against macro::a
+                              (tctx, let helped) = std-apply-macro(tctx, macro-helper, helper-args, Used());
                               if non-zero(helped)
                               then (tctx, std-direct-destructure-macro(helped, mstruct))
                               else (tctx, no)
@@ -62,14 +56,8 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                         );
                         _ => (
                            if index-macro-meta.has-key(macro-helper) {
-                              (tctx, let helped) = match margs {
-                                 App{left:Var{helper-arg-key2=key}} => (
-                                    if helper-arg-key2==macro-helper
-                                    then std-apply-macro(tctx, macro-helper, margs, Used());
-                                    else std-apply-macro-weak(tctx, macro-helper, margs, Used());
-                                 );
-                                 _ => std-apply-macro-weak(tctx, macro-helper, margs, Used());
-                              };
+                              # fallible, like matching x against macro::variable or macro::nil
+                              (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, margs, Used());
                               if non-zero(helped)
                               then (tctx, std-direct-destructure-macro(helped, mstruct))
                               else (tctx, no)
