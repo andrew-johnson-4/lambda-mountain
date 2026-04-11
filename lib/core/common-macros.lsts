@@ -203,13 +203,13 @@ typed macro macro::lhs-fields-with-term(term: lazy, field-key pat: macro::lhs-fi
    macro::lhs-fields-with-term(term, field-key, pat);
 );
 
-typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::lhs-tag, prefix field-key pat: macro::lhs-fields): lazy = (
+typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, prefix pat: macro::lhs-fields): lazy = (
    term.discriminator-case-tag==(term as tag-type).discriminator-case-tag
-   and macro::lhs-fields-with-term(term, prefix, field-key, pat)
+   and macro::lhs-fields-with-term(term, prefix, pat)
 );
 
-typed macro macro::lhs-tagged-with-term(term: lazy, tag-guard: macro::nil, prefix key pat: macro::lhs-fields): lazy = (
-   macro::lhs-fields-with-term(term, prefix, key, pat)
+typed macro macro::lhs-tagged-with-term(term: lazy, tag-guard: macro::nil, prefix pat: macro::lhs-fields): lazy = (
+   macro::lhs-fields-with-term(term, prefix, pat)
 );
 
 typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields-guard: macro::nil): lazy = (

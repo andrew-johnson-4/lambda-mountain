@@ -50,7 +50,7 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                               # infallible, like matching macro::a(x) against macro::a
                               (tctx, let helped) = std-apply-macro-helper(tctx, macro-helper, helper-args, Used());
                               if non-zero(helped)
-                              then (tctx, std-direct-destructure-macro(helped, mstruct))
+                              then (tctx, std-direct-destructure-macro(helped, mstruct, macro-helper, mstruct, margs))
                               else (tctx, no)
                            } else (tctx, no)
                         );
@@ -59,12 +59,12 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                               # fallible, like matching x against macro::variable or macro::nil
                               (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, margs, Used());
                               if non-zero(helped)
-                              then (tctx, std-direct-destructure-macro(helped, mstruct))
+                              then (tctx, std-direct-destructure-macro(helped, mstruct, macro-helper, mstruct, margs))
                               else (tctx, no)
                            } else (tctx, no)
                         );
                      };
-                  } else (tctx, std-direct-destructure-macro(margs, mstruct))
+                  } else (tctx, std-direct-destructure-macro(margs, mstruct, c"[direct]", mstruct, margs))
                );
                _ => (tctx, no);
             }
