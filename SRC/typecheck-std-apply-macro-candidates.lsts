@@ -44,7 +44,7 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                   if non-zero(std-macro-helper-name(tt))
                   then {
                      let macro-helper = std-macro-helper-name(tt);
-                     match margs {
+                     (tctx, success) = match margs {
                         App{left:Var{maybe-helper=key}, helper-args=right} => (
                            if macro-helper==maybe-helper {
                               (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, helper-args, Used());
@@ -61,7 +61,9 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                               else (tctx, no)
                            } else (tctx, no)
                         );
-                     }
+                     };
+                     if success.is-none then exit-error("Macro helper failed \{std-macro-helper-name(tt)} with arguments \{margs}\n", margs);
+                     (tctx, success)
                   } else (tctx, std-direct-destructure-macro(margs, mstruct))
                );
                _ => (tctx, no);

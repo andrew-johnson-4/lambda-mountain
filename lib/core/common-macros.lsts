@@ -188,9 +188,10 @@ typed macro macro::lhs-fields-field(field-key: macro::variable, bind-key val: ma
    field-key; true;
 );
 
-typed macro macro::lhs-fields(prefix: lazy, field-key pat: macros::lhs-fields-field): lazy = (
+typed macro macro::lhs-fields(prefix: lazy, field-key pat: macro::lhs-fields-field): lazy = (
    prefix; field-key; pat;
 );
+
 
 typed macro macro::lhs-fields-with-term(term: lazy, prefix: macro::nil, field-key: macro::variable, pat: lazy): lazy = (
    let uuid(f) = field-key(term);
@@ -203,9 +204,9 @@ typed macro macro::lhs-fields-with-term(term: lazy, prefix prefix-field-key pref
    macro::lhs-fields-with-term(term, prefix, prefix-field-key, prefix-pat);
 );
 
-typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::lhs-tag, fields-guard: macro::lhs-fields): lazy = (
+typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::lhs-tag, prefix field-key pat: macro::lhs-fields): lazy = (
    term.discriminator-case-tag==(term as tag-type).discriminator-case-tag
-   and fields-guard(term)
+   and macro::lhs-fields-with-term(term, prefix, field-key, pat)
 );
 
 typed macro macro::lhs-tagged-with-term(term: lazy, tag-guard: macro::nil, prefix key pat: macro::lhs-fields): lazy = (
