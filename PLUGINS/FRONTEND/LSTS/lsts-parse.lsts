@@ -1756,7 +1756,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
          if non-zero(attr-key) {
             attr-key = c"." + attr-key;
             val = mk-app(
-               Var( c"macro::lhs-field", with-location(mk-token("macro::lhs-field"),attr-loc) ),
+               Var( c"macro::lhs-fields-field", with-location(mk-token("macro::lhs-fields-field"),attr-loc) ),
                mk-cons(
                   Var( attr-key, with-location(mk-token(attr-key),attr-loc) ),
                   val
