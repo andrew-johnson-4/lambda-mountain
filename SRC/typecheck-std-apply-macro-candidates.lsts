@@ -44,7 +44,7 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                   if non-zero(std-macro-helper-name(tt))
                   then {
                      let macro-helper = std-macro-helper-name(tt);
-                     (tctx, success) = match margs {
+                     (tctx, let success) = match margs {
                         App{left:Var{maybe-helper=key}, helper-args=right} => (
                            if macro-helper==maybe-helper {
                               (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, helper-args, Used());
