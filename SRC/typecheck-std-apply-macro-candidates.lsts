@@ -48,7 +48,7 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                         App{left:Var{maybe-helper=key}, helper-args=right} => (
                            if macro-helper==maybe-helper {
                               # infallible, like matching macro::a(x) against macro::a
-                              (tctx, let helped) = std-apply-macro(tctx, macro-helper, helper-args, Used());
+                              (tctx, let helped) = std-apply-macro-helper(tctx, macro-helper, helper-args, Used());
                               if non-zero(helped)
                               then (tctx, std-direct-destructure-macro(helped, mstruct))
                               else (tctx, no)
