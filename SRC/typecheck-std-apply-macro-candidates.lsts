@@ -44,10 +44,17 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                   if non-zero(std-macro-helper-name(tt))
                   then {
                      let macro-helper = std-macro-helper-name(tt);
-                     (tctx, let success) = match margs {
+                     match margs {
                         App{left:Var{maybe-helper=key}, helper-args=right} => (
                            if macro-helper==maybe-helper {
-                              (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, helper-args, Used());
+                              (tctx, let helped) = match helper-args {
+                                 App{left:Var{helper-arg-key1=key}} => (
+                                    if helper-arg-key1==macro-helper
+                                    then std-apply-macro(tctx, macro-helper, helper-args, Used());
+                                    else std-apply-macro-weak(tctx, macro-helper, helper-args, Used());
+                                 );
+                                 _ => std-apply-macro-weak(tctx, macro-helper, helper-args, Used());
+                              };
                               if non-zero(helped)
                               then (tctx, std-direct-destructure-macro(helped, mstruct))
                               else (tctx, no)
@@ -55,15 +62,20 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                         );
                         _ => (
                            if index-macro-meta.has-key(macro-helper) {
-                              (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, margs, Used());
+                              (tctx, let helped) = match margs {
+                                 App{left:Var{helper-arg-key2=key}} => (
+                                    if helper-arg-key2==macro-helper
+                                    then std-apply-macro(tctx, macro-helper, margs, Used());
+                                    else std-apply-macro-weak(tctx, macro-helper, margs, Used());
+                                 );
+                                 _ => std-apply-macro-weak(tctx, macro-helper, margs, Used());
+                              };
                               if non-zero(helped)
                               then (tctx, std-direct-destructure-macro(helped, mstruct))
                               else (tctx, no)
                            } else (tctx, no)
                         );
                      };
-                     if success.is-none then exit-error("Macro helper failed \{std-macro-helper-name(tt)} with arguments \{margs}\n", margs);
-                     (tctx, success)
                   } else (tctx, std-direct-destructure-macro(margs, mstruct))
                );
                _ => (tctx, no);
