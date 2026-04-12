@@ -7,7 +7,6 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
-   print("Term \{term}\n");
    profile-visit-ast-unique(term);
    profile-visit-ast-equal(term);
    if not(term.is-free-and-seen) { match term {
