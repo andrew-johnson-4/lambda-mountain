@@ -201,7 +201,7 @@ typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::underscore): 
 );
 
 typed macro macro::lhs-fields-with-term(term: lazy, prefix field-key bind-key field-pat: macro::lhs-fields): Bool = (
-   let bind-key = field-key(term);
+   let bind-key = open(field-key(term));
    macro::lhs-fields-with-term(term, prefix) and
    macro::lhs-fields-with-term(term, field-pat)
 );

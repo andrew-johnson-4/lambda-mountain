@@ -7,7 +7,7 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
-   print("Term: \{term}\n");
+   print("Term \{term}\n");
    profile-visit-ast-unique(term);
    profile-visit-ast-equal(term);
    if not(term.is-free-and-seen) { match term {
@@ -340,7 +340,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   if var-name-if-var-or-lit(l)==c".release" then rr-args-hint = rr-args-hint && t0(c"MustNotFresh");
                   let pre-retain-tctx = tctx;
                   (tctx, let new-r) = std-infer-call-arg(tctx, r, var-name-if-var-or-lit(l), rr-args-hint);
-                  print("Rewritten arg \{new-r}\n");
                   let ftype = tctx.find-callable( var-name-if-var-or-lit(l), typeof-term(new-r), term, direct-hint ).direct-type;
                   if typeof-term(l) == type-any-arrow {
                      tctx = tctx.ascript(l, ftype);
