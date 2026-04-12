@@ -342,9 +342,9 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          while non-zero(tokens) and lsts-parse-head(tokens)==c">" {
             (let vp, tokens) = lsts-parse-type(tokens); 
             varparameters = varparameters.push(vp);
-            if non-zero(tokens) and lsts-parse-head(tokens)!=c">" then tokens = lsts-parse-expect(c",", tokens);
+            if non-zero(tokens) and lsts-parse-head(tokens)==c"," then tokens = tail(tokens);
          };
-         tokens = lsts-parse-expect(c">", tokens);
+         lsts-parse-expect(c">", tokens); tokens = tail(tokens);
       };
       tvs ( varname, varparameters )
    } else {
