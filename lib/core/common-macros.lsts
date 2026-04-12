@@ -180,42 +180,55 @@ typed macro macro::lhs-tagged(tag-guard: lazy, fields-guard: lazy): lazy = (
    tag-guard; fields-guard;
 );
 
-typed macro macro::lhs-fields-field(field-key: macro::variable, bind-key pat: macro::lhs-bind): lazy = (
-   field-key; bind-key; pat;
+typed macro macro::lhs-fields-field(field-key: macro::variable, pat: lazy): lazy = (
+   field-key; pat;
 );
 
 typed macro macro::lhs-bind(bind-key: macro::variable, pat: lazy): lazy = (
    bind-key; pat;
 );
 
-typed macro macro::lhs-fields(prefix: lazy, field-key field-bind field-pat: macro::lhs-fields-field): lazy = (
-   prefix; field-key; field-bind; field-pat;
+typed macro macro::lhs-fields(prefix: lazy, fields: lazy): lazy = (
+   prefix; fields;
 );
 
-typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::nil): lazy = (
-   true
-);
-
-typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::underscore): lazy = (
-   true
-);
-
-typed macro macro::lhs-fields-with-term(term: lazy, prefix field-key bind-key field-pat: macro::lhs-fields): Bool = (
-   let bind-key = open(field-key(term));
+typed macro macro::lhs-fields-with-term(term: lazy, prefix last: macro::lhs-fields): Bool = (
    macro::lhs-fields-with-term(term, prefix) and
-   macro::lhs-fields-with-term(term, field-pat)
+   macro::lhs-fields-with-term(term, last)
 );
 
-typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields: lazy): lazy = (
+typed macro macro::lhs-fields-with-term(term: lazy, bind pat: macro::lhs-bind): Bool = (
+   let bind = term;
+   macro::lhs-fields-with-term(bind, pat)
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, field-key pat: macro::lhs-fields-field): Bool = (
+   let uuid(x) = open(field-key(term));
+   macro::lhs-fields-with-term(uuid(x), pat)
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::nil): Bool = (
+   true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::underscore): Bool = (
+   true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, tag-guard fields-guard: macro::lhs-tagged): Bool = (
+   macro::lhs-tagged-with-term(term, tag-guard, fields-guard)
+);
+
+typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields: lazy): Bool = (
    term.discriminator-case-tag==(term as tag-type).discriminator-case-tag
    and macro::lhs-fields-with-term((term as tag-type), fields)
 );
 
-typed macro macro::lhs-tagged-with-term(term: lazy, tag-guard: macro::nil, prefix pat: macro::lhs-fields): lazy = (
+typed macro macro::lhs-tagged-with-term(term: lazy, tag-guard: macro::nil, prefix pat: macro::lhs-fields): Bool = (
    macro::lhs-fields-with-term(term, prefix, pat)
 );
 
-typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields-guard: macro::nil): lazy = (
+typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields-guard: macro::nil): Bool = (
    term.discriminator-case-tag==(term as tag-type).discriminator-case-tag
 );
 
