@@ -222,6 +222,10 @@ typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::nil): Bool = 
    true
 );
 
+typed macro macro::lhs-fields-with-term(term: lazy, c: macro::constant): Bool = (
+   term == c
+);
+
 typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::underscore): Bool = (
    true
 );
