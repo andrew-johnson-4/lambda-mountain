@@ -20,6 +20,9 @@ let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, mk-vector(type(Typ
 # new allocations = 0
 let tv(name: CString): Type = TVar(name, mk-vector(type(Type)));
 
+# new allocations = 0
+let tvs(name: CString, ps: Vector<Type>): Type = TVar(name, ps);
+
 # new allocations = 1
 let tv1(name: CString, p1: Type): Type = TVar(name, mk-vector(type(Type)).push(p1));
 

@@ -1,0 +1,50 @@
+
+import stdint.h;
+import stdio.h;
+import stdlib.h;
+import string.h;
+import regex.h;
+
+# not sure why this is necessary, the C frontend must be missing this definition?
+let :FFI mktemp(template: U8[]): U8[] = ();
+let :FFI write(ft: USize, buf: C<"void">[], count: USize): USize;
+
+import lib/core/l.lsts;
+import lib/core/phi.lsts;
+import lib/core/platform-macros.lsts;
+import lib/core/common-macros.lsts;
+import lib/core/primitives.lsts;
+import lib/core/bool.lsts;
+import lib/core/u8.lsts;
+import lib/core/u16.lsts;
+import lib/core/u32.lsts;
+import lib/core/u64.lsts;
+import lib/core/i8.lsts;
+import lib/core/i16.lsts;
+import lib/core/i32.lsts;
+import lib/core/i64.lsts;
+import lib/core/sized.lsts;
+import lib/core/usize.lsts;
+import lib/core/cstring.lsts;
+import lib/core/array.lsts;
+import lib/core/io.lsts;
+import lib/core/cmp.lsts;
+import lib/core/c_int.lsts;
+import lib/core/dumb.lsts;
+
+let config-v23 = true;
+
+# Requires Phi typing
+import lib/core/baremetal-into.lsts;
+import lib/core/bedrock-cstring.lsts;
+import lib/core/owned-data.lsts;
+import lib/core/sparse-owned-data.lsts;
+import lib/core/string.lsts;
+import lib/core/vector.lsts;
+import lib/core/tuple.lsts;
+import lib/core/maybe.lsts;
+import lib/core/list.lsts;
+import lib/core/s.lsts;
+import lib/core/hashtable.lsts;
+import lib/core/regex.lsts;
+import lib/core/functional.lsts;
