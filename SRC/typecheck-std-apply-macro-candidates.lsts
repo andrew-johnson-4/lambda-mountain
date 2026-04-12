@@ -42,6 +42,9 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
          );
          _ => (
             match mcandidate {
+               App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt:TGround{tag:c"MACRO::Literal",parameters:[TGround{literal-tag=tag,parameters=parameters}..]}}}} => (
+                  fail("Apply Literal \{literal-tag} \{parameters} \{margs} into \{mstruct}\n");
+               );
                App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt=tt}}} => (
                   if non-zero(std-macro-helper-name(tt))
                   then {

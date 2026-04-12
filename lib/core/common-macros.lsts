@@ -208,6 +208,24 @@ typed macro macro::lhs-fields-with-term(term: lazy, prefix last: macro::lhs-fiel
    macro::lhs-fields-with-term(term, last)
 );
 
+typed macro macro::lhs-head(x: head, xs: tail): lazy = (
+   head; tail;
+);
+
+typed macro macro::match-pats-arm(term: lazy, case: macro::literal<MACRO::LHS-LIST-SENTINEL,_>): lazy = (
+   true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, x rest: macro::lhs-head): Bool = (
+   macro::let(uuid(v), term);
+   $"if"(uuid(v).has-head)
+      ($"if"(macro::match-pats-arm(head(uuid(v)),x))
+         ( macro::match-pats-arm(tail(uuid(v)),rest) )
+         (branchfalse())
+      )
+      (branchfalse())
+);
+
 typed macro macro::lhs-fields-with-term(term: lazy, bind pat: macro::lhs-bind): Bool = (
    let bind = term;
    macro::lhs-fields-with-term(bind, pat)

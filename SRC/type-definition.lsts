@@ -11,7 +11,7 @@ type Type zero TAny implies MustRetain, MustRelease
         = TGround { tag:CString, parameters:Vector<Type> }
         | TId { id:U64 } # for fast TGround in fixed positions like Phi::Id<231>
         | TAny
-        | TVar { name:CString }
+        | TVar { name:CString, parameters:Vector<Type> }
         | TAnd { conjugate:Vector<Type> };
 
 let .release(t: Type): Nil = (
