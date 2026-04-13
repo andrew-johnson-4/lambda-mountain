@@ -175,6 +175,16 @@ typed macro macro::match-pats-arm(term: lazy, ignore: macro::underscore): lazy =
    branchtrue()
 );
 
+typed macro macro::match-pats-arm(term: lazy, x rest: macro::lhs-head): lazy = (
+   macro::let(uuid(v), term);
+   $"if"(uuid(v).has-head)
+      ($"if"(macro::match-pats-arm(head(uuid(v)),x))
+         ( macro::match-pats-arm(tail(uuid(v)),rest) )
+         (branchfalse())
+      )
+      (branchfalse())
+);
+
 deprecated macro (rl"match-pats-arm"(term,rl":Any:")) (
    branchtrue()
 );
@@ -210,7 +220,7 @@ typed macro macro::lhs-fields-with-term(term: lazy, prefix last: macro::lhs-fiel
 );
 
 typed macro macro::lhs-head(x: head, xs: tail): lazy = (
-   head; tail;
+   x; xs;
 );
 
 typed macro macro::match-pats-arm(term: lazy, case: macro::literal<MACRO::LHS-LIST-SENTINEL,_>): lazy = (
