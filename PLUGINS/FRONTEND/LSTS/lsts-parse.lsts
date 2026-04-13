@@ -339,7 +339,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
       let varparameters = mk-vector(type(Type));
       if lsts-parse-head(tokens)==c"<" {
          tokens = tail(tokens);
-         while non-zero(tokens) and lsts-parse-head(tokens)==c">" {
+         while non-zero(tokens) and lsts-parse-head(tokens)!=c">" {
             (let vp, tokens) = lsts-parse-type(tokens); 
             varparameters = varparameters.push(vp);
             if non-zero(tokens) and lsts-parse-head(tokens)==c"," then tokens = tail(tokens);

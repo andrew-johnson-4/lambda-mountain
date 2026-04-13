@@ -204,8 +204,9 @@ typed macro macro::lhs-fields(prefix: lazy, fields: lazy): lazy = (
 );
 
 typed macro macro::lhs-fields-with-term(term: lazy, prefix last: macro::lhs-fields): Bool = (
-   macro::lhs-fields-with-term(term, prefix) and
-   macro::lhs-fields-with-term(term, last)
+   $"if"(macro::lhs-fields-with-term(term, prefix))
+        (macro::lhs-fields-with-term(term, last))
+        (branchfalse())
 );
 
 typed macro macro::lhs-head(x: head, xs: tail): lazy = (
@@ -253,8 +254,9 @@ typed macro macro::lhs-fields-with-term(term: lazy, tag-guard fields-guard: macr
 );
 
 typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields: lazy): Bool = (
-   term.discriminator-case-tag==(term as tag-type).discriminator-case-tag
-   and macro::lhs-fields-with-term((term as tag-type), fields)
+   $"if"(term.discriminator-case-tag==(term as tag-type).discriminator-case-tag)
+        (macro::lhs-fields-with-term((term as tag-type), fields))
+        (branchfalse())
 );
 
 typed macro macro::lhs-tagged-with-term(term: lazy, tag-guard: macro::nil, prefix pat: macro::lhs-fields): Bool = (
