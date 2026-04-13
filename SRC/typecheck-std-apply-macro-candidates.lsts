@@ -21,6 +21,7 @@ let std-apply-macro-candidates(tctx: TypeContext?, mname: CString, margs: AST, c
 );
 
 let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcandidate: AST): (TypeContext?, AContext?) = (
+   print("Destructure macro \{mcandidate}\n");
    let no = (None : AContext?)();
    if let Abs{lhs=lhs, rhs=rhs} = mcandidate then std-try-destructure-macro(tctx, margs, mtype, lhs)
    else {
@@ -42,7 +43,7 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
          );
          _ => (
             match mcandidate {
-               App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt:TGround{tag:c"MACRO::Literal",parameters:[TGround{literal-tag=tag,parameters=parameters}..]}}}} => (
+               App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt:TVar{name:c"MACRO::Literal",parameters:[TGround{literal-tag=tag,parameters=parameters}.. etc-parameters]}}}} => (
                   fail("Apply Literal \{literal-tag} \{parameters} \{margs} into \{mstruct}\n");
                );
                App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt=tt}}} => (

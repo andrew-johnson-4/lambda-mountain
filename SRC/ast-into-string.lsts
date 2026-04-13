@@ -17,7 +17,7 @@ let .into(t: AST, tgt: Type<String>): String = (
          "(fn (" + lhs.ast-params-into(type(String)) + ") = " + rhs.into(type(String)) + ")";
       );
       Glb{gkey=key,gval=val} => (
-         "let \{gkey.key} = " + gval.into(type(String)) + ";";
+         "let \{gkey.key} = \{gval.into(type(String))};";
       );
       AType{tt=tt} => tt.into(type(String));
       Seq{seq=seq} => (

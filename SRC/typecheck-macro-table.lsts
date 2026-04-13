@@ -19,6 +19,7 @@ index-macro-meta = index-macro-meta.bind(c"macro::constant", [] : List<(Type,Typ
 index-macro-meta = index-macro-meta.bind(c"macro::tag", [] : List<(Type,Type,AST)>);
 
 let bind-new-macro(mname: CString, mterm: AST): Nil = (
+   print("Bind new macro \{mname} : \{mterm}\n");
    let row = index-macro-table.lookup(mname, [] : List<(Type,Type,AST)>);
    let mtype = param-types-of-macro(mterm);
    row = cons( (denormalize(mtype), macro-type-peep-holes(mtype), mterm), row);

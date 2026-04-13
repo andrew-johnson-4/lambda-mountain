@@ -93,6 +93,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
 
       let matched = [] : List<(Type,AST)>;
       for list Tuple{mtype=first, mterm=third} in row {
+         print("Try can unify \{mtype} x \{peeped-type}\n");
          if can-unify(mtype, peeped-type) then matched = cons( (mtype,mterm), matched );
       }; 
 
