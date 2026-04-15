@@ -20,9 +20,15 @@ let std-apply-macro-candidates(tctx: TypeContext?, mname: CString, margs: AST, c
    (tctx, t, return-type)
 );
 
+let std-macro-unpack-args(actx: AContext?, parameters: Vector<Type>, margs: AST): AContext? = (
+   print("Unpack args \{parameters} \{margs}\n");
+   Some([] : AContext)
+);
+
 let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcandidate: AST): (TypeContext?, AContext?) = (
    print("Destructure macro \{mcandidate}\n");
    let no = (None : AContext?)();
+   let yes = Some([] : AContext);
    if let Abs{lhs=lhs, rhs=rhs} = mcandidate then std-try-destructure-macro(tctx, margs, mtype, lhs)
    else {
       match mtype {
@@ -44,7 +50,13 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
          _ => (
             match mcandidate {
                App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt:TVar{name:c"macro::literal",parameters:[TGround{literal-tag=tag,parameters=parameters}.. etc-parameters]}}}} => (
-                  fail("Apply Literal \{literal-tag} \{parameters} \{margs} into \{mstruct}\n");
+                  match margs {
+                     App{left:Lit{key:c":"}, right:App{left:Lit{key1=key}, right:AType{tt=tt}}} => (tctx, if key1==literal-tag and parameters.length==0 then yes else no);
+                     Lit{key2=key} => (tctx, if key2==literal-tag and parameters.length==0 then yes else no);
+                     App{ left:App{left:Lit{key:c":"}, right:App{left:Lit{key3=key}, right:AType{tt=tt}}}, margs-right=right } => (tctx, if key3==literal-tag then std-macro-unpack-args(yes,parameters,margs-right) else no);
+                     App{ left:Lit{key4=key}, margs-right=right } => (tctx, if key4==literal-tag then std-macro-unpack-args(yes,parameters,margs-right) else no);
+                     _ => (tctx, no);
+                  };
                );
                App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt=tt}}} => (
                   if non-zero(std-macro-helper-name(tt))
