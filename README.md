@@ -1,3 +1,5 @@
+<img src="https://github.com/Lambda-Mountain-Compiler-Backend/lambda-mountain/blob/main/MLLM.png?raw=true" width=300 alt="lim e. (ML + Feature)^e -> LM">
+
 # [Lambda Mountain](https://github.com/andrew-johnson-4/-/wiki)
 
 λ☶ (pronounced Lambda Mountain) is a typed macro assembler that provides a relatively clean implementation of **System F<: with Specialization**.
