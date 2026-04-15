@@ -70,7 +70,6 @@ let infer-global-context-td(term: AST): Nil = (
 );
 
 let infer-global-context(term: AST): Nil = (
-   print("Global \{term}\n");
    match term {
       Seq{seq=seq} => (
          for vector s in seq { infer-global-context(s) };
