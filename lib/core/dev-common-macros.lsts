@@ -231,6 +231,10 @@ typed macro macro::lhs-fields-with-term(term: lazy, case: macro::literal<MACRO::
    true
 );
 
+typed macro macro::lhs-fields-with-term(term: lazy, v: macro::variable): Bool = (
+   let v = term; true
+);
+
 typed macro macro::lhs-fields-with-term(term: lazy, x rest: macro::lhs-head): Bool = (
    macro::let(uuid(v), term);
    $"if"(uuid(v).has-head)
