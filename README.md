@@ -1,4 +1,6 @@
-<img src="https://github.com/Lambda-Mountain-Compiler-Backend/lambda-mountain/blob/main/MLLM.png?raw=true" width=300 alt="lim e. (ML + Feature)^e -> LM">
+<a href="https://github.com/Lambda-Mountain-Compiler-Backend/lambda-mountain/wiki/Unopinionated-Philosophy#confidence-in-correctness-creates-opportunities-for-optimization">
+   <img src="https://github.com/Lambda-Mountain-Compiler-Backend/lambda-mountain/blob/main/MLLM.png?raw=true" width=300 alt="lim e. (ML + Feature)^e -> LM">
+</a>
 
 # [Lambda Mountain](https://github.com/andrew-johnson-4/-/wiki)
 
