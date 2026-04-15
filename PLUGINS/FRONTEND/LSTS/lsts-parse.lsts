@@ -1186,14 +1186,23 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
                f-rest.first;
             };
          } else mk-nil();
-         let cases = mk-cons(mk-nil(), mk-cons(lhs-rest.first, matched-rest.first));
+         let cases = mk-app(
+            mk-var(c"macro::pats-some").with-location(lhs-rest.first.location),
+            mk-cons(mk-cons(
+               mk-app( mk-var(c"macro::pats-none").with-location(lhs-rest.first.location), mk-nil() ),
+               lhs-rest.first
+            ), matched-rest.first)
+         );
          if non-zero(default-rest) {
-            cases = mk-cons(cases, mk-cons(
-               Var( c"_", with-location(mk-token(c"_"),loc) ),
-               default-rest
-            ));
+            cases = mk-app(
+               mk-var(c"macro::pats-some").with-location(lhs-rest.first.location),
+               mk-cons(mk-cons(
+                  cases,
+                  mk-var(c"_").with-location(lhs-rest.first.location)
+               ), default-rest)
+            );
          };
-         base = mk-cons(
+         base = mk-app(
             Var( c"macro::match", with-location(mk-token("macro::match"),loc) ),
             mk-cons(
                expr-rest.first,
