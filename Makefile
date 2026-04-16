@@ -8,7 +8,9 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm --v23 --showastcount SRC/index.lsts
+	lm tests/promises/list/bound-reverse.lsts
+	gcc tmp.c
+	./a.out
 	#time lm --showalloc SRC/unit-type-core.lsts > out.txt
 	#time lm --showalloc SRC/unit-tctx-core.lsts > out.txt
 	#time lm --showalloc SRC/unit-prop-core.lsts > out.txt
