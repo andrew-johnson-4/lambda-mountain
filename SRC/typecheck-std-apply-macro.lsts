@@ -89,7 +89,10 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
             peeped = mtype;
          };
       };
-      (tctx, peeped-type, margs) = std-infer-peeped-arguments(tctx, margs, peep-holes);
+      (let peeped-tctx, peeped-type, margs) = std-infer-peeped-arguments(tctx, margs, peep-holes);
+      let peeped-tctx-unwrapped = peeped-tctx.get-or(mk-tctx());
+      peeped-tctx-unwrapped.pctx = tctx.get-or(mk-tctx()).pctx; # Phi Variables are irrelevant to peeped arguments
+      tctx = Some(peeped-tctx-unwrapped);
 
       let matched = [] : List<(Type,AST)>;
       for list Tuple{mtype=first, mterm=third} in row {
