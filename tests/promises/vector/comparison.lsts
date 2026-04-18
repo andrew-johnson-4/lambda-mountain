@@ -1,5 +1,5 @@
 
-import lib/core/bedrock.lsts;
+import lib/core/dev-bedrock.lsts;
 
 let test() = (
    assert( mk-vector(type(U8)).reverse == mk-vector(type(U8)) );

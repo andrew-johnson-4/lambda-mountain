@@ -1,5 +1,5 @@
 
-import lib/core/bedrock.lsts;
+import lib/core/dev-bedrock.lsts;
 
 assert( ({} : Hashtable<U64,U64>)[0_u64] == ({} : Hashtable<U64,U64>)[0_u64] );
 assert( {1:2}[1] == {1:2}[1] );

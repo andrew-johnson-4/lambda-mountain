@@ -1,5 +1,5 @@
 
-import lib/core/bedrock.lsts;
+import lib/core/dev-bedrock.lsts;
 
 # This is a subtle bug where type parameters in a function are similar but not equal
 # The rule is that at least the datatypes should be equal not just a subtype

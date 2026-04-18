@@ -1,5 +1,5 @@
 
-import lib/core/bedrock.lsts;
+import lib/core/dev-bedrock.lsts;
 
 assert( 1_sz == 1_sz );
 assert( 2_sz == 2_sz );

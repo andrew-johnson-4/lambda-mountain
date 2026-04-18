@@ -1,5 +1,5 @@
 
-import lib/core/bedrock.lsts;
+import lib/core/dev-bedrock.lsts;
 
 assert( type(U8).into(type(String)) == "U8" );
 assert( safe-alloc-block-count == 0 );

@@ -1,4 +1,4 @@
 
-import lib/core/bedrock.lsts;
+import lib/core/dev-bedrock.lsts;
 
 assert( type(U8).into(type(CString)) == c"U8" );

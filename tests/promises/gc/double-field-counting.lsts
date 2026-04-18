@@ -1,4 +1,4 @@
 
-import lib/core/bedrock.lsts;
+import lib/core/dev-bedrock.lsts;
 
 VectorView(mk-vector(type(U8)).push(1), 0, 1).data.data;

@@ -1,5 +1,5 @@
 
-import lib/core/bedrock.lsts;
+import lib/core/dev-bedrock.lsts;
 
 assert( "\sa".remove-prefix("\s") == Some("a") );
 assert( "a".remove-prefix("\s") == (None : String?) );
