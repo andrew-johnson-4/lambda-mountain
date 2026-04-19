@@ -282,9 +282,9 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c")", tokens); tokens = tail(tokens);
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    (mk-glb(
-      mk-token(mname),
+      mk-token(mname), 
       mk-abs(margs, mk-app(mk-lit(c":"), mk-cons(mbody.without-location,mk-atype(mrett))), t0(c"TypedMacro"))
-   ), tokens)
+   ), tokens);
 );
 
 let lsts-parse-type(tokens: List<Token>): Tuple<Type,List<Token>> = (
@@ -336,7 +336,17 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
       new-tt
    } else if lsts-is-ident-head(lsts-parse-head(tokens)) and not(lsts-is-type-tag(lsts-parse-head(tokens))) {
       (let varname, tokens) = lsts-parse-identifier(tokens);
-      TVar ( varname )
+      let varparameters = mk-vector(type(Type));
+      if lsts-parse-head(tokens)==c"<" {
+         tokens = tail(tokens);
+         while non-zero(tokens) and lsts-parse-head(tokens)!=c">" {
+            (let vp, tokens) = lsts-parse-type(tokens); 
+            varparameters = varparameters.push(vp);
+            if non-zero(tokens) and lsts-parse-head(tokens)==c"," then tokens = tail(tokens);
+         };
+         lsts-parse-expect(c">", tokens); tokens = tail(tokens);
+      };
+      tvs ( varname, varparameters )
    } else {
       if not(lsts-is-type-tag(lsts-parse-head(tokens))) {
          lsts-parse-expect(c"[Type Tag]", tokens);
@@ -1176,19 +1186,28 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
                f-rest.first;
             };
          } else mk-nil();
-         let cases = mk-cons(mk-nil(), mk-cons(lhs-rest.first, matched-rest.first));
+         let cases = mk-app(
+            mk-var(c"macro::pats-some").with-location(lhs-rest.first.location),
+            mk-cons(mk-cons(
+               mk-app( mk-var(c"macro::pats-none").with-location(lhs-rest.first.location), mk-nil() ),
+               lhs-rest.first
+            ), matched-rest.first)
+         );
          if non-zero(default-rest) {
-            cases = mk-cons(cases, mk-cons(
-               Var( c"_", with-location(mk-token(c"_"),loc) ),
-               default-rest
-            ));
+            cases = mk-app(
+               mk-var(c"macro::pats-some").with-location(lhs-rest.first.location),
+               mk-cons(mk-cons(
+                  cases,
+                  mk-var(c"_").with-location(lhs-rest.first.location)
+               ), default-rest)
+            );
          };
-         base = mk-cons(
+         base = mk-app(
+            Var( c"macro::match", with-location(mk-token("macro::match"),loc) ),
             mk-cons(
-               Var( c"match", with-location(mk-token("match"),loc) ),
-               expr-rest.first
-            ),
-            cases
+               expr-rest.first,
+               cases
+            )
          );
       );
       [Token{key:c"if"}.. rest] => (
@@ -1705,7 +1724,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
       let loc = head(tokens).location;
       let tag = lsts-parse-head(tokens); tokens = tail(tokens);
       lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-      let des-args = mk-eof();
+      let des-args = mk-nil();
       while non-zero(tokens) and lsts-parse-head(tokens)!=c"}" {
          let attr-loc = head(tokens).location;
          let binding = c"";
@@ -1740,7 +1759,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
          };
          if non-zero(binding) {
             val = mk-app(
-               Var( c"@", with-location(mk-token("@"),attr-loc) ),
+               Var( c"macro::lhs-bind", with-location(mk-token("macro::lhs-bind"),attr-loc) ),
                mk-cons(
                   Var( binding, with-location(mk-token(binding),attr-loc) ),
                   val
@@ -1748,7 +1767,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
             );
             if raw {
                val = mk-app(
-                  Var( c"macro::bind-raw", with-location(mk-token("macro::bind-raw"),attr-loc) ),
+                  Var( c"macro::lhs-bind-raw", with-location(mk-token("macro::lhs-bind-raw"),attr-loc) ),
                   val
                );
             };
@@ -1756,25 +1775,35 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
          if non-zero(attr-key) {
             attr-key = c"." + attr-key;
             val = mk-app(
-               Var( c"macro::bind-field-by-key", with-location(mk-token("macro::bind-field-by-key"),attr-loc) ),
+               Var( c"macro::lhs-fields-field", with-location(mk-token("macro::lhs-fields-field"),attr-loc) ),
                mk-cons(
                   Var( attr-key, with-location(mk-token(attr-key),attr-loc) ),
                   val
                )
             );
          };
-         if non-zero(des-args) {
-            des-args = mk-cons(des-args, val);
-         } else { des-args = val; };
+         des-args = mk-app(
+            mk-var(c"macro::lhs-fields").with-location(loc),
+            mk-cons(
+               des-args,
+               val
+            )
+         );
          if lsts-parse-head(tokens) != c"}" {
             lsts-parse-expect(c",", tokens); tokens = tail(tokens);
          };
       };
       if not(non-zero(des-args)) { des-args = mk-nil(); };
       lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+      let lhs-tag = if tag!=c"_"
+      then mk-lit(tag).with-location(loc)
+      else mk-nil();
       mk-app(
-         Lit( tag, with-location(mk-token(tag),loc) ),
-         des-args
+         mk-var(c"macro::lhs-tagged").with-location(loc),
+         mk-cons(
+            lhs-tag,
+            des-args
+         )
       );
    } else {
       lsts-parse-expect(c"[Left Hand Side]", tokens);
@@ -1838,41 +1867,19 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
          tokens = rhs-rest.second;
       };
       lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-      if list {
-         term = mk-app(
-            mk-app(
-               Var( c"for-each-list", with-location(mk-token("for-each-list"),loc) ),
-               mk-cons(
-                  mk-cons(
-                     lhs-rest.first,
-                     Var( c"in", with-location(mk-token("in"),loc) )
-                  ),
-                  iter-rest.first
-               )
+      term = mk-app(
+         Var( c"macro::for", with-location(mk-token("macro::for"),loc) ),
+         mk-cons(
+            mk-cons(
+               lhs-rest.first,
+               iter-rest.first
             ),
             mk-app(
                Var( c"scope", with-location(mk-token("scope"),loc) ),
                rhs
             )
-         );
-      } else {
-         term = mk-app(
-            mk-app(
-               Var( c"for-each", with-location(mk-token("for-each"),loc) ),
-               mk-cons(
-                  mk-cons(
-                     lhs-rest.first,
-                     Var( c"in", with-location(mk-token("in"),loc) )
-                  ),
-                  iter-rest.first
-               )
-            ),
-            mk-app(
-               Var( c"scope", with-location(mk-token("scope"),loc) ),
-               rhs
-            )
-         );
-      }         
+         )
+      );
    } else if lsts-parse-head(tokens)==c"while" {
       let loc = head(tokens).location; tokens = tail(tokens);
       let c-rest = lsts-parse-small-expression(tokens);
@@ -1906,7 +1913,7 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
             e-rest.first
          );
       };
-      let pats = mk-nil();
+      let pats = mk-app( mk-var(c"macro::pats-none").with-location(loc), mk-nil() );
       lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
       while non-zero(tokens) and lsts-parse-head(tokens)!=c"}" {
          let lhs-rest = lsts-parse-lhs(tokens);
@@ -1919,15 +1926,18 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
          let rhs-rest = lsts-parse-small-expression(tokens);
          tokens = rhs-rest.second;
          lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-         pats = mk-cons(pats, mk-cons(lhs-rest.first, rhs-rest.first));
+         pats = mk-app(
+            mk-var(c"macro::pats-some").with-location(lhs-rest.first.location),
+            mk-cons(mk-cons(pats, lhs-rest.first), rhs-rest.first)
+         );
       };
       lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
       term = mk-app(
+         Var( c"macro::match", with-location(mk-token("macro::match"),loc) ),
          mk-app(
-            Var( c"match", with-location(mk-token("match"),loc) ),
-            e-rest.first
-         ),
-         pats
+            e-rest.first,
+            pats
+         )
       );
    } else if lsts-parse-head(tokens).has-suffix(c"_ss") {
       (term, tokens) = lsts-parse-lit(tokens);

@@ -1,12 +1,14 @@
 
-let std-direct-destructure-macro(margs: AST, mstruct: AST): AContext? = (
+let std-direct-destructure-macro(margs: AST, mstruct: AST, helper-name: CString, original-pat: AST, blame: AST): AContext? = (
    let no = (None : AContext?)();
    match (margs, mstruct) {
-      Tuple{ val=first, second:Var{key1=key} } => Some([(key1,val)]);
+      Tuple{ val=first, second:Var{key1=key} } => (
+         Some([(key1,val)]);
+      );
       Tuple{ first:App{lrest=left, val=right}, second:App{rrest=left, right:Var{key2=key}} } => (
-         let ctx = std-direct-destructure-macro(lrest, rrest);
+         let ctx = std-direct-destructure-macro(lrest, rrest, helper-name, original-pat, blame);
          if ctx.is-some then Some(cons((key2,val), ctx.get-or-panic)) else no;
       );
-      _ => fail("Unexpected std-direct-destructure-macro\nLeft: \{mstruct}\nRight: \{margs}\n");
+      _ => (exit-error("Attempted to destructure macro helper \{helper-name} into \{original-pat}", blame); no);
    }
 );

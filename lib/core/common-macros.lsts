@@ -1,10 +1,10 @@
 
-typed macro $"assert"(c: lazy): lazy = (
-   if not c then fail(c"Assertion Failed At ", macro::location(c));
-);
-
 deprecated macro ( rl"macro::define-zero"(base-type,constructor,con-tag) ) (
    let non-zero(t: base-type): Bool = t.discriminator-case-tag != (t as con-tag).discriminator-case-tag;
+);
+
+typed macro $"assert"(c: lazy): lazy = (
+   if not c then fail(c"Assertion Failed At ", macro::location(c));
 );
 
 typed macro macro::let(lhs: lazy, rhs: lazy): lazy = (
@@ -55,8 +55,18 @@ typed macro macro::while(cond: Bool, body: lazy): lazy = (
    primitive::while( cond, body as Nil )
 );
 
-deprecated macro ( rl"for-each"(item(rl"in")(iterable))(loop) ) ((
-   let uuid(iter-term) = iterable : Vector<?>; # assert that type is vector to prevent accidental application (will be fixed with full transition to typed macros)
+typed macro macro::for(item: lazy, iterable: List<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iterable;
+   while non-zero(uuid(iter-term)) {
+      match head(uuid(iter-term)) {
+         item => loop;
+      };
+      uuid(iter-term) = tail(uuid(iter-term));
+   };
+);
+
+typed macro macro::for(item: lazy, iterable: Vector<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iterable;
    let uuid(iter-i) = 0_sz;
    while uuid(iter-i) < uuid(iter-term).length {
       match uuid(iter-term)[uuid(iter-i)] {
@@ -64,310 +74,194 @@ deprecated macro ( rl"for-each"(item(rl"in")(iterable))(loop) ) ((
       };
       uuid(iter-i) = uuid(iter-i) + 1;
    };
-));
+);
 
-deprecated macro ( rl"for-each-list"(item(rl"in")(iterable))(loop) ) ((
-   let uuid(iter-term) = iterable : List<?>; # assert type is list to prevent accidental application (will be fixed with full transition to typed macros)
-   while non-zero(uuid(iter-term)) {
-      match head(uuid(iter-term)) {
-         item => loop;
-      };
-      uuid(iter-term) = tail(uuid(iter-term));
-   };
-));
-
-deprecated macro ( rl"while"(cond)(body) )
-      ( $"primitive::while"( cond, body as Nil ) );
-
-deprecated macro (rl"match"(t)(ps)) (scope(
+typed macro macro::match(t: lazy, ps: lazy): lazy = (scope(
    let uuid(term) = open(t);
-   match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", p(rl":Location:") : Constant+Literal+CString) );
+   macro::match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
 ));
 
-deprecated macro (rl"match"(rl"macro::bind-raw"(t))(ps)) (scope(
+typed macro macro::match(t: macro::bind-raw, ps: lazy): lazy = (scope(
    let uuid(term) = t;
-   match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", p(rl":Location:") : Constant+Literal+CString) );
+   macro::match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
 ));
 
-deprecated macro (rl"match"(
-                     rl"macro::bind-raw"( rl":Field:"(f), t ),
-                     ps
-                 )) (scope(
+typed macro macro::match(f t: macro::bind-raw-field, ps: lazy): lazy = (scope(
    let uuid(term) = f($"raw"(t));
-   match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", p(rl":Location:") : Constant+Literal+CString) );
+   macro:: match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
 ));
 
-deprecated macro (rl"match-pats"(term,(),remainder))
-                 (remainder);
-
-deprecated macro (rl"match-pats"(term,ps(lhs,rhs),remainder)) (
-   match-pats(term,ps,
-      scope($"if"(match-pats-arm(term,lhs))(rhs)(remainder))
-   )
+typed macro macro::match-pats(term: lazy, cases: macro::pats-none, remainder: lazy): lazy = (
+   remainder
 );
 
-deprecated macro (rl"match-pats-arm"(term,rl":Variable:"(v))) (
-   ($"macro::let"(v, term); branchtrue())
+typed macro macro::match-pats(term: lazy, ps lhs rhs: macro::pats-some, remainder: lazy): lazy = (
+   macro::match-pats(term, ps, scope($"if"(macro::match-pats-arm(term,lhs))(rhs)(remainder)));
 );
 
-deprecated macro (rl"match-pats-arm"(term,rl"@"(v,more))) (
-   ($"macro::let"(v, term); match-pats-arm(v,more))
+typed macro macro::pats-some(ps: lazy, lhs: lazy, rhs: lazy): lazy = (
+   ps; lhs; rhs
 );
 
-deprecated macro (rl"match-pats-arm"(term,rl":Any:")) (
+typed macro macro::pats-none(ignore: lazy): lazy = (
+   ()
+);
+
+typed macro macro::match-pats-arm(term: lazy, v: macro::variable): lazy = (
+   macro::let(v, term); branchtrue()
+);
+
+typed macro macro::match-pats-arm(term: lazy, v pat: macro::match-lhs-binding): lazy = (
+   macro::let(v, term); match-pats-arm(v, pat)
+);
+
+typed macro macro::match-pats-arm(term: lazy, ignore: macro::underscore): lazy = (
    branchtrue()
 );
 
-deprecated macro (rl"match-pats-arm"(term,rl":Literal:"(l))) (
-   ( $"macro::let"(uuid(v), term); uuid(v)==l )
-);
-
-deprecated macro (rl"match-pats-arm"(term,rl":Tag:"(l)(lt))) (
-   ( $"macro::let"(uuid(v), term); uuid(v).discriminator-case-tag==(uuid(v) as lt).discriminator-case-tag )
-);
-
-deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-head"(x,rest))) ((
-   $"macro::let"(uuid(v), term);
+typed macro macro::match-pats-arm(term: lazy, x rest: macro::lhs-head): lazy = (
+   macro::let(uuid(v), term);
    $"if"(uuid(v).has-head)
-        ($"if"(match-pats-arm(head(uuid(v)),x))
-              (match-pats-arm(tail(uuid(v)),rest))
-              (branchfalse())
-        )
-        (branchfalse())
-));
-
-deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rl":Literal:"(l), rest ))) ((
-   $"macro::let"(uuid(v), term);
-   $"macro::let"(uuid(p), uuid(v).remove-prefix(l));
-   $"if"(uuid(p).is-some)
-        (match-pats-arm(uuid(p).get-or-panic,rest))
-        (branchfalse())
-));
-
-deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rest, rl":Literal:"(l) ))) ((
-   $"macro::let"(uuid(v), term);
-   $"macro::let"(uuid(p), uuid(v).remove-suffix(l));
-   $"if"(uuid(p).is-some)
-        (match-pats-arm(uuid(p).get-or-panic,rest))
-        (branchfalse())
-));
-
-deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rl"macro::lhs-bind"(rl":Variable:"(b), rl":Literal:"(l)), rest ))) ((
-   $"macro::let"(uuid(v), term);
-   $"macro::let"(uuid(s), uuid(v).remove-prefix(l));
-   $"macro::let"(uuid(p), uuid(v).get-prefix(l));
-   $"if"(uuid(p).is-some and uuid(s).is-some)
-      ($"macro::let"(b, uuid(p).get-or-panic); match-pats-arm(uuid(s).get-or-panic,rest))
+      ($"if"(macro::match-pats-arm(head(uuid(v)),x))
+         ( macro::match-pats-arm(tail(uuid(v)),rest) )
+         (branchfalse())
+      )
       (branchfalse())
-));
+);
 
+typed macro macro::match-pats-arm(term: lazy, c: macro::constant): lazy = (
+   macro::let(uuid(v), term); uuid(v)==c
+);
 
-deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rest, rl"macro::lhs-bind"(rl":Variable:"(b), rl":Literal:"(l)) ))) ((
-   $"macro::let"(uuid(v), term);
-   $"macro::let"(uuid(s), uuid(v).remove-suffix(l));
-   $"macro::let"(uuid(p), uuid(v).get-suffix(l));
-   $"if"(uuid(p).is-some and uuid(s).is-some)
-      ($"macro::let"(b, uuid(p).get-or-panic); match-pats-arm(uuid(s).get-or-panic,rest))
+typed macro macro::lhs-tagged(tag-guard: lazy, fields-guard: lazy): lazy = (
+   tag-guard; fields-guard;
+);
+
+typed macro macro::lhs-fields-field(field-key: macro::variable, pat: lazy): lazy = (
+   field-key; pat;
+);
+
+typed macro macro::lhs-bind(bind-key: macro::variable, pat: lazy): lazy = (
+   bind-key; pat;
+);
+
+typed macro macro::lhs-fields(prefix: lazy, fields: lazy): lazy = (
+   prefix; fields;
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, prefix last: macro::lhs-fields): Bool = (
+   $"if"(macro::lhs-fields-with-term(term, prefix))
+        (macro::lhs-fields-with-term(term, last))
+        (branchfalse())
+);
+
+typed macro macro::lhs-head(x: head, xs: tail): lazy = (
+   x; xs;
+);
+
+typed macro macro::match-pats-arm(term: lazy, case: macro::literal<MACRO::LHS-LIST-SENTINEL,_>): lazy = (
+   true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, case: macro::literal<MACRO::LHS-LIST-SENTINEL,_>): lazy = (
+   true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, v: macro::variable): Bool = (
+   let v = term; true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, x rest: macro::lhs-head): Bool = (
+   macro::let(uuid(v), term);
+   $"if"(uuid(v).has-head)
+      ($"if"(macro::match-pats-arm(head(uuid(v)),x))
+         ( macro::match-pats-arm(tail(uuid(v)),rest) )
+         (branchfalse())
+      )
       (branchfalse())
-));
+);
 
-deprecated macro (rl"match-pats-arm"( term, rl"MACRO::LHS-LIST-SENTINEL"(_) )) ((
-   not(non-zero(term))
-));
+typed macro macro::lhs-fields-with-term(term: lazy, bind pat: macro::lhs-bind): Bool = (
+   let bind = term;
+   macro::lhs-fields-with-term(bind, pat)
+);
 
-deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x1) )) ((
+typed macro macro::lhs-fields-with-term(term: lazy, field-key pat: macro::lhs-fields-field): Bool = (
+   let uuid(x) = open(field-key(term));
+   macro::lhs-fields-with-term(uuid(x), pat)
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::nil): Bool = (
+   true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, c: macro::constant): Bool = (
+   term == c
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::underscore): Bool = (
+   true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, tag-guard fields-guard: macro::lhs-tagged): Bool = (
+   macro::lhs-tagged-with-term(term, tag-guard, fields-guard)
+);
+
+typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields: lazy): Bool = (
+   $"if"(term.discriminator-case-tag==(term as tag-type).discriminator-case-tag)
+        (macro::lhs-fields-with-term((term as tag-type), fields))
+        (branchfalse())
+);
+
+typed macro macro::lhs-tagged-with-term(term: lazy, tag-guard: macro::nil, prefix pat: macro::lhs-fields): Bool = (
+   macro::lhs-fields-with-term(term, prefix, pat)
+);
+
+typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields-guard: macro::nil): Bool = (
+   term.discriminator-case-tag==(term as tag-type).discriminator-case-tag
+);
+
+typed macro macro::match-pats-arm(term: lazy, tag-guard fields-guard: macro::lhs-tagged): lazy = (
+   macro::lhs-tagged-with-term(term, tag-guard, fields-guard);
+);
+
+typed macro macro::match-pats-arm-with-term(term: lazy, bind prefix: macro::lhs-bind, suffix: lazy): Bool = (
    let uuid(v) = term;
-   let uuid(m) = false;
-   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-      $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 ))
-         (uuid(m) = true)
-         ()
-   ) ();
-   uuid(m);
-));
+   let uuid(s) = uuid(v).remove-prefix(prefix);
+   let uuid(p) = uuid(v).get-prefix(prefix);
+   $"if"(uuid(p).is-some and uuid(s).is-some)
+        (macro::let(bind, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,suffix))
+        (branchfalse())
+);
 
-deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x2(x1)) )) ((
+typed macro macro::match-pats-arm-with-term(term: lazy, prefix: lazy, bind suffix: macro::lhs-bind): Bool = (
    let uuid(v) = term;
-   let uuid(m) = false;
-   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-           $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 )) (
-              $"if"(match-pats-arm( open($".2"(uuid(v) as lt)), x2 ))
-                   (uuid(m) = true)
-                   ()
-           ) ()
-        ) ();
-   uuid(m);
-));
+   let uuid(s) = uuid(v).remove-suffix(suffix);
+   let uuid(p) = uuid(v).get-suffix(suffix);
+   $"if"(uuid(p).is-some and uuid(s).is-some)
+        (macro::let(bind, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,prefix))
+        (branchfalse())
+);
 
-deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x3(x2)(x1)) )) ((
-   let uuid(v) = term;
-   let uuid(m) = false;
-   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-           $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 )) (
-              $"if"(match-pats-arm( open($".2"(uuid(v) as lt)), x2 )) (
-                 $"if"(match-pats-arm( open($".3"(uuid(v) as lt)), x3 ))
-                      (uuid(m) = true)
-                      ()
-              ) ()
-           ) ()
-        ) ();
-   uuid(m);
-));
+typed macro macro::match-pats-arm-with-term(term: lazy, pat: macro::constant, rest: lazy): Bool = (
+   macro::let(uuid(v), term);
+   macro::let(uuid(p), uuid(v).remove-prefix(pat));
+   $"if"(uuid(p).is-some)
+        (macro::match-pats-arm(uuid(p).get-or-panic, rest))
+        (branchfalse())
+);
 
-deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x4(x3)(x2)(x1)) )) ((
-   let uuid(v) = term;
-   let uuid(m) = false;
-   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-           $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 )) (
-              $"if"(match-pats-arm( open($".2"(uuid(v) as lt)), x2 )) (
-                 $"if"(match-pats-arm( open($".3"(uuid(v) as lt)), x3 )) (
-                    $"if"(match-pats-arm( open($".4"(uuid(v) as lt)), x4 ))
-                         (uuid(m) = true)
-                         ()
-                 ) ()
-              ) ()
-           ) ()
-        ) ();
-   uuid(m);
-));
+typed macro macro::match-pats-arm-with-term(term: lazy, rest: lazy, pat: macro::constant): Bool = (
+   macro::let(uuid(v), term);
+   macro::let(uuid(p), uuid(v).remove-suffix(pat));
+   $"if"(uuid(p).is-some)
+        (macro::match-pats-arm(uuid(p).get-or-panic, rest))
+        (branchfalse())
+);
 
-deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x5(x4)(x3)(x2)(x1)) )) ((
-   let uuid(v) = term;
-   let uuid(m) = false;
-   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-           $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 )) (
-              $"if"(match-pats-arm( open($".2"(uuid(v) as lt)), x2 )) (
-                 $"if"(match-pats-arm( open($".3"(uuid(v) as lt)), x3 )) (
-                    $"if"(match-pats-arm( open($".4"(uuid(v) as lt)), x4 )) (
-                       $"if"(match-pats-arm( open($".5"(uuid(v) as lt)), x5 ))
-                            (uuid(m) = true)
-                            ()
-                    ) ()
-                 ) ()
-              ) ()
-           ) ()
-        ) ();
-   uuid(m);
-));
+typed macro macro::lhs-prefix-or-suffix(prefix: lazy, suffix: lazy): Bool = (prefix; suffix);
 
-deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(x6(x5)(x4)(x3)(x2)(x1)) )) ((
-   let uuid(v) = term;
-   let uuid(m) = false;
-   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-           $"if"(match-pats-arm( open($".1"(uuid(v) as lt)), x1 )) (
-              $"if"(match-pats-arm( open($".2"(uuid(v) as lt)), x2 )) (
-                 $"if"(match-pats-arm( open($".3"(uuid(v) as lt)), x3 )) (
-                    $"if"(match-pats-arm( open($".4"(uuid(v) as lt)), x4 )) (
-                       $"if"(match-pats-arm( open($".5"(uuid(v) as lt)), x5 )) (
-                          $"if"(match-pats-arm( open($".6"(uuid(v) as lt)), x6 ))
-                               (uuid(m) = true)
-                               ()
-                       ) ()
-                    ) ()
-                 ) ()
-              ) ()
-           ) ()
-        ) ();
-   uuid(m);
-));
+typed macro macro::match-pats-arm(term: lazy, prefix suffix: macro::lhs-prefix-or-suffix): Bool = (
+   macro::match-pats-arm-with-term(term, prefix, suffix);
+);
 
-deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)() )) ((
-   let uuid(v) = term;
-   uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag
-));
-
-deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(rl"macro::bind-field-by-key"(x1-key,x1)) )) ((
-   let uuid(v) = term;
-   let uuid(m) = false;
-   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-      $"if"(match-pats-arm( open(x1-key(uuid(v) as lt)), x1 ))
-         (uuid(m) = true)
-         ()
-   ) ();
-   uuid(m);
-));
-
-deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(rl"macro::bind-field-by-key"(x2-key,x2)(rl"macro::bind-field-by-key"(x1-key,x1))) )) ((
-   let uuid(v) = term;
-   let uuid(m) = false;
-   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-      $"if"(match-pats-arm( open(x1-key(uuid(v) as lt)), x1 )) (
-         $"if"(match-pats-arm( open(x2-key(uuid(v) as lt)), x2 ))
-              (uuid(m) = true)
-              ()
-      ) ()
-   ) ();
-   uuid(m);
-));
-
-deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(rl"macro::bind-field-by-key"(x3-key,x3)(rl"macro::bind-field-by-key"(x2-key,x2))(rl"macro::bind-field-by-key"(x1-key,x1))) )) ((
-   let uuid(v) = term;
-   let uuid(m) = false;
-   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-      $"if"(match-pats-arm( open(x1-key(uuid(v) as lt)), x1 )) (
-         $"if"(match-pats-arm( open(x2-key(uuid(v) as lt)), x2 )) (
-            $"if"(match-pats-arm( open(x3-key(uuid(v) as lt)), x3 ))
-              (uuid(m) = true)
-              ()
-         ) ()
-      ) ()
-   ) ();
-   uuid(m);
-));
-
-deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(rl"macro::bind-field-by-key"(x4-key,x4)(rl"macro::bind-field-by-key"(x3-key,x3))(rl"macro::bind-field-by-key"(x2-key,x2))(rl"macro::bind-field-by-key"(x1-key,x1))) )) ((
-   let uuid(v) = term;
-   let uuid(m) = false;
-   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-      $"if"(match-pats-arm( open(x1-key(uuid(v) as lt)), x1 )) (
-         $"if"(match-pats-arm( open(x2-key(uuid(v) as lt)), x2 )) (
-            $"if"(match-pats-arm( open(x3-key(uuid(v) as lt)), x3 )) (
-               $"if"(match-pats-arm( open(x4-key(uuid(v) as lt)), x4 ))
-                 (uuid(m) = true)
-                 ()
-            ) ()
-         ) ()
-      ) ()
-   ) ();
-   uuid(m);
-));
-
-deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(rl"macro::bind-field-by-key"(x5-key,x5)(rl"macro::bind-field-by-key"(x4-key,x4))(rl"macro::bind-field-by-key"(x3-key,x3))(rl"macro::bind-field-by-key"(x2-key,x2))(rl"macro::bind-field-by-key"(x1-key,x1))) )) ((
-   let uuid(v) = term;
-   let uuid(m) = false;
-   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-      $"if"(match-pats-arm( open(x1-key(uuid(v) as lt)), x1 )) (
-         $"if"(match-pats-arm( open(x2-key(uuid(v) as lt)), x2 )) (
-            $"if"(match-pats-arm( open(x3-key(uuid(v) as lt)), x3 )) (
-               $"if"(match-pats-arm( open(x4-key(uuid(v) as lt)), x4 )) (
-                  $"if"(match-pats-arm( open(x5-key(uuid(v) as lt)), x5 ))
-                    (uuid(m) = true)
-                    ()
-               ) ()
-            ) ()
-         ) ()
-      ) ()
-   ) ();
-   uuid(m);
-));
-
-deprecated macro (rl"match-pats-arm"( term, rl":Tag:"(l)(lt)(rl"macro::bind-field-by-key"(x6-key,x6)(rl"macro::bind-field-by-key"(x5-key,x5))(rl"macro::bind-field-by-key"(x4-key,x4))(rl"macro::bind-field-by-key"(x3-key,x3))(rl"macro::bind-field-by-key"(x2-key,x2))(rl"macro::bind-field-by-key"(x1-key,x1))) )) ((
-   let uuid(v) = term;
-   let uuid(m) = false;
-   $"if"( uuid(v).discriminator-case-tag == (uuid(v) as lt).discriminator-case-tag ) (
-      $"if"(match-pats-arm( open(x1-key(uuid(v) as lt)), x1 )) (
-         $"if"(match-pats-arm( open(x2-key(uuid(v) as lt)), x2 )) (
-            $"if"(match-pats-arm( open(x3-key(uuid(v) as lt)), x3 )) (
-               $"if"(match-pats-arm( open(x4-key(uuid(v) as lt)), x4 )) (
-                  $"if"(match-pats-arm( open(x5-key(uuid(v) as lt)), x5 )) (
-                     $"if"(match-pats-arm( open(x6-key(uuid(v) as lt)), x6 ))
-                       (uuid(m) = true)
-                       ()
-                  ) ()
-               ) ()
-            ) ()
-         ) ()
-      ) ()
-   ) ();
-   uuid(m);
-));

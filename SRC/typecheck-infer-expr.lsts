@@ -436,6 +436,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.phi-move(typeof-term(term),term);
       }
    }};
+   (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
    (tctx, term);
 );
 

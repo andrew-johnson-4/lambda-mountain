@@ -1,5 +1,5 @@
 
-let std-apply-macro-candidates(tctx: TypeContext?, mname: CString, margs: AST, candidates: List<(Type,AST)>): (TypeContext?, AST) = (
+let std-apply-macro-candidates(tctx: TypeContext?, mname: CString, margs: AST, candidates: List<(Type,AST)>): (TypeContext?, AST, Type) = (
    # candidates must be in last-most-first order
    # Example: Source Definitions
    # define macro candidate 1
@@ -7,19 +7,26 @@ let std-apply-macro-candidates(tctx: TypeContext?, mname: CString, margs: AST, c
    # should be sent as
    # [ candidate 2, candidate 1 ]
    let t = mk-eof();
-   for list Tuple{ctype=first, second:Abs{mlhs=lhs,rhs:App{left:Lit{key:c":"},right:App{mrhs=left}}}} in candidates {
+   let return-type = ta;
+   for list Tuple{ctype=first, second:Abs{mlhs=lhs,rhs:App{left:Lit{key:c":"},right:App{mrhs=left,right:AType{new-return-type=tt}}}}} in candidates {
       if not(non-zero(t)) {
          (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, mlhs);
          tctx = tctx.phi-append(new-tctx);
          if mctx.is-some then mctx = union(mctx, Some(extract-uuids(mrhs)));
+         if mctx.is-some then return-type = new-return-type;
          if mctx.is-some then t = substitute(mctx.get-or-panic, mrhs).with-location-preserve(margs.location);
       }
    };
-   (tctx, t)
+   (tctx, t, return-type)
+);
+
+let std-macro-unpack-args(actx: AContext?, parameters: Vector<Type>, margs: AST): AContext? = (
+   Some([] : AContext)
 );
 
 let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcandidate: AST): (TypeContext?, AContext?) = (
    let no = (None : AContext?)();
+   let yes = Some([] : AContext);
    if let Abs{lhs=lhs, rhs=rhs} = mcandidate then std-try-destructure-macro(tctx, margs, mtype, lhs)
    else {
       match mtype {
@@ -40,6 +47,15 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
          );
          _ => (
             match mcandidate {
+               App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt:TVar{name:c"macro::literal",parameters:[TGround{literal-tag=tag,parameters=parameters}.. etc-parameters]}}}} => (
+                  match margs {
+                     App{left:Lit{key:c":"}, right:App{left:Lit{key1=key}, right:AType{tt=tt}}} => (tctx, if key1==literal-tag and parameters.length==0 then yes else no);
+                     Lit{key2=key} => (tctx, if key2==literal-tag and parameters.length==0 then yes else no);
+                     App{ left:App{left:Lit{key:c":"}, right:App{left:Lit{key3=key}, right:AType{tt=tt}}}, margs-right=right } => (tctx, if key3==literal-tag then std-macro-unpack-args(yes,parameters,margs-right) else no);
+                     App{ left:Lit{key4=key}, margs-right=right } => (tctx, if key4==literal-tag then std-macro-unpack-args(yes,parameters,margs-right) else no);
+                     _ => (tctx, no);
+                  };
+               );
                App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt=tt}}} => (
                   if non-zero(std-macro-helper-name(tt))
                   then {
@@ -47,22 +63,24 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                      match margs {
                         App{left:Var{maybe-helper=key}, helper-args=right} => (
                            if macro-helper==maybe-helper {
-                              (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, helper-args, Used());
+                              # infallible, like matching macro::a(x) against macro::a
+                              (tctx, let helped) = std-apply-macro-helper(tctx, macro-helper, helper-args, Used());
                               if non-zero(helped)
-                              then (tctx, std-direct-destructure-macro(helped, mstruct))
+                              then (tctx, std-direct-destructure-macro(helped, mstruct, macro-helper, mstruct, margs))
                               else (tctx, no)
                            } else (tctx, no)
                         );
                         _ => (
                            if index-macro-meta.has-key(macro-helper) {
+                              # fallible, like matching x against macro::variable or macro::nil
                               (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, margs, Used());
                               if non-zero(helped)
-                              then (tctx, std-direct-destructure-macro(helped, mstruct))
+                              then (tctx, std-direct-destructure-macro(helped, mstruct, macro-helper, mstruct, margs))
                               else (tctx, no)
                            } else (tctx, no)
                         );
-                     }
-                  } else (tctx, std-direct-destructure-macro(margs, mstruct))
+                     };
+                  } else (tctx, std-direct-destructure-macro(margs, mstruct, c"[direct]", mstruct, margs))
                );
                _ => (tctx, no);
             }

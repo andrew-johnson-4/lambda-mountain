@@ -7,8 +7,9 @@ let std-apply-macro(tctx: Maybe<TypeContext>, t: AST, used: IsUsed): (TypeContex
    }
 );
 
-let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, true);
-let std-apply-macro-weak(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, false);
+let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, MacroTerm);
+let std-apply-macro-helper(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, MacroHelper);
+let std-apply-macro-weak(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, MacroWeak);
 
 let std-apply-macro-concat(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
@@ -27,6 +28,13 @@ let std-apply-macro-variable(tctx: Maybe<TypeContext>, mname: CString, margs: AS
 let std-apply-macro-underscore(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
       Var{key:c"_"} => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+
+let std-apply-macro-nil(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      ASTNil{} => (tctx, margs);
       _ => (tctx, mk-eof());
    }
 );
@@ -56,13 +64,17 @@ let std-apply-macro-location(tctx: Maybe<TypeContext>, mname: CString, margs: AS
    (tctx, mk-lit(margs.location.into(type(String))).ascript(t0(c"CString") && t0(c"Literal")))
 );
 
-let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed, strong: Bool): (TypeContext?, AST) = (
+type MacroStrength = MacroTerm | MacroHelper | MacroWeak;
+
+let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed, strong: MacroStrength): (TypeContext?, AST) = (
    let result = mk-eof();
    let peeped-type = ta;
+   let return-type = ta;
    if mname==c"macro::concat" then (tctx, result) = std-apply-macro-concat(tctx, mname, margs)
    else if mname==c"macro::location" then (tctx, result) = std-apply-macro-location(tctx, mname, margs)
    else if mname==c"macro::variable" then (tctx, result) = std-apply-macro-variable(tctx, mname, margs)
    else if mname==c"macro::underscore" then (tctx, result) = std-apply-macro-underscore(tctx, mname, margs)
+   else if mname==c"macro::nil" then (tctx, result) = std-apply-macro-nil(tctx, mname, margs)
    else if mname==c"macro::constant" then (tctx, result) = std-apply-macro-constant(tctx, mname, margs)
    else if mname==c"macro::tag" then (tctx, result) = std-apply-macro-tag(tctx, mname, margs)
    else {
@@ -77,7 +89,10 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
             peeped = mtype;
          };
       };
-      (tctx, peeped-type, margs) = std-infer-peeped-arguments(tctx, margs, peep-holes);
+      (let peeped-tctx, peeped-type, margs) = std-infer-peeped-arguments(tctx, margs, peep-holes);
+      let peeped-tctx-unwrapped = peeped-tctx.get-or(mk-tctx());
+      peeped-tctx-unwrapped.pctx = tctx.get-or(mk-tctx()).pctx; # Phi Variables are irrelevant to peeped arguments
+      tctx = Some(peeped-tctx-unwrapped);
 
       let matched = [] : List<(Type,AST)>;
       for list Tuple{mtype=first, mterm=third} in row {
@@ -100,12 +115,12 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
             candidates = [(mtype,mterm)];
          }
       };
-      (tctx, result) = std-apply-macro-candidates(tctx, mname, margs, candidates);
+      (tctx, result, return-type) = std-apply-macro-candidates(tctx, mname, margs, candidates);
    };
 
-   if strong and not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs} : \{peeped-type}\n", margs);
-   if strong {
-      (tctx, result) = std-infer-expr(tctx, result, false, used, ta);
+   if not(is(strong,MacroWeak)) and not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs} : \{peeped-type}\n", margs);
+   if is(strong,MacroTerm) {
+      (tctx, result) = std-infer-expr(tctx, result, false, if return-type==type-lazy then used else Tail, ta);
       mark-free-and-seen(result);
    };
    (tctx, result)

@@ -5,6 +5,7 @@ index-macro-table = index-macro-table.bind(c"macro::concat", [] : List<(Type,Typ
 index-macro-table = index-macro-table.bind(c"macro::location", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::variable", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::underscore", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::nil", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::constant", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::tag", [] : List<(Type,Type,AST)>);
 
@@ -13,6 +14,7 @@ let index-macro-meta = {} : Hashtable<CString,List<(Type,Type,AST)>>;
 
 index-macro-meta = index-macro-meta.bind(c"macro::variable", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::underscore", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::nil", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::constant", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::tag", [] : List<(Type,Type,AST)>);
 
@@ -28,6 +30,13 @@ let param-types-of-macro(mterm: AST): Type = (
       Abs{lhs=lhs} => param-types-of-macro(lhs);
       App{ rst=left, right:App{left:Lit{key:c":"}, right:App{right:AType{tt=tt}}}  } => t2(c"Cons",param-types-of-macro(rst),tt);
       App{left:Lit{key:c":"}, right:App{right:AType{tt=tt}}} => tt;
+      # NOTE: there is no case for a Nil value here
+      # normally a nullary function application will have no arguments
+      # f() matches with a left-hand-side let f()
+      # however, for macros, we DO CARE about nil values because they can hold "code"
+      # so nil applications still need to accept an argument
+      # typed macro f(term: Nil)
+      # which can still be applied with just f()
    }
 );
 

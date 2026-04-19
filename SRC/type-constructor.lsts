@@ -18,13 +18,25 @@ let t1(tag: CString, p1: Type): Type = TGround(tag, mk-vector(type(Type)).push(p
 let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, mk-vector(type(Type)).push(p2).push(p1));
 
 # new allocations = 0
-let tv(name: CString): Type = TVar(name);
+let tv(name: CString): Type = TVar(name, mk-vector(type(Type)));
+
+# new allocations = 0
+let tvs(name: CString, ps: Vector<Type>): Type = TVar(name, ps);
+
+# new allocations = 1
+let tv1(name: CString, p1: Type): Type = TVar(name, mk-vector(type(Type)).push(p1));
+
+# new allocations = 1
+let tv1(name: CString, p2: Type): Type = TVar(name, mk-vector(type(Type)).push(p1).push(p2));
 
 # new allocations = 0 (constant)
 let type-nil = t0(c"Nil");
 
 # new allocations = 0 (constant)
 let type-any = t0(c"Any");
+
+# new allocations = 0 (constant)
+let type-lazy = tv(c"lazy");
 
 # new allocations = 0 (constant)
 let type-type-string = t1(c"Type",t0(c"String"));

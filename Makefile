@@ -8,18 +8,20 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm --v23 --showastcount SRC/index.lsts
+	lm tests/promises/match/constant-strings.lsts
+	gcc tmp.c
+	./a.out
 	#time lm --showalloc SRC/unit-type-core.lsts > out.txt
 	#time lm --showalloc SRC/unit-tctx-core.lsts > out.txt
 	#time lm --showalloc SRC/unit-prop-core.lsts > out.txt
 	#time lm --showalloc SRC/unit-ascript-core.lsts > out.txt
 	#time lm --showalloc SRC/index.lsts > out.txt
-	#time lm --showalloc SRC/dev-index.lsts > out.txt
+	#time lm --showalloc SRC/index.lsts > out.txt
 
 build: compile-production
-	time env $(LSTSFLAGS) ./production --v23 --c -o deploy1.c SRC/index.lsts
+	time env $(LSTSFLAGS) ./production --v23 -o deploy1.c SRC/index.lsts
 	$(CC) $(CFLAGS) deploy1.c -o deploy1
-	time env $(LSTSFLAGS) ./deploy1 --v23 --c -o deploy2.c SRC/index.lsts
+	time env $(LSTSFLAGS) ./deploy1 --v23 -o deploy2.c SRC/index.lsts
 	diff deploy1.c deploy2.c
 	mv deploy1.c BOOTSTRAP/cli.c
 	rm -f deploy1 deploy1.c deploy2.c
@@ -29,14 +31,14 @@ deploy: build smoke-test
 deploy-lite: build smoke-test-lite
 
 gprofng: install-production
-	gprofng collect app lm SRC/dev-index.lsts
+	gprofng collect app lm SRC/index.lsts
 
 gprofng-view:
 	gprofng display text -functions test.1.er > gprofng.view
 	nano gprofng.view
 
 valgrind: install-production
-	valgrind --tool=callgrind lm SRC/dev-index.lsts
+	valgrind --tool=callgrind lm SRC/index.lsts
 
 valgrind-view:
 	callgrind_annotate callgrind.out.18778
@@ -61,7 +63,7 @@ compile-bootstrap:
 
 compile-production: compile-bootstrap
 	rm -f production
-	$(LSTSFLAGS) ./bootstrap.exe --v23 --c -o production.c SRC/index.lsts
+	$(LSTSFLAGS) ./bootstrap.exe --v23 -o production.c SRC/index.lsts
 	$(CC) $(CFLAGS) -o production production.c
 	rm -f production.c
 
