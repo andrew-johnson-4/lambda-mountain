@@ -303,6 +303,24 @@ deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-head"(x,rest))) ((
         (branchfalse())
 ));
 
+typed macro macro::match-pats-arm-with-term(term: lazy, bind prefix: macro::lhs-bind, suffix: lazy): Bool = (
+   let uuid(v) = term;
+   let uuid(s) = uuid(v).remove-prefix(prefix);
+   let uuid(p) = uuid(v).get-prefix(prefix);
+   $"if"(uuid(p).is-some and uuid(s).is-some)
+        (macro::let(b, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,suffix))
+        (branchfalse())
+);
+
+typed macro macro::match-pats-arm-with-term(term: lazy, prefix: lazy, bind suffix: macro::lhs-bind): Bool = (
+   let uuid(v) = term;
+   let uuid(s) = uuid(v).remove-suffix(suffix);
+   let uuid(p) = uuid(v).get-suffix(suffix);
+   $"if"(uuid(p).is-some and uuid(s).is-some)
+        (macro::let(b, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,prefix))
+        (branchfalse())
+);
+
 typed macro macro::match-pats-arm-with-term(term: lazy, pat: macro::constant, rest: lazy): Bool = (
    macro::let(uuid(v), term);
    macro::let(uuid(p), uuid(v).remove-prefix(pat));
@@ -324,6 +342,11 @@ typed macro macro::lhs-prefix-or-suffix(prefix: lazy, suffix: lazy): Bool = (pre
 typed macro macro::match-pats-arm(term: lazy, prefix suffix: macro::lhs-prefix-or-suffix): Bool = (
    macro::match-pats-arm-with-term(term, prefix, suffix);
 );
+
+#typed macro macro::match-pats-arm-with-term(term: lazy, bind pat: macro::lhs-bind): Bool = (
+#   let bind = term;
+#   macro::match-pats-arm-with-term(bind, pat);
+#);
 
 deprecated macro (rl"match-pats-arm"(term,rl"macro::lhs-prefix-or-suffix"( rl":Literal:"(l), rest ))) ((
    $"macro::let"(uuid(v), term);
