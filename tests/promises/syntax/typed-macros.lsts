@@ -1,5 +1,5 @@
 
-import lib/core/dev-baremetal.lsts;
+import lib/core/baremetal.lsts;
 
 # This test case is also a beginning to profile the possibility of burning through to many intermediate terms during macro expansion
 # This does not seem to be a current problem, but caution is still warranted

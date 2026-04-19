@@ -1,5 +1,5 @@
 
-import lib/core/dev-bedrock.lsts;
+import lib/core/bedrock.lsts;
 
 let u8-data(): Nil = (
    let od = mk-owned-data(type(U8), 5);

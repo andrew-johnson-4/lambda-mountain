@@ -1,5 +1,5 @@
 
-import lib/core/dev-bedrock.lsts;
+import lib/core/bedrock.lsts;
 
 mk-vector(type(U8), 0);
 assert( safe-alloc-block-count == 0 );

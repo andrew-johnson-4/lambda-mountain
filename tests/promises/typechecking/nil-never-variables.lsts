@@ -1,5 +1,5 @@
 
-import lib/core/dev-bedrock.lsts;
+import lib/core/bedrock.lsts;
 
 let f() = (
    let a = ();

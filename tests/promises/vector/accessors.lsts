@@ -1,5 +1,5 @@
 
-import lib/core/dev-bedrock.lsts;
+import lib/core/bedrock.lsts;
 
 assert( mk-vector(type(U8)).push(1).push(2).push(3).nth(0) == Some(1) );
 assert( mk-vector(type(U8)).push(1).push(2).push(3).nth(1) == Some(2) );

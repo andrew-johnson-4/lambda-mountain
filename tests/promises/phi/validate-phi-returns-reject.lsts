@@ -1,5 +1,5 @@
 
-import lib/core/dev-baremetal.lsts;
+import lib/core/baremetal.lsts;
 
 type A = {};
 type phi AState = First | Second;

@@ -1,5 +1,5 @@
 
-import lib/core/dev-bedrock.lsts;
+import lib/core/bedrock.lsts;
 
 cons(2,cons(1, [] : List<U8>)).into(type(Vector<U8>));
 assert( safe-alloc-block-count == 0 );

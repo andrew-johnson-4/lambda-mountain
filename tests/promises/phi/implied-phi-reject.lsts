@@ -1,4 +1,4 @@
-import lib/core/dev-baremetal.lsts;
+import lib/core/baremetal.lsts;
 
 type phi AState = First | Second;
 type A implied phi AState::First = {};
