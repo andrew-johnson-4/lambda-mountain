@@ -1,59 +1,28 @@
 
 import lib/core/dev-bedrock.lsts;
 
-match c"a" {
-   c"a" => ();
-   _ => fail(c"FELL THROUGH!");
-};
-
-type Mode = ModeTypecheck | ModeParse | ModePreprocess | ModeCompile | ModeTokenize;
-
 let argv = mk-vector(type(CString)).push(c"--v23").push(c"--c");
 let argi = 0_sz;
-let config-mode = ModeCompile;
-let config-v0 = true;
-let config-v1 = true;
-let config-v23 = true;
-let config-v3 = true;
-let config-target = c"";
-let has-args = false;
-let highlight = false;
-let config-strip-debug = false;
-let show-alloc = false;
-let show-alloc-count-in-program = false;
-let show-ast-count = false;
-let config-profile-ast = false;
-let show-alloc-count = 0_sz;
 
 while argi < argv.length {
-   has-args = true;
    match argv[argi] {
-      c"--typecheck" => config-mode = ModeTypecheck();
-      c"--parse" => config-mode = ModeParse();
-      c"--preprocess" => config-mode = ModePreprocess();
-      c"--compile" => config-mode = ModeCompile();
-      c"--v0" => (config-v3 = false; config-v0 = true;);
-      c"--v1" => (config-v3 = false; config-v1 = true;);
-      c"--v2" => config-v3 = false;
-      c"--v23" => (config-v3 = false; config-v23 = true;);
-      c"--v3" => config-v3 = true;
-      c"--highlight" => (
-         config-mode = ModeTokenize();
-         highlight = true;
-      );
-      c"--tokens" => (
-         config-mode = ModeTokenize();
-         highlight = false;
-      );
-      c"--stripdebug" => config-strip-debug = true;
-      c"--showalloc" => show-alloc-count = true;
-      c"--showallocgen" => show-alloc-count-in-program = true;
-      c"--showastcount" => show-ast-count = true;
-      c"--profile-ast" => config-profile-ast = true;
-      c"-o" => (
-         argi = argi + 1;
-         config-target = argv[argi];
-      );
+      c"--typecheck" => ();
+      c"--parse" => ();
+      c"--preprocess" => ();
+      c"--compile" => ();
+      c"--v0" => ();
+      c"--v1" => ();
+      c"--v2" => ();
+      c"--v23" => ();
+      c"--v3" => ();
+      c"--highlight" => ();
+      c"--tokens" => ();
+      c"--stripdebug" => ();
+      c"--showalloc" => ();
+      c"--showallocgen" => ();
+      c"--showastcount" => ();
+      c"--profile-ast" => ();
+      c"-o" => ();
       fp1 => fail(c"STOP!");
    };
    argi = argi + 1;
