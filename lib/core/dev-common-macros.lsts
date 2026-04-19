@@ -226,7 +226,7 @@ typed macro macro::match-pats-arm-with-term(term: lazy, bind prefix: macro::lhs-
    let uuid(s) = uuid(v).remove-prefix(prefix);
    let uuid(p) = uuid(v).get-prefix(prefix);
    $"if"(uuid(p).is-some and uuid(s).is-some)
-        (macro::let(b, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,suffix))
+        (macro::let(bind, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,suffix))
         (branchfalse())
 );
 
@@ -235,7 +235,7 @@ typed macro macro::match-pats-arm-with-term(term: lazy, prefix: lazy, bind suffi
    let uuid(s) = uuid(v).remove-suffix(suffix);
    let uuid(p) = uuid(v).get-suffix(suffix);
    $"if"(uuid(p).is-some and uuid(s).is-some)
-        (macro::let(b, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,prefix))
+        (macro::let(bind, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,prefix))
         (branchfalse())
 );
 
