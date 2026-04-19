@@ -8,3 +8,7 @@ import SRC/unit-ascript-core.lsts;
 import SRC/unit-typecheck-core.lsts;
 import SRC/unit-backend-core.lsts;
 import SRC/unit-main-core.lsts;
+
+import PLUGINS/FRONTEND/LSTS/index.lsts;
+import PLUGINS/BACKEND/C/index.lsts;
+import PLUGINS/FRONTEND/C/index.lsts;
