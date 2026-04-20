@@ -37,6 +37,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       Tuple{ first:TGround{tag:c"MustNotFresh"} } => true;
       Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => false;
       Tuple{ first:TVar{name:c"lazy"}, second:TAny{} } => true; # this is for macros only
+      Tuple{ first:TAny{}, second:TVar{name:c"lazy"} } => true; # this is for macros only
       Tuple{ first:TVar{} } => true;
       Tuple{ first:TAnd{ lconjugate=conjugate }, second:TAnd{ rconjugate=conjugate } } => (
          let result = true;
