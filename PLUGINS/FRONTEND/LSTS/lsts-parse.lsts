@@ -277,9 +277,21 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c":", tokens); tokens = tail(tokens);
    (let mrett, tokens) = lsts-parse-type(tokens);
    lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-   lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-   (let mbody, tokens) = lsts-parse-top-level(tokens);
-   lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+   let mbody = if lsts-parse-head(tokens)==c"(" {
+      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+      (let mbody, tokens) = lsts-parse-top-level(tokens);
+      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+      mbody
+   } else {
+      lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+      let mbodies = mk-vector(type(AST));
+      while lsts-parse-head(tokens) != c"}" {
+         (let mbody, tokens) = lsts-parse-top-level(tokens);
+         mbodies = mbodies.push(mbody);
+      };
+      lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+      mk-seq(mbodies);
+   };
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    (mk-glb(
       mk-token(mname), 
@@ -914,7 +926,7 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
          };
          let constructor = head(tokens); tokens = tail(tokens);
          ast-parsed-program = ast-parsed-program + mk-app(
-            Var( c"macro::define-zero", with-key(constructor, c"macro::define-zero") ),
+            Var( c"macro::top-define-zero", with-key(constructor, c"macro::top-define-zero") ),
             mk-cons(
                mk-cons(
                   AType( lhs-type ),
