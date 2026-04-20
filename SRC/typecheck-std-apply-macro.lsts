@@ -97,7 +97,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
       let matched = [] : List<(Type,AST)>;
       for list Tuple{mtype=first, mterm=third} in row {
          if can-unify(mtype, peeped-type) then matched = cons( (mtype,mterm), matched );
-      }; 
+      };
 
       let dominant-type = ta;
       let candidates = [] : List<(Type,AST)>;
