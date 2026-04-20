@@ -287,6 +287,7 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
       let mbodies = mk-vector(type(AST));
       while lsts-parse-head(tokens) != c"}" {
          (let mbody, tokens) = lsts-parse-top-level(tokens);
+         lsts-parse-expect(c";", tokens); tokens = tail(tokens);
          mbodies = mbodies.push(mbody);
       };
       lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
@@ -925,8 +926,18 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
             lsts-parse-expect(c"[Type Constructor]", tokens);
          };
          let constructor = head(tokens); tokens = tail(tokens);
+         #ast-parsed-program = ast-parsed-program + mk-app(
+         #   Var( c"macro::top-define-zero", with-key(constructor, c"macro::top-define-zero") ),
+         #   mk-cons(
+         #      mk-cons(
+         #         AType( lhs-type ),
+         #         Lit( constructor.key, constructor )
+         #      ),
+         #      Lit( c"Tag::"+constructor.key, with-key(constructor, c"Tag::"+constructor.key) )
+         #   )
+         #);
          ast-parsed-program = ast-parsed-program + mk-app(
-            Var( c"macro::top-define-zero", with-key(constructor, c"macro::top-define-zero") ),
+            Var( c"macro::define-zero", with-key(constructor, c"macro::define-zero") ),
             mk-cons(
                mk-cons(
                   AType( lhs-type ),
