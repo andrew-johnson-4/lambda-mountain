@@ -7,7 +7,7 @@ let .is-datatype(tt: Type): Bool = (
    match tt {
       TAnd{conjugate=conjugate} => (
          let found = false;
-         for vector c in conjugate {
+         for c in conjugate {
             found = found or c.is-datatype;
          };
          found

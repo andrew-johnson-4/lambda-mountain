@@ -17,7 +17,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
 
    # Assert that all equal type variables also have equal datatype
    let apply-type-variables = {} : Hashtable<CString,Type>;
-   for list tr in apply-tctx.get-or-panic.tctx {
+   for tr in apply-tctx.get-or-panic.tctx {
       if apply-type-variables.has-key(tr.key-or-zero) {
          let previous-seen-tt = apply-type-variables.lookup(tr.key-or-zero, ta).datatype;
          let current-seen-tt = tr.direct-type.datatype;
@@ -44,7 +44,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
    then exit-error("Linear value used after move in call to \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
 
    # Phi: apply transitions, like (A ~> B)
-   for list pr in apply-tctx.get-or(mk-tctx()).pctx {
+   for pr in apply-tctx.get-or(mk-tctx()).pctx {
       tctx = tctx.bind-phi(pr.phi-id-or-zero, pr.phi-tt-or-zero, pr.blame-or-zero);
    };
 

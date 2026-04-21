@@ -19,6 +19,7 @@ index-macro-meta = index-macro-meta.bind(c"macro::constant", [] : List<(Type,Typ
 index-macro-meta = index-macro-meta.bind(c"macro::tag", [] : List<(Type,Type,AST)>);
 
 let bind-new-macro(mname: CString, mterm: AST): Nil = (
+   print("bind \{mname} \{mterm}\n");
    let row = index-macro-table.lookup(mname, [] : List<(Type,Type,AST)>);
    let mtype = param-types-of-macro(mterm);
    row = cons( (denormalize(mtype), macro-type-peep-holes(mtype), mterm), row);
@@ -53,7 +54,7 @@ let macro-type-peep-holes(mtype: Type): Type = (
       TGround{} => t0(c"Yes");
       TAnd{conjugate=conjugate} => (
          let peep = ta;
-         for vector c in conjugate {
+         for c in conjugate {
             peep = peep || macro-type-peep-holes(c);
          };
          peep;

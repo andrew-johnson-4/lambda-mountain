@@ -3,9 +3,9 @@ let .without-modifiers(tt: Type): Type = (
    match tt {
       TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type), 0);
-         for vector c in conjugate {
+         for c in conjugate {
             match c.without-modifiers {
-               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
                TAny{} => ();
                rc => ( result = result.push(rc); () );
             }
@@ -17,7 +17,7 @@ let .without-modifiers(tt: Type): Type = (
       TGround { tag:c"C", parameters:[TGround{tag:c"extern"}..] } => ta;
       TGround { tag:tag, parameters:parameters } => (
          let new-parameters = mk-vector(type(Type));
-         for vector p in parameters {
+         for p in parameters {
             new-parameters = new-parameters.push(p.without-modifiers);
          };
          ts(tag,new-parameters)

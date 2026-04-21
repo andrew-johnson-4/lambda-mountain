@@ -55,11 +55,15 @@ let infer-global-context-prim(term: AST): AST = (
             let rterm = infer-global-context-prim(seq[def-i]);
             match rterm {
                Seq{rseq=seq} => for r in rseq {
+                  let old-r = r;
                   r = infer-global-context-prim(r);
+                  print("Prim \{old-r} => \{r}\n");
                   out-seq = out-seq.push(r)
                };
                r => (
+                  let old-r = r;
                   if not(is(r,seq[def-i])) then r = infer-global-context-prim(r);
+                  print("Prim \{old-r} => \{r}\n");
                   out-seq = out-seq.push(r);
                );
             };
@@ -102,8 +106,8 @@ let infer-global-context-prim(term: AST): AST = (
 let infer-global-context-td(term: AST): Nil = (
    match term {
       Seq{seq=seq} => (
-         for vector s in seq { infer-global-context-td(s) };
-         for vector s in type-ast-inserts { ast-parsed-program = ast-parsed-program + s; };
+         for s in seq { infer-global-context-td(s) };
+         for s in type-ast-inserts { ast-parsed-program = ast-parsed-program + s; };
       );
       Typedef{} => infer-type-definition(term);
       _ => ();
@@ -113,7 +117,7 @@ let infer-global-context-td(term: AST): Nil = (
 let infer-global-macro(term: AST): Nil = (
    match term {
       Seq{seq=seq} => (
-         for vector s in seq { infer-global-macro(s) };
+         for s in seq { infer-global-macro(s) };
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
          if misc-tt.is-t(c"TypedMacro",0) then bind-new-macro(k.key, frhs)
@@ -125,7 +129,7 @@ let infer-global-macro(term: AST): Nil = (
 let infer-global-context(term: AST): Nil = (
    match term {
       Seq{seq=seq} => (
-         for vector s in seq { infer-global-context(s) };
+         for s in seq { infer-global-context(s) };
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
          if k.key.has-prefix(c"primitive::") then ()

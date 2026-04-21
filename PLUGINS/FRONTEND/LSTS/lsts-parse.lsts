@@ -136,7 +136,7 @@ let lsts-parse-doc(tokens: List<Token>): Tuple<AST, List<Token>> = (
       };
    };
 
-   for list Tuple{key=first, val=second} in tags {
+   for Tuple{key=first, val=second} in tags {
       ast = mk-app( mk-var("Meta::with-tag"), mk-cons( mk-lit(key), val ) );
    };
 
@@ -476,7 +476,7 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
          }
       };
       base = head(bases); bases = tail(bases);
-      for list b in bases {
+      for b in bases {
          base = mk-app(
             Var( c"macro::lhs-head", with-location(mk-token("macro::lhs-head"),loc) ),
             mk-cons(b, base)
@@ -567,7 +567,7 @@ let lsts-make-maybe-var(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-is-lit(s: CString): Bool = (
    let r = false;
-   for list Tuple { sfxs=first } in parse-suffixes {
+   for Tuple { sfxs=first } in parse-suffixes {
       r = r or s.has-suffix(sfxs);
    }; r;
 );
@@ -763,7 +763,7 @@ let lsts-parse-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
                lsts-parse-expect(c",", tokens); tokens = tail(tokens);
             }
          };
-         for list add-item in add-items {
+         for add-item in add-items {
             term = mk-app(
                Var( c"list::cons", with-location(mk-token("list::cons"),loc) ),
                mk-cons(add-item, term)
@@ -962,7 +962,7 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
          }
       };
    };
-   for vector i in infers {
+   for i in infers {
       if i.is-t(c"MustRelease",0) and not(implied-phi.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1))
       then {
          let mt = t1(c"MustRelease::ToRelease",type-linear-live);
@@ -1310,7 +1310,7 @@ let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
             expr = head;
          }
       };
-      for list s in seq {
+      for s in seq {
          expr = mk-app( mk-var(c"macro::lhs-head"), mk-cons(s,expr) );
       };
       lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
@@ -1473,7 +1473,7 @@ let lsts-parse-match2-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
       fail("Invalid Prefix/Suffix Chain", original-tokens.formatted-location);
    };
    lhs = presufs[starti];
-   for vector p in prefixes {
+   for p in prefixes {
       lhs = mk-app(mk-var(c"macro::lhs-prefix"), mk-cons(p, lhs));
    };
    while suffixes.length > 0 {
@@ -1511,7 +1511,7 @@ let lsts-parse-match2(tokens: List<Token>): Tuple<AST,List<Token>> = (
       lsts-parse-expect(c";", tokens); tokens = tail(tokens);
       cases = cons( (lhs,rhs), cases );
    };
-   for list Tuple{lhs=first,rhs=second} in cases {
+   for Tuple{lhs=first,rhs=second} in cases {
       case-root = mk-app(
          mk-var(c"macro::match-case"),
          mk-cons(mk-cons(lhs,rhs),case-root)
@@ -1574,7 +1574,7 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
          );
 
          let i = 0_u64;
-         for list lhs in lefts {
+         for lhs in lefts {
             let fieldstr = c"." + (i+1).into(type(CString));
             let rexpr = mk-app(
                Var( fieldstr, with-location(mk-token(fieldstr),loc) ),
@@ -1854,9 +1854,6 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       term = AType( term-rest.first );
    } else if lsts-parse-head(tokens)==c"for" {
       let loc = head(tokens).location; tokens = tail(tokens);
-      let list = false;
-      if lsts-parse-head(tokens)==c"list" then { tokens = tail(tokens); list = true; };
-      if lsts-parse-head(tokens)==c"vector" then { tokens = tail(tokens); list = false; };
       let lhs-rest = lsts-parse-lhs(tokens);
       tokens = lhs-rest.second;
       lsts-parse-expect(c"in", tokens); tokens = tail(tokens);

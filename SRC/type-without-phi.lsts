@@ -10,7 +10,7 @@ let .without-phi(tt: Type): Type = (
    match tt {
       TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type), 0);
-         for vector c in conjugate {
+         for c in conjugate {
             c = c.without-phi;
             if non-zero(c) then result = result.push(c);
          };
@@ -29,7 +29,7 @@ let .without-phi(tt: Type): Type = (
 
 let .without-phi(tt: Vector<Type>): Vector<Type> = (
    let next = mk-vector(type(Type));
-   for vector t in tt {
+   for t in tt {
       next = next.push(t.without-phi);
    };
    next

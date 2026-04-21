@@ -11,7 +11,7 @@ let print-toks-json(fp: CString): Nil = (
 #   print(fp);
 #   print("\":[");
 #   let first = true;
-#   for list tok in toks {
+#   for tok in toks {
 #      if first {
 #         first = false;
 #      } else {
@@ -87,7 +87,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          } else {
             print("{");
             let first-outer = true;
-            for list fp2 in input {
+            for fp2 in input {
                if first-outer {
                   first-outer = false;
                } else {
@@ -99,16 +99,16 @@ let main(argc: C_int, argv: CString[]): Nil = (
          };
       );
       ModeParse{} => (
-         for list fp3 in input.reverse { frontend(fp3); };
+         for fp3 in input.reverse { frontend(fp3); };
          print("\{ast-parsed-program}\n");
       );
       ModePreprocess{} => (
-         for list fp32 in input.reverse { frontend(fp32); };
+         for fp32 in input.reverse { frontend(fp32); };
          preprocess();
          print("\{ast-parsed-program}\n");
       );
       _ => (
-         for list fp4 in input.reverse { frontend(fp4); };
+         for fp4 in input.reverse { frontend(fp4); };
          if show-alloc-count-in-program {
             ast-parsed-program = ast-parsed-program +
             mk-app( mk-var(c"print"),

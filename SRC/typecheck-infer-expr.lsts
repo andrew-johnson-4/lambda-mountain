@@ -232,7 +232,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       Var{key2=key, token=token} => (
          let rewritten = false;
          if not non-zero(hint) {
-            for list Tuple{sfxs1=first, sfxtt1=second} in parse-suffixes {
+            for Tuple{sfxs1=first, sfxtt1=second} in parse-suffixes {
                if key2.has-suffix(sfxs1) {
                   let lpfx1 = key2.remove-suffix(sfxs1).get-or(c"");
                   term = mk-app( mk-lit(c":",with-key(token,c":")), mk-app( mk-lit(lpfx1,with-key(token,lpfx1)), mk-atype(sfxtt1) ) );
@@ -259,7 +259,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       Lit{key3=key, token=token} => (
          let rewritten = false;
          if not non-zero(hint) {
-            for list Tuple{sfxs2=first, sfxtt2=second} in parse-suffixes {
+            for Tuple{sfxs2=first, sfxtt2=second} in parse-suffixes {
                if key3.has-suffix(sfxs2) {
                   let lpfx2 = key3.remove-suffix(sfxs2).get-or(c"");
                   term = mk-app( mk-lit(c":",with-key(token,c":")), mk-app( mk-lit(lpfx2,with-key(token,lpfx2)), mk-atype(sfxtt2) ) );
