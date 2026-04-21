@@ -11,12 +11,14 @@ let std-apply-macro-candidates(tctx: TypeContext?, mname: CString, margs: AST, c
    for list Tuple{ctype=first, second:Abs{mlhs=lhs,rhs:App{left:Lit{key:c":"},right:App{mrhs=left,right:AType{new-return-type=tt}}}}} in candidates {
       if not(non-zero(t)) {
          (let new-tctx, let mctx) = std-try-destructure-macro(tctx, margs, ctype, mlhs);
+         print("Destructure \{mname} : \{margs} = \{new-tctx.is-some}\n");
          tctx = tctx.phi-append(new-tctx);
          if mctx.is-some then mctx = union(mctx, Some(extract-uuids(mrhs)));
          if mctx.is-some then return-type = new-return-type;
          if mctx.is-some then t = substitute(mctx.get-or-panic, mrhs).with-location-preserve(margs.location);
       }
    };
+   print("Destructure \{mname} : \{margs} = \{t}\n");
    (tctx, t, return-type)
 );
 
