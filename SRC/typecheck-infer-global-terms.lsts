@@ -48,10 +48,29 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
    (tctx, term)
 );
 
-let infer-global-context-prim(term: AST): Nil = (
+let infer-global-context-prim(term: AST): AST = (
+   print("Infer Prim \{term}");
    match term {
       Seq{seq=seq} => (
-         for vector s in seq { infer-global-context-prim(s) }
+         let out-seq = mk-vector(type(AST));
+         let def-i = 0_sz;
+         while def-i < seq.length {
+            let rterm = infer-global-context-prim(seq[def-i]);
+            print("Inferred \{seq[def-i]} becomes \{rterm}\n");
+            match rterm {
+               Seq{rseq=seq} => for r in rseq {
+                  r = infer-global-context-prim(r);
+                  print("Inferred Seq \{r}\n");
+                  out-seq = out-seq.push(r)
+               };
+               r => (
+                  if not(is(r,seq[def-i])) then r = infer-global-context-prim(r);
+                  out-seq = out-seq.push(r);
+               );
+            };
+            def-i = def-i + 1;
+         };
+         term = mk-seq(out-seq);
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
          if k.key.has-prefix(c"primitive::") then {
@@ -68,15 +87,23 @@ let infer-global-context-prim(term: AST): Nil = (
          if index-macro-table.has-key(var-name-if-var(l)) {
             (global-flow-tctx, let rterm) = std-apply-macro-super-weak(global-flow-tctx, var-name-if-var(l), margs, Used);
             match rterm {
-               Seq{rseq=seq} => for r in rseq {
-                  infer-global-context-prim(r);
-               };
-               r => ();
+               Seq{rseq=seq} => (
+                  let out-seq = mk-vector(type(AST));
+                  for r in rseq {
+                     r = infer-global-context-prim(r);
+                     print("Inferred Seq \{r}\n");
+                     out-seq = out-seq.push(r)
+                  };
+                  term = mk-seq(out-seq);
+               );
+               r => term = r;
             };
          }
       );
       _ => ();
-   }
+   };
+   print("Inferred Prim \{term}\n");
+   term
 );
 
 let infer-global-context-td(term: AST): Nil = (
@@ -86,17 +113,6 @@ let infer-global-context-td(term: AST): Nil = (
          for vector s in type-ast-inserts { ast-parsed-program = ast-parsed-program + s; };
       );
       Typedef{} => infer-type-definition(term);
-      App{l=left, margs=right} => (
-         if index-macro-table.has-key(var-name-if-var(l)) {
-            (global-flow-tctx, let rterm) = std-apply-macro-super-weak(global-flow-tctx, var-name-if-var(l), margs, Used);
-            match rterm {
-               Seq{rseq=seq} => for r in rseq {
-                  infer-global-context-td(r);
-               };
-               r => ();
-            };
-         }
-      );
       _ => ();
    }
 );
@@ -118,17 +134,6 @@ let infer-global-context(term: AST): Nil = (
                Some(mk-tctx()).bind-global(k.key, ft, denormalize-strong(ft), term);
             }
          };
-      );
-      App{l=left, margs=right} => (
-         if index-macro-table.has-key(var-name-if-var(l)) {
-            (global-flow-tctx, let rterm) = std-apply-macro-super-weak(global-flow-tctx, var-name-if-var(l), margs, Used);
-            match rterm {
-               Seq{rseq=seq} => for r in rseq {
-                  infer-global-context(r);
-               };
-               r => ();
-            };
-         }
       );
       _ => ();
    };

@@ -1,7 +1,8 @@
 
 let typecheck(): Nil = (
    print("TC 1\n");
-   infer-global-context-prim(ast-parsed-program);
+   ast-parsed-program = infer-global-context-prim(ast-parsed-program);
+   print("AST \{ast-parsed-program}\n");
    print("TC 2\n");
    infer-global-context-td(ast-parsed-program);
    print("TC 3\n");
