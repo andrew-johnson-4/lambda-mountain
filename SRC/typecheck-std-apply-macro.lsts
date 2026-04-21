@@ -123,7 +123,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
       (tctx, result, return-type) = std-apply-macro-candidates(tctx, mname, margs, candidates);
    };
 
-   if not(is(strong,MacroWeak)) and not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs} : \{peeped-type}\n", margs);
+   if not(is(strong,MacroWeak) or is(strong,MacroSuperWeak)) and not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs} : \{peeped-type}\n", margs);
    if is(strong,MacroTerm) {
       (tctx, result) = std-infer-expr(tctx, result, false, if return-type==type-lazy then used else Tail, ta);
       mark-free-and-seen(result);

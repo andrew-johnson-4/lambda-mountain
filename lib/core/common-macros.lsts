@@ -1,7 +1,7 @@
 
-deprecated macro ( rl"macro::define-zero"(base-type,constructor,con-tag) ) (
+typed macro macro::define-zero(base-type: lazy, constructor: lazy, con-tag: lazy): lazy = {
    let non-zero(t: base-type): Bool = t.discriminator-case-tag != (t as con-tag).discriminator-case-tag;
-);
+};
 
 typed macro $"assert"(c: lazy): lazy = (
    if not c then fail(c"Assertion Failed At ", macro::location(c));

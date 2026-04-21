@@ -1,6 +1,5 @@
 
 let lsts-frontend(fp: CString): Nil = (
-   print("Read \{fp}\n");
    lsts-parse(lsts-tokenize(fp));
 );
 register-frontend(c".lsts", lsts-frontend);
