@@ -1,6 +1,6 @@
 
 typed macro macro::define-zero(base-type: lazy, constructor: lazy, con-tag: lazy): lazy = {
-#   let non-zero(t: base-type): Bool = t.discriminator-case-tag != (t as con-tag).discriminator-case-tag;
+   let non-zero(t: base-type): Bool = t.discriminator-case-tag != (t as con-tag).discriminator-case-tag;
 };
 
 typed macro $"assert"(c: lazy): lazy = (
