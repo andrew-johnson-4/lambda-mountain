@@ -236,11 +236,9 @@ let lsts-parse-top-level(tokens: List<Token>): Tuple<AST,List<Token>> = (
          (mk-eof(), tokens);
       );
       _ => (
-         let term-rest = lsts-parse-small-expression(tokens);
-         let term = term-rest.first;
-         tokens = term-rest.second;
+         (let t, tokens) = lsts-parse-small-expression(tokens);
          lsts-parse-expect(c";",tokens); tokens = tail(tokens);
-         (mk-eof(), tokens);
+         (t, tokens);
       );
    };
 );
@@ -286,8 +284,6 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
       mk-seq(mbodies);
    };
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-   let x = mk-abs(margs, mbody.without-location.ascript(mrett), t0(c"TypedMacro"));
-   print("New Macro \{x}\n");
    (mk-glb(
       mk-token(mname), 
       mk-abs(margs, mbody.without-location.ascript(mrett), t0(c"TypedMacro"))
