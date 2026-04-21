@@ -11,7 +11,7 @@ let :FFI write(ft: USize, buf: C<"void">[], count: USize): USize;
 
 import lib/core/l.lsts;
 import lib/core/phi.lsts;
-import lib/core/platform-macros.lsts;
+import lib/core/dev-platform-macros.lsts;
 import lib/core/dev-common-macros.lsts;
 import lib/core/primitives.lsts;
 import lib/core/bool.lsts;
