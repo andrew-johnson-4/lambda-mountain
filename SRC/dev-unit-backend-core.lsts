@@ -1,5 +1,5 @@
 
-import SRC/dev-unit-typecheck-core.lsts;
+import SRC/unit-typecheck-core.lsts;
 
 import SRC/backend-fragment-definition.lsts;
 import SRC/backend-mk-fragment.lsts;

@@ -1,0 +1,172 @@
+
+# TODO: --tokenize is disabled because it has a hard dependency on lsts plugin
+#       to reenable, core should only reference placeholder methods that are overwritten or configured by the plugins
+let print-toks-json(fp: CString): Nil = (
+#   if not(fp.has-suffix(c".lsts")) {
+#      fail("only implemented for lsts files");
+#   };
+
+#   let toks = lsts-tokenize(fp);
+#   print("\"");
+#   print(fp);
+#   print("\":[");
+#   let first = true;
+#   for list tok in toks {
+#      if first {
+#         first = false;
+#      } else {
+#         print(",\n");
+#      };
+#      print("{\n \"key\":\"");
+#      print(tok.key);
+#      print("\",\n \"line\": ");
+#      print("\{tok.location.line}");
+#      print(",\n \"column\": ");
+#      print("\{tok.location.column}");
+#      print("\n}");
+#   };
+#   print("]");
+);
+
+let show-alloc-count = false;
+let show-alloc-count-in-program = false;
+
+let show-ast-count = false;
+let ast-parsed-count = 0_sz;
+let ast-typed-count = 0_sz;
+
+let main(argc: C_int, argv: CString[]): Nil = (
+   config-v23 = false;
+   let argi = 1_sz;
+   let input = [] : List<CString>;
+   let highlight = false;
+   let dump-tokens = false;
+   let has-args = false;
+   while argi < (argc as USize) {
+      has-args = true;
+      match argv[argi] {
+         c"--typecheck" => config-mode = ModeTypecheck();
+         c"--parse" => config-mode = ModeParse();
+         c"--preprocess" => config-mode = ModePreprocess();
+         c"--compile" => config-mode = ModeCompile();
+         c"--v0" => (config-v3 = false; config-v0 = true;);
+         c"--v1" => (config-v3 = false; config-v1 = true;);
+         c"--v2" => config-v3 = false;
+         c"--v23" => (config-v3 = false; config-v23 = true;);
+         c"--v3" => config-v3 = true;
+         c"--highlight" => (
+            config-mode = ModeTokenize();
+            highlight = true;
+         );
+         c"--tokens" => (
+            config-mode = ModeTokenize();
+            highlight = false;
+         );
+         c"--stripdebug" => config-strip-debug = true;
+         c"--showalloc" => show-alloc-count = true;
+         c"--showallocgen" => show-alloc-count-in-program = true;
+         c"--showastcount" => show-ast-count = true;
+         c"--profile-ast" => config-profile-ast = true;
+         c"-o" => (
+            argi = argi + 1;
+            config-target = argv[argi];
+         );
+         fp1 => (
+            if plugins-backends-index.has-key(fp1) {
+               plugin-current-backend = plugins-backends-index.lookup(fp1,&plugin-null-backend);
+            } else { input = cons(fp1, input); };
+         );
+      };
+      argi = argi + 1;
+   };
+   if not(has-args) then doby-say();
+   match config-mode {
+      ModeTokenize{} => (
+         if highlight {
+            # TODO
+         } else {
+            print("{");
+            let first-outer = true;
+            for list fp2 in input {
+               if first-outer {
+                  first-outer = false;
+               } else {
+                  print(",\n");
+               };
+               print-toks-json(fp2);
+            };
+            print("\n}\n");
+         };
+      );
+      ModeParse{} => (
+         for list fp3 in input.reverse { frontend(fp3); };
+         print("\{ast-parsed-program}\n");
+      );
+      ModePreprocess{} => (
+         for list fp32 in input.reverse { frontend(fp32); };
+         preprocess();
+         print("\{ast-parsed-program}\n");
+      );
+      _ => (
+         for list fp4 in input.reverse { frontend(fp4); };
+         if show-alloc-count-in-program {
+            ast-parsed-program = ast-parsed-program +
+            mk-app( mk-var(c"print"),
+               mk-app(
+                  mk-var(c"+"),
+                  mk-cons(
+                     mk-lit(c"TOTAL ALLOCATED: ").ascript(t0(c"String")),
+                     mk-app(
+                        mk-var(c"+"),
+                        mk-cons(
+                           mk-app(
+                              mk-var(c".into"),
+                              mk-cons(
+                                 mk-var(c"safe-alloc-block-count-monotonic-history"),
+                                 mk-atype(t1(c"Type",t0(c"String")))
+                              )
+                           ),
+                           mk-lit(c"\\n").ascript(t0(c"String"))
+                        )
+                     )
+                  )
+               )
+            );
+         };
+         ast-parsed-count = ast-count;
+         match config-mode {
+            ModeTypecheck{} => (preprocess(); typecheck(););
+            ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(); );
+         };
+         ast-typed-count = ast-count;
+      );
+   };
+   if show-alloc-count then {
+      print("Total blocks allocated: \{safe-alloc-block-count-monotonic}\n");
+   };
+   if config-profile-ast then {
+      profile-print-ast()
+   };
+   if show-ast-count then {
+      print("AST Count After Parse = \{ast-parsed-count}\n");
+      print("AST Count After Typecheck = \{ast-typed-count}\n");
+   };
+   #print("Worse Phi Length \{worst-phi-length}\n");
+   #print-allocation-counts()
+);
+
+let doby-say(): Nil = (
+   print("  ______________                \n");
+   print(" < Like No Udder >              \n");
+   print("  --------------                \n");
+   print("         \\   ^__^               \n");
+   print("          \\  (oo)\\_______       \n");
+   print("             (__)\\       )\\/\\   \n");
+   print("                 ||-----||      \n");
+   print("                 ||     ||      \n");
+   print("                                \n");
+   print(" OPTIONS:                       \n");
+   print("    [input-file]                \n");
+   print("    -o [output-file]            \n");
+   print("    --typecheck                 \n");
+);
