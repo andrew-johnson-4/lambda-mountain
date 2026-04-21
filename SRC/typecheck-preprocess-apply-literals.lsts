@@ -5,7 +5,7 @@ let preprocess-apply-literals(program: AST): AST = (
       Seq{seqs=seq} => (
          program = mk-eof();
          for vector p in seqs { program = program + preprocess-apply-literals(p) };
-         program
+         if non-zero(program) then program else mk-seq()
       );
       Abs{al1=lhs, ar1=rhs, tlt1=tt} => mk-abs(preprocess-apply-literals(al1), preprocess-apply-literals(ar1), tlt1);
       Glb{k2=key, ar2=val} => mk-glb(k2.unique, preprocess-apply-literals(ar2));

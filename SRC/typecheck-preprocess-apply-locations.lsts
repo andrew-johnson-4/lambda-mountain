@@ -13,7 +13,7 @@ let preprocess-apply-locations(program: AST): AST = (
       Seq{seq=seq} => (
          program = mk-eof();
          for vector p in seq { program = program + preprocess-apply-locations(p) };
-         program
+         if non-zero(program) then program else mk-seq()
       );
       Abs{al1=lhs, ar1=rhs, tlt1=tt} => mk-abs(preprocess-apply-locations(al1), preprocess-apply-locations(ar1), tlt1);
       Glb{k2=key, ar2=val} => mk-glb(k2.unique, preprocess-apply-locations(ar2));
