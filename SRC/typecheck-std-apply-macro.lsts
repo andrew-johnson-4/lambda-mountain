@@ -10,6 +10,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, t: AST, used: IsUsed): (TypeContex
 let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, MacroTerm);
 let std-apply-macro-helper(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, MacroHelper);
 let std-apply-macro-weak(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, MacroWeak);
+let std-apply-macro-super-weak(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, MacroSuperWeak);
 
 let std-apply-macro-concat(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
@@ -64,7 +65,7 @@ let std-apply-macro-location(tctx: Maybe<TypeContext>, mname: CString, margs: AS
    (tctx, mk-lit(margs.location.into(type(String))).ascript(t0(c"CString") && t0(c"Literal")))
 );
 
-type MacroStrength = MacroTerm | MacroHelper | MacroWeak;
+type MacroStrength = MacroTerm | MacroHelper | MacroWeak | MacroSuperWeak;
 
 let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed, strong: MacroStrength): (TypeContext?, AST) = (
    let result = mk-eof();
@@ -89,7 +90,11 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
             peeped = mtype;
          };
       };
-      (let peeped-tctx, peeped-type, margs) = std-infer-peeped-arguments(tctx, margs, peep-holes);
+      (let peeped-tctx, peeped-type, margs) = if not(is(strong,MacroSuperWeak)) {
+         std-infer-peeped-arguments(tctx, margs, peep-holes);
+      } else {
+         (tctx, ta, margs)
+      };
       let peeped-tctx-unwrapped = peeped-tctx.get-or(mk-tctx());
       peeped-tctx-unwrapped.pctx = tctx.get-or(mk-tctx()).pctx; # Phi Variables are irrelevant to peeped arguments
       tctx = Some(peeped-tctx-unwrapped);
