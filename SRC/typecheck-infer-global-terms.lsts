@@ -56,7 +56,7 @@ let infer-global-context-prim(term: AST): AST = (
          let def-i = 0_sz;
          while def-i < seq.length {
             let rterm = infer-global-context-prim(seq[def-i]);
-            print("Inferred \{seq[def-i]} becomes \{rterm}\n");
+            print("Infer Prim \{seq[def-i]} becomes \{rterm}\n");
             match rterm {
                Seq{rseq=seq} => for r in rseq {
                   r = infer-global-context-prim(r);
@@ -86,6 +86,7 @@ let infer-global-context-prim(term: AST): AST = (
       App{l=left, margs=right} => (
          if index-macro-table.has-key(var-name-if-var(l)) {
             (global-flow-tctx, let rterm) = std-apply-macro-super-weak(global-flow-tctx, var-name-if-var(l), margs, Used);
+            print("Super Weak Result \{rterm}\n");
             match rterm {
                Seq{rseq=seq} => (
                   let out-seq = mk-vector(type(AST));
@@ -117,6 +118,18 @@ let infer-global-context-td(term: AST): Nil = (
    }
 );
 
+let infer-global-macro(term: AST): Nil = (
+   match term {
+      Seq{seq=seq} => (
+         for vector s in seq { infer-global-macro(s) };
+      );
+      Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
+         if misc-tt.is-t(c"TypedMacro",0) then bind-new-macro(k.key, frhs)
+      );
+      _ => ();
+   };
+);
+
 let infer-global-context(term: AST): Nil = (
    match term {
       Seq{seq=seq} => (
@@ -124,7 +137,7 @@ let infer-global-context(term: AST): Nil = (
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
          if k.key.has-prefix(c"primitive::") then ()
-         else if misc-tt.is-t(c"TypedMacro",0) then bind-new-macro(k.key, frhs)
+         else if misc-tt.is-t(c"TypedMacro",0) then ()
          else {
             let ft = t2(c"Arrow", typeof-lhs(lhs), return-type.rewrite-type-alias.expand-implied-phi.without-modifiers).without-phi-keep-state && misc-tt;
             if not(global-is-seen(k.key, ft)) {

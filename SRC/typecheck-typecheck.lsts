@@ -1,5 +1,7 @@
 
 let typecheck(): Nil = (
+   print("TC 0\n");
+   infer-global-macro(ast-parsed-program);
    print("TC 1\n");
    ast-parsed-program = infer-global-context-prim(ast-parsed-program);
    print("AST \{ast-parsed-program}\n");
