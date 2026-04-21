@@ -1,5 +1,5 @@
 
-import SRC/unit-prop-core.lsts;
+import SRC/dev-unit-prop-core.lsts;
 
 import SRC/ascript-types-have-changed.lsts;
 import SRC/ascript-type-index.lsts;

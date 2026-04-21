@@ -10,8 +10,13 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
          let def-i = 0_sz;
          while def-i < seq.length {
             (tctx, let rterm) = infer-global-terms(tctx, seq[def-i]);
+            print("Inferred \{seq[def-i]} becomes \{rterm}\n");
             match rterm {
-               Seq{rseq=seq} => for r in rseq { out-seq = out-seq.push(r) };
+               Seq{rseq=seq} => for r in rseq {
+                  (tctx, r) = infer-global-terms(tctx, r);
+                  print("Inferred Seq \{r}\n");
+                  out-seq = out-seq.push(r)
+               };
                r => out-seq = out-seq.push(r);
             };
             def-i = def-i + 1;
@@ -59,6 +64,17 @@ let infer-global-context-prim(term: AST): Nil = (
             }
          };
       );
+      App{l=left} => (
+         if index-macro-table.has-key(var-name-if-var(l)) {
+            (global-flow-tctx, let rterm) = std-apply-macro(global-flow-tctx, term, Used);
+            match rterm {
+               Seq{rseq=seq} => for r in rseq {
+                  infer-global-context-prim(r);
+               };
+               r => ();
+            };
+         }
+      );
       _ => ();
    }
 );
@@ -70,6 +86,17 @@ let infer-global-context-td(term: AST): Nil = (
          for vector s in type-ast-inserts { ast-parsed-program = ast-parsed-program + s; };
       );
       Typedef{} => infer-type-definition(term);
+      App{l=left} => (
+         if index-macro-table.has-key(var-name-if-var(l)) {
+            (global-flow-tctx, let rterm) = std-apply-macro(global-flow-tctx, term, Used);
+            match rterm {
+               Seq{rseq=seq} => for r in rseq {
+                  infer-global-context-td(r);
+               };
+               r => ();
+            };
+         }
+      );
       _ => ();
    }
 );
@@ -91,6 +118,17 @@ let infer-global-context(term: AST): Nil = (
                Some(mk-tctx()).bind-global(k.key, ft, denormalize-strong(ft), term);
             }
          };
+      );
+      App{l=left} => (
+         if index-macro-table.has-key(var-name-if-var(l)) {
+            (global-flow-tctx, let rterm) = std-apply-macro(global-flow-tctx, term, Used);
+            match rterm {
+               Seq{rseq=seq} => for r in rseq {
+                  infer-global-context(r);
+               };
+               r => ();
+            };
+         }
       );
       _ => ();
    };
