@@ -10,11 +10,9 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
          let def-i = 0_sz;
          while def-i < seq.length {
             (tctx, let rterm) = infer-global-terms(tctx, seq[def-i]);
-            print("Inferred \{seq[def-i]} becomes \{rterm}\n");
             match rterm {
                Seq{rseq=seq} => for r in rseq {
                   (tctx, r) = infer-global-terms(tctx, r);
-                  print("Inferred Seq \{r}\n");
                   out-seq = out-seq.push(r)
                };
                r => out-seq = out-seq.push(r);
@@ -49,18 +47,15 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
 );
 
 let infer-global-context-prim(term: AST): AST = (
-   print("Infer Prim \{term}");
    match term {
       Seq{seq=seq} => (
          let out-seq = mk-vector(type(AST));
          let def-i = 0_sz;
          while def-i < seq.length {
             let rterm = infer-global-context-prim(seq[def-i]);
-            print("Infer Prim \{seq[def-i]} becomes \{rterm}\n");
             match rterm {
                Seq{rseq=seq} => for r in rseq {
                   r = infer-global-context-prim(r);
-                  print("Inferred Seq \{r}\n");
                   out-seq = out-seq.push(r)
                };
                r => (
@@ -86,13 +81,11 @@ let infer-global-context-prim(term: AST): AST = (
       App{l=left, margs=right} => (
          if index-macro-table.has-key(var-name-if-var(l)) {
             (global-flow-tctx, let rterm) = std-apply-macro-super-weak(global-flow-tctx, var-name-if-var(l), margs, Used);
-            print("Super Weak Result \{rterm}\n");
             match rterm {
                Seq{rseq=seq} => (
                   let out-seq = mk-vector(type(AST));
                   for r in rseq {
                      r = infer-global-context-prim(r);
-                     print("Inferred Seq \{r}\n");
                      out-seq = out-seq.push(r)
                   };
                   term = mk-seq(out-seq);
@@ -103,7 +96,6 @@ let infer-global-context-prim(term: AST): AST = (
       );
       _ => ();
    };
-   print("Inferred Prim \{term}\n");
    term
 );
 
