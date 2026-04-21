@@ -294,9 +294,11 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
       mk-seq(mbodies);
    };
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
+   let x = mk-abs(margs, mbody.without-location.ascript(mrett), t0(c"TypedMacro"));
+   print("New Macro \{x}\n");
    (mk-glb(
       mk-token(mname), 
-      mk-abs(margs, mk-app(mk-lit(c":"), mk-cons(mbody.without-location,mk-atype(mrett))), t0(c"TypedMacro"))
+      mk-abs(margs, mbody.without-location.ascript(mrett), t0(c"TypedMacro"))
    ), tokens);
 );
 
