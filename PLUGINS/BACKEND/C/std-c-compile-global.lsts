@@ -156,6 +156,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             text = text + SAtom(c")");
             
             let e = std-c-compile-call(ctx, c"cdecl::return", rhs);
+            let fe = e.get(c"expression");
+            print("Comile global \{k} = cdecl::return(\{rhs}) = \{clone-rope(fe)}\n");
             text = text + SAtom(c"{");
             if k==c"main" then text = text + assemble-string-initializer-section + assemble-global-initializer-section;
             text = text + e.get(c"frame") + e.get(c"expression") + SAtom(c"}");

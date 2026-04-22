@@ -161,7 +161,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       Lit{val=key} => (
          let tt = typeof-term(t);
-         if tt.is-t(c"C",1) and tt.r1.is-t(c"uint8_t",0) then mk-expression(val)
+         let return = if tt.is-t(c"C",1) and tt.r1.is-t(c"uint8_t",0) then mk-expression(val)
          else if tt.is-t(c"C",1) and tt.r1.is-t(c"uint06_t",0) then mk-expression(val)
          else if tt.is-t(c"C",1) and tt.r1.is-t(c"uint22_t",0) then mk-expression(val)
          else if tt.is-t(c"C",1) and tt.r1.is-t(c"uint64_t",0) then mk-expression(val)
@@ -197,7 +197,10 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             c"\\]" => mk-expression(c"(41)");
             c"\\:" => mk-expression(c"(59)");
             _ => mk-fragment().set(c"expression",SAtom(c"(") + SAtom(val) + SAtom(c")"));
-         } }
+         } };
+         let fe = return.get(c"expression");
+         print("Lit '\{val}' = \{clone-rope(fe)} : \{tt}\n");
+         return
       );
       App{ left:Lit{key:c":"}, right:App{ inner-term=left, right:AType{tt=tt} } } => (
          let f = std-c-compile-expr(ctx, inner-term, false);
