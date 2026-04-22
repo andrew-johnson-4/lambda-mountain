@@ -27,9 +27,9 @@ let .rewrite-type-alias(lt: Type): Type = (
       );
       TAnd{ conjugate=conjugate } => (
          let result = mk-vector(type(Type), 0);
-         for vector c in conjugate {
+         for c in conjugate {
             match c.rewrite-type-alias {
-               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
                TAny{} => ();
                rc => ( result = result.push(rc); () );
             }
@@ -43,7 +43,7 @@ let .rewrite-type-alias(lt: Type): Type = (
 );
 let .rewrite-type-alias(lt: Vector<Type>): Vector<Type> = (
    let next = mk-vector(type(Type));
-   for vector t in lt {
+   for t in lt {
       next = next.push(t.rewrite-type-alias)
    };
    next
@@ -68,9 +68,9 @@ let .rewrite-opaque-type-alias(lt: Type): Type = (
       );
       TAnd{ conjugate=conjugate } => (
          let result = mk-vector(type(Type), 0);
-         for vector c in conjugate {
+         for c in conjugate {
             match c.rewrite-opaque-type-alias {
-               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
                TAny{} => ();
                rc => ( result = result.push(rc); () );
             }
@@ -84,7 +84,7 @@ let .rewrite-opaque-type-alias(lt: Type): Type = (
 );
 let .rewrite-opaque-type-alias(lt: Vector<Type>): Vector<Type> = (
    let next = mk-vector(type(Type));
-   for vector t in lt {
+   for t in lt {
       next = next.push(t.rewrite-opaque-type-alias)
    };
    next

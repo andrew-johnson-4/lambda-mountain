@@ -1,6 +1,7 @@
 
 let typecheck(): Nil = (
-   infer-global-context-prim(ast-parsed-program);
+   infer-global-macro(ast-parsed-program);
+   ast-parsed-program = infer-global-context-prim(ast-parsed-program);
    infer-global-context-td(ast-parsed-program);
    infer-global-context(ast-parsed-program);
    assert-no-infinite-types();

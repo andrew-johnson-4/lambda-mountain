@@ -26,6 +26,11 @@ let mk-seq(): AST = (
    Seq( mk-vector(type(AST)) )
 );
 
+let mk-seq(seqs: Vector<AST>): AST = (
+   ast-count = ast-count + 1;
+   Seq( seqs )
+);
+
 let mk-typedef(loc: SourceLocation, lhs-type: Type): AST = (
    ast-count = ast-count + 1;
    Typedef( loc, lhs-type, mk-vector(type(Type)), mk-vector(type(Type)),

@@ -28,16 +28,16 @@ let .enrich-strong(base: Type): Type = (
       );
       #TGround { tag=tag, parameters=parameters } => ( if not(tag.has-prefix(c"Field::") and parameters.length==1) then {
       #   let new-parameters = [] : List<Type>;
-      #   for list p in parameters.reverse {
+      #   for p in parameters.reverse {
       #      new-parameters = cons( p.enrich-strong, new-parameters );
       #   };
       #   base = ts(tag,new-parameters);
       #});
       TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type));
-         for vector c in conjugate {
+         for c in conjugate {
             match c.enrich-strong {
-               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
                TAny{} => ();
                rc => ( result = result.push(rc); () );
             }
@@ -54,7 +54,7 @@ let .enrich-strong(base: Type): Type = (
 let enrich-quick-prop(base: Type, pre: Type): Type = (
    match pre {
       TGround { tag=tag, parameters=parameters } => (
-         for vector row in quick-prop.lookup( pre.ground-tag-and-arity, mk-vector(type((Type,Type))) ) {
+         for row in quick-prop.lookup( pre.ground-tag-and-arity, mk-vector(type((Type,Type))) ) {
             let lt = row.first;
             let rt = row.second;
             if base <: lt then (
@@ -68,7 +68,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
             );
          };
          if tag==c"Array" and parameters.length==2 {
-            for vector row in quick-prop.lookup( (c"Array",2_u64), mk-vector(type((Type,Type))) ) {
+            for row in quick-prop.lookup( (c"Array",2_u64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if base <: lt then (
@@ -85,9 +85,9 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
       );
       TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type));
-         for vector c in conjugate {
+         for c in conjugate {
             match enrich-quick-prop(base, c) {
-               TAnd{rconjugate=conjugate} => for vector rc in rconjugate { result = result.push(rc) };
+               TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
                TAny{} => ();
                rc => ( result = result.push(rc); () );
             }
@@ -137,7 +137,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
    let early-base = base;
    match pre {
       TGround { tag=tag, parameters=parameters } => (
-         for vector row in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, mk-vector(type((Type,Type))) ) {
+         for row in weaken-quick-prop-index.lookup( pre.ground-tag-and-arity, mk-vector(type((Type,Type))) ) {
             let lt = row.first;
             let rt = row.second;
             if can-unify(lt, original-base) then (
@@ -145,7 +145,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             );
          };
          if tag==c"Array" and parameters.length==2 {
-            for vector row in weaken-quick-prop-index.lookup( (c"Array",2_u64), mk-vector(type((Type,Type))) ) {
+            for row in weaken-quick-prop-index.lookup( (c"Array",2_u64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (
@@ -158,7 +158,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             let tag-base = if tag.has-prefix(c"Tag::") then c"Tag::"
                       else if tag.has-prefix(c"Field::") then c"Field::"
                       else c"";
-            for vector row in weaken-quick-prop-index.lookup( (tag-base, parameters.length as U64), mk-vector(type((Type,Type))) ) {
+            for row in weaken-quick-prop-index.lookup( (tag-base, parameters.length as U64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (
@@ -168,25 +168,25 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
          };
       );
       TAnd { conjugate=conjugate } => (
-         for vector c in conjugate { base = weaken-quick-prop(original-base, base, c) };
+         for c in conjugate { base = weaken-quick-prop(original-base, base, c) };
       );
       _ => ();
    };
    match base {
       TGround { tag2=tag, parameters=parameters } => (
          let new-parameters = mk-vector(type(Type));
-         for vector p in parameters {
+         for p in parameters {
             new-parameters = new-parameters.push(p.weaken);
          };
          base = ts(tag2,new-parameters);
       );
       TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type));
-         for vector c in conjugate {
+         for c in conjugate {
             match c {
                TGround { tag3=tag, parameters=parameters } => (
                   let new-parameters = mk-vector(type(Type));
-                  for vector p in parameters {
+                  for p in parameters {
                      new-parameters = new-parameters.push(p.weaken);
                   };
                   result = result.push(ts(tag3,new-parameters));
@@ -212,7 +212,7 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
    let early-base = base;
    match pre {
       TGround { tag=tag, parameters=parameters } => (
-         for vector row in quick-prop.lookup( pre.ground-tag-and-arity, mk-vector(type((Type,Type))) ) {
+         for row in quick-prop.lookup( pre.ground-tag-and-arity, mk-vector(type((Type,Type))) ) {
             let lt = row.first;
             let rt = row.second;
             if can-unify(lt, original-base) then (
@@ -220,7 +220,7 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             );
          };
          if tag==c"Array" and parameters.length==2 {
-            for vector row in quick-prop.lookup( (c"Array",2_u64), mk-vector(type((Type,Type))) ) {
+            for row in quick-prop.lookup( (c"Array",2_u64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (
@@ -232,7 +232,7 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             let tag-base = if tag.has-prefix(c"Tag::") then c"Tag::"
                       else if tag.has-prefix(c"Field::") then c"Field::"
                       else c"";
-            for vector row in quick-prop.lookup( (tag-base, parameters.length as U64), mk-vector(type((Type,Type))) ) {
+            for row in quick-prop.lookup( (tag-base, parameters.length as U64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (
@@ -242,25 +242,25 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
          };
       );
       TAnd { conjugate=conjugate } => (
-         for vector c in conjugate { base = unenrich-quick-prop(original-base, base, c) };
+         for c in conjugate { base = unenrich-quick-prop(original-base, base, c) };
       );
       _ => ();
    };
    match base {
       TGround { tag2=tag, parameters=parameters } => (
          let new-parameters = mk-vector(type(Type));
-         for vector p in parameters {
+         for p in parameters {
             new-parameters = new-parameters.push(p.unenrich);
          };
          base = ts(tag2,new-parameters);
       );
       TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type));
-         for vector c in conjugate {
+         for c in conjugate {
             match c {
                TGround { tag3=tag, parameters=parameters } => (
                   let new-parameters = mk-vector(type(Type));
-                  for vector p in parameters {
+                  for p in parameters {
                      new-parameters = new-parameters.push(p.unenrich);
                   };
                   result = result.push(ts(tag3,new-parameters));

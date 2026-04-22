@@ -10,6 +10,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, t: AST, used: IsUsed): (TypeContex
 let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, MacroTerm);
 let std-apply-macro-helper(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, MacroHelper);
 let std-apply-macro-weak(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, MacroWeak);
+let std-apply-macro-super-weak(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed): (TypeContext?, AST) = std-apply-macro(tctx, mname, margs, used, MacroSuperWeak);
 
 let std-apply-macro-concat(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
@@ -64,7 +65,7 @@ let std-apply-macro-location(tctx: Maybe<TypeContext>, mname: CString, margs: AS
    (tctx, mk-lit(margs.location.into(type(String))).ascript(t0(c"CString") && t0(c"Literal")))
 );
 
-type MacroStrength = MacroTerm | MacroHelper | MacroWeak;
+type MacroStrength = MacroTerm | MacroHelper | MacroWeak | MacroSuperWeak;
 
 let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed, strong: MacroStrength): (TypeContext?, AST) = (
    let result = mk-eof();
@@ -81,7 +82,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
       let row = index-macro-table.lookup(mname, [] : List<(Type,Type,AST)>);
       let peep-holes = ta;
       let peeped = ta;
-      for list Tuple{mtype=first, peep=second, mterm=third} in row {
+      for Tuple{mtype=first, peep=second, mterm=third} in row {
          if non-zero(peep-holes) {
             if peep-holes != peep then fail("Error: Macros must have the same pre-inference expectation.\n\{mname} : \{peeped}\n\{mname} : \{mtype}\n");
          } else {
@@ -89,19 +90,23 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
             peeped = mtype;
          };
       };
-      (let peeped-tctx, peeped-type, margs) = std-infer-peeped-arguments(tctx, margs, peep-holes);
+      (let peeped-tctx, peeped-type, margs) = if not(is(strong,MacroSuperWeak)) {
+         std-infer-peeped-arguments(tctx, margs, peep-holes, true);
+      } else {
+         std-infer-peeped-arguments(tctx, margs, peep-holes, false);
+      };
       let peeped-tctx-unwrapped = peeped-tctx.get-or(mk-tctx());
       peeped-tctx-unwrapped.pctx = tctx.get-or(mk-tctx()).pctx; # Phi Variables are irrelevant to peeped arguments
       tctx = Some(peeped-tctx-unwrapped);
 
       let matched = [] : List<(Type,AST)>;
-      for list Tuple{mtype=first, mterm=third} in row {
+      for Tuple{mtype=first, mterm=third} in row {
          if can-unify(mtype, peeped-type) then matched = cons( (mtype,mterm), matched );
-      }; 
+      };
 
       let dominant-type = ta;
       let candidates = [] : List<(Type,AST)>;
-      for list Tuple{mtype=first, mterm=second} in matched {
+      for Tuple{mtype=first, mterm=second} in matched {
          if non-zero(dominant-type) {
             if can-unify(mtype,dominant-type) and can-unify(dominant-type,mtype) {
                candidates = cons( (mtype,mterm), candidates );
@@ -118,7 +123,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
       (tctx, result, return-type) = std-apply-macro-candidates(tctx, mname, margs, candidates);
    };
 
-   if not(is(strong,MacroWeak)) and not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs} : \{peeped-type}\n", margs);
+   if not(is(strong,MacroWeak) or is(strong,MacroSuperWeak)) and not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs} : \{peeped-type}\n", margs);
    if is(strong,MacroTerm) {
       (tctx, result) = std-infer-expr(tctx, result, false, if return-type==type-lazy then used else Tail, ta);
       mark-free-and-seen(result);
@@ -126,13 +131,34 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
    (tctx, result)
 );
 
-let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type): (TypeContext?, Type, AST) = (
+let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type, strong: Bool): (TypeContext?, Type, AST) = (
+   let o-t = t;
+   let rewritten = false;
+   match t {
+      Var{vkey1=key} => (
+         for Tuple{sfxs1=first, sfxtt1=second} in parse-suffixes {
+            if vkey1.has-suffix(sfxs1) {
+               (tctx, t) = std-infer-expr(tctx, t, false, Used, ta);
+               rewritten = true;
+            };
+         };
+      );
+      Lit{vkey2=key} => (
+         for Tuple{sfxs2=first, sfxtt2=second} in parse-suffixes {
+            if vkey2.has-suffix(sfxs2) {
+               (tctx, t) = std-infer-expr(tctx, t, false, Used, ta);
+               rewritten = true;
+            };
+         };
+      );
+      _ => ();
+   };
    match peep {
       TGround{tag:c"Cons", parameters:[p2.. p1..]} => (
          match t {
             App{is-cons=is-cons, left=left, right=right} => (
-               (tctx, let lt, let new-left) = std-infer-peeped-arguments(tctx, left, p1);
-               (tctx, let rt, let new-right) = std-infer-peeped-arguments(tctx, right, p2);
+               (tctx, let lt, let new-left) = std-infer-peeped-arguments(tctx, left, p1, strong);
+               (tctx, let rt, let new-right) = std-infer-peeped-arguments(tctx, right, p2, strong);
                if not(is(left,new-left)) or not(is(right,new-right))
                then t = mk-cons-or-app(is-cons,new-left,new-right);
                (tctx, t2(c"Cons",lt,rt), t)
@@ -141,12 +167,17 @@ let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type): (T
          }
       );
       TAny{} => (tctx, ta, t);
-      TVar{} => (tctx, ta, t);
       _ => (
-         (let protected-tctx, t) = std-infer-expr(tctx, t, false, Used(), ta);
-         mark-free-and-seen(t);
-         tctx = tctx.with-pctx( protected-tctx.get-or(mk-tctx()).pctx );
-         (tctx, typeof-term(t), t);
+         if strong {
+            if not rewritten {
+               (let protected-tctx, t) = std-infer-expr(tctx, t, false, Used(), ta);
+               mark-free-and-seen(t);
+               tctx = tctx.with-pctx( protected-tctx.get-or(mk-tctx()).pctx );
+            };
+            (tctx, typeof-term(t), t);
+         } else {
+            (tctx, ta, t)
+         }
       );
    }
 );

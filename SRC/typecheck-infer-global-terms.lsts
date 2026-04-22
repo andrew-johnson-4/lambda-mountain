@@ -6,12 +6,20 @@ let infer-bind-global(tctx: TypeContext?, key: CString, nt: Type, dt: Type, blam
 let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
    match term {
       Seq{seq=seq} => (
+         let out-seq = mk-vector(type(AST));
          let def-i = 0_sz;
          while def-i < seq.length {
             (tctx, let rterm) = infer-global-terms(tctx, seq[def-i]);
-            seq[def-i] = rterm;
+            match rterm {
+               Seq{rseq=seq} => for r in rseq {
+                  (tctx, r) = infer-global-terms(tctx, r);
+                  out-seq = out-seq.push(r)
+               };
+               r => out-seq = out-seq.push(r);
+            };
             def-i = def-i + 1;
          };
+         term = mk-seq(out-seq);
       );
       Glb{val:Abs{}} => ();
       Glb{k=key, rhs=val} => (
@@ -38,10 +46,28 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
    (tctx, term)
 );
 
-let infer-global-context-prim(term: AST): Nil = (
+let infer-global-context-prim(term: AST): AST = (
    match term {
       Seq{seq=seq} => (
-         for vector s in seq { infer-global-context-prim(s) }
+         let out-seq = mk-vector(type(AST));
+         let def-i = 0_sz;
+         while def-i < seq.length {
+            let rterm = infer-global-context-prim(seq[def-i]);
+            match rterm {
+               Seq{rseq=seq} => for r in rseq {
+                  let old-r = r;
+                  r = infer-global-context-prim(r);
+                  out-seq = out-seq.push(r)
+               };
+               r => (
+                  let old-r = r;
+                  if not(is(r,seq[def-i])) then r = infer-global-context-prim(r);
+                  out-seq = out-seq.push(r);
+               );
+            };
+            def-i = def-i + 1;
+         };
+         term = mk-seq(out-seq);
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
          if k.key.has-prefix(c"primitive::") then {
@@ -54,29 +80,58 @@ let infer-global-context-prim(term: AST): Nil = (
             }
          };
       );
+      App{l=left, margs=right} => (
+         if index-macro-table.has-key(var-name-if-var(l)) {
+            (global-flow-tctx, let rterm) = std-apply-macro-super-weak(global-flow-tctx, var-name-if-var(l), margs, Used);
+            match rterm {
+               Seq{rseq=seq} => (
+                  let out-seq = mk-vector(type(AST));
+                  for r in rseq {
+                     r = infer-global-context-prim(r);
+                     out-seq = out-seq.push(r)
+                  };
+                  term = mk-seq(out-seq);
+               );
+               r => term = r;
+            };
+         }
+      );
       _ => ();
-   }
+   };
+   term
 );
 
 let infer-global-context-td(term: AST): Nil = (
    match term {
       Seq{seq=seq} => (
-         for vector s in seq { infer-global-context-td(s) };
-         for vector s in type-ast-inserts { ast-parsed-program = ast-parsed-program + s; };
+         for s in seq { infer-global-context-td(s) };
+         for s in type-ast-inserts { ast-parsed-program = ast-parsed-program + s; };
       );
       Typedef{} => infer-type-definition(term);
       _ => ();
    }
 );
 
+let infer-global-macro(term: AST): Nil = (
+   match term {
+      Seq{seq=seq} => (
+         for s in seq { infer-global-macro(s) };
+      );
+      Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
+         if misc-tt.is-t(c"TypedMacro",0) then bind-new-macro(k.key, frhs)
+      );
+      _ => ();
+   };
+);
+
 let infer-global-context(term: AST): Nil = (
    match term {
       Seq{seq=seq} => (
-         for vector s in seq { infer-global-context(s) };
+         for s in seq { infer-global-context(s) };
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
          if k.key.has-prefix(c"primitive::") then ()
-         else if misc-tt.is-t(c"TypedMacro",0) then bind-new-macro(k.key, frhs)
+         else if misc-tt.is-t(c"TypedMacro",0) then ()
          else {
             let ft = t2(c"Arrow", typeof-lhs(lhs), return-type.rewrite-type-alias.expand-implied-phi.without-modifiers).without-phi-keep-state && misc-tt;
             if not(global-is-seen(k.key, ft)) {

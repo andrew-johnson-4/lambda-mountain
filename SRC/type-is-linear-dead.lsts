@@ -3,13 +3,13 @@ let .is-linear-dead(tt: Type): Bool = (
    match tt {
       TAnd{conjugate=conjugate} => (
          let return = false;
-         for vector c in conjugate { return = return or c.is-linear-dead };
+         for c in conjugate { return = return or c.is-linear-dead };
          return
       );
       TGround{tag:c"Linear",parameters:[TGround{tag:c"Phi::Moved",parameters:[]}..]} => true;
       TGround{parameters=parameters} => (
          let return = false;
-         for vector c in parameters { return = return or c.is-linear-dead };
+         for c in parameters { return = return or c.is-linear-dead };
          return
       );
       _ => false;

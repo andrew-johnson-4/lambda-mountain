@@ -36,6 +36,9 @@ let type-nil = t0(c"Nil");
 let type-any = t0(c"Any");
 
 # new allocations = 0 (constant)
+let type-tail-position = t0(c"TailPosition");
+
+# new allocations = 0 (constant)
 let type-lazy = tv(c"lazy");
 
 # new allocations = 0 (constant)
@@ -100,21 +103,21 @@ let $"&&"(lt: Type, rt: Type): Type = (
       Tuple{second:TAny{}} => lt;
       Tuple{first:TAnd{lconjugate=conjugate},second:TAnd{rconjugate=conjugate}} => (
          let result = mk-vector(type(Type), lconjugate.length+rconjugate.length);
-         for vector c in lconjugate { result = result.push(c) };
-         for vector c in rconjugate { result = result.push(c) };
+         for c in lconjugate { result = result.push(c) };
+         for c in rconjugate { result = result.push(c) };
          result = result.sort;
          TAnd(result)
       );
       Tuple{first=first,second:TAnd{rconjugate=conjugate}} => (
          let result = mk-vector(type(Type), 1+rconjugate.length);
          result = result.push(first);
-         for vector c in rconjugate { result = result.push(c) };
+         for c in rconjugate { result = result.push(c) };
          result = result.sort;
          TAnd(result)
       );
       Tuple{first:TAnd{lconjugate=conjugate},second=second} => (
          let result = mk-vector(type(Type), lconjugate.length+1);
-         for vector c in lconjugate { result = result.push(c) };
+         for c in lconjugate { result = result.push(c) };
          result = result.push(second);
          result = result.sort;
          TAnd(result)
@@ -137,14 +140,14 @@ let .extend(lt: Type, rt: Type): Type = (
       Tuple{first:TAny{}} => rt;
       Tuple{second:TAny{}} => lt;
       Tuple{first:TAnd{lconjugate=conjugate},second:TAnd{rconjugate=conjugate}} => (
-         for vector c in rconjugate { lconjugate = lconjugate.push(c) };
+         for c in rconjugate { lconjugate = lconjugate.push(c) };
          lconjugate = lconjugate.sort;
          TAnd(lconjugate)
       );
       Tuple{first=first,second:TAnd{rconjugate=conjugate}} => (
          let result = mk-vector(type(Type), 1+rconjugate.length);
          result = result.push(first);
-         for vector c in rconjugate { result = result.push(c) };
+         for c in rconjugate { result = result.push(c) };
          result = result.sort;
          TAnd(result)
       );

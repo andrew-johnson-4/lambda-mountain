@@ -7,6 +7,10 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
+   std-infer-expr(tctx, term, is-scoped, used, hint, false);
+);
+
+let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type, rewritten-constant: Bool): (TypeContext?, AST) = (
    profile-visit-ast-unique(term);
    profile-visit-ast-equal(term);
    if not(term.is-free-and-seen) { match term {
@@ -83,10 +87,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          } else {
             tt = tt.rewrite-type-alias;
             add-concrete-type-instance(tt, term);
-            (tctx, let new-t) = std-infer-expr(tctx, t, false, Tail, tt);
+            (tctx, let new-t) = std-infer-expr(tctx, t, false, Tail, tt, not hint <: type-tail-position);
             if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
             let is-nullary = false;
-            if typeof-term(t).is-arrow and not(tt.is-arrow) and non-zero(var-name-if-var-or-lit(t)) {
+            if typeof-term(t).is-arrow and not(tt.is-arrow) and non-zero(var-name-if-var-or-lit(t)) and not(tt.is-t(c"L",0)) {
                # This case exists for nullary constructors like TAny : Type
                let ftype = tctx.find-callable( var-name-if-var-or-lit(t), type-nil, term, tt ).direct-type;
                tctx = tctx.ascript(term, ftype);
@@ -231,15 +235,15 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       Var{key2=key, token=token} => (
          let rewritten = false;
-         if not non-zero(hint) {
-            for list Tuple{sfxs1=first, sfxtt1=second} in parse-suffixes {
+         if not rewritten-constant {
+            for Tuple{sfxs1=first, sfxtt1=second} in parse-suffixes {
                if key2.has-suffix(sfxs1) {
                   let lpfx1 = key2.remove-suffix(sfxs1).get-or(c"");
                   term = mk-app( mk-lit(c":",with-key(token,c":")), mk-app( mk-lit(lpfx1,with-key(token,lpfx1)), mk-atype(sfxtt1) ) );
-                  (tctx, term) = std-infer-expr(tctx, term, is-scoped, used, ta);
+                  (tctx, term) = std-infer-expr(tctx, term, is-scoped, used, ta, true);
                   rewritten = true;
                }
-            }
+            };
          };
          if not rewritten {
             (tctx, let vt) = typeof-var(term, tctx, key2, hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
@@ -258,15 +262,15 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       Lit{key3=key, token=token} => (
          let rewritten = false;
-         if not non-zero(hint) {
-            for list Tuple{sfxs2=first, sfxtt2=second} in parse-suffixes {
+         if not rewritten-constant {
+            for Tuple{sfxs2=first, sfxtt2=second} in parse-suffixes {
                if key3.has-suffix(sfxs2) {
                   let lpfx2 = key3.remove-suffix(sfxs2).get-or(c"");
                   term = mk-app( mk-lit(c":",with-key(token,c":")), mk-app( mk-lit(lpfx2,with-key(token,lpfx2)), mk-atype(sfxtt2) ) );
-                  (tctx, term) = std-infer-expr(tctx, term, is-scoped, used, ta);
+                  (tctx, term) = std-infer-expr(tctx, term, is-scoped, used, ta, true);
                   rewritten = true;
                }
-            }
+            };
          };
          if not rewritten {
             if hint.is-t(c"Literal",0) {

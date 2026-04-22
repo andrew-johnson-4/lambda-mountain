@@ -136,7 +136,7 @@ let lsts-parse-doc(tokens: List<Token>): Tuple<AST, List<Token>> = (
       };
    };
 
-   for list Tuple{key=first, val=second} in tags {
+   for Tuple{key=first, val=second} in tags {
       ast = mk-app( mk-var("Meta::with-tag"), mk-cons( mk-lit(key), val ) );
    };
 
@@ -198,58 +198,49 @@ let lsts-parse(tokens: List<Token>): Nil = (
    while non-zero(tokens) {
       (let docx, tokens) = lsts-parse-doc(tokens);
       let prev-tokens = tokens;
-      match tokens {
-         [ Token{key:c"let"}.. _] => (
-            (let t, tokens) = lsts-parse-let(tokens);
-            ast-parsed-program = ast-parsed-program + t;
-         );
-         [ Token{key:c"type"}.. _] => (
-            (let td, tokens) = lsts-parse-typedef(tokens);
-            ast-parsed-program = ast-parsed-program + td;
-         );
-         [ Token{key:c"typed"}.. Token{key:c"macro"}.. _] => (
-            (let bind, tokens) = lsts-parse-typed-macro(tokens);
-            ast-parsed-program = ast-parsed-program + bind;
-         );
-         [ Token{key:c"deprecated"}.. Token{key:c"macro"}.. rst] => (
-            (let mlhs, tokens) = lsts-parse-atom-without-tail(rst);
-            let mrhs = ASTNil;
-            lsts-parse-expect(c"(",tokens); tokens = tail(tokens);
-            if lsts-parse-head(tokens)==c"let" then (mrhs, tokens) = lsts-parse-let(tokens)
-            else (mrhs, tokens) = lsts-parse-atom(tokens);
-            lsts-parse-expect(c")",tokens); tokens = tail(tokens);
-            preprocess-macros = MSeq( close(preprocess-macros), Macro(mlhs.without-location, mrhs.without-location) );
-            lsts-parse-expect(c";",tokens); tokens = tail(tokens);
-         );
-         [ Token{key:c"interface"}.. _] => tokens = lsts-parse-interface(tokens);
-         [ Token{key:c"import"}.. rest] => (
-            tokens = rest;
-            let path = SNil();
-            while non-zero(tokens) and lsts-parse-head(tokens) != c";" {
-               path = path + SAtom ( lsts-unwrap-identifier(lsts-parse-head(tokens)) );
-               tokens = tail(tokens);
-            };
-            lsts-parse-expect(c";",tokens); tokens = tail(tokens);
-            frontend(clone-rope(path));
-         );
-         _ => (
-            let term-rest = lsts-parse-small-expression(tokens);
-            let term = term-rest.first;
-            tokens = term-rest.second;
-            ast-parsed-program = ast-parsed-program + term;
-            lsts-parse-expect(c";",tokens); tokens = tail(tokens);
-         );
-      };
+      (let t, tokens) = lsts-parse-top-level(tokens);
       if is(prev-tokens, tokens) { fail("Unrecognized Token During Parsing: \{lsts-parse-head(tokens)}\n") };
-      if non-zero(docx) { 
-         ast-parsed-program = ast-parsed-program + mk-meta(docx);
-      };
+      if non-zero(t) then ast-parsed-program = ast-parsed-program + t;
    };
 );
 
 let lsts-parse-top-level(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   # TODO, accept all top-level expressions here
-   lsts-parse-expression(tokens);
+   match tokens {
+      [ Token{key:c"let"}.. _] => lsts-parse-let(tokens);
+      [ Token{key:c"type"}.. _] => lsts-parse-typedef(tokens);
+      [ Token{key:c"typed"}.. Token{key:c"macro"}.. _] => lsts-parse-typed-macro(tokens);
+      [ Token{key:c"deprecated"}.. Token{key:c"macro"}.. rst] => (
+         (let mlhs, tokens) = lsts-parse-atom-without-tail(rst);
+         let mrhs = ASTNil;
+         lsts-parse-expect(c"(",tokens); tokens = tail(tokens);
+         if lsts-parse-head(tokens)==c"let" then (mrhs, tokens) = lsts-parse-let(tokens)
+         else (mrhs, tokens) = lsts-parse-atom(tokens);
+         lsts-parse-expect(c")",tokens); tokens = tail(tokens);
+         preprocess-macros = MSeq( close(preprocess-macros), Macro(mlhs.without-location, mrhs.without-location) );
+         lsts-parse-expect(c";",tokens); tokens = tail(tokens);
+         (mk-eof(), tokens);
+      );
+      [ Token{key:c"interface"}.. _] => (
+         tokens = lsts-parse-interface(tokens);
+         (mk-eof(), tokens);
+      );
+      [ Token{key:c"import"}.. rest] => (
+         tokens = rest;
+         let path = SNil();
+         while non-zero(tokens) and lsts-parse-head(tokens) != c";" {
+            path = path + SAtom ( lsts-unwrap-identifier(lsts-parse-head(tokens)) );
+            tokens = tail(tokens);
+         };
+         lsts-parse-expect(c";",tokens); tokens = tail(tokens);
+         frontend(clone-rope(path));
+         (mk-eof(), tokens);
+      );
+      _ => (
+         (let t, tokens) = lsts-parse-small-expression(tokens);
+         lsts-parse-expect(c";",tokens); tokens = tail(tokens);
+         (t, tokens);
+      );
+   };
 );
 
 let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
@@ -277,13 +268,25 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c":", tokens); tokens = tail(tokens);
    (let mrett, tokens) = lsts-parse-type(tokens);
    lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-   lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-   (let mbody, tokens) = lsts-parse-top-level(tokens);
-   lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+   let mbody = if lsts-parse-head(tokens)==c"(" {
+      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+      (let mbody, tokens) = lsts-parse-expression(tokens);
+      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+      mbody
+   } else {
+      lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+      let mbodies = mk-vector(type(AST));
+      while lsts-parse-head(tokens) != c"}" {
+         (let mbody, tokens) = lsts-parse-top-level(tokens);
+         mbodies = mbodies.push(mbody);
+      };
+      lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+      mk-seq(mbodies);
+   };
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    (mk-glb(
       mk-token(mname), 
-      mk-abs(margs, mk-app(mk-lit(c":"), mk-cons(mbody.without-location,mk-atype(mrett))), t0(c"TypedMacro"))
+      mk-abs(margs, mbody.without-location.ascript(mrett), t0(c"TypedMacro"))
    ), tokens);
 );
 
@@ -473,7 +476,7 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
          }
       };
       base = head(bases); bases = tail(bases);
-      for list b in bases {
+      for b in bases {
          base = mk-app(
             Var( c"macro::lhs-head", with-location(mk-token("macro::lhs-head"),loc) ),
             mk-cons(b, base)
@@ -564,7 +567,7 @@ let lsts-make-maybe-var(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-is-lit(s: CString): Bool = (
    let r = false;
-   for list Tuple { sfxs=first } in parse-suffixes {
+   for Tuple { sfxs=first } in parse-suffixes {
       r = r or s.has-suffix(sfxs);
    }; r;
 );
@@ -760,7 +763,7 @@ let lsts-parse-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
                lsts-parse-expect(c",", tokens); tokens = tail(tokens);
             }
          };
-         for list add-item in add-items {
+         for add-item in add-items {
             term = mk-app(
                Var( c"list::cons", with-location(mk-token("list::cons"),loc) ),
                mk-cons(add-item, term)
@@ -959,7 +962,7 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
          }
       };
    };
-   for vector i in infers {
+   for i in infers {
       if i.is-t(c"MustRelease",0) and not(implied-phi.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1))
       then {
          let mt = t1(c"MustRelease::ToRelease",type-linear-live);
@@ -1289,125 +1292,6 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
    Tuple ( base, tokens )
 );
 
-let lsts-parse-match2-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   let expr = mk-eof();
-   if lsts-parse-head(tokens)==c"[" {
-      let loc = head(tokens).location;
-      lsts-parse-expect(c"[", tokens); tokens = tail(tokens);
-      expr = mk-app(mk-var(c"macro::lhs-tail").with-location(loc), mk-nil());
-      let seq = [] : List<AST>;
-      while non-zero(tokens) and lsts-parse-head(tokens)!=c"]" {
-         (let head, tokens) = lsts-parse-match2-lhs-one-bind(tokens);
-         if lsts-parse-head(tokens)==c"." and lsts-parse-head(tail(tokens))==c"." {
-            lsts-parse-expect(c".", tokens); tokens = tail(tokens);
-            lsts-parse-expect(c".", tokens); tokens = tail(tokens);
-            seq = cons(head, seq);
-         } else {
-            lsts-parse-expect(c"]", tokens);
-            expr = head;
-         }
-      };
-      for list s in seq {
-         expr = mk-app( mk-var(c"macro::lhs-head"), mk-cons(s,expr) );
-      };
-      lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
-   } else if lsts-parse-head(tokens)==c"(" {
-      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-      (expr, tokens) = lsts-parse-match2-lhs-one-bind(tokens);
-      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-   } else if lsts-parse-head(tokens)==c"uuid" {
-      let loc = head(tokens).location;
-      lsts-parse-expect(c"uuid", tokens); tokens = tail(tokens);
-      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-      (let name, tokens) = lsts-parse-identifier(tokens);
-      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-      expr = mk-app( mk-var(c"uuid").with-location(loc), mk-var(name).with-location(loc) );
-   } else if lsts-parse-head(tokens).is-lsts-constant {
-      expr = lsts-make-lit(head(tokens)); tokens = tail(tokens);
-   } else if lsts-is-enum-head(lsts-parse-head(tokens)) or (lsts-parse-head(tokens)==c"_" and lsts-parse-head(tail(tokens))==c"{") {
-      let loc = head(tokens).location;
-      let tag = lsts-parse-head(tokens); tokens = tail(tokens);
-      let suffix-condition = mk-var(c"_").with-location(loc);
-      if lsts-parse-head(tokens)==c"{" {
-         lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-         while non-zero(tokens) and lsts-parse-head(tokens)!=c"}" {
-            let mode = c"macro::let-name";
-            if lsts-parse-head(tokens)==c"set" { mode = c"macro::set-name"; tokens = tail(tokens) }
-            else if lsts-parse-head(tokens)==c"let" { mode = c"macro::let-name"; tokens = tail(tokens) };
-            let raw = false;
-            if lsts-parse-head(tokens)==c"raw" { raw = true; tokens = tail(tokens) };
-            let bind-name = c"_";
-            (let field-name, tokens) = lsts-parse-identifier(tokens);
-            if lsts-parse-head(tokens)==c"=" {
-               lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-               bind-name = field-name;
-               (field-name, tokens) = lsts-parse-identifier(tokens);
-            };
-            let val = if lsts-parse-head(tokens)==c":" {
-               lsts-parse-expect(c":", tokens); tokens = tail(tokens);
-               (let val, tokens) = lsts-parse-match2-lhs-one(tokens);
-               val
-            } else {
-               mk-var(c"_").with-location(loc)
-            };
-            let bind = if bind-name==c"_" then mk-var(bind-name).with-location(loc)
-            else mk-app( mk-var(mode), mk-var(bind-name).with-location(loc) );
-            let new-cond = if raw {
-               mk-app( mk-var(c"macro::lhs-raw-struct-field"), mk-cons(
-                  mk-cons(
-                     bind,
-                     mk-var(field-name)
-                  ),
-                  val
-               ));
-            } else {
-               mk-app( mk-var(c"macro::lhs-struct-field"), mk-cons(
-                  mk-cons(
-                     bind,
-                     mk-var(field-name)
-                  ),
-                  val
-               ));
-            };
-            suffix-condition = mk-app( mk-var(c"macro::lhs-struct"), mk-cons(new-cond, suffix-condition) );
-            if lsts-parse-head(tokens)!=c"}" {
-               lsts-parse-expect(c",", tokens); tokens = tail(tokens);
-            };
-         };
-         lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-      };
-      if tag == c"_" {
-         expr = suffix-condition;
-      } else {
-         expr = mk-app(mk-var(c"macro::lhs-struct"), mk-cons( mk-lit(tag).with-location(loc), suffix-condition ));
-      };
-   } else if lsts-parse-head(tokens)==c"_" {
-      expr = mk-var(c"_").with-location(head(tokens).location);
-      lsts-parse-expect(c"_", tokens); tokens = tail(tokens);
-   } else if lsts-is-ident-head(lsts-parse-head(tokens)) {
-      (let name2, tokens) = lsts-parse-identifier(tokens);
-      expr = mk-var(name2).with-location(head(tokens).location);
-   } else {
-      lsts-parse-expect(c"[Left Hand Side]", tokens);
-   };
-   (expr, tokens)
-);
-
-let lsts-parse-match2-lhs-one-bind(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   if lsts-has-assign(tokens) {
-      let mode = c"macro::let-bind";
-      if lsts-parse-head(tokens)==c"set" { mode = c"macro::set-bind"; tokens = tail(tokens) }
-      else if lsts-parse-head(tokens)==c"let" { mode = c"macro::let-bind"; tokens = tail(tokens) };
-      (let name, tokens) = lsts-parse-identifier(tokens);
-      lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-      (let rest, tokens) = lsts-parse-match2-lhs-one(tokens);
-      let expr = mk-app(mk-var(mode), mk-cons(rest, mk-var(name)));
-      (expr, tokens)
-   } else {
-      lsts-parse-match2-lhs-one(tokens);
-   }
-);
-
 let .is-assign-lit(t: AST): Bool = (
    match t {
       App{ left:Var{key:c"macro::let-bind"} } => true;
@@ -1437,86 +1321,6 @@ let .is-constant(t: AST): Bool = (
       Var{key2=key} => key2.is-lsts-constant;
       _ => false;
    }
-);
-
-let lsts-parse-match2-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   # prefixes
-   # suffixes
-   # list-likes
-   # tuples
-   # objects
-   let original-tokens = tokens;
-   (let lhs, tokens) = lsts-parse-match2-lhs-one-bind(tokens);
-   let presufs = mk-vector(type(AST)).push(lhs);
-   while lsts-parse-head(tokens)==c"." and lsts-parse-head(tail(tokens))==c"." {
-      lsts-parse-expect(c".", tokens); tokens = tail(tokens);
-      lsts-parse-expect(c".", tokens); tokens = tail(tokens);
-      (lhs, tokens) = lsts-parse-match2-lhs-one-bind(tokens);
-      presufs = presufs.push(lhs);
-   };
-   let prefixes = mk-vector(type(AST));
-   let suffixes = mk-vector(type(AST));
-   let starti = 0_sz;
-   let endi = presufs.length - 1;
-   while starti < endi and presufs[starti].is-constant or presufs[starti].is-assign-lit {
-      prefixes = prefixes.push(presufs[starti]);
-      starti = starti + 1;
-   };
-   while starti < endi and  presufs[endi].is-constant or presufs[endi].is-assign-lit {
-      suffixes = suffixes.push(presufs[endi]);
-      endi = endi - 1;
-   };
-   if endi != starti then {
-      fail("Invalid Prefix/Suffix Chain", original-tokens.formatted-location);
-   };
-   lhs = presufs[starti];
-   for vector p in prefixes {
-      lhs = mk-app(mk-var(c"macro::lhs-prefix"), mk-cons(p, lhs));
-   };
-   while suffixes.length > 0 {
-      (let p, suffixes) = suffixes.pop-backwards-compatible();
-      lhs = mk-app(mk-var(c"macro::lhs-suffix"), mk-cons(p, lhs));
-   };
-   if lsts-parse-head(tokens)==c"where" {
-      lsts-parse-expect(c"where", tokens); tokens = tail(tokens);
-      (let cond, tokens) = lsts-parse-ascript(tokens);
-      lhs = mk-app( mk-var(c"macro::lhs-guard"), mk-cons(lhs,cond) );
-   };
-   (lhs, tokens)
-);
-
-let lsts-parse-match2(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   let loc = head(tokens).location;
-   lsts-parse-expect(c"match2", tokens); tokens = tail(tokens);
-   let raw = lsts-parse-head(tokens)==c"raw"; if raw { tokens = tail(tokens); };
-   (let expr, tokens) = lsts-parse-small-expression(tokens);
-   if raw then expr = mk-app(mk-var(c"macro::bind-raw"), expr);
-   let case-root = mk-app(mk-var(c"fail"),mk-cons(
-      mk-lit(c"Pattern Match Failure").ascript(t0(c"String") && t0(c"Literal")),
-      mk-app(mk-var(c"macro::location"),mk-var(c"here").with-location(loc))
-   ));
-   lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-   let cases = [] : List<(AST,AST)>;
-   while non-zero(tokens) and lsts-parse-head(tokens)!=c"}" {
-      (let lhs, tokens) = lsts-parse-match2-lhs(tokens);
-      lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-      lsts-parse-expect(c">", tokens); tokens = tail(tokens);
-      if lsts-parse-head(tokens) == c"{" {
-         fail("Please wrap map literals in match cases in parenthesis. At \{tokens.formatted-location}\n");
-      };
-      (let rhs, tokens) = lsts-parse-small-expression(tokens);
-      lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-      cases = cons( (lhs,rhs), cases );
-   };
-   for list Tuple{lhs=first,rhs=second} in cases {
-      case-root = mk-app(
-         mk-var(c"macro::match-case"),
-         mk-cons(mk-cons(lhs,rhs),case-root)
-      );
-   };
-   lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-   let result-expr = mk-app(mk-var(c"macro::match"), mk-cons(expr, case-root));
-   (result-expr, tokens);
 );
 
 let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
@@ -1571,7 +1375,7 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
          );
 
          let i = 0_u64;
-         for list lhs in lefts {
+         for lhs in lefts {
             let fieldstr = c"." + (i+1).into(type(CString));
             let rexpr = mk-app(
                Var( fieldstr, with-location(mk-token(fieldstr),loc) ),
@@ -1851,9 +1655,6 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       term = AType( term-rest.first );
    } else if lsts-parse-head(tokens)==c"for" {
       let loc = head(tokens).location; tokens = tail(tokens);
-      let list = false;
-      if lsts-parse-head(tokens)==c"list" then { tokens = tail(tokens); list = true; };
-      if lsts-parse-head(tokens)==c"vector" then { tokens = tail(tokens); list = false; };
       let lhs-rest = lsts-parse-lhs(tokens);
       tokens = lhs-rest.second;
       lsts-parse-expect(c"in", tokens); tokens = tail(tokens);
@@ -1898,8 +1699,6 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
             )
          )
       );         
-   } else if lsts-parse-head(tokens)==c"match2" {
-      (term, tokens) = lsts-parse-match2(tokens);
    } else if lsts-parse-head(tokens)==c"match" {
       let loc = head(tokens).location; tokens = tail(tokens);
       let raw = if lsts-parse-head(tokens)==c"raw" {
@@ -1941,6 +1740,9 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       );
    } else if lsts-parse-head(tokens).has-suffix(c"_ss") {
       (term, tokens) = lsts-parse-lit(tokens);
+   } else if lsts-parse-head(tokens).has-suffix(c"_l") {
+      term = mk-lit(lsts-parse-head(tokens).remove-suffix(c"_l").get-or-panic).ascript(t0(c"L"));
+      tokens = tail(tokens);
    } else if lsts-parse-head(tokens).has-suffix(c"_rl") {
       term = mk-lit(lsts-parse-head(tokens).remove-suffix(c"_rl").get-or(c""));
       tokens = tail(tokens);

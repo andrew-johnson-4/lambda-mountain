@@ -3,7 +3,7 @@ let .is-moved(tt: Type): Bool = (
    match tt {
       TAnd{conjugate=conjugate} => (
          let moved = false;
-         for vector c in conjugate {
+         for c in conjugate {
             moved = moved or c.is-moved;
          };
          moved
@@ -11,7 +11,7 @@ let .is-moved(tt: Type): Bool = (
       TGround{tag:c"Phi::Moved",parameters:[]} => true;
       TGround{tag=tag,parameters=parameters} => (
          let moved = false;
-         for vector c in parameters {
+         for c in parameters {
             moved = moved or c.is-moved;
          };
          moved
