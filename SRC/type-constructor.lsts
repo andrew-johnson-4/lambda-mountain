@@ -36,6 +36,9 @@ let type-nil = t0(c"Nil");
 let type-any = t0(c"Any");
 
 # new allocations = 0 (constant)
+let type-tail-position = t0(c"TailPosition");
+
+# new allocations = 0 (constant)
 let type-lazy = tv(c"lazy");
 
 # new allocations = 0 (constant)
