@@ -57,13 +57,11 @@ let infer-global-context-prim(term: AST): AST = (
                Seq{rseq=seq} => for r in rseq {
                   let old-r = r;
                   r = infer-global-context-prim(r);
-                  print("Prim \{old-r} => \{r}\n");
                   out-seq = out-seq.push(r)
                };
                r => (
                   let old-r = r;
                   if not(is(r,seq[def-i])) then r = infer-global-context-prim(r);
-                  print("Prim \{old-r} => \{r}\n");
                   out-seq = out-seq.push(r);
                );
             };
