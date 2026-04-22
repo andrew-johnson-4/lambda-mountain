@@ -153,7 +153,6 @@ let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type, str
       );
       _ => ();
    };
-   if not(is(t,o-t)) then print("\{o-t} => \{t} : \{typeof-term(t)}\n");
    match peep {
       TGround{tag:c"Cons", parameters:[p2.. p1..]} => (
          match t {
