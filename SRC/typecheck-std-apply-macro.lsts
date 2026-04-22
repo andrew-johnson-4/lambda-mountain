@@ -132,6 +132,28 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
 );
 
 let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type, strong: Bool): (TypeContext?, Type, AST) = (
+   let o-t = t;
+   let rewritten = false;
+   match t {
+      Var{vkey1=key} => (
+         for Tuple{sfxs1=first, sfxtt1=second} in parse-suffixes {
+            if vkey1.has-suffix(sfxs1) {
+               (tctx, t) = std-infer-expr(tctx, t, false, Used, ta);
+               rewritten = true;
+            };
+         };
+      );
+      Lit{vkey2=key} => (
+         for Tuple{sfxs2=first, sfxtt2=second} in parse-suffixes {
+            if vkey2.has-suffix(sfxs2) {
+               (tctx, t) = std-infer-expr(tctx, t, false, Used, ta);
+               rewritten = true;
+            };
+         };
+      );
+      _ => ();
+   };
+   if not(is(t,o-t)) then print("\{o-t} => \{t} : \{typeof-term(t)}\n");
    match peep {
       TGround{tag:c"Cons", parameters:[p2.. p1..]} => (
          match t {
@@ -146,12 +168,13 @@ let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type, str
          }
       );
       TAny{} => (tctx, ta, t);
-      TVar{} => (tctx, ta, t);
       _ => (
          if strong {
-            (let protected-tctx, t) = std-infer-expr(tctx, t, false, Used(), ta);
-            mark-free-and-seen(t);
-            tctx = tctx.with-pctx( protected-tctx.get-or(mk-tctx()).pctx );
+            if not rewritten {
+               (let protected-tctx, t) = std-infer-expr(tctx, t, false, Used(), ta);
+               mark-free-and-seen(t);
+               tctx = tctx.with-pctx( protected-tctx.get-or(mk-tctx()).pctx );
+            };
             (tctx, typeof-term(t), t);
          } else {
             (tctx, ta, t)

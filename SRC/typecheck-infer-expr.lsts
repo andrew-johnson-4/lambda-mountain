@@ -7,6 +7,10 @@ let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, bl
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type): (TypeContext?, AST) = (
+   std-infer-expr(tctx, term, is-scoped, used, hint, false);
+);
+
+let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type, rewritten-constant: Bool): (TypeContext?, AST) = (
    profile-visit-ast-unique(term);
    profile-visit-ast-equal(term);
    if not(term.is-free-and-seen) { match term {
@@ -102,6 +106,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                # frontend is producing ((None : TContext?)()) instead of (None() : TContext?)
                # the return hint stuff is working, so all the hard work is done. I think only the frontend needs to change
                tt = tt.without-slot(c"ReturnHint",0).rewrite-type-alias;
+               print("Ascripted \{t}\n");
                if not(can-unify(tt, typeof-term(term)))
                then exit-error("Ascripted value does not match declared type:\nExpected \{tt}\nFound \{typeof-term(t)}\n", term);
             };
@@ -231,15 +236,15 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       Var{key2=key, token=token} => (
          let rewritten = false;
-         if not non-zero(hint) {
+         if not rewritten-constant {
             for Tuple{sfxs1=first, sfxtt1=second} in parse-suffixes {
                if key2.has-suffix(sfxs1) {
                   let lpfx1 = key2.remove-suffix(sfxs1).get-or(c"");
                   term = mk-app( mk-lit(c":",with-key(token,c":")), mk-app( mk-lit(lpfx1,with-key(token,lpfx1)), mk-atype(sfxtt1) ) );
-                  (tctx, term) = std-infer-expr(tctx, term, is-scoped, used, ta);
+                  (tctx, term) = std-infer-expr(tctx, term, is-scoped, used, ta, true);
                   rewritten = true;
                }
-            }
+            };
          };
          if not rewritten {
             (tctx, let vt) = typeof-var(term, tctx, key2, hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
@@ -258,15 +263,15 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       Lit{key3=key, token=token} => (
          let rewritten = false;
-         if not non-zero(hint) {
+         if not rewritten-constant {
             for Tuple{sfxs2=first, sfxtt2=second} in parse-suffixes {
                if key3.has-suffix(sfxs2) {
                   let lpfx2 = key3.remove-suffix(sfxs2).get-or(c"");
                   term = mk-app( mk-lit(c":",with-key(token,c":")), mk-app( mk-lit(lpfx2,with-key(token,lpfx2)), mk-atype(sfxtt2) ) );
-                  (tctx, term) = std-infer-expr(tctx, term, is-scoped, used, ta);
+                  (tctx, term) = std-infer-expr(tctx, term, is-scoped, used, ta, true);
                   rewritten = true;
                }
-            }
+            };
          };
          if not rewritten {
             if hint.is-t(c"Literal",0) {
