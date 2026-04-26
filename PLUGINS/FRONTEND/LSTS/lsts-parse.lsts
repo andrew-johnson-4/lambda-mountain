@@ -1686,8 +1686,8 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
       let c-rest = lsts-parse-small-expression(tokens);
       tokens = c-rest.second;
       lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-      let rhs-rest = lsts-parse-expression(tokens);
-      tokens = rhs-rest.second;
+      let rhs = mk-nil();
+      if lsts-parse-head(tokens)!=c"}" then (rhs, tokens) = lsts-parse-expression(tokens);
       lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
       term = mk-app(
          Var( c"macro::while", with-location(mk-token("macro::while"),loc) ),
@@ -1695,7 +1695,7 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
             c-rest.first,
             mk-app(
                Var( c"scope", with-location(mk-token("scope"),loc) ),
-               rhs-rest.first
+               rhs
             )
          )
       );         
