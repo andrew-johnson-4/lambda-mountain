@@ -63,7 +63,7 @@ let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
    safe-alloc-block-count-monotonic-history = safe-alloc-block-count-monotonic-history + 1;
 
    let tk = type(t).into(type(CString));
-   if tk != c"SparseOwnedData<Tuple<U64,C<\"char\">[],HashtableRowExists>>" {
+   if tk != c"SparseOwnedData<Tuple<Tuple<U64,U64>,C<\"char\">[],HashtableRowExists>>" {
       (let running-count, let running-size) = alloc-type-counter.lookup(tk, (0_u64, 0_u64));
       running-count = running-count + 1;
       running-size = running-size + sizeof(t);
