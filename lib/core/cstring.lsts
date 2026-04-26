@@ -3,7 +3,7 @@
 type alias CString suffix _s = C<"char">[];
 
 let .length(l: CString): USize = dumb_strlen(l) as USize;
-let non-zero(l: CString): Bool = l.length > 0;
+let non-zero(l: CString): Bool = if (l as U64)==0 then false else l.length > 0;
 
 let cmp(l: CString, r: CString): Ord = (
    let c = dumb_strcmp( l, r ) as I64;
