@@ -1,0 +1,13 @@
+
+import lib/core/bedrock.lsts;
+
+if true {
+   let s = mk-set(type(U8)).bind(1).bind(2);
+   assert( not(s.has(0)) );
+   assert( s.has(1) );
+   assert( s.has(2) );
+   assert( not(s.has(3)) );
+};
+assert( safe-alloc-block-count == 0 );
+assert( safe-alloc-block-count-monotonic == 1 );
+safe-alloc-block-count-monotonic = 0;

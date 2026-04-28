@@ -1,6 +1,13 @@
 
 import SRC/unit-tctx-core.lsts;
 
+let tctxu = unify( 
+   t1(c"Sized",tv(c"t")),
+   t1(c"Sized", t0(c"USize") && t0(c"U64")),
+   mk-eof()
+);
+print("tctxu \{tctxu}\n");
+
 assert( unify( t0(c"A"), (t0(c"A") && t0(c"B")), mk-eof() ) == Some(mk-tctx()) );
 assert( unify( t0(c"B"), (t0(c"A") && t0(c"B")), mk-eof() ) == Some(mk-tctx()) );
 assert( unify( t0(c"C"), (t0(c"A") && t0(c"B")), mk-eof() ) == (None : TypeContext?) );
@@ -56,3 +63,4 @@ assert(
    unify( t1(c"Phi::State",t0(c"A")) && t2(c"Phi::Transition",t0(c"A"),t0(c"B")), t1(c"Phi::State",t0(c"A")) && t1(c"Phi::Id",ti(0)), mk-eof() )
    .lookup-phi(0).phi-tt-or-zero == t0(c"B")
 );
+
