@@ -84,7 +84,7 @@ let infer-type-definition(term: AST): Nil = (
       let case-number = 0_u64;
       for Tuple{ case-tag2=first, case-fields=second } in cases {
          complex-type-index = complex-type-index.bind( lhs-type.ground-tag-and-arity, true );
-         datatype-index = datatype-index.bind( lhs-type.ground-tag-and-arity, true );
+         datatype-index = datatype-index.bind( lhs-type.ground-tag-and-arity );
          let field-ordinal = 0_u64;
          for Tuple{ field-name3=first, field-type=second } in case-fields {
             let guard = lhs-type && (if non-zero(case-tag2) then t0(c"Tag::"+case-tag2) else ta);

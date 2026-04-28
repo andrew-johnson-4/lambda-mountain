@@ -9,7 +9,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 
 dev: install-production
 	lm --v3 SRC/unit-ascript-core.lsts --showastcount --showallocgen > gc-enabled.txt
-	lm --v23 SRC/unit-ascript-core.lsts --showastcount --showallocgen > gc-disabled.txt
+	lm --v3 SRC/unit-ascript-core.lsts --showastcount --showallocgen > gc-disabled.txt
 	gcc tmp.c
 	./a.out
 	#time lm --showalloc SRC/unit-type-core.lsts > out.txt
