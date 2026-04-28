@@ -326,7 +326,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             if typeof-term(new-l).is-arrow then r-used = Call(var-name-if-var-or-lit(new-l)); # if l was a macro then it could be macro::concat
             (tctx, let new-r) = std-infer-expr(tctx, r, false, if used.is-tail then used else if used.is-unused then used else Used, rhint);
             if not(is(l,new-l)) or not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-cons(new-l, new-r) };
-            tctx = tctx.ascript(term, if used.is-tail then typeof-term(r) else t2(c"Cons", typeof-term(l), typeof-term(r)));
+            tctx = tctx.ascript(term, if used.is-tail or typeof-term(l).is-t(c"Nil",0) then typeof-term(r) else t2(c"Cons", typeof-term(l), typeof-term(r)));
          } else {
             let rt = ta;
             if index-macro-table.has-key(var-name-if-var(l)) {
@@ -372,7 +372,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                } else {
                   (tctx, ta, t2(c"Cons", typeof-term(l), typeof-term(r)))
                };
-               if not(used.is-call) { rt = rt.cons-tail-or-self; };
+               if not(used.is-call) or rt.slot(c"Cons",2).l1.is-t(c"Nil",0) { rt = rt.cons-tail-or-self; };
                if var-name-if-var-or-lit(l)==c"mov" and typeof-term(r).is-t(c"Cons",2) {
                   let from-tt = typeof-term(r).slot(c"Cons",2).l1;
                   let to-tt = typeof-term(r).slot(c"Cons",2).l2;

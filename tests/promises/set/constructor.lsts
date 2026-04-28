@@ -1,0 +1,16 @@
+
+import lib/core/bedrock.lsts;
+
+if true {
+   let s = mk-set(type(U64));
+   let o = 0_u64;
+   while o < 10000_u64 {
+      assert( not s.has(o) );
+      s = s.bind(o);
+      assert( s.has(o) );
+      o = o + 1;
+   };
+};
+assert( safe-alloc-block-count == 0 );
+assert( safe-alloc-block-count-monotonic == 1 );
+safe-alloc-block-count-monotonic = 0;

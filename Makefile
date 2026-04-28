@@ -8,7 +8,8 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm tests/promises/match/constant-strings.lsts
+	lm --v3 SRC/unit-ascript-core.lsts --showastcount --showallocgen > gc-enabled.txt
+	lm --v23 SRC/unit-ascript-core.lsts --showastcount --showallocgen > gc-disabled.txt
 	gcc tmp.c
 	./a.out
 	#time lm --showalloc SRC/unit-type-core.lsts > out.txt
@@ -19,7 +20,7 @@ dev: install-production
 	#time lm --showalloc SRC/index.lsts > out.txt
 
 build: compile-production
-	time env $(LSTSFLAGS) ./production --v23 -o deploy1.c SRC/index.lsts > out1.txt
+	time env $(LSTSFLAGS) ./production --v23 -o deploy1.c SRC/index.lsts
 	$(CC) $(CFLAGS) deploy1.c -o deploy1
 	time env $(LSTSFLAGS) ./deploy1 --v23 -o deploy2.c SRC/index.lsts
 	diff deploy1.c deploy2.c
