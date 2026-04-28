@@ -121,7 +121,6 @@ let .bind-direct(h: Set<k>, key: k): Nil = (
       let kv = contents[ki];
       if mem-is-non-zero(kv) and kv.first==key { found = true; };
       while not found and mem-is-non-zero(kv) {
-         print("Bind direct \{ki}\n");
          ki = (ki + 1) % contents.capacity;
          kv = contents[ki];
          if mem-is-non-zero(kv) and kv.first==key { found = true; };
@@ -142,7 +141,6 @@ let .has(h: Set<k>, key: k): Bool = (
       let kv = contents[ki];
       if mem-is-non-zero(kv) and kv.first==key { found = true; };
       while not found and mem-is-non-zero(kv) {
-         print("Has \{ki}\n");
          ki = (ki + 1) % contents.capacity;
          kv = contents[ki];
          if mem-is-non-zero(kv) and kv.first==key { found = true; };
