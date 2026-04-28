@@ -66,7 +66,7 @@ let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
    if tk != c"SparseOwnedData<Tuple<Tuple<U64,U64>,C<\"char\">[],HashtableRowExists>>" {
       (let running-count, let running-size) = alloc-type-counter.lookup(tk, (0_u64, 0_u64));
       running-count = running-count + 1;
-      running-size = running-size + sizeof(t);
+      running-size = running-size + nb * sizeof(t);
       alloc-type-counter = alloc-type-counter.bind(tk, (running-count, running-size));
    };
    # TODO: config flag or remove
