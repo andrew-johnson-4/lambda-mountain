@@ -39,22 +39,22 @@ let safe-alloc-block-count-monotonic-history = 0_u64;
 
 let safe-alloc-semaphore = false;
 
-#let alloc-type-counter = {} : Hashtable<CString,(U64,U64)>;
+let alloc-type-counter = {} : Hashtable<CString,(U64,U64)>;
 
-#let print-allocation-counts() = (
-#   print("Allocation Counts\n");
-#   print("Total memory usage: \{current_allocated_memory()}\n");
-#   let h-capacity = alloc-type-counter.data.capacity;
-#   let h-i = 0_sz;
-#   while h-i < h-capacity {
-#      (let h-key, let h-count-size) = alloc-type-counter.data[h-i];
-#      (let h-count, let h-size) = h-count-size;
-#      if non-zero(h-key) {
-#         print("\{h-key} x \{h-count} = \{h-size}\n");
-#      };
-#      h-i = h-i + 1;
-#   };
-#);
+let print-allocation-counts() = (
+   print("Allocation Counts\n");
+   print("Total memory usage: \{current_allocated_memory()}\n");
+   let h-capacity = alloc-type-counter.data.capacity;
+   let h-i = 0_sz;
+   while h-i < h-capacity {
+      (let h-key, let h-count-size) = alloc-type-counter.data[h-i];
+      (let h-count, let h-size) = h-count-size;
+      if non-zero(h-key) {
+         print("\{h-key} x \{h-count} = \{h-size}\n");
+      };
+      h-i = h-i + 1;
+   };
+);
 
 let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
    # TODO: wrap counter adjustments in conditional compilation
@@ -62,13 +62,13 @@ let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
    safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
    safe-alloc-block-count-monotonic-history = safe-alloc-block-count-monotonic-history + 1;
 
-   #let tk = type(t).into(type(CString));
-   #if tk != c"SparseOwnedData<Tuple<Tuple<U64,U64>,C<\"char\">[],HashtableRowExists>>" {
-   #   (let running-count, let running-size) = alloc-type-counter.lookup(tk, (0_u64, 0_u64));
-   #   running-count = running-count + 1;
-   #   running-size = running-size + nb;
-   #   alloc-type-counter = alloc-type-counter.bind(tk, (running-count, running-size));
-   #};
+   let tk = type(t).into(type(CString));
+   if tk != c"SparseOwnedData<Tuple<Tuple<U64,U64>,C<\"char\">[],HashtableRowExists>>" {
+      (let running-count, let running-size) = alloc-type-counter.lookup(tk, (0_u64, 0_u64));
+      running-count = running-count + 1;
+      running-size = running-size + nb;
+      alloc-type-counter = alloc-type-counter.bind(tk, (running-count, running-size));
+   };
    # TODO: config flag or remove
 
    # BEFORE CHANGING THIS: talk to alex

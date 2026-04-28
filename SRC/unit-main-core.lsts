@@ -151,8 +151,8 @@ let main(argc: C_int, argv: CString[]): Nil = (
       print("AST Count After Parse = \{ast-parsed-count}\n");
       print("AST Count After Typecheck = \{ast-typed-count}\n");
    };
-   #print("Worse Phi Length \{worst-phi-length}\n");
-   #print-allocation-counts()
+   print("Worse Phi Length \{worst-phi-length}\n");
+   print-allocation-counts()
 );
 
 let doby-say(): Nil = (
