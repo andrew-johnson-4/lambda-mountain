@@ -7,7 +7,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    let tctx-after-pctx = tctx-after.get-or(mk-tctx()).pctx;
    let needs-release = [] : List<TypeContextRow>;
    let needs-mark-release = [] : List<TypeContextRow>;
-   let pid-seen = {} : Hashtable<U64,Bool>;
+   let pid-seen = mk-set(type(U64));
    while non-zero(tctx-after-tctx) and not(is(tctx-before-tctx, tctx-after-tctx)) {
       let tr = head(tctx-after-tctx);
       let dt = tctx-after.with-phi(tr.denormalized, term);
@@ -29,7 +29,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
          tctx-after = tctx-after.ascript(def, binding-type);
       };
       for nd in needs-release {
-         pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-id,true);
+         pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-id);
          let do-release = mk-cons(
             mk-app(mk-var(c".release"),mk-var(nd.key-or-zero)),
             mk-app(mk-var(c"destroy"),mk-var(nd.key-or-zero))
@@ -45,13 +45,13 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       term = mk-cons(term, return-term); tctx-after = tctx-after.ascript(term,return-type);
    };
    for nd in needs-mark-release {
-      pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-id,true);
+      pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-id);
       tctx-after = tctx-after.phi-move(tctx-after.with-phi(nd.denormalized, term), term);
    };
    while non-zero(tctx-after-pctx) and not(is(tctx-before-pctx, tctx-after-pctx)) {
       let tr = head(tctx-after-pctx);
-      if tr.dead-on-arrival-or-zero and not(pid-seen.has-key(tr.phi-id-or-zero)) and tr.phi-tt-or-zero.is-linear-live {
-         pid-seen = pid-seen.bind(tr.phi-id-or-zero,true);
+      if tr.dead-on-arrival-or-zero and not(pid-seen.has(tr.phi-id-or-zero)) and tr.phi-tt-or-zero.is-linear-live {
+         pid-seen = pid-seen.bind(tr.phi-id-or-zero);
          tctx-after = tctx-after.bind-phi(tr.phi-id-or-zero, tr.phi-tt-or-zero.move-linear, tr.blame-or-zero);
       };
       tctx-after-pctx = tail(tctx-after-pctx);

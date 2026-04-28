@@ -1,6 +1,6 @@
 
 let type-ast-inserts = mk-vector(type(AST));
-let complex-type-index = {} : Hashtable<(CString,U64),Bool>;
+let complex-type-index = mk-set(type((CString,U64)));
 
 let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U64, case-number: U64): Nil = (
    let mangled-field-name = case-number.into(type(CString)) + c"_" + field-name;
@@ -73,7 +73,7 @@ let infer-type-definition(term: AST): Nil = (
                case-parameters = case-parameters.push(field-type);
             };
             let case-name = lhs-type.simple-tag+c"::"+case-tag1;
-            phi-type-index = phi-type-index.bind((case-name, common-tags-length + case-fields.length), true);
+            phi-type-index = phi-type-index.bind((case-name, common-tags-length + case-fields.length));
             phi-parameters-index = phi-parameters-index.bind((case-name, common-tags-length + case-fields.length), ts(case-name,case-parameters));
          }
       }
@@ -83,7 +83,7 @@ let infer-type-definition(term: AST): Nil = (
 
       let case-number = 0_u64;
       for Tuple{ case-tag2=first, case-fields=second } in cases {
-         complex-type-index = complex-type-index.bind( lhs-type.ground-tag-and-arity, true );
+         complex-type-index = complex-type-index.bind( lhs-type.ground-tag-and-arity );
          datatype-index = datatype-index.bind( lhs-type.ground-tag-and-arity );
          let field-ordinal = 0_u64;
          for Tuple{ field-name3=first, field-type=second } in case-fields {

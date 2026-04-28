@@ -1,5 +1,5 @@
 
-let interface-index = {} : Hashtable<(CString,U64),Bool>;
+let interface-index = mk-set(type((CString,U64)));
 
 let interface-shape-index = {} : Hashtable<(CString,U64),List<(CString,Type,Type)>>;
 

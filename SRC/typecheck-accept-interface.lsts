@@ -12,7 +12,7 @@ let .should-accept-interface(tt: Type): Bool = (
          for c in conjugate { result = result and c.should-accept-interface };
          result
       );
-      TGround{tag=tag} => interface-index.has-key(tt.ground-tag-and-arity);
+      TGround{tag=tag} => interface-index.has(tt.ground-tag-and-arity);
       _ => false;
    }
 );
