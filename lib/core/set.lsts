@@ -1,6 +1,6 @@
 
 type Set<k> implies MustRetain, MustRelease
-   = { data: SparseOwnedData<k>[] };
+   = { data: SparseOwnedData<(k,Bool)>[] };
 
 
 let .release(x: Set<k>): Nil = (
@@ -21,8 +21,8 @@ let .retain(x: Set<k>): Set<k> = (
 #                 | 1
 let mk-set(tyk: Type<k>, capacity: USize): Set<k> = (
    if capacity==0
-   then Set( 0 as SparseOwnedData<k>[] )
-   else Set( mk-sparse-owned-data(type(k), capacity) )
+   then Set( 0 as SparseOwnedData<(k,Bool)>[] )
+   else Set( mk-sparse-owned-data(type((k,Bool)), capacity) )
 );
 
 # new allocations = 0
@@ -81,12 +81,12 @@ let .length(h: Set<k>): USize = (
 # Reallocates the Set with a new capacity, rehashing all existing entries.
 # Used internally when the Set needs to grow.
 let .realloc(h: Set<k>, target-capacity: USize): Set<k> = (
-   let new-data = Set(mk-sparse-owned-data(type(k), target-capacity));
+   let new-data = Set(mk-sparse-owned-data(type((k,Bool)), target-capacity));
    let old-i = 0_sz;
    while old-i < h.data.capacity {
       let old-kv = h.data[old-i];
       if mem-is-non-zero(old-kv)
-      then new-data.bind-direct(old-kv);
+      then new-data.bind-direct(old-kv.first);
       old-i = old-i + 1;
    };
    new-data
@@ -98,7 +98,7 @@ let .bind(h: Set<k>, key: k): Set<k>+MustUse = (
    if (h.data as USize) == 0 or h.data.capacity == 0 {
       # Sets can be allocated on the stack as empty values
       # Resize these to size 32 next
-      h = mk-set(type(Set<k>), 32);
+      h = mk-set(type(k), 32);
    };
    let occupied = h.data.occupied;
    let capacity = h.data.capacity;
@@ -119,14 +119,15 @@ let .bind-direct(h: Set<k>, key: k): Nil = (
       let contents = h.data;
       let ki = (key-hash as USize) % contents.capacity;
       let kv = contents[ki];
-      if mem-is-non-zero(kv) and kv==key { found = true; };
-      while not(found) and mem-is-non-zero(kv) {
+      if mem-is-non-zero(kv) and kv.first==key { found = true; };
+      while not found and mem-is-non-zero(kv) {
+         print("Bind direct \{ki}\n");
          ki = (ki + 1) % contents.capacity;
          kv = contents[ki];
-         if mem-is-non-zero(kv) and kv==key { found = true; };
+         if mem-is-non-zero(kv) and kv.first==key { found = true; };
       };
       if not(mem-is-non-zero(kv)) then contents.occupied = contents.occupied + 1;
-      contents[ki] = key;
+      contents[ki] = (key,true);
    };
 );
 
@@ -139,11 +140,12 @@ let .has(h: Set<k>, key: k): Bool = (
       let contents = h.data;
       let ki = (key-hash as USize) % contents.capacity;
       let kv = contents[ki];
-      if mem-is-non-zero(kv) and kv==key { found = true; };
-      while not mem-is-non-zero(kv) and not found {
+      if mem-is-non-zero(kv) and kv.first==key { found = true; };
+      while not found and mem-is-non-zero(kv) {
+         print("Has \{ki}\n");
          ki = (ki + 1) % contents.capacity;
          kv = contents[ki];
-         if mem-is-non-zero(kv) and kv==key { found = true; };
+         if mem-is-non-zero(kv) and kv.first==key { found = true; };
       };
    };
    found
