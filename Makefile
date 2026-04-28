@@ -59,6 +59,7 @@ profile: install-bootstrap
 	./report.sh
 
 compile-bootstrap:
+	cat lib/core/*.lsts SRC/*.lsts PLUGINS/*/*/*.lsts > BOOTSTRAP/monolithic.lsts
 	rm -f bootstrap.exe
 	$(CC) $(CFLAGS) -o bootstrap.exe BOOTSTRAP/cli.c
 
