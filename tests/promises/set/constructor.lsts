@@ -2,11 +2,11 @@
 import lib/core/bedrock.lsts;
 
 if true {
-   let s = mk-set(type(U8)).bind(1).bind(2);
-   assert( not(s.has(0)) );
-   assert( s.has(1) );
-   assert( s.has(2) );
-   assert( not(s.has(3)) );
+   let s = mk-set(type(U64)).bind(1_u64).bind(2_u64);
+   assert( not(s.has(0_u64)) );
+   assert( s.has(1_u64) );
+   assert( s.has(2_u64) );
+   assert( not(s.has(3_u64)) );
 };
 assert( safe-alloc-block-count == 0 );
 assert( safe-alloc-block-count-monotonic == 1 );

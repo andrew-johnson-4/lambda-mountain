@@ -98,7 +98,7 @@ let .bind(h: Set<k>, key: k): Set<k>+MustUse = (
    if (h.data as USize) == 0 or h.data.capacity == 0 {
       # Sets can be allocated on the stack as empty values
       # Resize these to size 32 next
-      h = mk-set(32) : Set<k>;
+      h = mk-set(type(Set<k>), 32);
    };
    let occupied = h.data.occupied;
    let capacity = h.data.capacity;
@@ -119,7 +119,7 @@ let .bind-direct(h: Set<k>, key: k): Nil = (
       let contents = h.data;
       let ki = (key-hash as USize) % contents.capacity;
       let kv = contents[ki];
-      if mem-is-nonzer(kv) and kv==key { found = true; };
+      if mem-is-non-zero(kv) and kv==key { found = true; };
       while not(found) and mem-is-non-zero(kv) {
          ki = (ki + 1) % contents.capacity;
          kv = contents[ki];
