@@ -1,5 +1,6 @@
 
 let validate-pctx-release(tctx: TypeContext?): Nil = (
+   print("Validate pctx release\n");
    let ps-seen = mk-set(type(U64));
    for pr in tctx.get-or(mk-tctx()).pctx {
       if not(pr.is-global-or-zero) and not(ps-seen.has(pr.phi-id-or-zero)) {
@@ -8,4 +9,5 @@ let validate-pctx-release(tctx: TypeContext?): Nil = (
          ps-seen = ps-seen.bind(pr.phi-id-or-zero);
       };
    };
+   print("Validated pctx release\n");
 );
