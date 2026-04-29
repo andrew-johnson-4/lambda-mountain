@@ -5,6 +5,7 @@ import lib/core/baremetal.lsts;
 import lib/core/baremetal-into.lsts;
 import lib/core/bedrock-cstring.lsts;
 import lib/core/owned-data.lsts;
+import lib/core/one-owned-data.lsts;
 import lib/core/sparse-owned-data.lsts;
 import lib/core/string.lsts;
 import lib/core/vector.lsts;
