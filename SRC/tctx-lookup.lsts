@@ -47,6 +47,25 @@ let .lookups(trs: List<TypeContextRow>, key: CString): Vector<TypeContextRow> = 
    default
 );
 
+let .lookups-first(tctx: TypeContext?, key: CString): TypeContextRow = tctx.get-or(mk-tctx()).tctx.lookups-first(key);
+let .lookups-first(trs: List<TypeContextRow>, key: CString): TypeContextRow = (
+   let default = NullTypeContextRow;
+   while non-zero(trs) and not(non-zero(default)) {
+      let tr = head(trs); trs = tail(trs);
+      if tr.key-or-zero == key {
+         default = tr;
+      }
+   };
+   if not(non-zero(default)) {
+      for tr in global-tctx.lookup(key, mk-vector(type(TypeContextRow)) ) {
+         if tr.key-or-zero == key and not(non-zero(default)) {
+            default = tr;
+         }
+      };
+   };
+   default
+);
+
 let .lookup-phi(tctx: TypeContext?, key: U64): PhiContextRow = tctx.get-or(mk-tctx()).pctx.lookup(key);
 let .lookup(trs: List<PhiContextRow>, key: U64): PhiContextRow = (
    let default = NullPhiContextRow;
