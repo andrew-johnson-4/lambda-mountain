@@ -25,13 +25,32 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
    let match-set = mk-vector(type(TypeContextRow));
 
    # Find all accepting function candidates
-   for tr in tctx.lookups(fname) {
-      # can-receive is an additional refinement on top of argument satisfaction
-      # it is necessary for nullary or partial constructors that need a full type
-      # like, None : TypeContext?
-      if can-apply(tr.dt-or-zero, arg-types) and (not(non-zero(return-type-hint)) or can-receive(tr.dt-or-zero, return-type-hint)) {
-         match-set = match-set.push(tr);
+   # this was originally just iterating over a call to lookups
+   # however to prevent one Vector allocation the loop was unrolled
+   # would it be possible to make zero-cost generators from typed macros?
+   let continue-lookups = true;
+   let tctx-lookups = tctx.get-or(mk-tctx()).tctx;
+   while non-zero(tctx-lookups) and continue-lookups {
+      let tr = head(tctx-lookups); tctx-lookups = tail(tctx-lookups);
+      if tr.key-or-zero == fname {
+         # can-receive is an additional refinement on top of argument satisfaction
+         # it is necessary for nullary or partial constructors that need a full type
+         # like, None : TypeContext?
+         if can-apply(tr.dt-or-zero, arg-types) and (not(non-zero(return-type-hint)) or can-receive(tr.dt-or-zero, return-type-hint)) {
+            match-set = match-set.push(tr);
+         };
+         continue-lookups = false;
       }
+   };
+   if continue-lookups {
+      for tr in global-tctx.lookup(fname, mk-vector(type(TypeContextRow)) ) {
+         # can-receive is an additional refinement on top of argument satisfaction
+         # it is necessary for nullary or partial constructors that need a full type
+         # like, None : TypeContext?
+         if can-apply(tr.dt-or-zero, arg-types) and (not(non-zero(return-type-hint)) or can-receive(tr.dt-or-zero, return-type-hint)) {
+            match-set = match-set.push(tr);
+         }
+      };
    };
 
    # Apply specialization to reduce function candidates down to one
