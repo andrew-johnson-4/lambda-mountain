@@ -108,7 +108,9 @@ let main(argc: C_int, argv: CString[]): Nil = (
          print("\{ast-parsed-program}\n");
       );
       _ => (
+         print("Parse 1\n");
          for fp4 in input.reverse { frontend(fp4); };
+         print("Parsed\n");
          if show-alloc-count-in-program {
             ast-parsed-program = ast-parsed-program +
             mk-app( mk-var(c"print"),
@@ -136,7 +138,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          ast-parsed-count = ast-count;
          match config-mode {
             ModeTypecheck{} => (preprocess(); typecheck(););
-            ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(); );
+            ModeCompile{} => (print("Preprocess\n"); preprocess(); print("Typecheck\n"); typecheck(); print("Backend\n"); plugin-current-backend(); print("Finish\n"); );
          };
          ast-typed-count = ast-count;
       );
