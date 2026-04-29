@@ -4342,7 +4342,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
    };
    match base {
       TGround { tag2=tag, parameters=parameters } => (
-         let new-parameters = mk-vector(type(Type));
+         let new-parameters = mk-vector(type(Type), parameters.length);
          for p in parameters {
             new-parameters = new-parameters.push(p.weaken);
          };
@@ -4353,7 +4353,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
          for c in conjugate {
             match c {
                TGround { tag3=tag, parameters=parameters } => (
-                  let new-parameters = mk-vector(type(Type));
+                  let new-parameters = mk-vector(type(Type), parameters.length);
                   for p in parameters {
                      new-parameters = new-parameters.push(p.weaken);
                   };
@@ -4416,7 +4416,7 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
    };
    match base {
       TGround { tag2=tag, parameters=parameters } => (
-         let new-parameters = mk-vector(type(Type));
+         let new-parameters = mk-vector(type(Type), parameters.length);
          for p in parameters {
             new-parameters = new-parameters.push(p.unenrich);
          };
@@ -4427,7 +4427,7 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
          for c in conjugate {
             match c {
                TGround { tag3=tag, parameters=parameters } => (
-                  let new-parameters = mk-vector(type(Type));
+                  let new-parameters = mk-vector(type(Type), parameters.length);
                   for p in parameters {
                      new-parameters = new-parameters.push(p.unenrich);
                   };
@@ -6429,7 +6429,7 @@ let .move-linear(tt: Type): Type = (
       );
       TGround{tag:c"Linear", parameters:[_..]} => type-linear-moved;
       TGround{tag=tag, parameters=parameters} => (
-         let new-parameters = mk-vector(type(Type));
+         let new-parameters = mk-vector(type(Type), parameters.length);
          for p in parameters {
             new-parameters = new-parameters.push(p.move-linear);
          };
@@ -6631,7 +6631,7 @@ let .without-modifiers(tt: Type): Type = (
       );
       TGround { tag:c"C", parameters:[TGround{tag:c"extern"}..] } => ta;
       TGround { tag:tag, parameters:parameters } => (
-         let new-parameters = mk-vector(type(Type));
+         let new-parameters = mk-vector(type(Type), parameters.length);
          for p in parameters {
             new-parameters = new-parameters.push(p.without-modifiers);
          };

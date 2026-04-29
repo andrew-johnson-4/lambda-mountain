@@ -16,7 +16,7 @@ let .without-modifiers(tt: Type): Type = (
       );
       TGround { tag:c"C", parameters:[TGround{tag:c"extern"}..] } => ta;
       TGround { tag:tag, parameters:parameters } => (
-         let new-parameters = mk-vector(type(Type));
+         let new-parameters = mk-vector(type(Type), parameters.length);
          for p in parameters {
             new-parameters = new-parameters.push(p.without-modifiers);
          };
