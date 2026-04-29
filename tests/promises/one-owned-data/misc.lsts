@@ -1,4 +1,4 @@
 
 import lib/core/bedrock.lsts;
 
-open(close-one-owned(1));
+open(close(1));

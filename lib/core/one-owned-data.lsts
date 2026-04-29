@@ -42,7 +42,7 @@ let open(od: OneOwnedData<t>[]): t = (
    od[0];
 );
 
-let close-one-owned(d: t): OneOwnedData<t>[] = (
+let close(d: t): OneOwnedData<t>[] = (
    let od = mk-one-owned-data(type(t));
    od.push(d);
    od
