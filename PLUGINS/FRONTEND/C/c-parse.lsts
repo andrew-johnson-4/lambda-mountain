@@ -13,21 +13,21 @@ type CTerm = CInteger{value:String}
             | CString{value:String}
             | CIdentifier{value:String}
             | CType1{value:String}
-            | CList{value:OneOwnedData<List<CTerm>>[]}
-            | CIList{value:OneOwnedData<List<String>>[]}
-            | CMaybe{value:OneOwnedData<Maybe<CTerm>>[]}
+            | CList{value:OwnedData<List<CTerm>>[]}
+            | CIList{value:OwnedData<List<String>>[]}
+            | CMaybe{value:OwnedData<Maybe<CTerm>>[]}
             | CZOp{op:String}
-            | CCompound{terms:OneOwnedData<List<CTerm>>[]}
-            | CPointer{qualifiers:OneOwnedData<Maybe<List<CTerm>>>[], next:OneOwnedData<Maybe<CTerm>>[]}
-            | CInitializer{designator:OneOwnedData<List<CTerm>>[], initializer:OneOwnedData<CTerm>[]}
-            | CInitializerList{terms:OneOwnedData<List<CTerm>>[]}
-            | CUnaryPostfix{op:String, arg:OneOwnedData<CTerm>[]}
-            | CUnaryPrefix{op:String, arg:OneOwnedData<CTerm>[]}
-            | CBinaryOp{op:String, arg1:OneOwnedData<CTerm>[], arg2:OneOwnedData<CTerm>[]}
-            | CTernaryOp{op:String, arg1:OneOwnedData<CTerm>[], arg2:OneOwnedData<CTerm>[], arg3: OneOwnedData<CTerm>[]}
-            | CFor{op:String, arg1:OneOwnedData<Maybe<CTerm>>[], arg2:OneOwnedData<Maybe<CTerm>>[], arg3: OneOwnedData<Maybe<CTerm>>[], stmt:OneOwnedData<CTerm>[]}
-            | CFunctionDefinition{specifiers:OneOwnedData<CTerm>[], declarator:OneOwnedData<CTerm>[], declaration-list:OneOwnedData<CTerm>[], statement:OneOwnedData<CTerm>[]}
-            | CAccessor{accessor:String, field:String, arg:OneOwnedData<CTerm>[]};
+            | CCompound{terms:OwnedData<List<CTerm>>[]}
+            | CPointer{qualifiers:OwnedData<Maybe<List<CTerm>>>[], next:OwnedData<Maybe<CTerm>>[]}
+            | CInitializer{designator:OwnedData<List<CTerm>>[], initializer:OwnedData<CTerm>[]}
+            | CInitializerList{terms:OwnedData<List<CTerm>>[]}
+            | CUnaryPostfix{op:String, arg:OwnedData<CTerm>[]}
+            | CUnaryPrefix{op:String, arg:OwnedData<CTerm>[]}
+            | CBinaryOp{op:String, arg1:OwnedData<CTerm>[], arg2:OwnedData<CTerm>[]}
+            | CTernaryOp{op:String, arg1:OwnedData<CTerm>[], arg2:OwnedData<CTerm>[], arg3: OwnedData<CTerm>[]}
+            | CFor{op:String, arg1:OwnedData<Maybe<CTerm>>[], arg2:OwnedData<Maybe<CTerm>>[], arg3: OwnedData<Maybe<CTerm>>[], stmt:OwnedData<CTerm>[]}
+            | CFunctionDefinition{specifiers:OwnedData<CTerm>[], declarator:OwnedData<CTerm>[], declaration-list:OwnedData<CTerm>[], statement:OwnedData<CTerm>[]}
+            | CAccessor{accessor:String, field:String, arg:OwnedData<CTerm>[]};
 
 let cmp(l: CTerm, r: CTerm): Ord = (
    if l.discriminator-case-tag != r.discriminator-case-tag then cmp(l.discriminator-case-tag, r.discriminator-case-tag)

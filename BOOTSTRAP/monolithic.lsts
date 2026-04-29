@@ -1185,7 +1185,7 @@ let :Blob mangle(t: L): L = ();
 let :Blob mangle-pre(t: Type<Any>): L;
 let :Blob mangle-post(t: Type<Any>): L;
 
-type List<x> implies MustRetain, MustRelease zero LEOF = LEOF | LCons { head: x, tail: OneOwnedData<List<x>>[] };
+type List<x> implies MustRetain, MustRelease zero LEOF = LEOF | LCons { head: x, tail: OwnedData<List<x>>[] };
 
 let .release(t: List<x>): Nil = (
    if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag {
@@ -1455,13 +1455,7 @@ let open(od: OneOwnedData<t>[]): t = (
    od[0];
 );
 
-let close-owned(d: t): OneOwnedData<t>[] = (
-   let od = mk-one-owned-data(type(t));
-   od.push(d);
-   od
-);
-
-let close(d: t): OneOwnedData<t>[] = (
+let close-one-owned(d: t): OneOwnedData<t>[] = (
    let od = mk-one-owned-data(type(t));
    od.push(d);
    od
@@ -1541,6 +1535,22 @@ let .pop(od: OwnedData<t>[]): t = (
    then fail(c"OwnedData .pop From Empty Data");
    od.occupied = od.occupied - 1;
    od.data[od.occupied]
+);
+
+let open(od: OwnedData<t>[]): t = (
+   od[0];
+);
+
+let close-owned(d: t): OwnedData<t>[] = (
+   let od = mk-owned-data(type(t), 1);
+   od.push(d);
+   od
+);
+
+let close(d: t): OwnedData<t>[] = (
+   let od = mk-owned-data(type(t), 1);
+   od.push(d);
+   od
 );
 
 let .release(od: OwnedData<t>[]): Nil = (
@@ -1780,7 +1790,7 @@ let .get-prefix(text: String, rgx: Regex): String? = (
 
 type S zero SNil = SNil
                  | SAtom { atom: String }
-                 | SCons { left: OneOwnedData<S>[], right: OneOwnedData<S>[] }
+                 | SCons { left: OwnedData<S>[], right: OwnedData<S>[] }
                  | SPointer { pointer: Nil[] };
 
 # TODO: remove after GC enabled, this is for compatibility of constructors
@@ -3435,19 +3445,19 @@ let .misc-type(t: AST+Tag::Typedef): Type = open((t as Tag::Typedef).td).misc-ty
 let .implied-phi(t: AST+Tag::Typedef): Type = open((t as Tag::Typedef).td).implied-phi;
 
 type AST zero ASTEOF implies MustRetain, MustRelease
-         = Meta { val: OneOwnedData<AST>[] }
+         = Meta { val: OwnedData<AST>[] }
          | ASTEOF
          | ASTNil
-         | App { is-cons: Bool, left: OneOwnedData<AST>[], right: OneOwnedData<AST>[] }
+         | App { is-cons: Bool, left: OwnedData<AST>[], right: OwnedData<AST>[] }
          | Var { key: CString, token: Token }
          | Lit { key: CString, token: Token }
-         | Abs { lhs: OneOwnedData<AST>[], rhs: OneOwnedData<AST>[], tt: Type }
+         | Abs { lhs: OwnedData<AST>[], rhs: OwnedData<AST>[], tt: Type }
          | AType { tt: Type }
          | Seq { seq: Vector<AST> }
-         | Glb { key: Token , val: OneOwnedData<AST>[] }
-         | Typedef { td: OneOwnedData<ASTTypedef>[] };
+         | Glb { key: Token , val: OwnedData<AST>[] }
+         | Typedef { td: OwnedData<ASTTypedef>[] };
 
-let $"App"(left: OneOwnedData<AST>[], right: OneOwnedData<AST>[]): AST = App ( false, left, right );
+let $"App"(left: OwnedData<AST>[], right: OwnedData<AST>[]): AST = App ( false, left, right );
 
 let .retain(t: ASTTypedef): ASTTypedef = (
    mark-as-released(t.lhs-type.retain);
@@ -3736,7 +3746,7 @@ let .into(used: IsUsed, ty: Type<String>): String = (
 );
 
 type Macro = { lhs:AST, rhs:AST };
-type MacroList zero MEOF = MEOF | MSeq{ k:OneOwnedData<MacroList>[], v:Macro };
+type MacroList zero MEOF = MEOF | MSeq{ k:OwnedData<MacroList>[], v:Macro };
 
 let mk-location(): SourceLocation = (
    SourceLocation ( c"Unknown", 0, 0 )
@@ -3973,9 +3983,9 @@ let .lookup(ctx: FContext, k: CString, kt: Type, sloc: AST, hard: Bool): Fragmen
    r
 );
 
-type Fragment = { term: AST, keyvals: OneOwnedData<List<Tuple<CString,S>>>[], type: Type, context: OneOwnedData<FContext>[], vararg: List<OneOwnedData<Fragment>[]> };
+type Fragment = { term: AST, keyvals: OwnedData<List<Tuple<CString,S>>>[], type: Type, context: OwnedData<FContext>[], vararg: List<OwnedData<Fragment>[]> };
 
-type FContext zero FCtxEOF = FCtxEOF | FCtxBind{ remainder:OneOwnedData<FContext>[] , k:CString , kt:Type , kv:Fragment };
+type FContext zero FCtxEOF = FCtxEOF | FCtxBind{ remainder:OwnedData<FContext>[] , k:CString , kt:Type , kv:Fragment };
 
 let .get(e: Fragment, k: CString): S = (
    let r = SNil();
@@ -4010,7 +4020,7 @@ let mk-fctx(): FContext = FCtxEOF;
 let mk-fragment(): Fragment = (
    Fragment (
       mk-eof(), close([] : List<Tuple<CString,S>>),
-      ta, close(mk-fctx()), ([] : List<OneOwnedData<Fragment>[]>)
+      ta, close(mk-fctx()), ([] : List<OwnedData<Fragment>[]>)
    )
 );
 
@@ -8005,7 +8015,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
 );
 
 let specialize(key: CString, unify-ctx: TypeContext?, result-type: Type, term: AST): Nil = (
-   if (key!=c"open" or result-type.domain.slot(c"Array",2).l1.is-t(c"OwnedData",1)) and key!=c"mov" and not(is-special(key, result-type)) {
+   if (key!=c"open" or result-type.domain.slot(c"Array",2).l1.is-t(c"OwnedData",1) or result-type.domain.slot(c"Array",2).l1.is-t(c"OneOwnedData",1)) and key!=c"mov" and not(is-special(key, result-type)) {
       mark-as-special(key, result-type);
       let special-term = substitute(unify-ctx, term);
       match special-term {
@@ -11243,21 +11253,21 @@ type CTerm = CInteger{value:String}
             | CString{value:String}
             | CIdentifier{value:String}
             | CType1{value:String}
-            | CList{value:OneOwnedData<List<CTerm>>[]}
-            | CIList{value:OneOwnedData<List<String>>[]}
-            | CMaybe{value:OneOwnedData<Maybe<CTerm>>[]}
+            | CList{value:OwnedData<List<CTerm>>[]}
+            | CIList{value:OwnedData<List<String>>[]}
+            | CMaybe{value:OwnedData<Maybe<CTerm>>[]}
             | CZOp{op:String}
-            | CCompound{terms:OneOwnedData<List<CTerm>>[]}
-            | CPointer{qualifiers:OneOwnedData<Maybe<List<CTerm>>>[], next:OneOwnedData<Maybe<CTerm>>[]}
-            | CInitializer{designator:OneOwnedData<List<CTerm>>[], initializer:OneOwnedData<CTerm>[]}
-            | CInitializerList{terms:OneOwnedData<List<CTerm>>[]}
-            | CUnaryPostfix{op:String, arg:OneOwnedData<CTerm>[]}
-            | CUnaryPrefix{op:String, arg:OneOwnedData<CTerm>[]}
-            | CBinaryOp{op:String, arg1:OneOwnedData<CTerm>[], arg2:OneOwnedData<CTerm>[]}
-            | CTernaryOp{op:String, arg1:OneOwnedData<CTerm>[], arg2:OneOwnedData<CTerm>[], arg3: OneOwnedData<CTerm>[]}
-            | CFor{op:String, arg1:OneOwnedData<Maybe<CTerm>>[], arg2:OneOwnedData<Maybe<CTerm>>[], arg3: OneOwnedData<Maybe<CTerm>>[], stmt:OneOwnedData<CTerm>[]}
-            | CFunctionDefinition{specifiers:OneOwnedData<CTerm>[], declarator:OneOwnedData<CTerm>[], declaration-list:OneOwnedData<CTerm>[], statement:OneOwnedData<CTerm>[]}
-            | CAccessor{accessor:String, field:String, arg:OneOwnedData<CTerm>[]};
+            | CCompound{terms:OwnedData<List<CTerm>>[]}
+            | CPointer{qualifiers:OwnedData<Maybe<List<CTerm>>>[], next:OwnedData<Maybe<CTerm>>[]}
+            | CInitializer{designator:OwnedData<List<CTerm>>[], initializer:OwnedData<CTerm>[]}
+            | CInitializerList{terms:OwnedData<List<CTerm>>[]}
+            | CUnaryPostfix{op:String, arg:OwnedData<CTerm>[]}
+            | CUnaryPrefix{op:String, arg:OwnedData<CTerm>[]}
+            | CBinaryOp{op:String, arg1:OwnedData<CTerm>[], arg2:OwnedData<CTerm>[]}
+            | CTernaryOp{op:String, arg1:OwnedData<CTerm>[], arg2:OwnedData<CTerm>[], arg3: OwnedData<CTerm>[]}
+            | CFor{op:String, arg1:OwnedData<Maybe<CTerm>>[], arg2:OwnedData<Maybe<CTerm>>[], arg3: OwnedData<Maybe<CTerm>>[], stmt:OwnedData<CTerm>[]}
+            | CFunctionDefinition{specifiers:OwnedData<CTerm>[], declarator:OwnedData<CTerm>[], declaration-list:OwnedData<CTerm>[], statement:OwnedData<CTerm>[]}
+            | CAccessor{accessor:String, field:String, arg:OwnedData<CTerm>[]};
 
 let cmp(l: CTerm, r: CTerm): Ord = (
    if l.discriminator-case-tag != r.discriminator-case-tag then cmp(l.discriminator-case-tag, r.discriminator-case-tag)
