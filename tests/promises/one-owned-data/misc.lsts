@@ -1,0 +1,4 @@
+
+import lib/core/bedrock.lsts;
+
+open(close(1));

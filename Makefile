@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm --v3 SRC/unit-ascript-core.lsts --showastcount --showallocgen > gc-enabled.txt
+	time lm --v3 SRC/unit-ascript-core.lsts --showastcount --showallocgen > gc-enabled.txt
 	lm --v23 SRC/unit-ascript-core.lsts --showastcount --showallocgen > gc-disabled.txt
 	gcc tmp.c
 	./a.out
@@ -59,6 +59,7 @@ profile: install-bootstrap
 	./report.sh
 
 compile-bootstrap:
+	cat lib/core/*.lsts SRC/*.lsts PLUGINS/*/*/*.lsts > BOOTSTRAP/monolithic.lsts
 	rm -f bootstrap.exe
 	$(CC) $(CFLAGS) -o bootstrap.exe BOOTSTRAP/cli.c
 

@@ -1,5 +1,5 @@
 
-let is-special-index = {} : Hashtable<(CString,Type),Bool>;
+let is-special-index = mk-set(type((CString,Type)));
 
-let mark-as-special(name: CString, tt: Type): Nil = is-special-index = is-special-index.bind((name,tt), true);
-let is-special(name: CString, tt: Type): Bool = is-special-index.lookup((name,tt), false);
+let mark-as-special(name: CString, tt: Type): Nil = is-special-index = is-special-index.bind((name,tt));
+let is-special(name: CString, tt: Type): Bool = is-special-index.has((name,tt));

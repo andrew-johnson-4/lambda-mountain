@@ -9,7 +9,8 @@ let .phi-append-dead-on-arrival(tctx-primary: TypeContext?, tctx-secondary: Type
 
 let .phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>, dead-on-arrival: Bool): List<PhiContextRow> = (
    let seen = mk-set(type(U64));
-   for pr1 in tctx-secondary {
+   while non-zero(tctx-secondary) and not(is(tctx-secondary,tctx-primary)) {
+      let pr1 = head(tctx-secondary);
       if not(seen.has(pr1.phi-id-or-zero)) {
          let pr2 = tctx-primary.lookup(pr1.phi-id-or-zero);
          if dead-on-arrival then pr1 = PhiContextRow(pr1.phi-id-or-zero, pr1.phi-tt-or-zero, pr1.blame-or-zero, dead-on-arrival, pr1.is-global-or-zero);
@@ -18,6 +19,7 @@ let .phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiConte
          };
          seen = seen.bind(pr1.phi-id-or-zero);
       };
+      tctx-secondary = tail(tctx-secondary);
    };
    tctx-primary
 );

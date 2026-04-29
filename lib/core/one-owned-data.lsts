@@ -1,0 +1,70 @@
+
+type OneOwnedData<t> = {
+   reference-count: USize,
+   data: t[]+FlexibleArrayMember
+};
+
+let mk-one-owned-data(tt: Type<t>): OneOwnedData<t>[] = (
+   let od = safe-alloc-impl(
+      # TODO: make sizeof return USize
+      (sizeof(OneOwnedData<t>) as USize) + (sizeof(t) as USize),
+      type(OneOwnedData<t>)
+   );
+   od.reference-count = 1;
+   od
+);
+
+let $"[]"(od: OneOwnedData<t>[], idx: USize): t = (
+   if (od as USize)==0
+   then fail(c"OneOwnedData [] Access Null Pointer");
+   od.data[idx]
+);
+
+let $"set[]"(od: OneOwnedData<t>[], idx: USize, val: t): Nil = (
+   if (od as USize)==0
+   then fail(c"OneOwnedData set[] Access Null Pointer");
+   if type(t) <: type(MustRelease) then od.data[idx].release;
+   od.data[idx] = val;
+);
+
+let .push(od: OneOwnedData<t>[], d: t): Nil = (
+   if (od as USize)==0
+   then fail(c"OneOwnedData .push Into Null Pointer");
+   od.data[0_sz] = d;
+);
+
+let .pop(od: OneOwnedData<t>[]): t = (
+   if (od as USize)==0
+   then fail(c"OneOwnedData .pop From Null Pointer");
+   od.data[od.occupied]
+);
+
+let open(od: OneOwnedData<t>[]): t = (
+   od[0];
+);
+
+let close(d: t): OneOwnedData<t>[] = (
+   let od = mk-one-owned-data(type(t));
+   od.push(d);
+   od
+);
+
+let .release(od: OneOwnedData<t>[]): Nil = (
+   if (od as USize)!=0 {
+      if od.reference-count==0 then fail(c"OneOwnedData.release called when reference count is already zero. This object has already been freed!");
+      od.reference-count = od.reference-count - 1;
+      if od.reference-count == 0 {
+         if type(t) <: type(MustRelease) {
+            od.data[0_sz].release;
+         };
+         safe-free(od);
+      };
+   };
+);
+
+let .retain(od: OneOwnedData<t>[]): Nil = (
+   if (od as USize)!=0 {
+      if od.reference-count==0 then fail(c"OneOwnedData.retain called when reference count is zero. This object has already been freed!");
+      od.reference-count = od.reference-count + 1;
+   }
+);

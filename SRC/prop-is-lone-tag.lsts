@@ -1,5 +1,5 @@
 
-let lone-index = {} : Hashtable<CString,Bool>;
+let lone-index = mk-set(type(CString));
 
-let index-lone-tag(tag: CString): Nil = lone-index = lone-index.bind(tag,true);
-let is-lone-tag(tag: CString): Bool = lone-index.lookup(tag,false);
+let index-lone-tag(tag: CString): Nil = lone-index = lone-index.bind(tag);
+let is-lone-tag(tag: CString): Bool = lone-index.has(tag);

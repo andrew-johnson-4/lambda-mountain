@@ -786,7 +786,7 @@ let lsts-parse-interface(tokens: List<Token>): List<Token> = (
       self-type = interface-type;
       (interface-type, tokens) = lsts-parse-type(tokens);
    };
-   interface-index = interface-index.bind(interface-type.ground-tag-and-arity, true);
+   interface-index = interface-index.bind(interface-type.ground-tag-and-arity);
    interface-self-index = interface-self-index.bind(interface-type.ground-tag-and-arity, (self-type, interface-type));
 
    lsts-parse-expect(c"{", tokens); tokens = tail(tokens);

@@ -25,19 +25,19 @@ let .misc-type(t: AST+Tag::Typedef): Type = open((t as Tag::Typedef).td).misc-ty
 let .implied-phi(t: AST+Tag::Typedef): Type = open((t as Tag::Typedef).td).implied-phi;
 
 type AST zero ASTEOF implies MustRetain, MustRelease
-         = Meta { val: OwnedData<AST>[] }
+         = Meta { val: OneOwnedData<AST>[] }
          | ASTEOF
          | ASTNil
-         | App { is-cons: Bool, left: OwnedData<AST>[], right: OwnedData<AST>[] }
+         | App { is-cons: Bool, left: OneOwnedData<AST>[], right: OneOwnedData<AST>[] }
          | Var { key: CString, token: Token }
          | Lit { key: CString, token: Token }
-         | Abs { lhs: OwnedData<AST>[], rhs: OwnedData<AST>[], tt: Type }
+         | Abs { lhs: OneOwnedData<AST>[], rhs: OneOwnedData<AST>[], tt: Type }
          | AType { tt: Type }
          | Seq { seq: Vector<AST> }
-         | Glb { key: Token , val: OwnedData<AST>[] }
-         | Typedef { td: OwnedData<ASTTypedef>[] };
+         | Glb { key: Token , val: OneOwnedData<AST>[] }
+         | Typedef { td: OneOwnedData<ASTTypedef>[] };
 
-let $"App"(left: OwnedData<AST>[], right: OwnedData<AST>[]): AST = App ( false, left, right );
+let $"App"(left: OneOwnedData<AST>[], right: OneOwnedData<AST>[]): AST = App ( false, left, right );
 
 let .retain(t: ASTTypedef): ASTTypedef = (
    mark-as-released(t.lhs-type.retain);
