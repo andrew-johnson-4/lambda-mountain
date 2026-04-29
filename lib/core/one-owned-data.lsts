@@ -10,6 +10,7 @@ let mk-one-owned-data(tt: Type<t>): OneOwnedData<t>[] = (
       (sizeof(OneOwnedData<t>) as USize) + (sizeof(t) as USize),
       type(OneOwnedData<t>)
    );
+   od.reference-count = 1;
    od
 );
 
@@ -50,7 +51,7 @@ let close(d: t): OneOwnedData<t>[] = (
 
 let .release(od: OneOwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
-      if od.reference-count==0 then fail(c"OwnedData.release called when reference count is already zero. This object has already been freed!");
+      if od.reference-count==0 then fail(c"OneOwnedData.release called when reference count is already zero. This object has already been freed!");
       od.reference-count = od.reference-count - 1;
       if od.reference-count == 0 {
          if type(t) <: type(MustRelease) {
@@ -63,7 +64,7 @@ let .release(od: OneOwnedData<t>[]): Nil = (
 
 let .retain(od: OneOwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
-      if od.reference-count==0 then fail(c"OwnedData.retain called when reference count is zero. This object has already been freed!");
+      if od.reference-count==0 then fail(c"OneOwnedData.retain called when reference count is zero. This object has already been freed!");
       od.reference-count = od.reference-count + 1;
    }
 );
