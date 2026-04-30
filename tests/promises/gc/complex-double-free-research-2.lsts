@@ -9,21 +9,6 @@ import regex.h;
 let :FFI mktemp(template: U8[]): U8[] = ();
 let :FFI write(ft: USize, buf: C<"void">[], count: USize): USize;
 
-#import lib/core/l.lsts;
-#import lib/core/platform-macros.lsts;
-#import lib/core/common-macros.lsts;
-#import lib/core/primitives.lsts;
-#import lib/core/bool.lsts;
-#import lib/core/u8.lsts;
-#import lib/core/u64.lsts;
-#import lib/core/i64.lsts;
-#import lib/core/sized.lsts;
-#import lib/core/usize.lsts;
-#import lib/core/cstring.lsts;
-#import lib/core/array.lsts;
-#import lib/core/io.lsts;
-#import lib/core/cmp.lsts;
-
 type L suffix _l;
 
 let :Blob $":expression"(x0: Any): L;
@@ -505,23 +490,6 @@ declare-binop( $"%", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"%
 declare-binop( $"*", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"*"; y; l")"; ) );
 
 declare-unop( $"~", raw-type(I64), raw-type(I64), ( l"((int64_t)(~"; x; l"))"; ) );
-
-let min(l: I64, r: I64): I64 = (
-   if l < r then l else r
-);
-let max(l: I64, r: I64): I64 = (
-   if l > r then l else r
-);
-
-let cmp(l: I64, r: I64): Ord = (
-   if l < r then LessThan
-   else if l > r then GreaterThan
-   else Equal
-);
-
-let abs(i: I64): I64 = if i<0 then 0_i64 - i else i;
-
-let non-zero(x: I64): Bool = x != 0;
 
 type opaque alias USize suffix _sz
      implies U64, C<"size_t">
