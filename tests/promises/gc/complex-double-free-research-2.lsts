@@ -6,5 +6,4 @@ typed macro macro::let(lhs: lazy, rhs: lazy): lazy = (
 let f(): Nil = (
    let l-length = ();
    let r-length = ();
-   1
 );
