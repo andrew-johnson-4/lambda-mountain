@@ -54,6 +54,16 @@ let .release(t: TypeContext): Nil = (
 
 let mk-tctx(): TypeContext = TypeContext( [] : List<TypeContextRow>, [] : List<PhiContextRow>, false, false, c"" );
 
+let .with-is-blob(tctx: TypeContext, is-blob: Bool): TypeContext = (
+   TypeContext( tctx.tctx, tctx.pctx, tctx.is-unsafe, is-blob, tctx.function-name )
+);
+let .with-is-unsafe(tctx: TypeContext, is-unsafe: Bool): TypeContext = (
+   TypeContext( tctx.tctx, tctx.pctx, is-unsafe, tctx.is-blob, tctx.function-name )
+);
+let .with-function-name(tctx: TypeContext, function-name: CString): TypeContext = (
+   TypeContext( tctx.tctx, tctx.pctx, tctx.is-unsafe, tctx.is-blob, function-name )
+);
+
 let .key-or-zero(tr: TypeContextRow): CString = (
    match tr {
       TypeContextRow{ key=key } => key;
