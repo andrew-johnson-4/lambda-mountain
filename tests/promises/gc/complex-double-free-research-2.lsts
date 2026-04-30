@@ -1,10 +1,4 @@
 
-import stdint.h;
-import stdio.h;
-import stdlib.h;
-import string.h;
-import regex.h;
-
 type L suffix _l;
 
 let :Blob $":expression"(x0: Any): L;
