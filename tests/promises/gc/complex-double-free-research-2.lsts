@@ -10,38 +10,7 @@ typed macro macro::let(lhs: lazy, rhs: lazy): lazy = (
    (fn(lhs) = ()) (rhs)
 );
 
-typed macro macro::set(lhs: lazy, rhs: lazy): lazy = (
-   mov(rhs, lhs)
-);
-
-typed macro declare-unop(op-alias: lazy, x-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
-   let :Blob op-alias(x: x-type): r-type = (
-      $":expression"(op-expr);
-      $":frame"($":frame"(x));
-   );
-};
-
-typed macro declare-binop(op-alias: lazy, x-type: lazy, y-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
-   let :Blob op-alias(x: x-type, y: y-type): r-type = (
-      $":expression"(op-expr);
-      $":frame"($":frame"(x); $":frame"(y));
-   );
-};
-
-declare-unop( $"cdecl::return", raw-type(Any), raw-type(Nil), (l"return "; x; l";";) );
-declare-unop( $"cdecl::return", raw-type(Nil), raw-type(Nil), (x; l";";) );
-
-declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs+MustNotFresh+MustNotMove+MustNotRetain+MustReleaseAfterCall+MustNotRewrite), raw-type(Nil), ( l"({"; y; l"="; x; l";({});})"; ) );
-
-let :Blob $"primitive::call"(ictx: ImplicitContext, args: Any): Nil = (
-   $":frame"( $":frame"(ictx); $":frame"(args); );
-   $":expression"(
-      l"("; $":function-id"(ictx); l"("; $":expression"(args); l"))";
-   );
-);
-
 type opaque alias U8 suffix _u8
-     implies C<"int">, USize, U64, I64, C<"size_t">
      = C<"uint8_t">;
 
 # The "LMCString" makes the CString a subtype of C<"char">[] instead of a direct alias
