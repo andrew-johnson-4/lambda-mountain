@@ -145,9 +145,6 @@ let :Blob $"primitive::call"(ictx: ImplicitContext, args: Any): Nil = (
    );
 );
 
-declare-unop( $".discriminator-case-tag", raw-type(LMStruct+MustNotRetain+MustReleaseAfterCall+CaseNumber<cn>), raw-type(USize), ( l"("; cn : L; l")"; ) );
-declare-unop( $".discriminator-case-tag", raw-type(LMStruct+MustNotRetain+MustReleaseAfterCall), raw-type(USize), ( l"("; x; l".discriminator_case_tag)"; ) );
-
 declare-unop-retain( $"primitive::field-get", raw-type(base-type+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), ( l"("; x; l"."; mangle(field-name : L); l")"; ) );
 declare-binop( $"primitive::field-set", raw-type(base-type+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), raw-type(Nil), ( l"("; x; l"."; mangle(field-name : L); l"="; y; l")"; ) );
 
@@ -174,42 +171,6 @@ let cmp(l: Bool, r: Bool): Ord = cmp(l as U8, r as U8);
 type opaque alias U8 suffix _u8
      implies C<"int">, USize, U64, I64, C<"size_t">
      = C<"uint8_t">;
-
-declare-binop( $"!=", raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
-declare-binop( $"==", raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
-declare-binop( $"<",  raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
-declare-binop( $"<=", raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
-declare-binop( $">",  raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
-declare-binop( $">=", raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
-
-declare-binop( $"&", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"&"; y; l")"; ) );
-declare-binop( $"|", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"|"; y; l")"; ) );
-declare-binop( $"^", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"^"; y; l")"; ) );
-declare-binop( $"+", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"+"; y; l")"; ) );
-declare-binop( $"-", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"-"; y; l")"; ) );
-declare-binop( $"/", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"/"; y; l")"; ) );
-declare-binop( $"%", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"%"; y; l")"; ) );
-declare-binop( $"*", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"*"; y; l")"; ) );
-
-declare-binop( $"<<", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"<<"; y; l")"; ) );
-declare-binop( $">>", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l">>"; y; l")"; ) );
-
-declare-unop( $"~", raw-type(U8), raw-type(U8), ( l"((uint8_t)(~"; x; l"))"; ) );
-
-let min(l: U8, r: U8): U8 = (
-   if l < r then l else r
-);
-let max(l: U8, r: U8): U8 = (
-   if l > r then l else r
-);
-
-let cmp(l: U8, r: U8): Ord = (
-   if l < r then LessThan
-   else if l > r then GreaterThan
-   else Equal
-);
-
-let non-zero(x: U8): Bool = x != 0;
 
 type opaque alias U64 suffix _u64 = C<"uint64_t">;
 
