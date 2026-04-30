@@ -405,8 +405,6 @@ declare-binop( or, raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"
 
 let cmp(l: Bool, r: Bool): Ord = cmp(l as U8, r as U8);
 
-let hash(x: Bool): U64 = hash(x as U64);
-
 type opaque alias U8 suffix _u8
      implies C<"int">, USize, U64, I64, C<"size_t">
      = C<"uint8_t">;
@@ -444,8 +442,6 @@ let cmp(l: U8, r: U8): Ord = (
    else if l > r then GreaterThan
    else Equal
 );
-
-let hash(x: U8): U64 = x as U64;
 
 let non-zero(x: U8): Bool = x != 0;
 
@@ -486,8 +482,6 @@ let cmp(l: U64, r: U64): Ord = (
    else if l > r then GreaterThan
    else Equal
 );
-
-let hash(x: U64): U64 = x as U64;
 
 let to-u64(s: CString): U64 = (
    let i = 0_u64;
@@ -549,8 +543,6 @@ let cmp(l: I64, r: I64): Ord = (
 
 let abs(i: I64): I64 = if i<0 then 0_i64 - i else i;
 
-let hash(x: I64): U64 = x as U64;
-
 let to-i64(s: CString): I64 = (
    let negative = false;
    if head(s)==45 {
@@ -602,8 +594,6 @@ let cmp(l: USize, r: USize): Ord = (
    else Equal
 );
 
-let hash(x: USize): U64 = x as U64;
-
 # The "LMCString" makes the CString a subtype of C<"char">[] instead of a direct alias
 type alias CString suffix _s = C<"char">[];
 
@@ -651,22 +641,6 @@ let eprint(msg: CString): Nil = (
 
 let $"[]"(l: CString, idx: USize): U8 = (
    (l as U8[])[idx]
-);
-
-let hash(key: CString): U64 = (
-   let i = 0_sz;
-   let key-length = key.length;
-   let result = 0_u64;
-   while i < key-length {
-      result = result + key[i];
-      result = result + (result << 10);
-      result = result ^ (result >> 6);
-      i = i + 1;
-   };
-   result = result + (result << 3);
-   result = result ^ (result >> 11);
-   result = result + (result << 15);
-   result
 );
 
 let $"+"(l: CString, r: CString): CString = (
@@ -765,50 +739,17 @@ let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
    };
 );
 
-# TODO: configure this with conditional compilation to remove if unused
-# EXAMPLE: # if CFG.debug
-#          let safe-alloc-block-count = 0_u64;
-#          let safe-alloc-block-count-monotonic = 0_u64;
-#          # endif
-# safe-alloc-block-count is an increment/decrement counter to track active malloc blocks
-# safe-alloc-block-count-monotonic is an increment-only counter to track historical malloc blocks
 let safe-alloc-block-count = 0_u64;
 let safe-alloc-block-count-monotonic = 0_u64;
 let safe-alloc-block-count-monotonic-history = 0_u64;
 
 let safe-alloc-semaphore = false;
 
-#let alloc-type-counter = {} : Hashtable<CString,(U64,U64)>;
-
-#let print-allocation-counts() = (
-#   print("Allocation Counts\n");
-#   print("Total memory usage: \{current_allocated_memory()}\n");
-#   let h-capacity = alloc-type-counter.data.capacity;
-#   let h-i = 0_sz;
-#   while h-i < h-capacity {
-#      (let h-key, let h-count-size) = alloc-type-counter.data[h-i];
-#      (let h-count, let h-size) = h-count-size;
-#      if non-zero(h-key) {
-#         print("\{h-key} x \{h-count} = \{h-size}\n");
-#      };
-#      h-i = h-i + 1;
-#   };
-#);
-
 let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
    # TODO: wrap counter adjustments in conditional compilation
    safe-alloc-block-count = safe-alloc-block-count + 1;
    safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
    safe-alloc-block-count-monotonic-history = safe-alloc-block-count-monotonic-history + 1;
-
-   #let tk = type(t).into(type(CString));
-   #if tk != c"SparseOwnedData<Tuple<Tuple<U64,U64>,C<\"char\">[],HashtableRowExists>>" {
-   #   (let running-count, let running-size) = alloc-type-counter.lookup(tk, (0_u64, 0_u64));
-   #   running-count = running-count + 1;
-   #   running-size = running-size + nb;
-   #   alloc-type-counter = alloc-type-counter.bind(tk, (running-count, running-size));
-   #};
-   # TODO: config flag or remove
 
    # BEFORE CHANGING THIS: talk to alex
 
