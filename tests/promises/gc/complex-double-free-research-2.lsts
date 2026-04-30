@@ -610,50 +610,13 @@ declare-binop( $"-", raw-type(base-type[]), raw-type(base-type[]), raw-type(USiz
 declare-unop( $"&", raw-type(t+MustNotRetain), raw-type(t[]), (l"(&"; x; l")";) );
 declare-unop( $".void-pointer", raw-type(?[]), raw-type(C<"void">[]), x );
 
-let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
-   # BEFORE CHANGING THIS: talk to alex
-
-   while len > 0_sz {
-      let ignored = ptr[0_sz];
-      len = len - 1_sz;
-      ptr = ((ptr as U8[]) + 1_sz) as t[];
-   };
-);
-
-let safe-alloc-block-count = 0_u64;
-let safe-alloc-block-count-monotonic = 0_u64;
-let safe-alloc-block-count-monotonic-history = 0_u64;
-
-let safe-alloc-semaphore = false;
-
 let :Blob open(i: x): x = (
    $":expression"($":expression"(i));
    $":frame"($":frame"(i));
 );
 
-let :Blob current_allocated_memory(): U64 = (
-    $":expression"($":expression"(l"({struct mallinfo2 mi = mallinfo2(); mi.uordblks;})"))
-);
-
-type opaque alias "IO::File" = C<"FILE">[];
 type opaque alias Never = C<"void">;
 type opaque alias Nil = C<"void">;
-
-let file-exists(fp: CString): Bool = (
-   let f = fopen(fp as C<"char">[], c"r" as C<"char">[]);
-   let exists = false;
-   if (f as U64) != 0 {
-      exists = true;
-      fclose(f); ()
-   };
-   exists
-);
-
-let write-file(fp: CString, contents: CString): Nil = (
-   let f = fopen(fp, c"w");
-   fwrite(contents as C<"void">[], 1, contents.length, f);
-   fclose(f); ()
-);
 
 ## order is important here because
 ## [type(LessThan).discriminator-case-tag] = 0
