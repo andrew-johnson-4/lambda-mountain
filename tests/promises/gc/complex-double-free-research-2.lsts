@@ -3,7 +3,7 @@ typed macro macro::let(lhs: lazy, rhs: lazy): lazy = (
    (fn(lhs) = ()) (rhs)
 );
 
-let f(): Nil = (
+(
    let l-length = ();
    let r-length = ();
 );
