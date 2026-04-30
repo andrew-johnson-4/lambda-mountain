@@ -5120,6 +5120,16 @@ let .release(t: TypeContext): Nil = (
 
 let mk-tctx(): TypeContext = TypeContext( [] : List<TypeContextRow>, [] : List<PhiContextRow>, false, false, c"" );
 
+let .with-is-blob(tctx: TypeContext, is-blob: Bool): TypeContext = (
+   TypeContext( tctx.tctx, tctx.pctx, tctx.is-unsafe, is-blob, tctx.function-name )
+);
+let .with-is-unsafe(tctx: TypeContext, is-unsafe: Bool): TypeContext = (
+   TypeContext( tctx.tctx, tctx.pctx, is-unsafe, tctx.is-blob, tctx.function-name )
+);
+let .with-function-name(tctx: TypeContext, function-name: CString): TypeContext = (
+   TypeContext( tctx.tctx, tctx.pctx, tctx.is-unsafe, tctx.is-blob, function-name )
+);
+
 let .key-or-zero(tr: TypeContextRow): CString = (
    match tr {
       TypeContextRow{ key=key } => key;
@@ -7045,9 +7055,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{szof=left:Var{key:c"unsafe"}, r=right} => (
          let direct-tctx = tctx.get-or(mk-tctx());
          let is-unsafe = direct-tctx.is-unsafe;
-         direct-tctx.is-unsafe = true;
+         direct-tctx = direct-tctx.with-is-unsafe(true);
          (tctx, term) = std-infer-expr(Some(direct-tctx), r, false, Tail, ta);
-         direct-tctx.is-unsafe = is-unsafe;
+         direct-tctx = direct-tctx.with-is-unsafe(is-unsafe);
          tctx = Some(direct-tctx);
       );
       App{asc=left:Lit{key:c":"}, right:App{inner=left:ASTNil{},right:AType{tt=tt}}} => (
@@ -7201,7 +7211,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          let rough-tt = typeof-term(term);
          if rough-tt.is-arrow and not(rough-tt.is-open) and not(rough-tt.is-t(c"TypedMacro",0)) {
             let tctx-tctx = tctx.get-or(mk-tctx());
-            tctx-tctx.function-name = key1.key;
+            tctx-tctx = tctx-tctx.with-function-name(key1.key);
             tctx = Some(tctx-tctx);
             (let inner-tctx, let new-val) = std-infer-expr(tctx, val, is-scoped, Used(), ta);
             match new-val {
@@ -7273,8 +7283,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          }
       );
       Abs{lhs=lhs, rhs=rhs:App{asc=left:Lit{key:c":"},right:App{inner-rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} => (
-         let direct-tctx = tctx.get-or(mk-tctx());
-         direct-tctx.is-blob = misc-tt.is-t(c"Blob",0);
+         let direct-tctx = tctx.get-or(mk-tctx()).with-is-blob(misc-tt.is-t(c"Blob",0));
          tctx = Some(direct-tctx);
          let before-tctx = tctx; # make sure to capture locals as "local" scope
          tctx = infer-ctx(tctx, lhs);
