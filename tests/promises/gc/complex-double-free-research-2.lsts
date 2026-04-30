@@ -64,10 +64,6 @@ typed macro macro::lhs-index(base field: macro::lhs-field, index: lazy): lazy = 
    macro::concat($".", field)(base); index
 );
 
-typed macro macro::while(cond: Bool, body: lazy): lazy = (
-   primitive::while( cond, body as Nil )
-);
-
 typed macro declare-zop(op-alias: lazy, r-type: lazy, op-expr: lazy): lazy = {
    let :Blob op-alias(): r-type = (
       $":expression"(op-expr);
@@ -113,30 +109,9 @@ declare-unop( $"cdecl::return", raw-type(Nil), raw-type(Nil), (x; l";";) );
 
 declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs+MustNotFresh+MustNotMove+MustNotRetain+MustReleaseAfterCall+MustNotRewrite), raw-type(Nil), ( l"({"; y; l"="; x; l";({});})"; ) );
 
-# needs to be declared to prevent a special case during inference
-# this only needs to be declared if you want to support casting type information into String literals
-# EXAMPLE: print(typeof(x))
 declare-binop( $".into", type(Any), type(CString), raw-type(CString), () );
 
 declare-unop( typeof, type(x), raw-type(Type<x>), () );
-
-# this operator is hard-coded in the compiler for now
-# but this definition being in the library is simplest for inference
-declare-binop( $"<:", type(Any), type(Any), raw-type(Bool), () );
-
-let :Blob $"primitive::while"(cond: Bool, body: Any): Nil = (
-   $":frame"( $":frame"(cond); $":frame"(body) );
-   $":expression"(
-      l"({while("; $":expression"(cond); l"){"; $":expression"(body); l";};})";
-   );
-);
-
-let :Blob $"primitive::if"(f: Any, t: Any, c: Bool): Nil = (
-   $":frame"( $":frame"(c); $":frame"(t); $":frame"(f); );
-   $":expression"(
-      l"("; $":expression"(c); l"?"; $":expression"(t); l":"; $":expression"(f); l")";
-   );
-);
 
 let :Blob $"primitive::call"(ictx: ImplicitContext, args: Any): Nil = (
    $":frame"( $":frame"(ictx); $":frame"(args); );
@@ -151,33 +126,11 @@ declare-binop( $"primitive::field-set", raw-type(base-type+MustNotRetain+MustRel
 declare-unop-retain( $"primitive::field-get-indirect", raw-type(base-type[]+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), ( l"("; x; l"->"; mangle(field-name : L); l")"; ) );
 declare-binop( $"primitive::field-set-indirect", raw-type(base-type[]+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), raw-type(Nil), ( l"("; x; l"->"; mangle(field-name : L); l"="; y; l")"; ) );
 
-let branchtrue(): Bool = true;
-let branchfalse(): Bool = false;
-
-type opaque alias Bool = C<"uint8_t">;
-
-let true = 1 as Bool;
-let false = 0 as Bool;
-
-# These are logical operators, not bitwise operators
-# so `!=` is used for xor instead of bitwise `^`
-declare-unop( not, raw-type(Bool), raw-type(Bool), ( l"(!"; x; l")"; ) );
-declare-binop( xor, raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
-declare-binop( and, raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"&&"; y; l")"; ) );
-declare-binop( or, raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"||"; y; l")"; ) );
-
 type opaque alias U8 suffix _u8
      implies C<"int">, USize, U64, I64, C<"size_t">
      = C<"uint8_t">;
 
 type opaque alias U64 suffix _u64 = C<"uint64_t">;
-
-declare-binop( $"!=", raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
-declare-binop( $"==", raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
-declare-binop( $"<",  raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
-declare-binop( $"<=", raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
-declare-binop( $">",  raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
-declare-binop( $">=", raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
 
 declare-binop( $"&", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"&"; y; l")"; ) );
 declare-binop( $"|", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"|"; y; l")"; ) );
@@ -192,8 +145,6 @@ declare-binop( $"<<", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"
 declare-binop( $">>", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l">>"; y; l")"; ) );
 
 declare-unop( $"~", raw-type(U64), raw-type(U64), ( l"((uint64_t)(~"; x; l"))"; ) );
-
-let non-zero(x: U64): Bool = x != 0;
 
 type opaque alias I64 suffix _i64 = C<"int64_t">;
 
@@ -229,9 +180,6 @@ let $"+"(l: CString, r: CString): CString = (
    dumb_strcat(buf, r);
    buf
 );
-
-let head(x: CString): U8 = if non-zero(x) then (x as U8[])[0] else 0;
-let tail(x: CString): CString = if non-zero(x) then ((x as U8[]) + 1) as CString else c"";
 
 declare-binop-retain( $"[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), ( l"("; x; l"["; y; l"])"; ) );
 declare-ternop( $"set[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), raw-type(Nil), ( l"("; x; l"["; y; l"]="; z; l")"; ) );
