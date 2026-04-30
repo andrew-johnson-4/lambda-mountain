@@ -590,65 +590,8 @@ let $"+"(l: CString, r: CString): CString = (
    buf
 );
 
-let .has-suffix(s2: CString, s1: CString): Bool = (
-   let s1-length = 1_sz;
-   let s2-length = 1_sz;
-   if s1-length > s2-length then false else {
-      let i = 0_sz;
-      let return = true;
-      while i < s1-length {
-         if s1[s1-length - i - 1] != s2[s2-length - i - 1]
-         then return = false;
-         i = i + 1;
-      };
-      return
-   }
-);
-
-let .has-prefix(s2: CString, s1: CString): Bool = (
-   let s1-length = s1.length;
-   let s2-length = s2.length;
-   if s1-length > s2-length then false else {
-      let i = 0_sz;
-      let return = true;
-      while i < s1-length {
-         if s1[i] != s2[i]
-         then return = false;
-         i = i + 1;
-      };
-      return
-   }
-);
-
 let head(x: CString): U8 = if non-zero(x) then (x as U8[])[0] else 0;
 let tail(x: CString): CString = if non-zero(x) then ((x as U8[]) + 1) as CString else c"";
-
-let .contains(base: CString, pat: CString): Bool = (
-   let r = false;
-   while not(r) and non-zero(base) {
-      r = base.has-prefix(pat);
-      base = tail(base);
-   };
-   r
-);
-
-let .file-extension(path: CString): CString = (
-   while head(path) != 0_u8 and head(path) != 46_u8 {
-      path = tail(path);
-   };
-   path
-);
-
-let .is-digit(base: CString): Bool = (
-   if non-zero(base) {
-      let r = true;
-      while head(base) != 0_u8 and r {
-         r = 48_u8 <= head(base) and head(base) <= 57_u8;
-         base = tail(base);
-      };
-      r
-   } else false
-);
 
 declare-binop-retain( $"[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), ( l"("; x; l"["; y; l"])"; ) );
 declare-ternop( $"set[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), raw-type(Nil), ( l"("; x; l"["; y; l"]="; z; l")"; ) );
