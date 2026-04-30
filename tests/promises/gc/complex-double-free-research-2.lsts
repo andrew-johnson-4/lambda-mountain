@@ -166,8 +166,6 @@ declare-binop( xor, raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l
 declare-binop( and, raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"&&"; y; l")"; ) );
 declare-binop( or, raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"||"; y; l")"; ) );
 
-let cmp(l: Bool, r: Bool): Ord = cmp(l as U8, r as U8);
-
 type opaque alias U8 suffix _u8
      implies C<"int">, USize, U64, I64, C<"size_t">
      = C<"uint8_t">;
@@ -197,41 +195,7 @@ declare-unop( $"~", raw-type(U64), raw-type(U64), ( l"((uint64_t)(~"; x; l"))"; 
 
 let non-zero(x: U64): Bool = x != 0;
 
-let min(l: U64, r: U64): U64 = (
-   if l < r then l else r
-);
-let max(l: U64, r: U64): U64 = (
-   if l > r then l else r
-);
-
-let cmp(l: U64, r: U64): Ord = (
-   if l < r then LessThan
-   else if l > r then GreaterThan
-   else Equal
-);
-
 type opaque alias I64 suffix _i64 = C<"int64_t">;
-
-# C can't handle this literal directly because it needs to store as unsigned first before converting to signed
-let minimum-I64 = -9223372036854775807_i64 - 1_i64;
-
-declare-binop( $"!=", raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
-declare-binop( $"==", raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
-declare-binop( $"<",  raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
-declare-binop( $"<=", raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
-declare-binop( $">",  raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
-declare-binop( $">=", raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
-
-declare-binop( $"&", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"&"; y; l")"; ) );
-declare-binop( $"|", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"|"; y; l")"; ) );
-declare-binop( $"^", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"^"; y; l")"; ) );
-declare-binop( $"+", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"+"; y; l")"; ) );
-declare-binop( $"-", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"-"; y; l")"; ) );
-declare-binop( $"/", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"/"; y; l")"; ) );
-declare-binop( $"%", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"%"; y; l")"; ) );
-declare-binop( $"*", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"*"; y; l")"; ) );
-
-declare-unop( $"~", raw-type(I64), raw-type(I64), ( l"((int64_t)(~"; x; l"))"; ) );
 
 type opaque alias USize suffix _sz
      implies U64, C<"size_t">
@@ -294,26 +258,3 @@ let :Blob open(i: x): x = (
 type opaque alias Never = C<"void">;
 type opaque alias Nil = C<"void">;
 
-## order is important here because
-## [type(LessThan).discriminator-case-tag] = 0
-## [type(Equal).discriminator-case-tag] = 1
-## [type(GreaterThan).discriminator-case-tag] = 2
-type Ord = LessThan | Equal | GreaterThan;
-
-let $"=="(l: Ord, r: Ord): Bool = l.discriminator-case-tag == r.discriminator-case-tag;
-let $"!="(l: Ord, r: Ord): Bool = l.discriminator-case-tag != r.discriminator-case-tag;
-let $"<"(l: Ord, r: Ord): Bool  = l.discriminator-case-tag <  r.discriminator-case-tag;
-let $"<="(l: Ord, r: Ord): Bool = l.discriminator-case-tag <= r.discriminator-case-tag;
-let $">"(l: Ord, r: Ord): Bool  = l.discriminator-case-tag >  r.discriminator-case-tag;
-let $">="(l: Ord, r: Ord): Bool = l.discriminator-case-tag >= r.discriminator-case-tag;
-
-# TODO: add a Comparable interface and check arg type here
-# PREREQUISITE: total quick-prop inferences `C<"char">[] => Comparable`
-let $"=="(l: x, r: x): Bool = cmp(l, r) == Equal;
-let $"!="(l: x, r: x): Bool = cmp(l, r) != Equal;
-let $"<"(l: x, r: x): Bool  = cmp(l, r) <  Equal;
-let $"<="(l: x, r: x): Bool = cmp(l, r) <= Equal;
-let $">"(l: x, r: x): Bool  = cmp(l, r) >  Equal;
-let $">="(l: x, r: x): Bool = cmp(l, r) >= Equal;
-
-let $"&&"(l: Ord, r: Ord): Ord = if l == Equal then r else l;
