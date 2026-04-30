@@ -1,27 +1,10 @@
 
-type L suffix _l;
-
-let :Blob $":expression"(x0: Any): L;
-let :Blob $":frame"(x0: Any): L;
-
-let :Blob $":function-id"(x: ImplicitContext): L;
-
 typed macro macro::let(lhs: lazy, rhs: lazy): lazy = (
    (fn(lhs) = ()) (rhs)
 );
 
-type opaque alias U8 suffix _u8
-     = C<"uint8_t">;
-
-# The "LMCString" makes the CString a subtype of C<"char">[] instead of a direct alias
-type alias CString suffix _s = C<"char">[];
-
-let $"+"(l: CString, r: CString): CString = (
-   let l-length = 1;
-   let r-length = 1;
-   l-length + r-length + 1;
-   buf
+let f(): Nil = (
+   let l-length = ();
+   let r-length = ();
+   1
 );
-
-type opaque alias Nil = C<"void">;
-
