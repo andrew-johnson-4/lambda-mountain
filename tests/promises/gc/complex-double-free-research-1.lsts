@@ -1,0 +1,9 @@
+
+import SRC/unit-backend-core.lsts;
+import PLUGINS/FRONTEND/LSTS/index.lsts;
+import PLUGINS/BACKEND/C/index.lsts;
+import PLUGINS/FRONTEND/C/index.lsts;
+
+frontend(c"tests/promises/gc/complex-double-free-research-2.lsts");
+preprocess();
+typecheck();

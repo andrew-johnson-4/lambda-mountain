@@ -7,9 +7,8 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recursion is used fairly heavily
 # recommendation: ulimit -s unlimited
 
-dev: install-production
-	lm --v23  SRC/index.lsts --showastcount --showallocgen > gc-disabled.txt
-	lm --v3  SRC/index.lsts --showastcount --showallocgen > gc-enabled.txt
+dev: install-bootstrap
+	lm --v3 tests/promises/gc/complex-double-free-research-1.lsts
 	gcc tmp.c
 	./a.out
 	#time lm --showalloc SRC/unit-type-core.lsts > out.txt
