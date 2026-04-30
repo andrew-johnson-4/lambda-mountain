@@ -60,12 +60,6 @@ typed macro macro::lhs-index(base field: macro::lhs-field, index: lazy): lazy = 
    macro::concat($".", field)(base); index
 );
 
-typed macro declare-zop(op-alias: lazy, r-type: lazy, op-expr: lazy): lazy = {
-   let :Blob op-alias(): r-type = (
-      $":expression"(op-expr);
-   );
-};
-
 typed macro declare-unop(op-alias: lazy, x-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
    let :Blob op-alias(x: x-type): r-type = (
       $":expression"(op-expr);
