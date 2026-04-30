@@ -9,23 +9,918 @@ import regex.h;
 let :FFI mktemp(template: U8[]): U8[] = ();
 let :FFI write(ft: USize, buf: C<"void">[], count: USize): USize;
 
-import lib/core/l.lsts;
-import lib/core/phi.lsts;
-import lib/core/platform-macros.lsts;
-import lib/core/common-macros.lsts;
-import lib/core/primitives.lsts;
-import lib/core/bool.lsts;
-import lib/core/u8.lsts;
-import lib/core/u16.lsts;
-import lib/core/u32.lsts;
-import lib/core/u64.lsts;
-import lib/core/i8.lsts;
-import lib/core/i16.lsts;
-import lib/core/i32.lsts;
-import lib/core/i64.lsts;
-import lib/core/sized.lsts;
-import lib/core/usize.lsts;
-import lib/core/cstring.lsts;
-import lib/core/array.lsts;
-import lib/core/io.lsts;
-import lib/core/cmp.lsts;
+#import lib/core/l.lsts;
+#import lib/core/platform-macros.lsts;
+#import lib/core/common-macros.lsts;
+#import lib/core/primitives.lsts;
+#import lib/core/bool.lsts;
+#import lib/core/u8.lsts;
+#import lib/core/u64.lsts;
+#import lib/core/i64.lsts;
+#import lib/core/sized.lsts;
+#import lib/core/usize.lsts;
+#import lib/core/cstring.lsts;
+#import lib/core/array.lsts;
+#import lib/core/io.lsts;
+#import lib/core/cmp.lsts;
+
+type L suffix _l;
+
+let :Blob $":expression"(x0: Any): L;
+let :Blob $":frame"(x0: Any): L;
+
+let :Blob $":function-id"(x: ImplicitContext): L;
+
+let :Blob mangle(t: L): L = ();
+let :Blob mangle-pre(t: Type<Any>): L;
+let :Blob mangle-post(t: Type<Any>): L;
+
+typed macro macro::define-zero(base-type: lazy, constructor: lazy, con-tag: lazy): lazy = {
+   let non-zero(t: base-type): Bool = t.discriminator-case-tag != (t as con-tag).discriminator-case-tag;
+};
+
+typed macro $"assert"(c: lazy): lazy = (
+   if not c then fail(c"Assertion Failed At ", macro::location(c));
+);
+
+typed macro macro::let(lhs: lazy, rhs: lazy): lazy = (
+   (fn(lhs) = ()) (rhs)
+);
+
+typed macro macro::set(lhs: lazy, rhs: lazy): lazy = (
+   mov(rhs, lhs)
+);
+
+typed macro macro::set(base index: macro::lhs-index, rhs: lazy): lazy = (
+   $"set[]"( base, index, rhs )
+);
+
+typed macro macro::set(base field: macro::lhs-field, rhs: lazy): lazy = (
+   macro::concat($"set.", field) (base, rhs)
+);
+
+typed macro macro::lhs-as-rhs(v: macro::variable): lazy = (
+   v
+);
+
+typed macro macro::lhs-as-rhs(base: macro::lhs-address-of): lazy = (
+   &v
+);
+
+typed macro macro::lhs-address-of(base: lazy): lazy = (
+   base
+);
+
+typed macro macro::lhs-field(base: lazy, field: lazy): lazy = (
+   base; field
+);
+
+typed macro macro::lhs-as-rhs(base field: macro::lhs-index): lazy = (
+   macro::concat(l".", field)(base)
+);
+
+typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (
+   base; index
+);
+
+typed macro macro::lhs-index(base field: macro::lhs-field, index: lazy): lazy = (
+   macro::concat($".", field)(base); index
+);
+
+typed macro macro::while(cond: Bool, body: lazy): lazy = (
+   primitive::while( cond, body as Nil )
+);
+
+typed macro macro::for(item: lazy, iterable: List<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iterable;
+   while non-zero(uuid(iter-term)) {
+      match head(uuid(iter-term)) {
+         item => loop;
+      };
+      uuid(iter-term) = tail(uuid(iter-term));
+   };
+);
+
+typed macro macro::for(item: lazy, iterable: Vector<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iterable;
+   let uuid(iter-i) = 0_sz;
+   while uuid(iter-i) < uuid(iter-term).length {
+      match uuid(iter-term)[uuid(iter-i)] {
+         item => loop;
+      };
+      uuid(iter-i) = uuid(iter-i) + 1;
+   };
+);
+
+typed macro macro::match(t: lazy, ps: lazy): lazy = (scope(
+   let uuid(term) = open(t);
+   macro::match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
+));
+
+typed macro macro::match(t: macro::bind-raw, ps: lazy): lazy = (scope(
+   let uuid(term) = t;
+   macro::match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
+));
+
+typed macro macro::match(f t: macro::bind-raw-field, ps: lazy): lazy = (scope(
+   let uuid(term) = f($"raw"(t));
+   macro:: match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
+));
+
+typed macro macro::match-pats(term: lazy, cases: macro::pats-none, remainder: lazy): lazy = (
+   remainder
+);
+
+typed macro macro::match-pats(term: lazy, ps lhs rhs: macro::pats-some, remainder: lazy): lazy = (
+   macro::match-pats(term, ps, scope($"if"(macro::match-pats-arm(term,lhs))(rhs)(remainder)));
+);
+
+typed macro macro::pats-some(ps: lazy, lhs: lazy, rhs: lazy): lazy = (
+   ps; lhs; rhs
+);
+
+typed macro macro::pats-none(ignore: lazy): lazy = (
+   ()
+);
+
+typed macro macro::match-pats-arm(term: lazy, v: macro::variable): lazy = (
+   macro::let(v, term); branchtrue()
+);
+
+typed macro macro::match-pats-arm(term: lazy, v pat: macro::match-lhs-binding): lazy = (
+   macro::let(v, term); match-pats-arm(v, pat)
+);
+
+typed macro macro::match-pats-arm(term: lazy, ignore: macro::underscore): lazy = (
+   branchtrue()
+);
+
+typed macro macro::match-pats-arm(term: lazy, x rest: macro::lhs-head): lazy = (
+   macro::let(uuid(v), term);
+   $"if"(uuid(v).has-head)
+      ($"if"(macro::match-pats-arm(head(uuid(v)),x))
+         ( macro::match-pats-arm(tail(uuid(v)),rest) )
+         (branchfalse())
+      )
+      (branchfalse())
+);
+
+typed macro macro::match-pats-arm(term: lazy, c: macro::constant): lazy = (
+   macro::let(uuid(v), term); uuid(v)==c
+);
+
+typed macro macro::lhs-tagged(tag-guard: lazy, fields-guard: lazy): lazy = (
+   tag-guard; fields-guard;
+);
+
+typed macro macro::lhs-fields-field(field-key: macro::variable, pat: lazy): lazy = (
+   field-key; pat;
+);
+
+typed macro macro::lhs-bind(bind-key: macro::variable, pat: lazy): lazy = (
+   bind-key; pat;
+);
+
+typed macro macro::lhs-fields(prefix: lazy, fields: lazy): lazy = (
+   prefix; fields;
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, prefix last: macro::lhs-fields): Bool = (
+   $"if"(macro::lhs-fields-with-term(term, prefix))
+        (macro::lhs-fields-with-term(term, last))
+        (branchfalse())
+);
+
+typed macro macro::lhs-head(x: head, xs: tail): lazy = (
+   x; xs;
+);
+
+typed macro macro::match-pats-arm(term: lazy, case: macro::literal<MACRO::LHS-LIST-SENTINEL,_>): lazy = (
+   true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, case: macro::literal<MACRO::LHS-LIST-SENTINEL,_>): lazy = (
+   true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, v: macro::variable): Bool = (
+   let v = term; true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, x rest: macro::lhs-head): Bool = (
+   macro::let(uuid(v), term);
+   $"if"(uuid(v).has-head)
+      ($"if"(macro::match-pats-arm(head(uuid(v)),x))
+         ( macro::match-pats-arm(tail(uuid(v)),rest) )
+         (branchfalse())
+      )
+      (branchfalse())
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, bind pat: macro::lhs-bind): Bool = (
+   let bind = term;
+   macro::lhs-fields-with-term(bind, pat)
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, field-key pat: macro::lhs-fields-field): Bool = (
+   let uuid(x) = open(field-key(term));
+   macro::lhs-fields-with-term(uuid(x), pat)
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::nil): Bool = (
+   true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, c: macro::constant): Bool = (
+   term == c
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::underscore): Bool = (
+   true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, tag-guard fields-guard: macro::lhs-tagged): Bool = (
+   macro::lhs-tagged-with-term(term, tag-guard, fields-guard)
+);
+
+typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields: lazy): Bool = (
+   $"if"(term.discriminator-case-tag==(term as tag-type).discriminator-case-tag)
+        (macro::lhs-fields-with-term((term as tag-type), fields))
+        (branchfalse())
+);
+
+typed macro macro::lhs-tagged-with-term(term: lazy, tag-guard: macro::nil, prefix pat: macro::lhs-fields): Bool = (
+   macro::lhs-fields-with-term(term, prefix, pat)
+);
+
+typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields-guard: macro::nil): Bool = (
+   term.discriminator-case-tag==(term as tag-type).discriminator-case-tag
+);
+
+typed macro macro::match-pats-arm(term: lazy, tag-guard fields-guard: macro::lhs-tagged): lazy = (
+   macro::lhs-tagged-with-term(term, tag-guard, fields-guard);
+);
+
+typed macro macro::match-pats-arm-with-term(term: lazy, bind prefix: macro::lhs-bind, suffix: lazy): Bool = (
+   let uuid(v) = term;
+   let uuid(s) = uuid(v).remove-prefix(prefix);
+   let uuid(p) = uuid(v).get-prefix(prefix);
+   $"if"(uuid(p).is-some and uuid(s).is-some)
+        (macro::let(bind, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,suffix))
+        (branchfalse())
+);
+
+typed macro macro::match-pats-arm-with-term(term: lazy, prefix: lazy, bind suffix: macro::lhs-bind): Bool = (
+   let uuid(v) = term;
+   let uuid(s) = uuid(v).remove-suffix(suffix);
+   let uuid(p) = uuid(v).get-suffix(suffix);
+   $"if"(uuid(p).is-some and uuid(s).is-some)
+        (macro::let(bind, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,prefix))
+        (branchfalse())
+);
+
+typed macro macro::match-pats-arm-with-term(term: lazy, pat: macro::constant, rest: lazy): Bool = (
+   macro::let(uuid(v), term);
+   macro::let(uuid(p), uuid(v).remove-prefix(pat));
+   $"if"(uuid(p).is-some)
+        (macro::match-pats-arm(uuid(p).get-or-panic, rest))
+        (branchfalse())
+);
+
+typed macro macro::match-pats-arm-with-term(term: lazy, rest: lazy, pat: macro::constant): Bool = (
+   macro::let(uuid(v), term);
+   macro::let(uuid(p), uuid(v).remove-suffix(pat));
+   $"if"(uuid(p).is-some)
+        (macro::match-pats-arm(uuid(p).get-or-panic, rest))
+        (branchfalse())
+);
+
+typed macro macro::lhs-prefix-or-suffix(prefix: lazy, suffix: lazy): Bool = (prefix; suffix);
+
+typed macro macro::match-pats-arm(term: lazy, prefix suffix: macro::lhs-prefix-or-suffix): Bool = (
+   macro::match-pats-arm-with-term(term, prefix, suffix);
+);
+
+
+typed macro declare-zop(op-alias: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob op-alias(): r-type = (
+      $":expression"(op-expr);
+   );
+};
+
+typed macro declare-unop(op-alias: lazy, x-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob op-alias(x: x-type): r-type = (
+      $":expression"(op-expr);
+      $":frame"($":frame"(x));
+   );
+};
+typed macro declare-unop-retain(op-alias: lazy, x-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob+MustRetainOnCall op-alias(x: x-type): r-type = (
+      $":expression"(op-expr);
+      $":frame"($":frame"(x));
+   );
+};
+
+typed macro declare-binop(op-alias: lazy, x-type: lazy, y-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob op-alias(x: x-type, y: y-type): r-type = (
+      $":expression"(op-expr);
+      $":frame"($":frame"(x); $":frame"(y));
+   );
+};
+
+typed macro declare-binop-retain(op-alias: lazy, x-type: lazy, y-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob+MustRetainOnCall op-alias(x: x-type, y: y-type): r-type = (
+      $":expression"(op-expr);
+      $":frame"($":frame"(x); $":frame"(y));
+   );
+};
+
+typed macro declare-ternop(op-alias: lazy, x-type: lazy, y-type: lazy, z-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob op-alias(x: x-type, y: y-type, z: z-type): r-type = (
+      $":expression"(op-expr);
+      $":frame"($":frame"(x); $":frame"(y); $":frame"(z));
+   );
+};
+
+declare-unop( $"cdecl::return", raw-type(Any), raw-type(Nil), (l"return "; x; l";";) );
+declare-unop( $"cdecl::return", raw-type(Nil), raw-type(Nil), (x; l";";) );
+
+declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs+MustNotFresh+MustNotMove+MustNotRetain+MustReleaseAfterCall+MustNotRewrite), raw-type(Nil), ( l"({"; y; l"="; x; l";({});})"; ) );
+
+# needs to be declared to prevent a special case during inference
+# this only needs to be declared if you want to support casting type information into String literals
+# EXAMPLE: print(typeof(x))
+declare-binop( $".into", type(Any), type(CString), raw-type(CString), () );
+
+declare-unop( typeof, type(x), raw-type(Type<x>), () );
+
+# this operator is hard-coded in the compiler for now
+# but this definition being in the library is simplest for inference
+declare-binop( $"<:", type(Any), type(Any), raw-type(Bool), () );
+
+let :Blob $"primitive::while"(cond: Bool, body: Any): Nil = (
+   $":frame"( $":frame"(cond); $":frame"(body) );
+   $":expression"(
+      l"({while("; $":expression"(cond); l"){"; $":expression"(body); l";};})";
+   );
+);
+
+let :Blob $"primitive::if"(f: Any, t: Any, c: Bool): Nil = (
+   $":frame"( $":frame"(c); $":frame"(t); $":frame"(f); );
+   $":expression"(
+      l"("; $":expression"(c); l"?"; $":expression"(t); l":"; $":expression"(f); l")";
+   );
+);
+
+let :Blob $"primitive::call"(ictx: ImplicitContext, args: Any): Nil = (
+   $":frame"( $":frame"(ictx); $":frame"(args); );
+   $":expression"(
+      l"("; $":function-id"(ictx); l"("; $":expression"(args); l"))";
+   );
+);
+
+declare-unop( $".discriminator-case-tag", raw-type(LMStruct+MustNotRetain+MustReleaseAfterCall+CaseNumber<cn>), raw-type(USize), ( l"("; cn : L; l")"; ) );
+declare-unop( $".discriminator-case-tag", raw-type(LMStruct+MustNotRetain+MustReleaseAfterCall), raw-type(USize), ( l"("; x; l".discriminator_case_tag)"; ) );
+
+declare-unop-retain( $"primitive::field-get", raw-type(base-type+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), ( l"("; x; l"."; mangle(field-name : L); l")"; ) );
+declare-binop( $"primitive::field-set", raw-type(base-type+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), raw-type(Nil), ( l"("; x; l"."; mangle(field-name : L); l"="; y; l")"; ) );
+
+declare-unop-retain( $"primitive::field-get-indirect", raw-type(base-type[]+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), ( l"("; x; l"->"; mangle(field-name : L); l")"; ) );
+declare-binop( $"primitive::field-set-indirect", raw-type(base-type[]+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), raw-type(Nil), ( l"("; x; l"->"; mangle(field-name : L); l"="; y; l")"; ) );
+
+let branchtrue(): Bool = true;
+let branchfalse(): Bool = false;
+
+type opaque alias Bool = C<"uint8_t">;
+
+let true = 1 as Bool;
+let false = 0 as Bool;
+
+# These are logical operators, not bitwise operators
+# so `!=` is used for xor instead of bitwise `^`
+declare-unop( not, raw-type(Bool), raw-type(Bool), ( l"(!"; x; l")"; ) );
+declare-binop( xor, raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( and, raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"&&"; y; l")"; ) );
+declare-binop( or, raw-type(Bool), raw-type(Bool), raw-type(Bool), ( l"("; x; l"||"; y; l")"; ) );
+
+let cmp(l: Bool, r: Bool): Ord = cmp(l as U8, r as U8);
+
+let hash(x: Bool): U64 = hash(x as U64);
+
+type opaque alias U8 suffix _u8
+     implies C<"int">, USize, U64, I64, C<"size_t">
+     = C<"uint8_t">;
+
+declare-binop( $"!=", raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"&", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"&"; y; l")"; ) );
+declare-binop( $"|", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"|"; y; l")"; ) );
+declare-binop( $"^", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"^"; y; l")"; ) );
+declare-binop( $"+", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"/", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"/"; y; l")"; ) );
+declare-binop( $"%", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"%"; y; l")"; ) );
+declare-binop( $"*", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"*"; y; l")"; ) );
+
+declare-binop( $"<<", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l"<<"; y; l")"; ) );
+declare-binop( $">>", raw-type(U8), raw-type(U8), raw-type(U8), ( l"("; x; l">>"; y; l")"; ) );
+
+declare-unop( $"~", raw-type(U8), raw-type(U8), ( l"((uint8_t)(~"; x; l"))"; ) );
+
+let min(l: U8, r: U8): U8 = (
+   if l < r then l else r
+);
+let max(l: U8, r: U8): U8 = (
+   if l > r then l else r
+);
+
+let cmp(l: U8, r: U8): Ord = (
+   if l < r then LessThan
+   else if l > r then GreaterThan
+   else Equal
+);
+
+let hash(x: U8): U64 = x as U64;
+
+let non-zero(x: U8): Bool = x != 0;
+
+type opaque alias U64 suffix _u64 = C<"uint64_t">;
+
+declare-binop( $"!=", raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(U64), raw-type(U64), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"&", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"&"; y; l")"; ) );
+declare-binop( $"|", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"|"; y; l")"; ) );
+declare-binop( $"^", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"^"; y; l")"; ) );
+declare-binop( $"+", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"/", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"/"; y; l")"; ) );
+declare-binop( $"%", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"%"; y; l")"; ) );
+declare-binop( $"*", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"*"; y; l")"; ) );
+
+declare-binop( $"<<", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l"<<"; y; l")"; ) );
+declare-binop( $">>", raw-type(U64), raw-type(U64), raw-type(U64), ( l"("; x; l">>"; y; l")"; ) );
+
+declare-unop( $"~", raw-type(U64), raw-type(U64), ( l"((uint64_t)(~"; x; l"))"; ) );
+
+let non-zero(x: U64): Bool = x != 0;
+
+let min(l: U64, r: U64): U64 = (
+   if l < r then l else r
+);
+let max(l: U64, r: U64): U64 = (
+   if l > r then l else r
+);
+
+let cmp(l: U64, r: U64): Ord = (
+   if l < r then LessThan
+   else if l > r then GreaterThan
+   else Equal
+);
+
+let hash(x: U64): U64 = x as U64;
+
+let to-u64(s: CString): U64 = (
+   let i = 0_u64;
+   while head(s) != 0 {
+      i = i * 10;
+      match head(s) {
+         48_u8 => i = i + 0_u64;
+         49_u8 => i = i + 1_u64;
+         50_u8 => i = i + 2_u64;
+         51_u8 => i = i + 3_u64;
+         52_u8 => i = i + 4_u64;
+         53_u8 => i = i + 5_u64;
+         54_u8 => i = i + 6_u64;
+         55_u8 => i = i + 7_u64;
+         56_u8 => i = i + 8_u64;
+         57_u8 => i = i + 9_u64;
+         _ => ();
+      };
+      s = tail(s);
+   };
+   i
+);
+
+type opaque alias I64 suffix _i64 = C<"int64_t">;
+
+# C can't handle this literal directly because it needs to store as unsigned first before converting to signed
+let minimum-I64 = -9223372036854775807_i64 - 1_i64;
+
+declare-binop( $"!=", raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(I64), raw-type(I64), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"&", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"&"; y; l")"; ) );
+declare-binop( $"|", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"|"; y; l")"; ) );
+declare-binop( $"^", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"^"; y; l")"; ) );
+declare-binop( $"+", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"/", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"/"; y; l")"; ) );
+declare-binop( $"%", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"%"; y; l")"; ) );
+declare-binop( $"*", raw-type(I64), raw-type(I64), raw-type(I64), ( l"("; x; l"*"; y; l")"; ) );
+
+declare-unop( $"~", raw-type(I64), raw-type(I64), ( l"((int64_t)(~"; x; l"))"; ) );
+
+let min(l: I64, r: I64): I64 = (
+   if l < r then l else r
+);
+let max(l: I64, r: I64): I64 = (
+   if l > r then l else r
+);
+
+let cmp(l: I64, r: I64): Ord = (
+   if l < r then LessThan
+   else if l > r then GreaterThan
+   else Equal
+);
+
+let abs(i: I64): I64 = if i<0 then 0_i64 - i else i;
+
+let hash(x: I64): U64 = x as U64;
+
+let to-i64(s: CString): I64 = (
+   let negative = false;
+   if head(s)==45 {
+      negative = true;
+      s = tail(s);
+   };
+   let base = to-u64(s) as I64;
+   if negative then base = 0_i64 - base;
+   base
+);
+
+let non-zero(x: I64): Bool = x != 0;
+
+type opaque alias USize suffix _sz
+     implies U64, C<"size_t">
+     = C<"size_t">;
+
+declare-binop( $"!=", raw-type(USize), raw-type(USize), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(USize), raw-type(USize), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(USize), raw-type(USize), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(USize), raw-type(USize), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(USize), raw-type(USize), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(USize), raw-type(USize), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"&", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"&"; y; l")"; ) );
+declare-binop( $"|", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"|"; y; l")"; ) );
+declare-binop( $"^", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"^"; y; l")"; ) );
+declare-binop( $"+", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"/", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"/"; y; l")"; ) );
+declare-binop( $"%", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"%"; y; l")"; ) );
+declare-binop( $"*", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"*"; y; l")"; ) );
+
+declare-binop( $"<<", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l"<<"; y; l")"; ) );
+declare-binop( $">>", raw-type(USize), raw-type(USize), raw-type(USize), ( l"("; x; l">>"; y; l")"; ) );
+
+declare-unop( $"~", raw-type(USize), raw-type(USize), ( l"((size_t)(~"; x; l"))"; ) );
+
+let min(l: USize, r: USize): USize = (
+   if l < r then l else r
+);
+let max(l: USize, r: USize): USize = (
+   if l > r then l else r
+);
+
+let cmp(l: USize, r: USize): Ord = (
+   if l < r then LessThan
+   else if l > r then GreaterThan
+   else Equal
+);
+
+let hash(x: USize): U64 = x as U64;
+
+# The "LMCString" makes the CString a subtype of C<"char">[] instead of a direct alias
+type alias CString suffix _s = C<"char">[];
+
+let .length(l: CString): USize = dumb_strlen(l) as USize;
+let non-zero(l: CString): Bool = if (l as U64)==0 then false else l.length > 0;
+
+let cmp(l: CString, r: CString): Ord = (
+   let c = dumb_strcmp( l, r ) as I64;
+   if c < 0 then LessThan
+   else if c > 0 then GreaterThan
+   else Equal
+);
+
+# TODO: replace this with a macro or something
+# [specialize(x = CString)]
+let $"=="(l: CString, r: CString): Bool = cmp(l, r) == Equal;
+let $"!="(l: CString, r: CString): Bool = cmp(l, r) != Equal;
+let $"<"(l: CString, r: CString): Bool  = cmp(l, r) <  Equal;
+let $"<="(l: CString, r: CString): Bool = cmp(l, r) <= Equal;
+let $">"(l: CString, r: CString): Bool  = cmp(l, r) >  Equal;
+let $">="(l: CString, r: CString): Bool = cmp(l, r) >= Equal;
+
+let fail(msg: CString): Never = (
+   write(2, msg as C<"void">[], msg.length);
+   exit(1);
+   () as Never
+);
+
+let fail(msg1: CString, msg2: CString): Never = (
+   write(2, msg1 as C<"void">[], msg1.length);
+   write(2, msg2 as C<"void">[], msg2.length);
+   exit(1);
+   () as Never
+);
+
+let print(msg: CString): Nil = (
+   write(1, msg as C<"void">[], msg.length);
+   ()
+);
+
+let eprint(msg: CString): Nil = (
+   write(2, msg as C<"void">[], msg.length);
+   ()
+);
+
+let $"[]"(l: CString, idx: USize): U8 = (
+   (l as U8[])[idx]
+);
+
+let hash(key: CString): U64 = (
+   let i = 0_sz;
+   let key-length = key.length;
+   let result = 0_u64;
+   while i < key-length {
+      result = result + key[i];
+      result = result + (result << 10);
+      result = result ^ (result >> 6);
+      i = i + 1;
+   };
+   result = result + (result << 3);
+   result = result ^ (result >> 11);
+   result = result + (result << 15);
+   result
+);
+
+let $"+"(l: CString, r: CString): CString = (
+   let l-length = l.length;
+   let r-length = r.length;
+   let buf = safe-alloc(l-length + r-length + 1, type(C<"char">)) as CString;
+   dumb_strcat(buf, l);
+   dumb_strcat(buf, r);
+   buf
+);
+
+let .has-suffix(s2: CString, s1: CString): Bool = (
+   let s1-length = s1.length;
+   let s2-length = s2.length;
+   if s1-length > s2-length then false else {
+      let i = 0_sz;
+      let return = true;
+      while i < s1-length {
+         if s1[s1-length - i - 1] != s2[s2-length - i - 1]
+         then return = false;
+         i = i + 1;
+      };
+      return
+   }
+);
+
+let .has-prefix(s2: CString, s1: CString): Bool = (
+   let s1-length = s1.length;
+   let s2-length = s2.length;
+   if s1-length > s2-length then false else {
+      let i = 0_sz;
+      let return = true;
+      while i < s1-length {
+         if s1[i] != s2[i]
+         then return = false;
+         i = i + 1;
+      };
+      return
+   }
+);
+
+let head(x: CString): U8 = if non-zero(x) then (x as U8[])[0] else 0;
+let tail(x: CString): CString = if non-zero(x) then ((x as U8[]) + 1) as CString else c"";
+
+let .contains(base: CString, pat: CString): Bool = (
+   let r = false;
+   while not(r) and non-zero(base) {
+      r = base.has-prefix(pat);
+      base = tail(base);
+   };
+   r
+);
+
+let .file-extension(path: CString): CString = (
+   while head(path) != 0_u8 and head(path) != 46_u8 {
+      path = tail(path);
+   };
+   path
+);
+
+let .is-digit(base: CString): Bool = (
+   if non-zero(base) {
+      let r = true;
+      while head(base) != 0_u8 and r {
+         r = 48_u8 <= head(base) and head(base) <= 57_u8;
+         base = tail(base);
+      };
+      r
+   } else false
+);
+
+declare-binop-retain( $"[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), ( l"("; x; l"["; y; l"])"; ) );
+declare-ternop( $"set[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), raw-type(Nil), ( l"("; x; l"["; y; l"]="; z; l")"; ) );
+
+declare-binop( $"!=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"+", raw-type(base-type[]), raw-type(USize), raw-type(base-type[]), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(USize), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(base-type[]), raw-type(USize), ( l"("; x; l"-"; y; l")"; ) );
+
+declare-unop( $"&", raw-type(t+MustNotRetain), raw-type(t[]), (l"(&"; x; l")";) );
+declare-unop( $".void-pointer", raw-type(?[]), raw-type(C<"void">[]), x );
+
+let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   while len > 0_sz {
+      let ignored = ptr[0_sz];
+      len = len - 1_sz;
+      ptr = ((ptr as U8[]) + 1_sz) as t[];
+   };
+);
+
+# TODO: configure this with conditional compilation to remove if unused
+# EXAMPLE: # if CFG.debug
+#          let safe-alloc-block-count = 0_u64;
+#          let safe-alloc-block-count-monotonic = 0_u64;
+#          # endif
+# safe-alloc-block-count is an increment/decrement counter to track active malloc blocks
+# safe-alloc-block-count-monotonic is an increment-only counter to track historical malloc blocks
+let safe-alloc-block-count = 0_u64;
+let safe-alloc-block-count-monotonic = 0_u64;
+let safe-alloc-block-count-monotonic-history = 0_u64;
+
+let safe-alloc-semaphore = false;
+
+#let alloc-type-counter = {} : Hashtable<CString,(U64,U64)>;
+
+#let print-allocation-counts() = (
+#   print("Allocation Counts\n");
+#   print("Total memory usage: \{current_allocated_memory()}\n");
+#   let h-capacity = alloc-type-counter.data.capacity;
+#   let h-i = 0_sz;
+#   while h-i < h-capacity {
+#      (let h-key, let h-count-size) = alloc-type-counter.data[h-i];
+#      (let h-count, let h-size) = h-count-size;
+#      if non-zero(h-key) {
+#         print("\{h-key} x \{h-count} = \{h-size}\n");
+#      };
+#      h-i = h-i + 1;
+#   };
+#);
+
+let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
+   # TODO: wrap counter adjustments in conditional compilation
+   safe-alloc-block-count = safe-alloc-block-count + 1;
+   safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
+   safe-alloc-block-count-monotonic-history = safe-alloc-block-count-monotonic-history + 1;
+
+   #let tk = type(t).into(type(CString));
+   #if tk != c"SparseOwnedData<Tuple<Tuple<U64,U64>,C<\"char\">[],HashtableRowExists>>" {
+   #   (let running-count, let running-size) = alloc-type-counter.lookup(tk, (0_u64, 0_u64));
+   #   running-count = running-count + 1;
+   #   running-size = running-size + nb;
+   #   alloc-type-counter = alloc-type-counter.bind(tk, (running-count, running-size));
+   #};
+   # TODO: config flag or remove
+
+   # BEFORE CHANGING THIS: talk to alex
+
+   let ptr = malloc(nb) as t[];
+
+   if ptr as USize == 0_sz {
+      fail(c"malloc fail");
+   };
+
+   # Zero Out Memory
+   dumb_memset(ptr as U8[], 0, nb);
+
+   mark-memory-as-safe(ptr as U8[], nb);
+
+   ptr
+);
+
+let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   let new-ptr = realloc(ptr as C<"void">[], nb) as ?[];
+
+   if new-ptr as USize == 0_sz {
+      fail(c"realloc fail");
+   };
+
+   mark-memory-as-safe(new-ptr as U8[], nb);
+
+   # TODO: wrap counter adjustments in conditional compilation
+   safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
+   safe-alloc-block-count-monotonic-history = safe-alloc-block-count-monotonic-history + 1;
+
+   new-ptr
+);
+
+## this will fail() if len is 0
+let safe-alloc(len: USize, ty: Type<t>): t[] = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   let nb = len * (sizeof(t) as USize);
+   safe-alloc-impl(nb, type(t))
+);
+
+## this will fail() if len is 0
+let safe-realloc(ptr: t[], len: USize, ty: Type<t>): t[] = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   let nb = len * (sizeof(t) as USize);
+   safe-realloc-impl(ptr as ?[], nb) as t[]
+);
+
+# Disabling free here makes GC miscounts fail immediately due to lack of data overwrite
+# TODO: create a compiler option to disable free (--nofree)
+let safe-free(ptr: ?[]): Nil = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   # TODO: wrap counter adjustments in conditional compilation
+   safe-alloc-block-count = safe-alloc-block-count - 1;
+
+   #free(ptr as C<"void">[]);
+   ()
+);
+
+let :Blob open(i: x): x = (
+   $":expression"($":expression"(i));
+   $":frame"($":frame"(i));
+);
+
+let :Blob current_allocated_memory(): U64 = (
+    $":expression"($":expression"(l"({struct mallinfo2 mi = mallinfo2(); mi.uordblks;})"))
+);
+
+type opaque alias "IO::File" = C<"FILE">[];
+type opaque alias Never = C<"void">;
+type opaque alias Nil = C<"void">;
+
+let file-exists(fp: CString): Bool = (
+   let f = fopen(fp as C<"char">[], c"r" as C<"char">[]);
+   let exists = false;
+   if (f as U64) != 0 {
+      exists = true;
+      fclose(f); ()
+   };
+   exists
+);
+
+let write-file(fp: CString, contents: CString): Nil = (
+   let f = fopen(fp, c"w");
+   fwrite(contents as C<"void">[], 1, contents.length, f);
+   fclose(f); ()
+);
+
+## order is important here because
+## [type(LessThan).discriminator-case-tag] = 0
+## [type(Equal).discriminator-case-tag] = 1
+## [type(GreaterThan).discriminator-case-tag] = 2
+type Ord = LessThan | Equal | GreaterThan;
+
+let $"=="(l: Ord, r: Ord): Bool = l.discriminator-case-tag == r.discriminator-case-tag;
+let $"!="(l: Ord, r: Ord): Bool = l.discriminator-case-tag != r.discriminator-case-tag;
+let $"<"(l: Ord, r: Ord): Bool  = l.discriminator-case-tag <  r.discriminator-case-tag;
+let $"<="(l: Ord, r: Ord): Bool = l.discriminator-case-tag <= r.discriminator-case-tag;
+let $">"(l: Ord, r: Ord): Bool  = l.discriminator-case-tag >  r.discriminator-case-tag;
+let $">="(l: Ord, r: Ord): Bool = l.discriminator-case-tag >= r.discriminator-case-tag;
+
+# TODO: add a Comparable interface and check arg type here
+# PREREQUISITE: total quick-prop inferences `C<"char">[] => Comparable`
+let $"=="(l: x, r: x): Bool = cmp(l, r) == Equal;
+let $"!="(l: x, r: x): Bool = cmp(l, r) != Equal;
+let $"<"(l: x, r: x): Bool  = cmp(l, r) <  Equal;
+let $"<="(l: x, r: x): Bool = cmp(l, r) <= Equal;
+let $">"(l: x, r: x): Bool  = cmp(l, r) >  Equal;
+let $">="(l: x, r: x): Bool = cmp(l, r) >= Equal;
+
+let $"&&"(l: Ord, r: Ord): Ord = if l == Equal then r else l;
