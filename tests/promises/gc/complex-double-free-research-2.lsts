@@ -236,20 +236,6 @@ let tail(x: CString): CString = if non-zero(x) then ((x as U8[]) + 1) as CString
 declare-binop-retain( $"[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), ( l"("; x; l"["; y; l"])"; ) );
 declare-ternop( $"set[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), raw-type(Nil), ( l"("; x; l"["; y; l"]="; z; l")"; ) );
 
-declare-binop( $"!=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
-declare-binop( $"==", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
-declare-binop( $"<",  raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
-declare-binop( $"<=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
-declare-binop( $">",  raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
-declare-binop( $">=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
-
-declare-binop( $"+", raw-type(base-type[]), raw-type(USize), raw-type(base-type[]), ( l"("; x; l"+"; y; l")"; ) );
-declare-binop( $"-", raw-type(base-type[]), raw-type(USize), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
-declare-binop( $"-", raw-type(base-type[]), raw-type(base-type[]), raw-type(USize), ( l"("; x; l"-"; y; l")"; ) );
-
-declare-unop( $"&", raw-type(t+MustNotRetain), raw-type(t[]), (l"(&"; x; l")";) );
-declare-unop( $".void-pointer", raw-type(?[]), raw-type(C<"void">[]), x );
-
 let :Blob open(i: x): x = (
    $":expression"($":expression"(i));
    $":frame"($":frame"(i));
