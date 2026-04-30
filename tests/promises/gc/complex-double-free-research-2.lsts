@@ -483,28 +483,6 @@ let cmp(l: U64, r: U64): Ord = (
    else Equal
 );
 
-let to-u64(s: CString): U64 = (
-   let i = 0_u64;
-   while head(s) != 0 {
-      i = i * 10;
-      match head(s) {
-         48_u8 => i = i + 0_u64;
-         49_u8 => i = i + 1_u64;
-         50_u8 => i = i + 2_u64;
-         51_u8 => i = i + 3_u64;
-         52_u8 => i = i + 4_u64;
-         53_u8 => i = i + 5_u64;
-         54_u8 => i = i + 6_u64;
-         55_u8 => i = i + 7_u64;
-         56_u8 => i = i + 8_u64;
-         57_u8 => i = i + 9_u64;
-         _ => ();
-      };
-      s = tail(s);
-   };
-   i
-);
-
 type opaque alias I64 suffix _i64 = C<"int64_t">;
 
 # C can't handle this literal directly because it needs to store as unsigned first before converting to signed
@@ -542,17 +520,6 @@ let cmp(l: I64, r: I64): Ord = (
 );
 
 let abs(i: I64): I64 = if i<0 then 0_i64 - i else i;
-
-let to-i64(s: CString): I64 = (
-   let negative = false;
-   if head(s)==45 {
-      negative = true;
-      s = tail(s);
-   };
-   let base = to-u64(s) as I64;
-   if negative then base = 0_i64 - base;
-   base
-);
 
 let non-zero(x: I64): Bool = x != 0;
 
@@ -597,46 +564,17 @@ let cmp(l: USize, r: USize): Ord = (
 # The "LMCString" makes the CString a subtype of C<"char">[] instead of a direct alias
 type alias CString suffix _s = C<"char">[];
 
-let .length(l: CString): USize = dumb_strlen(l) as USize;
-let non-zero(l: CString): Bool = if (l as U64)==0 then false else l.length > 0;
-
-let cmp(l: CString, r: CString): Ord = (
-   let c = dumb_strcmp( l, r ) as I64;
-   if c < 0 then LessThan
-   else if c > 0 then GreaterThan
-   else Equal
-);
-
-# TODO: replace this with a macro or something
-# [specialize(x = CString)]
-let $"=="(l: CString, r: CString): Bool = cmp(l, r) == Equal;
-let $"!="(l: CString, r: CString): Bool = cmp(l, r) != Equal;
-let $"<"(l: CString, r: CString): Bool  = cmp(l, r) <  Equal;
-let $"<="(l: CString, r: CString): Bool = cmp(l, r) <= Equal;
-let $">"(l: CString, r: CString): Bool  = cmp(l, r) >  Equal;
-let $">="(l: CString, r: CString): Bool = cmp(l, r) >= Equal;
-
 let fail(msg: CString): Never = (
-   write(2, msg as C<"void">[], msg.length);
+   write(2, msg as C<"void">[], 1_sz);
    exit(1);
    () as Never
 );
 
 let fail(msg1: CString, msg2: CString): Never = (
-   write(2, msg1 as C<"void">[], msg1.length);
-   write(2, msg2 as C<"void">[], msg2.length);
+   write(2, msg1 as C<"void">[], 1_sz);
+   write(2, msg2 as C<"void">[], 1_sz);
    exit(1);
    () as Never
-);
-
-let print(msg: CString): Nil = (
-   write(1, msg as C<"void">[], msg.length);
-   ()
-);
-
-let eprint(msg: CString): Nil = (
-   write(2, msg as C<"void">[], msg.length);
-   ()
 );
 
 let $"[]"(l: CString, idx: USize): U8 = (
@@ -644,8 +582,8 @@ let $"[]"(l: CString, idx: USize): U8 = (
 );
 
 let $"+"(l: CString, r: CString): CString = (
-   let l-length = l.length;
-   let r-length = r.length;
+   let l-length = 1_sz;
+   let r-length = 1_sz;
    let buf = safe-alloc(l-length + r-length + 1, type(C<"char">)) as CString;
    dumb_strcat(buf, l);
    dumb_strcat(buf, r);
@@ -653,8 +591,8 @@ let $"+"(l: CString, r: CString): CString = (
 );
 
 let .has-suffix(s2: CString, s1: CString): Bool = (
-   let s1-length = s1.length;
-   let s2-length = s2.length;
+   let s1-length = 1_sz;
+   let s2-length = 1_sz;
    if s1-length > s2-length then false else {
       let i = 0_sz;
       let return = true;
