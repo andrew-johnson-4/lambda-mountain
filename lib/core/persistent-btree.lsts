@@ -49,24 +49,24 @@ let .retain(t: PBTree<k,v>): PBTree<k,v> = (
 );
 
 # Constructor for an empty tree
-let mk-pbtree(): PBtree<k,v> = PBLeaf : PBTree<k,v>;
+let mk-pbtree(): PBTree<k,v> = PBLeaf : PBTree<k,v>;
 let mk-pbtree(tk: Type<k>, tv: Type<v>): PBTree<k,v> = PBLeaf : PBTree<k,v>;
 
 # O(log N) Persistent Lookup
-let .lookup(tree: PBtree<k,v>, key: k, default: v): v = (
+let .lookup(tree: PBTree<k,v>, key: k, default: v): v = (
    match tree {
       PBLeaf {} => default;
-      PBNode1 { k1=k1, v1=v1, left=left, right=right } => (
-         if key == k1 then v1
-         else if key < k1 then open(left).lookup(key, default)
-         else open(right).lookup(key, default)
+      PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
+         if key == k11 then v11
+         else if key < k11 then left.lookup(key, default)
+         else right.lookup(key, default)
       );
-      PBNode2 { k1=k1, v1=v1, k2=k2, v2=v2, left=left, mid=mid, right=right } => (
-         if key == k1 then v1
-         else if key == k2 then v2
-         else if key < k1 then open(left).lookup(key, default)
-         else if key < k2 then open(mid).lookup(key, default)
-         else open(right).lookup(key, default)
+      PBNode2 { k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+         if key == k12 then v12
+         else if key == k22 then v22
+         else if key < k12 then left.lookup(key, default)
+         else if key < k22 then mid.lookup(key, default)
+         else right.lookup(key, default)
       );
    }
 );
@@ -74,72 +74,72 @@ let .lookup(tree: PBtree<k,v>, key: k, default: v): v = (
 # --- Internal Insert Mechanism ---
 
 # We need an intermediary state type to handle nodes splitting as they bubble up
-type PBtreeInsert<k,v> implies MustRetain, MustRelease
-   = PBtreeDone { tree: PBtree<k,v> }
-   | PBtreeUp { k1: k, v1: v, left: OneOwnedData<PBtree<k,v>>[], right: OneOwnedData<PBtree<k,v>>[] };
+type PBTreeInsert<k,v> implies MustRetain, MustRelease
+   = PBTreeDone { tree: PBTree<k,v> }
+   | PBTreeUp { k1: k, v1: v, left: OneOwnedData<PBTree<k,v>>[], right: OneOwnedData<PBTree<k,v>>[] };
 
-let .release(t: PBtreeInsert<k,v>): Nil = (
-   if t.discriminator-case-tag == (t as Tag::PBtreeDone).discriminator-case-tag {
-      (t as Tag::PBtreeDone).tree.release;
+let .release(t: PBTreeInsert<k,v>): Nil = (
+   if t.discriminator-case-tag == (t as Tag::PBTreeDone).discriminator-case-tag {
+      (t as Tag::PBTreeDone).tree.release;
    };
-   if t.discriminator-case-tag == (t as Tag::PBtreeUp).discriminator-case-tag {
-      if type(k) <: type(MustRelease) { (t as Tag::PBtreeUp).k1.release; };
-      if type(v) <: type(MustRelease) { (t as Tag::PBtreeUp).v1.release; };
-      (t as Tag::PBtreeUp).left.release;
-      (t as Tag::PBtreeUp).right.release;
+   if t.discriminator-case-tag == (t as Tag::PBTreeUp).discriminator-case-tag {
+      if type(k) <: type(MustRelease) { (t as Tag::PBTreeUp).k1.release; };
+      if type(v) <: type(MustRelease) { (t as Tag::PBTreeUp).v1.release; };
+      (t as Tag::PBTreeUp).left.release;
+      (t as Tag::PBTreeUp).right.release;
    };
    mark-as-released(t);
 );
 
-let .retain(t: PBtreeInsert<k,v>): PBtreeInsert<k,v> = (
-   if t.discriminator-case-tag == (t as Tag::PBtreeDone).discriminator-case-tag {
-      mark-as-released((t as Tag::PBtreeDone).tree.retain);
+let .retain(t: PBTreeInsert<k,v>): PBTreeInsert<k,v> = (
+   if t.discriminator-case-tag == (t as Tag::PBTreeDone).discriminator-case-tag {
+      mark-as-released((t as Tag::PBTreeDone).tree.retain);
    };
-   if t.discriminator-case-tag == (t as Tag::PBtreeUp).discriminator-case-tag {
-      if type(k) <: type(MustRetain) { let r = (t as Tag::PBtreeUp).k1.retain; mark-as-released(r); };
-      if type(v) <: type(MustRetain) { let r = (t as Tag::PBtreeUp).v1.retain; mark-as-released(r); };
-      (t as Tag::PBtreeUp).left.retain;
-      (t as Tag::PBtreeUp).right.retain;
+   if t.discriminator-case-tag == (t as Tag::PBTreeUp).discriminator-case-tag {
+      if type(k) <: type(MustRetain) { let r = (t as Tag::PBTreeUp).k1.retain; mark-as-released(r); };
+      if type(v) <: type(MustRetain) { let r = (t as Tag::PBTreeUp).v1.retain; mark-as-released(r); };
+      (t as Tag::PBTreeUp).left.retain;
+      (t as Tag::PBTreeUp).right.retain;
    };
    t
 );
 
-let insert-rec(tree: PBtree<k,v>, key: k, val: v): PBtreeInsert<k,v> = (
+let insert-rec(tree: PBTree<k,v>, key: k, val: v): PBTreeInsert<k,v> = (
    match tree {
-      PBLeaf {} => PBtreeUp(key, val, close(PBLeaf()), close(PBLeaf()));
+      PBLeaf {} => PBTreeUp(key, val, close(PBLeaf : PBTree<k,v>), close(PBLeaf : PBTree<k,v>));
       
-      PBNode1 { k1=k1, v1=v1, left=left, right=right } => (
-         if key == k1 then PBtreeDone(PBNode1(k1, val, left, right))
-         else if key < k1 then (
-            match insert-rec(open(left), key, val) {
-               PBtreeDone { tree=new-left } => PBtreeDone(PBNode1(k1, v1, close(new-left), right));
-               PBtreeUp { k1=nk, v1=nv, left=nl, right=nr } => PBtreeDone(PBNode2(nk, nv, k1, v1, nl, nr, right));
+      PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
+         if key == k11 then PBTreeDone(PBNode1(k11, val, close(left), close(right)))
+         else if key < k11 then (
+            match insert-rec(left, key, val) {
+               PBTreeDone { new-left=tree } => PBTreeDone(PBNode1(k11, v11, close(new-left), close(right)));
+               PBTreeUp { nk1=k1, nv1=v1, nl=left, nr=right } => PBTreeDone(PBNode2(nk1, nv1, k11, v11, close(nl), close(nr), close(right)));
             }
          ) else (
-            match insert-rec(open(right), key, val) {
-               PBtreeDone { tree=new-right } => PBtreeDone(PBNode1(k1, v1, left, close(new-right)));
-               PBtreeUp { k1=nk, v1=nv, left=nl, right=nr } => PBtreeDone(PBNode2(k1, v1, nk, nv, left, nl, nr));
+            match insert-rec(right, key, val) {
+               PBTreeDone { new-right=tree } => PBTreeDone(PBNode1(k11, v11, close(left), close(new-right)));
+               PBTreeUp { nk2=k1, nv2=v1, nl=left, nr=right } => PBTreeDone(PBNode2(k11, v11, nk2, nv2, close(left), close(nl), close(nr)));
             }
          )
       );
       
-      PBNode2 { k1=k1, v1=v1, k2=k2, v2=v2, left=left, mid=mid, right=right } => (
-         if key == k1 then PBtreeDone(PBNode2(k1, val, k2, v2, left, mid, right))
-         else if key == k2 then PBtreeDone(PBNode2(k1, v1, k2, val, left, mid, right))
-         else if key < k1 then (
-            match insert-rec(open(left), key, val) {
-               PBtreeDone { tree=new-left } => PBtreeDone(PBNode2(k1, v1, k2, v2, close(new-left), mid, right));
-               PBtreeUp { k1=nk, v1=nv, left=nl, right=nr } => PBtreeUp(k1, v1, close(PBNode1(nk, nv, nl, nr)), close(PBNode1(k2, v2, mid, right)));
+      PBNode2 { k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+         if key == k12 then PBTreeDone(PBNode2(k12, val, k22, v22, close(left), close(mid), close(right)))
+         else if key == k22 then PBTreeDone(PBNode2(k12, v12, k22, val, close(left), close(mid), close(right)))
+         else if key < k12 then (
+            match insert-rec(left, key, val) {
+               PBTreeDone { new-left=tree } => PBTreeDone(PBNode2(k12, v12, k22, v22, close(new-left), close(mid), close(right)));
+               PBTreeUp { nk3=k1, nv3=v1, nl=left, nr=right } => PBTreeUp(k12, v12, close(PBNode1(nk3, nv3, close(nl), close(nr))), close(PBNode1(k22, v22, close(mid), close(right))));
             }
-         ) else if key < k2 then (
-            match insert-rec(open(mid), key, val) {
-               PBtreeDone { tree=new-mid } => PBtreeDone(PBNode2(k1, v1, k2, v2, left, close(new-mid), right));
-               PBtreeUp { k1=nk, v1=nv, left=nl, right=nr } => PBtreeUp(nk, nv, close(PBNode1(k1, v1, left, nl)), close(PBNode1(k2, v2, nr, right)));
+         ) else if key < k22 then (
+            match insert-rec(mid, key, val) {
+               PBTreeDone { new-mid=tree } => PBTreeDone(PBNode2(k12, v12, k22, v22, close(left), close(new-mid), close(right)));
+               PBTreeUp { nk4=k1, nv4=v1, nl=left, nr=right } => PBTreeUp(nk4, nv4, close(PBNode1(k12, v12, close(left), close(nl))), close(PBNode1(k22, v22, close(nr), close(right))));
             }
          ) else (
-            match insert-rec(open(right), key, val) {
-               PBtreeDone { tree=new-right } => PBtreeDone(PBNode2(k1, v1, k2, v2, left, mid, close(new-right)));
-               PBtreeUp { k1=nk, v1=nv, left=nl, right=nr } => PBtreeUp(k2, v2, close(PBNode1(k1, v1, left, mid)), close(PBNode1(nk, nv, nl, nr)));
+            match insert-rec(right, key, val) {
+               PBTreeDone { new-right=tree } => PBTreeDone(PBNode2(k12, v12, k22, v22, close(left), close(mid), close(new-right)));
+               PBTreeUp { nk5=k1, nv5=v1, nl=left, nr=right } => PBTreeUp(k22, v22, close(PBNode1(k12, v12, close(left), close(mid))), close(PBNode1(nk5, nv5, close(nl), close(nr))));
             }
          )
       );
@@ -147,10 +147,10 @@ let insert-rec(tree: PBtree<k,v>, key: k, val: v): PBtreeInsert<k,v> = (
 );
 
 # Public O(log N) Persistent Insert
-let .insert(tree: PBtree<k,v>, key: k, val: v): PBtree<k,v> = (
+let .insert(tree: PBTree<k,v>, key: k, val: v): PBTree<k,v> = (
    match insert-rec(tree, key, val) {
-      PBtreeDone { tree=new-tree } => new-tree;
+      PBTreeDone { new-tree=tree } => new-tree;
       # If the root itself splits, we catch the bubble-up here and form a new root.
-      PBtreeUp { k1=k1, v1=v1, left=left, right=right } => PBNode1(k1, v1, left, right);
+      PBTreeUp { k1=k1, v1=v1, left=left, right=right } => PBNode1(k1, v1, close(left), close(right));
    }
 );
