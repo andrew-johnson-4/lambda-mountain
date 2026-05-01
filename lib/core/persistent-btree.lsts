@@ -1,0 +1,155 @@
+
+# A persistent B-Tree of order 3 (2-3 Tree).
+# We use OneOwnedData to box recursive tree children, exactly like LSTS's internal `List` type.
+type BTree<k,v> implies MustRetain, MustRelease
+   = BLeaf
+   | BNode1 { k1: k, v1: v, left: OneOwnedData<BTree<k,v>>[], right: OneOwnedData<BTree<k,v>>[] }
+   | BNode2 { k1: k, v1: v, k2: k, v2: v, left: OneOwnedData<BTree<k,v>>[], mid: OneOwnedData<BTree<k,v>>[], right: OneOwnedData<BTree<k,v>>[] };
+
+# LSTS requires explicit release propagation for types implying MustRelease
+let .release(t: BTree<k,v>): Nil = (
+   if t.discriminator-case-tag == (t as Tag::BNode1).discriminator-case-tag {
+      if type(k) <: type(MustRelease) { (t as Tag::BNode1).k1.release; };
+      if type(v) <: type(MustRelease) { (t as Tag::BNode1).v1.release; };
+      (t as Tag::BNode1).left.release;
+      (t as Tag::BNode1).right.release;
+   };
+   if t.discriminator-case-tag == (t as Tag::BNode2).discriminator-case-tag {
+      if type(k) <: type(MustRelease) { (t as Tag::BNode2).k1.release; (t as Tag::BNode2).k2.release; };
+      if type(v) <: type(MustRelease) { (t as Tag::BNode2).v1.release; (t as Tag::BNode2).v2.release; };
+      (t as Tag::BNode2).left.release;
+      (t as Tag::BNode2).mid.release;
+      (t as Tag::BNode2).right.release;
+   };
+   mark-as-released(t);
+);
+
+# Explicit retain propagation for types implying MustRetain
+let .retain(t: BTree<k,v>): BTree<k,v> = (
+   if t.discriminator-case-tag == (t as Tag::BNode1).discriminator-case-tag {
+      if type(k) <: type(MustRetain) { let r = (t as Tag::BNode1).k1.retain; mark-as-released(r); };
+      if type(v) <: type(MustRetain) { let r = (t as Tag::BNode1).v1.retain; mark-as-released(r); };
+      (t as Tag::BNode1).left.retain;
+      (t as Tag::BNode1).right.retain;
+   };
+   if t.discriminator-case-tag == (t as Tag::BNode2).discriminator-case-tag {
+      if type(k) <: type(MustRetain) {
+         let r1 = (t as Tag::BNode2).k1.retain; mark-as-released(r1);
+         let r2 = (t as Tag::BNode2).k2.retain; mark-as-released(r2);
+      };
+      if type(v) <: type(MustRetain) {
+         let r1 = (t as Tag::BNode2).v1.retain; mark-as-released(r1);
+         let r2 = (t as Tag::BNode2).v2.retain; mark-as-released(r2);
+      };
+      (t as Tag::BNode2).left.retain;
+      (t as Tag::BNode2).mid.retain;
+      (t as Tag::BNode2).right.retain;
+   };
+   t
+);
+
+# Constructor for an empty tree
+let mk-btree(): BTree<k,v> = BLeaf();
+
+# O(log N) Persistent Lookup
+let .lookup(tree: BTree<k,v>, key: k, default: v): v = (
+   match tree {
+      BLeaf {} => default;
+      BNode1 { k1=k1, v1=v1, left=left, right=right } => (
+         if key == k1 then v1
+         else if key < k1 then open(left).lookup(key, default)
+         else open(right).lookup(key, default)
+      );
+      BNode2 { k1=k1, v1=v1, k2=k2, v2=v2, left=left, mid=mid, right=right } => (
+         if key == k1 then v1
+         else if key == k2 then v2
+         else if key < k1 then open(left).lookup(key, default)
+         else if key < k2 then open(mid).lookup(key, default)
+         else open(right).lookup(key, default)
+      );
+   }
+);
+
+# --- Internal Insert Mechanism ---
+
+# We need an intermediary state type to handle nodes splitting as they bubble up
+type BTreeInsert<k,v> implies MustRetain, MustRelease
+   = BTreeDone { tree: BTree<k,v> }
+   | BTreeUp { k1: k, v1: v, left: OneOwnedData<BTree<k,v>>[], right: OneOwnedData<BTree<k,v>>[] };
+
+let .release(t: BTreeInsert<k,v>): Nil = (
+   if t.discriminator-case-tag == (t as Tag::BTreeDone).discriminator-case-tag {
+      (t as Tag::BTreeDone).tree.release;
+   };
+   if t.discriminator-case-tag == (t as Tag::BTreeUp).discriminator-case-tag {
+      if type(k) <: type(MustRelease) { (t as Tag::BTreeUp).k1.release; };
+      if type(v) <: type(MustRelease) { (t as Tag::BTreeUp).v1.release; };
+      (t as Tag::BTreeUp).left.release;
+      (t as Tag::BTreeUp).right.release;
+   };
+   mark-as-released(t);
+);
+
+let .retain(t: BTreeInsert<k,v>): BTreeInsert<k,v> = (
+   if t.discriminator-case-tag == (t as Tag::BTreeDone).discriminator-case-tag {
+      mark-as-released((t as Tag::BTreeDone).tree.retain);
+   };
+   if t.discriminator-case-tag == (t as Tag::BTreeUp).discriminator-case-tag {
+      if type(k) <: type(MustRetain) { let r = (t as Tag::BTreeUp).k1.retain; mark-as-released(r); };
+      if type(v) <: type(MustRetain) { let r = (t as Tag::BTreeUp).v1.retain; mark-as-released(r); };
+      (t as Tag::BTreeUp).left.retain;
+      (t as Tag::BTreeUp).right.retain;
+   };
+   t
+);
+
+let insert-rec(tree: BTree<k,v>, key: k, val: v): BTreeInsert<k,v> = (
+   match tree {
+      BLeaf {} => BTreeUp(key, val, close(BLeaf()), close(BLeaf()));
+      
+      BNode1 { k1=k1, v1=v1, left=left, right=right } => (
+         if key == k1 then BTreeDone(BNode1(k1, val, left, right))
+         else if key < k1 then (
+            match insert-rec(open(left), key, val) {
+               BTreeDone { tree=new-left } => BTreeDone(BNode1(k1, v1, close(new-left), right));
+               BTreeUp { k1=nk, v1=nv, left=nl, right=nr } => BTreeDone(BNode2(nk, nv, k1, v1, nl, nr, right));
+            }
+         ) else (
+            match insert-rec(open(right), key, val) {
+               BTreeDone { tree=new-right } => BTreeDone(BNode1(k1, v1, left, close(new-right)));
+               BTreeUp { k1=nk, v1=nv, left=nl, right=nr } => BTreeDone(BNode2(k1, v1, nk, nv, left, nl, nr));
+            }
+         )
+      );
+      
+      BNode2 { k1=k1, v1=v1, k2=k2, v2=v2, left=left, mid=mid, right=right } => (
+         if key == k1 then BTreeDone(BNode2(k1, val, k2, v2, left, mid, right))
+         else if key == k2 then BTreeDone(BNode2(k1, v1, k2, val, left, mid, right))
+         else if key < k1 then (
+            match insert-rec(open(left), key, val) {
+               BTreeDone { tree=new-left } => BTreeDone(BNode2(k1, v1, k2, v2, close(new-left), mid, right));
+               BTreeUp { k1=nk, v1=nv, left=nl, right=nr } => BTreeUp(k1, v1, close(BNode1(nk, nv, nl, nr)), close(BNode1(k2, v2, mid, right)));
+            }
+         ) else if key < k2 then (
+            match insert-rec(open(mid), key, val) {
+               BTreeDone { tree=new-mid } => BTreeDone(BNode2(k1, v1, k2, v2, left, close(new-mid), right));
+               BTreeUp { k1=nk, v1=nv, left=nl, right=nr } => BTreeUp(nk, nv, close(BNode1(k1, v1, left, nl)), close(BNode1(k2, v2, nr, right)));
+            }
+         ) else (
+            match insert-rec(open(right), key, val) {
+               BTreeDone { tree=new-right } => BTreeDone(BNode2(k1, v1, k2, v2, left, mid, close(new-right)));
+               BTreeUp { k1=nk, v1=nv, left=nl, right=nr } => BTreeUp(k2, v2, close(BNode1(k1, v1, left, mid)), close(BNode1(nk, nv, nl, nr)));
+            }
+         )
+      );
+   }
+);
+
+# Public O(log N) Persistent Insert
+let .insert(tree: BTree<k,v>, key: k, val: v): BTree<k,v> = (
+   match insert-rec(tree, key, val) {
+      BTreeDone { tree=new-tree } => new-tree;
+      # If the root itself splits, we catch the bubble-up here and form a new root.
+      BTreeUp { k1=k1, v1=v1, left=left, right=right } => BNode1(k1, v1, left, right);
+   }
+);
