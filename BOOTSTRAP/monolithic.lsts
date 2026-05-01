@@ -7200,7 +7200,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          }};
       );
       Glb{key1=key, val=val} => (
-         print("Infer \{term}\n");
          let prev-count-history = safe-alloc-block-count-monotonic-history;
          let rough-tt = typeof-term(term);
          if rough-tt.is-arrow and not(rough-tt.is-open) and not(rough-tt.is-t(c"TypedMacro",0)) {
@@ -8592,22 +8591,14 @@ let try-destructure-macro(loc: SourceLocation, lhs: AST, term: AST): AContext? =
 );
 
 let typecheck(): Nil = (
-   print("Typecheck 1\n");
    infer-global-macro(ast-parsed-program);
-   print("Typecheck 2\n");
    ast-parsed-program = infer-global-context-prim(ast-parsed-program);
-   print("Typecheck 3\n");
    infer-global-context-td(ast-parsed-program);
-   print("Typecheck 4\n");
    infer-global-context(ast-parsed-program);
-   print("Typecheck 5\n");
    assert-no-infinite-types();
-   print("Typecheck 6\n");
    (global-flow-tctx, ast-parsed-program) = infer-global-terms(global-flow-tctx, ast-parsed-program);
-   print("Typecheck 7\n");
    tctx-currently-processing-globals = false;
    (global-flow-tctx, ast-parsed-program) = std-infer-expr(global-flow-tctx, ast-parsed-program, false, Used, ta);
-   print("Typecheck 8\n");
    # TODO: release globals for graceful exit
    while non-zero(stack-to-specialize) { match stack-to-specialize.pop {
       # this can't be a normal for-loop because it gets extended during iteration
@@ -8615,13 +8606,9 @@ let typecheck(): Nil = (
          specialize(key, ctx, result-type, term);
       );
    }};
-   print("Typecheck 9\n");
    validate-interfaces();
-   print("Typecheck 10\n");
    assert-well-typed(ast-parsed-program);
-   print("Typecheck 11\n");
    decorate-var-to-def();
-   print("Typecheck 12\n");
 );
 
 let typeof-lhs(lhs: AST): Type = typeof-lhs(lhs,0);
@@ -8893,7 +8880,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          ast-parsed-count = ast-count;
          match config-mode {
             ModeTypecheck{} => (preprocess(); typecheck(););
-            ModeCompile{} => (print("Preprocess\n"); preprocess(); print("Typecheck\n"); typecheck(); print("Backend\n"); plugin-current-backend(););
+            ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(););
          };
          ast-typed-count = ast-count;
       );
