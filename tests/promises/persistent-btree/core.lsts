@@ -1,2 +1,6 @@
 
 import lib/core/bedrock.lsts;
+
+(
+   let b = mk-pbtree(type(U8), type(U8));
+);
