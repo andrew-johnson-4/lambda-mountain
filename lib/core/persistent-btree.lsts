@@ -27,19 +27,19 @@ let .release(t: PBTree<k,v>): Nil = (
 # Explicit retain propagation for types implying MustRetain
 let .retain(t: PBTree<k,v>): PBTree<k,v> = (
    if t.discriminator-case-tag == (t as Tag::PBNode1).discriminator-case-tag {
-      if type(k) <: type(MustRetain) { let r = (t as Tag::PBNode1).k1.retain; mark-as-released(r); };
-      if type(v) <: type(MustRetain) { let r = (t as Tag::PBNode1).v1.retain; mark-as-released(r); };
+      if type(k) <: type(MustRetain) { mark-as-released((t as Tag::PBNode1).k1.retain); };
+      if type(v) <: type(MustRetain) { mark-as-released((t as Tag::PBNode1).v1.retain); };
       (t as Tag::PBNode1).left.retain;
       (t as Tag::PBNode1).right.retain;
    };
    if t.discriminator-case-tag == (t as Tag::PBNode2).discriminator-case-tag {
       if type(k) <: type(MustRetain) {
-         let r1 = (t as Tag::PBNode2).k1.retain; mark-as-released(r1);
-         let r2 = (t as Tag::PBNode2).k2.retain; mark-as-released(r2);
+         mark-as-released((t as Tag::PBNode2).k1.retain);
+         mark-as-released((t as Tag::PBNode2).k2.retain);
       };
       if type(v) <: type(MustRetain) {
-         let r1 = (t as Tag::PBNode2).v1.retain; mark-as-released(r1);
-         let r2 = (t as Tag::PBNode2).v2.retain; mark-as-released(r2);
+         mark-as-released((t as Tag::PBNode2).v1.retain);
+         mark-as-released((t as Tag::PBNode2).v2.retain);
       };
       (t as Tag::PBNode2).left.retain;
       (t as Tag::PBNode2).mid.retain;
@@ -96,8 +96,8 @@ let .retain(t: PBTreeInsert<k,v>): PBTreeInsert<k,v> = (
       mark-as-released((t as Tag::PBTreeDone).tree.retain);
    };
    if t.discriminator-case-tag == (t as Tag::PBTreeUp).discriminator-case-tag {
-      if type(k) <: type(MustRetain) { let r = (t as Tag::PBTreeUp).k1.retain; mark-as-released(r); };
-      if type(v) <: type(MustRetain) { let r = (t as Tag::PBTreeUp).v1.retain; mark-as-released(r); };
+      if type(k) <: type(MustRetain) { mark-as-released((t as Tag::PBTreeUp).k1.retain); };
+      if type(v) <: type(MustRetain) { mark-as-released((t as Tag::PBTreeUp).v1.retain); };
       (t as Tag::PBTreeUp).left.retain;
       (t as Tag::PBTreeUp).right.retain;
    };
