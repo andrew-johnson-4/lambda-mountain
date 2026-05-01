@@ -1,9 +1,0 @@
-
-typed macro macro::let(lhs: lazy, rhs: lazy): lazy = (
-   (fn(lhs) = ()) (rhs)
-);
-
-(
-   let l-length = ();
-   let r-length = ();
-);

@@ -1,0 +1,21 @@
+
+import lib/core/bedrock.lsts;
+
+type T implies MustRetain, MustRelease = { v: Vector<U8>, x: Bool };
+
+let .release(t: T): Nil = (
+   t.v.release;
+   mark-as-released(t);
+);
+
+let .retain(t: T): T = (
+   mark-as-released(t.v.retain);
+   t
+);
+
+let f(xs: T): T = (
+   xs.x = false;
+   xs
+);
+
+f(T(mk-vector(type(U8)).push(1), true));

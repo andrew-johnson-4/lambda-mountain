@@ -211,7 +211,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          }};
       );
       Glb{key1=key, val=val} => (
-         print("Infer Global \{term}\n");
          let prev-count-history = safe-alloc-block-count-monotonic-history;
          let rough-tt = typeof-term(term);
          if rough-tt.is-arrow and not(rough-tt.is-open) and not(rough-tt.is-t(c"TypedMacro",0)) {
@@ -289,6 +288,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       Abs{lhs=lhs, rhs=rhs:App{asc=left:Lit{key:c":"},right:App{inner-rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} => (
          let direct-tctx = tctx.get-or(mk-tctx());
+         # Here, direct-tctx is dropping a reference count
          direct-tctx.is-blob = misc-tt.is-t(c"Blob",0);
          tctx = Some(direct-tctx);
          let before-tctx = tctx; # make sure to capture locals as "local" scope
