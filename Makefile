@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm --v23 tests/promises/gc/complex-double-free-research-1.lsts
+	lm --v3 tests/promises/gc/complex-double-free-research-1.lsts > out.txt
 	gcc tmp.c
 	./a.out
 	#time lm --showalloc SRC/unit-type-core.lsts > out.txt
@@ -64,7 +64,7 @@ compile-bootstrap:
 
 compile-production: compile-bootstrap
 	rm -f production
-	$(LSTSFLAGS) ./bootstrap.exe --v23 -o production.c SRC/index.lsts
+	$(LSTSFLAGS) ./bootstrap.exe --v3 -o production.c SRC/index.lsts
 	$(CC) $(CFLAGS) -o production production.c
 	rm -f production.c
 
