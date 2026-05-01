@@ -136,7 +136,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          ast-parsed-count = ast-count;
          match config-mode {
             ModeTypecheck{} => (preprocess(); typecheck(););
-            ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(); );
+            ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(););
          };
          ast-typed-count = ast-count;
       );
