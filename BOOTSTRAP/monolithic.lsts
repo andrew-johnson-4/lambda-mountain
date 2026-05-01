@@ -1667,7 +1667,7 @@ declare-unop( $".discriminator-case-tag", raw-type(LMStruct+MustNotRetain+MustRe
 declare-unop( $".discriminator-case-tag", raw-type(LMStruct+MustNotRetain+MustReleaseAfterCall), raw-type(USize), ( l"("; x; l".discriminator_case_tag)"; ) );
 
 declare-unop-retain( $"primitive::field-get", raw-type(base-type+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), ( l"("; x; l"."; mangle(field-name : L); l")"; ) );
-declare-binop( $"primitive::field-set", raw-type(base-type+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), raw-type(Nil), ( l"("; x; l"."; mangle(field-name : L); l"="; y; l")"; ) );
+declare-binop( $"primitive::field-set", raw-type(base-type+MustNotRetain), raw-type(field-type), raw-type(Nil), ( l"("; x; l"."; mangle(field-name : L); l"="; y; l")"; ) );
 
 declare-unop-retain( $"primitive::field-get-indirect", raw-type(base-type[]+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), ( l"("; x; l"->"; mangle(field-name : L); l")"; ) );
 declare-binop( $"primitive::field-set-indirect", raw-type(base-type[]+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), raw-type(Nil), ( l"("; x; l"->"; mangle(field-name : L); l"="; y; l")"; ) );
@@ -7000,7 +7000,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type, rewritten-constant: Bool): (TypeContext?, AST) = (
-   let original-term = term;
    profile-visit-ast-unique(term);
    profile-visit-ast-equal(term);
    if not(term.is-free-and-seen) { match term {
@@ -7194,7 +7193,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          while def-i < seq.length { match seq[def-i] {
             Glb{val:Abs{}} => (
                (_, let new-r) = std-infer-expr(tctx, seq[def-i], false, Used(), hint);
-               print("Compiled \{new-r}\n");
                seq[def-i] = new-r;
                def-i = def-i + 1;
             );
@@ -7202,6 +7200,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          }};
       );
       Glb{key1=key, val=val} => (
+         print("Infer \{term}\n");
          let prev-count-history = safe-alloc-block-count-monotonic-history;
          let rough-tt = typeof-term(term);
          if rough-tt.is-arrow and not(rough-tt.is-open) and not(rough-tt.is-t(c"TypedMacro",0)) {
@@ -7433,8 +7432,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       }
    }};
    (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
-   print("Infer original \{original-term}\n");
-   print("Infer result \{term}\n");
    (tctx, term);
 );
 
@@ -8609,9 +8606,8 @@ let typecheck(): Nil = (
    (global-flow-tctx, ast-parsed-program) = infer-global-terms(global-flow-tctx, ast-parsed-program);
    print("Typecheck 7\n");
    tctx-currently-processing-globals = false;
-   print("Typecheck 8\n");
    (global-flow-tctx, ast-parsed-program) = std-infer-expr(global-flow-tctx, ast-parsed-program, false, Used, ta);
-   print("Typecheck 9\n");
+   print("Typecheck 8\n");
    # TODO: release globals for graceful exit
    while non-zero(stack-to-specialize) { match stack-to-specialize.pop {
       # this can't be a normal for-loop because it gets extended during iteration
@@ -8619,13 +8615,13 @@ let typecheck(): Nil = (
          specialize(key, ctx, result-type, term);
       );
    }};
-   print("Typecheck 10\n");
+   print("Typecheck 9\n");
    validate-interfaces();
-   print("Typecheck 11\n");
+   print("Typecheck 10\n");
    assert-well-typed(ast-parsed-program);
-   print("Typecheck 12\n");
+   print("Typecheck 11\n");
    decorate-var-to-def();
-   print("Typecheck 13\n");
+   print("Typecheck 12\n");
 );
 
 let typeof-lhs(lhs: AST): Type = typeof-lhs(lhs,0);
@@ -8869,9 +8865,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          print("\{ast-parsed-program}\n");
       );
       _ => (
-         print("Parse 1\n");
          for fp4 in input.reverse { frontend(fp4); };
-         print("Parsed\n");
          if show-alloc-count-in-program {
             ast-parsed-program = ast-parsed-program +
             mk-app( mk-var(c"print"),
@@ -8899,7 +8893,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          ast-parsed-count = ast-count;
          match config-mode {
             ModeTypecheck{} => (preprocess(); typecheck(););
-            ModeCompile{} => (print("Preprocess\n"); preprocess(); print("Typecheck\n"); typecheck(); print("Backend\n"); plugin-current-backend(); print("Finish\n"); );
+            ModeCompile{} => (print("Preprocess\n"); preprocess(); print("Typecheck\n"); typecheck(); print("Backend\n"); plugin-current-backend(););
          };
          ast-typed-count = ast-count;
       );
