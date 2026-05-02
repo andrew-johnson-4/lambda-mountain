@@ -154,3 +154,15 @@ let .bind(tree: PBTree<k,v>, key: k, val: v): PBTree<k,v> = (
       PBTreeUp { k1=k1, v1=v1, left=left, right=right } => PBNode1(k1, v1, close(left), close(right));
    }
 );
+
+let $"+"(lpb: PBTree<k,v>, rpb: PBTree<k,v>): PBTree<k,v> = (
+   match rpb {
+      PBLeaf{} => lpb;
+      PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
+          lpb.bind(k11, v11) + left + right;
+      );
+      PBNode2{ k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+          lpb.bind(k12, v12).bind(k22,v22) + left + mid + right;
+      );
+   }
+);

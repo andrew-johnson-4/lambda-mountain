@@ -115,3 +115,10 @@ let .is-global-or-zero(tr: PhiContextRow): Bool = (
       _ => false;
    }
 );
+
+let .with-phi-tt(tr: PhiContextRow, phi-tt: Type): PhiContextRow = (
+   match tr {
+      PhiContextRow{ phi-id=phi-id, blame=blame, dead-on-arrival=dead-on-arrival, is-global=is-global } => PhiContextRow(phi-id, phi-tt, blame, dead-on-arrival, is-global);
+      _ => tr;
+   }
+);
