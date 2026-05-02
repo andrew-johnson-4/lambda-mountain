@@ -19,7 +19,7 @@ dev: install-production
 	#time lm --showalloc SRC/index.lsts > out.txt
 
 build: compile-production
-	time env $(LSTSFLAGS) ./production --v23 -o deploy1.c SRC/index.lsts > deploy1.txt
+	time env $(LSTSFLAGS) ./production --v23 -o deploy1.c SRC/index.lsts
 	$(CC) $(CFLAGS) deploy1.c -o deploy1
 	time env $(LSTSFLAGS) ./deploy1 --v23 -o deploy2.c SRC/index.lsts
 	diff deploy1.c deploy2.c

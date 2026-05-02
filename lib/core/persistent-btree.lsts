@@ -147,7 +147,7 @@ let insert-rec(tree: PBTree<k,v>, key: k, val: v): PBTreeInsert<k,v> = (
 );
 
 # Public O(log N) Persistent Insert
-let .insert(tree: PBTree<k,v>, key: k, val: v): PBTree<k,v> = (
+let .bind(tree: PBTree<k,v>, key: k, val: v): PBTree<k,v> = (
    match insert-rec(tree, key, val) {
       PBTreeDone { new-tree=tree } => new-tree;
       # If the root itself splits, we catch the bubble-up here and form a new root.
