@@ -8230,6 +8230,36 @@ let preprocess(): Nil = (
    index-typedefs(ast-parsed-program);
 );
 
+let release-locals(tctx-before: PBTree<k,v>, tctx-after: PBTree<k,v>, tctx-after-iter: PBTree<k,v>, pid-seen: Set<U64>): (Set<U64>, PBTree<k,v>) = (
+   if is(tctx-before,tctx-after) then (pid-seen, tctx-after)
+   else match tctx-after-iter {
+      PBLeaf{} => (pid-seen, tctx-after);
+      PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
+         if v11.dead-on-arrival-or-zero and not(pid-seen.has(v11.phi-id-or-zero)) and v11.phi-tt-or-zero.is-linear-live {
+            pid-seen = pid-seen.bind(v11.phi-id-or-zero);
+            tctx-after = tctx-after.bind(v11.phi-id-or-zero, v11.with-phi-tt(v11.phi-tt-or-zero.move-linear));
+         };
+         (pid-seen, tctx-after) = release-locals(tctx-before, tctx-after, left, pid-seen);
+         (pid-seen, tctx-after) = release-locals(tctx-before, tctx-after, right, pid-seen);
+         (pid-seen, tctx-after)
+      );
+      PBNode2{ k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+         if v12.dead-on-arrival-or-zero and not(pid-seen.has(v12.phi-id-or-zero)) and v12.phi-tt-or-zero.is-linear-live {
+            pid-seen = pid-seen.bind(v12.phi-id-or-zero);
+            tctx-after = tctx-after.bind(v12.phi-id-or-zero, v12.with-phi-tt(v12.phi-tt-or-zero.move-linear));
+         };
+         if v22.dead-on-arrival-or-zero and not(pid-seen.has(v22.phi-id-or-zero)) and v22.phi-tt-or-zero.is-linear-live {
+            pid-seen = pid-seen.bind(v22.phi-id-or-zero);
+            tctx-after = tctx-after.bind(v22.phi-id-or-zero, v22.with-phi-tt(v22.phi-tt-or-zero.move-linear));
+         };
+         (pid-seen, tctx-after) = release-locals(tctx-before, tctx-after, left, pid-seen);
+         (pid-seen, tctx-after) = release-locals(tctx-before, tctx-after, mid, pid-seen);
+         (pid-seen, tctx-after) = release-locals(tctx-before, tctx-after, right, pid-seen);
+         (pid-seen, tctx-after)
+      );
+   };
+);
+
 let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST, hint: Type, release-self: Bool): (TypeContext?, AST) = (
    tctx-after = tctx-after.phi-append-dead-on-arrival(tctx-before);
    let tctx-before-tctx = tctx-before.get-or(mk-tctx()).tctx;
@@ -8279,15 +8309,8 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-id);
       tctx-after = tctx-after.phi-move(tctx-after.with-phi(nd.denormalized, term), term);
    };
-   # TODO
-   #while non-zero(tctx-after-pctx) and not(is(tctx-before-pctx, tctx-after-pctx)) {
-   #   let tr = head(tctx-after-pctx);
-   #   if tr.dead-on-arrival-or-zero and not(pid-seen.has(tr.phi-id-or-zero)) and tr.phi-tt-or-zero.is-linear-live {
-   #      pid-seen = pid-seen.bind(tr.phi-id-or-zero);
-   #      tctx-after = tctx-after.bind-phi(tr.phi-id-or-zero, tr.phi-tt-or-zero.move-linear, tr.blame-or-zero);
-   #   };
-   #   tctx-after-pctx = tail(tctx-after-pctx);
-   #};
+   (pid-seen, tctx-after-pctx) = release-locals(tctx-before-pctx, tctx-after-pctx, tctx-after-pctx, pid-seen);
+   tctx-after.with-pctx(tctx-after-pctx);
    tctx-before = tctx-before.phi-append(tctx-after);
    if not(release-self) then (tctx-before, _) = tctx-before.resurrect(typeof-term(term), term);
    (tctx-before, term)
