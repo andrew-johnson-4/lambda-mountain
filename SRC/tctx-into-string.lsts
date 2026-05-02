@@ -15,13 +15,13 @@ let .into(tree: PBTree<U64,PhiContextRow>, tt: Type<String>): String = (
          right.into(type(String))
       );
    }
-)
+);
 
 let .into(tctx: Maybe<TypeContext>, tt: Type<String>): String = (
    let result = "";
    for tr in tctx.get-or(mk-tctx()).tctx {
       result = result + "\{tr.key-or-zero} : \{tr.direct-type}\n";
    };
-   result = result + tctx.get-or(mk-tctx()).pctx.into(type(String))
+   result = result + tctx.get-or(mk-tctx()).pctx.into(type(String));
    result
 );

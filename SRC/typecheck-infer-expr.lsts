@@ -442,7 +442,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       }
    }};
    (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
-   print("Inferred \{term}\nTCTX: \{tctx}\n");
+   #print("Inferred \{term}\nTCTX: \{tctx}\n");
    (tctx, term);
 );
 

@@ -5359,14 +5359,30 @@ let .with-phi-tt(tr: PhiContextRow, phi-tt: Type): PhiContextRow = (
    }
 );
 
+let .into(tree: PBTree<U64,PhiContextRow>, tt: Type<String>): String = (
+   match tree {
+      PBLeaf {} => "";
+      PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
+         "\{k11} : \{v11.phi-tt-or-zero}\n" +
+         left.into(type(String)) +
+         right.into(type(String))
+      );
+      PBNode2 { k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+         "\{k12} : \{v12.phi-tt-or-zero}\n" +
+         "\{k22} : \{v22.phi-tt-or-zero}\n" +
+         left.into(type(String)) +
+         mid.into(type(String)) +
+         right.into(type(String))
+      );
+   }
+);
+
 let .into(tctx: Maybe<TypeContext>, tt: Type<String>): String = (
    let result = "";
    for tr in tctx.get-or(mk-tctx()).tctx {
       result = result + "\{tr.key-or-zero} : \{tr.direct-type}\n";
    };
-   #for tr in tctx.get-or(mk-tctx()).pctx {
-   #   result = result + "\{tr.phi-id-or-zero} : \{tr.phi-tt-or-zero}\n";
-   #};
+   result = result + tctx.get-or(mk-tctx()).pctx.into(type(String));
    result
 );
 
@@ -7642,6 +7658,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       }
    }};
    (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
+   #print("Inferred \{term}\nTCTX: \{tctx}\n");
    (tctx, term);
 );
 

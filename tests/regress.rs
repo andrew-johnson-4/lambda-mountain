@@ -17,6 +17,7 @@ fn compile_bootstrap() {
                       .arg("-O2")
                       .arg("-march=native")
                       .arg("-mtune=native")
+                      .arg("-fbracket-depth=1000")
                       .arg("-o")
                       .arg("bootstrap.exe")
                       .arg("BOOTSTRAP/cli.c")
@@ -34,30 +35,17 @@ fn run_bootstrap(target: &str, leave_tmp: bool, is_v3: bool) -> String {
    if !leave_tmp { rm("tmp.c"); };
    rm("a.out");
 
-   let exit = if is_v3 {
-      Command::new("./bootstrap.exe")
+   let exit = Command::new("./bootstrap.exe")
               .stdout(std::process::Stdio::piped())
               .stderr(std::process::Stdio::piped())
+              .arg("--v3")
               .arg("-o")
               .arg("tmp.c")
               .arg(target)
               .spawn()
               .expect("failed to execute process")
               .wait_with_output()
-              .expect("failed to wait for process")
-   } else {
-      Command::new("./bootstrap.exe")
-              .stdout(std::process::Stdio::piped())
-              .stderr(std::process::Stdio::piped())
-              .arg("--v2")
-              .arg("-o")
-              .arg("tmp.c")
-              .arg(target)
-              .spawn()
-              .expect("failed to execute process")
-              .wait_with_output()
-              .expect("failed to wait for process")
-   };
+              .expect("failed to wait for process");
 
    let mut output = "".to_string();
    if !exit.status.success() {
