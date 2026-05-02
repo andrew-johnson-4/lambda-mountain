@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm --v23 tests/promises/gc/field-double-free.lsts > out.txt
+	lm --v3 tests/promises/phi/implied-linear-phi-reject.lsts
 	gcc tmp.c
 	./a.out
 	#time lm --showalloc SRC/unit-type-core.lsts > out.txt
