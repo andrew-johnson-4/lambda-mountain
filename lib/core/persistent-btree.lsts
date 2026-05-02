@@ -1,7 +1,7 @@
 
 # A persistent B-Tree of order 3 (2-3 Tree).
 # We use OneOwnedData to box recursive tree children, exactly like LSTS's internal `List` type.
-type PBTree<k,v> implies MustRetain, MustRelease
+type PBTree<k,v> implies MustRetain, MustRelease zero PBLeaf
    = PBLeaf
    | PBNode1 { k1: k, v1: v, left: OneOwnedData<PBTree<k,v>>[], right: OneOwnedData<PBTree<k,v>>[] }
    | PBNode2 { k1: k, v1: v, k2: k, v2: v, left: OneOwnedData<PBTree<k,v>>[], mid: OneOwnedData<PBTree<k,v>>[], right: OneOwnedData<PBTree<k,v>>[] };
