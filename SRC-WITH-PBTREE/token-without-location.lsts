@@ -1,4 +1,0 @@
-
-let .without-location(t: Token): Token = (
-   Token( t.key, t.nonce, mk-location() )
-);
