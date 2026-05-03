@@ -1,0 +1,7 @@
+
+let .unroll-seq(t: AST): Vector<AST> = (
+   match t {
+      Seq{seq=seq} => seq;
+      _ => mk-vector(type(AST));
+   }
+);

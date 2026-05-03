@@ -7,34 +7,19 @@ let .phi-append-dead-on-arrival(tctx-primary: TypeContext?, tctx-secondary: Type
    tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,true) ) 
 );
 
-let .phi-append(tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, dead-on-arrival: Bool): PBTree<U64,PhiContextRow> = (
-   match tctx-secondary {
-      PBLeaf{} => tctx-primary;
-      PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
-          let pr2 = tctx-primary.lookup(k11, NullPhiContextRow);
-          if dead-on-arrival then v11 = PhiContextRow(v11.phi-id-or-zero, v11.phi-tt-or-zero, v11.blame-or-zero, dead-on-arrival, v11.is-global-or-zero);
-          if not(is(v11,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
-             tctx-primary = tctx-primary.bind(k11, v11);
-          };
-          tctx-primary = tctx-primary.phi-append(left, dead-on-arrival);
-          tctx-primary = tctx-primary.phi-append(right, dead-on-arrival);
-          tctx-primary
-      );
-      PBNode2{ k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
-          let pr2 = tctx-primary.lookup(k12, NullPhiContextRow);
-          if dead-on-arrival then v12 = PhiContextRow(v12.phi-id-or-zero, v12.phi-tt-or-zero, v12.blame-or-zero, dead-on-arrival, v12.is-global-or-zero);
-          if not(is(v12,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
-             tctx-primary = tctx-primary.bind(k12, v12);
-          };
-          pr2 = tctx-primary.lookup(k22, NullPhiContextRow);
-          if dead-on-arrival then v22 = PhiContextRow(v22.phi-id-or-zero, v22.phi-tt-or-zero, v22.blame-or-zero, dead-on-arrival, v22.is-global-or-zero);
-          if not(is(v22,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
-             tctx-primary = tctx-primary.bind(k22, v22);
-          };
-          tctx-primary = tctx-primary.phi-append(left, dead-on-arrival);
-          tctx-primary = tctx-primary.phi-append(mid, dead-on-arrival);
-          tctx-primary = tctx-primary.phi-append(right, dead-on-arrival);
-          tctx-primary
-      );
-   }
+let .phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>, dead-on-arrival: Bool): List<PhiContextRow> = (
+   let seen = mk-set(type(U64));
+   while non-zero(tctx-secondary) and not(is(tctx-secondary,tctx-primary)) {
+      let pr1 = head(tctx-secondary);
+      if not(seen.has(pr1.phi-id-or-zero)) {
+         let pr2 = tctx-primary.lookup(pr1.phi-id-or-zero);
+         if dead-on-arrival then pr1 = PhiContextRow(pr1.phi-id-or-zero, pr1.phi-tt-or-zero, pr1.blame-or-zero, dead-on-arrival, pr1.is-global-or-zero);
+         if not(is(pr1,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
+            tctx-primary = cons( pr1, tctx-primary );
+         };
+         seen = seen.bind(pr1.phi-id-or-zero);
+      };
+      tctx-secondary = tail(tctx-secondary);
+   };
+   tctx-primary
 );

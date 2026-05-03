@@ -1,0 +1,4 @@
+
+type Fragment = { term: AST, keyvals: OneOwnedData<List<Tuple<CString,S>>>[], type: Type, context: OneOwnedData<FContext>[], vararg: List<OneOwnedData<Fragment>[]> };
+
+type FContext zero FCtxEOF = FCtxEOF | FCtxBind{ remainder:OneOwnedData<FContext>[] , k:CString , kt:Type , kv:Fragment };

@@ -1,5 +1,5 @@
 
-let .with-pctx(tctx: TypeContext?, pctx: PBTree<U64,PhiContextRow>): TypeContext? = (
+let .with-pctx(tctx: TypeContext?, pctx: List<PhiContextRow>): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
       pctx,

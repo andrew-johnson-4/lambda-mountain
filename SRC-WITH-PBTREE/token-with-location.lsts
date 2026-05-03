@@ -1,0 +1,5 @@
+
+let with-location(t: Token, loc: SourceLocation): Token = (
+   if non-zero(t.location) then t else Token( t.key, iuid(), loc )
+);
+let .with-location(term: Token, loc: SourceLocation): Token = with-location(term, loc);

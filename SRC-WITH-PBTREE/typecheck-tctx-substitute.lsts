@@ -1,0 +1,47 @@
+
+let substitute(tctx: TypeContext?, t: AST): AST = substitute(tctx,t,false);
+
+let substitute(tctx: TypeContext?, t: AST, is-return: Bool): AST = (
+   match t {
+      ASTEOF{} => t;
+      ASTNil{} => t;
+      App{ left:Lit{key:c":",ctk=token}, right:App{ left:Var{v1=key,vtk1=token}, right:AType{vt1=tt} } } => (
+         vt1 = substitute-macro(tctx, vt1).expand-implied-phi.without-phi-keep-state;
+         t = mk-app( mk-lit(c":",ctk.unique), mk-app(mk-var(v1,vtk1.unique), mk-atype(vt1)) );
+         let found = false;
+         for TypeContextRow{tk1=key,ta=def} in tctx.get-or(mk-tctx()).tctx {
+            if not(found) and tk1==v1 {
+               t = mk-app( mk-lit(c":",ctk.unique), mk-app(substitute(tctx,ta), mk-atype(vt1)) );
+               found = true;
+            }
+         }; t
+      );
+      App{ left:Lit{key:c":",ctk=token}, right:App{ inner-t=left, right:AType{vt2=tt} } } => (
+         vt2 = substitute-macro(tctx, vt2).expand-implied-phi.without-phi-keep-state;
+         mk-app( mk-lit(c":",ctk.unique), mk-app(substitute(tctx, inner-t), mk-atype(vt2)) );
+      );
+      Lit{v2=key,vtk2=token} => mk-lit(v2,vtk2.unique);
+      Var{v3=key,vtk3=token} => mk-var(v3,vtk3.unique);
+      Abs{lhs=lhs,rhs=rhs,tt1=tt} => mk-abs(substitute-lhs(tctx,lhs),substitute(tctx,rhs,true),tctx.substitute(tt1));
+      AType{tt2=tt} => mk-atype(tctx.substitute(tt2).sanitize-phi);
+      App{is-cons=is-cons,lt=left,rt=right} => mk-cons-or-app(is-cons,substitute(tctx,lt),substitute(tctx,rt));
+      Seq{seq=seq} => (
+         t = mk-eof();
+         for s in seq { t = t + substitute(tctx,s); };
+         t
+      );
+      Glb{k=key, rt=val} => (
+         let found = false;
+         for TypeContextRow{tk2=key,ta=def} in tctx.get-or(mk-tctx()).tctx {
+            if not(found) and k.key==tk2 {
+               match ta {
+                  Var{tvtk=token} => k = tvtk;
+                  _ => ();
+               };
+               found = true;
+            }
+         };
+         mk-glb(k.unique,substitute(tctx,rt))
+      );
+   }
+);

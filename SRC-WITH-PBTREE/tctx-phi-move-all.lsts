@@ -1,0 +1,27 @@
+
+let .phi-move-all(tctx: TypeContext?): TypeContext? = (
+   let inner = tctx.get-or(mk-tctx());
+   inner.pctx = inner.pctx.phi-move-all;
+   Some(inner)
+);
+
+let .phi-move-all(tctx: PBTree<U64,PhiContextRow>): PBTree<U64,PhiContextRow> = (
+   match tctx {
+      PBLeaf{} => tctx;
+      PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
+          if v11.phi-tt-or-zero.is-linear-live {
+             v11 = v11.with-phi-tt(v11.phi-tt-or-zero.move-linear);
+          };
+          PBNode1(k11, v11, close(left), close(right));
+      );
+      PBNode2{ k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+          if v12.phi-tt-or-zero.is-linear-live {
+             v12 = v12.with-phi-tt(v12.phi-tt-or-zero.move-linear);
+          };
+          if v22.phi-tt-or-zero.is-linear-live {
+             v22 = v22.with-phi-tt(v22.phi-tt-or-zero.move-linear);
+          };
+          PBNode2(k12, v12, k22, v22, close(left), close(mid), close(right));
+      );
+   }
+);

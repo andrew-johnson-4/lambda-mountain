@@ -44,7 +44,9 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
    then exit-error("Linear value used after move in call to \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
 
    # Phi: apply transitions, like (A ~> B)
-   tctx = tctx.phi-append(apply-tctx);
+   for pr in apply-tctx.get-or(mk-tctx()).pctx {
+      tctx = tctx.bind-phi(pr.phi-id-or-zero, pr.phi-tt-or-zero, pr.blame-or-zero);
+   };
 
    # Phi: move linear values, like (Linear<A> ~> Linear<Phi::Moved>)
    tctx = tctx.phi-move-args(ft.domain, at, blame);

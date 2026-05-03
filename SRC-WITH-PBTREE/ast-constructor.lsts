@@ -1,0 +1,278 @@
+
+let ast-count = 0_sz;
+
+let mk-app(f: AST, a: AST): AST = (
+   ast-count = ast-count + 1;
+   App( close(f), close(a) )
+);
+
+let mk-cons-or-app(is-cons: Bool, f: AST, a: AST): AST = (
+   ast-count = ast-count + 1;
+   App( is-cons, close(f), close(a) )
+);
+
+let mk-cons(f: AST, a: AST): AST = (
+   ast-count = ast-count + 1;
+   App( true, close(f), close(a) )
+);
+
+let mk-glb(k: Token, v: AST): AST = (
+   ast-count = ast-count + 1;
+   Glb( k, close(v) )
+);
+
+let mk-seq(): AST = (
+   ast-count = ast-count + 1;
+   Seq( mk-vector(type(AST)) )
+);
+
+let mk-seq(seqs: Vector<AST>): AST = (
+   ast-count = ast-count + 1;
+   Seq( seqs )
+);
+
+let mk-typedef(loc: SourceLocation, lhs-type: Type): AST = (
+   ast-count = ast-count + 1;
+   Typedef( loc, lhs-type, mk-vector(type(Type)), mk-vector(type(Type)),
+             ta, ta, ta, mk-vector(type((CString,Vector<(CString,Type)>))), ta, ta )
+);
+
+let .is-cons(t: AST): Bool = (
+   match t {
+      App{is-cons=is-cons} => is-cons;
+      _ => false;
+   }
+);
+
+let .is-var(t: AST): Bool = (
+   match t {
+      Var{} => true;
+      _ => false;
+   }
+);
+
+let .is-var-or-ascripted-var(t: AST): Bool = (
+   match t {
+      Var{} => true;
+      App{ left:Var{key:c"as"}, right:App{ left:Var{}, right:AType{} } } => true;
+      App{ left:Lit{key:c":"}, right:App{ left:Var{}, right:AType{} } } => true;
+      _ => false;
+   }
+);
+
+let .with-implies(term: AST, implies: Vector<Type>): AST = (
+   match term {
+      Typedef{} => (
+         let location = open((term as Tag::Typedef).td).location;
+         let lhs-type = open((term as Tag::Typedef).td).lhs-type;
+         let implements = open((term as Tag::Typedef).td).implements;
+         let size = open((term as Tag::Typedef).td).size;
+         let alias = open((term as Tag::Typedef).td).alias;
+         let opaque-alias = open((term as Tag::Typedef).td).opaque-alias;
+         let cases = open((term as Tag::Typedef).td).cases;
+         let misc-type = open((term as Tag::Typedef).td).misc-type;
+         let implied-phi = open((term as Tag::Typedef).td).implied-phi;
+         Typedef( location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi );
+      );
+      _ => term;
+   }
+);
+let .with-implements(term: AST, implements: Vector<Type>): AST = (
+   match term {
+      Typedef{} => (
+         let location = open((term as Tag::Typedef).td).location;
+         let lhs-type = open((term as Tag::Typedef).td).lhs-type;
+         let implies = open((term as Tag::Typedef).td).implies;
+         let size = open((term as Tag::Typedef).td).size;
+         let alias = open((term as Tag::Typedef).td).alias;
+         let opaque-alias = open((term as Tag::Typedef).td).opaque-alias;
+         let cases = open((term as Tag::Typedef).td).cases;
+         let misc-type = open((term as Tag::Typedef).td).misc-type;
+         let implied-phi = open((term as Tag::Typedef).td).implied-phi;
+         Typedef( location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi );
+      );
+      _ => term;
+   }
+);
+let .with-size(term: AST, size: Type): AST = (
+   match term {
+      Typedef{} => (
+         let location = open((term as Tag::Typedef).td).location;
+         let lhs-type = open((term as Tag::Typedef).td).lhs-type;
+         let implies = open((term as Tag::Typedef).td).implies;
+         let implements = open((term as Tag::Typedef).td).implements;
+         let alias = open((term as Tag::Typedef).td).alias;
+         let opaque-alias = open((term as Tag::Typedef).td).opaque-alias;
+         let cases = open((term as Tag::Typedef).td).cases;
+         let misc-type = open((term as Tag::Typedef).td).misc-type;
+         let implied-phi = open((term as Tag::Typedef).td).implied-phi;
+         Typedef( location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi );
+      );
+      _ => term;
+   }
+);
+let .with-alias(term: AST, alias: Type): AST = (
+   match term {
+      Typedef{} => (
+         let location = open((term as Tag::Typedef).td).location;
+         let lhs-type = open((term as Tag::Typedef).td).lhs-type;
+         let implies = open((term as Tag::Typedef).td).implies;
+         let implements = open((term as Tag::Typedef).td).implements;
+         let size = open((term as Tag::Typedef).td).size;
+         let opaque-alias = open((term as Tag::Typedef).td).opaque-alias;
+         let cases = open((term as Tag::Typedef).td).cases;
+         let misc-type = open((term as Tag::Typedef).td).misc-type;
+         let implied-phi = open((term as Tag::Typedef).td).implied-phi;
+         Typedef( location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi );
+      );
+      _ => term;
+   }
+);
+let .with-opaque-alias(term: AST, opaque-alias: Type): AST = (
+   match term {
+      Typedef{} => (
+         let location = open((term as Tag::Typedef).td).location;
+         let lhs-type = open((term as Tag::Typedef).td).lhs-type;
+         let implies = open((term as Tag::Typedef).td).implies;
+         let implements = open((term as Tag::Typedef).td).implements;
+         let size = open((term as Tag::Typedef).td).size;
+         let alias = open((term as Tag::Typedef).td).alias;
+         let cases = open((term as Tag::Typedef).td).cases;
+         let misc-type = open((term as Tag::Typedef).td).misc-type;
+         let implied-phi = open((term as Tag::Typedef).td).implied-phi;
+         Typedef( location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi );
+      );
+      _ => term;
+   }
+);
+let .with-cases(term: AST, cases: Vector<(CString,Vector<(CString,Type)>)>): AST = (
+   match term {
+      Typedef{} => (
+         let location = open((term as Tag::Typedef).td).location;
+         let lhs-type = open((term as Tag::Typedef).td).lhs-type;
+         let implies = open((term as Tag::Typedef).td).implies;
+         let implements = open((term as Tag::Typedef).td).implements;
+         let size = open((term as Tag::Typedef).td).size;
+         let alias = open((term as Tag::Typedef).td).alias;
+         let opaque-alias = open((term as Tag::Typedef).td).opaque-alias;
+         let misc-type = open((term as Tag::Typedef).td).misc-type;
+         let implied-phi = open((term as Tag::Typedef).td).implied-phi;
+         Typedef( location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi );
+      );
+      _ => term;
+   }
+);
+let .with-misc(term: AST, misc-type: Type): AST = (
+   match term {
+      Typedef{} => (
+         let location = open((term as Tag::Typedef).td).location;
+         let lhs-type = open((term as Tag::Typedef).td).lhs-type;
+         let implies = open((term as Tag::Typedef).td).implies;
+         let implements = open((term as Tag::Typedef).td).implements;
+         let size = open((term as Tag::Typedef).td).size;
+         let alias = open((term as Tag::Typedef).td).alias;
+         let opaque-alias = open((term as Tag::Typedef).td).opaque-alias;
+         let cases = open((term as Tag::Typedef).td).cases;
+         let implied-phi = open((term as Tag::Typedef).td).implied-phi;
+         Typedef( location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi );
+      );
+      _ => term;
+   }
+);
+let .with-implied-phi(term: AST, implied-phi: Type): AST = (
+   match term {
+      Typedef{} => (
+         let location = open((term as Tag::Typedef).td).location;
+         let lhs-type = open((term as Tag::Typedef).td).lhs-type;
+         let implies = open((term as Tag::Typedef).td).implies;
+         let implements = open((term as Tag::Typedef).td).implements;
+         let size = open((term as Tag::Typedef).td).size;
+         let alias = open((term as Tag::Typedef).td).alias;
+         let opaque-alias = open((term as Tag::Typedef).td).opaque-alias;
+         let cases = open((term as Tag::Typedef).td).cases;
+         let misc-type = open((term as Tag::Typedef).td).misc-type;
+         Typedef( location, lhs-type, implies, implements, size, alias, opaque-alias, cases, misc-type, implied-phi );
+      );
+      _ => term;
+   }
+);
+
+let mk-abs(l: AST, r: AST, t: Type): AST = (
+   ast-count = ast-count + 1;
+   Abs( close(l), close(r), t )
+);
+
+let mk-meta(l: AST): AST = (
+   ast-count = ast-count + 1;
+   Meta( close(l) )
+);
+
+let mk-nil(): AST = ASTNil();
+let mk-eof(): AST = ASTEOF();
+
+let .is-lit(t: AST): Bool = match t { Lit{} => true; _ => false; };
+let .is-ascript(t: AST): Bool = (
+   match t {
+      App{ left:Lit{key:c":"}, right:App{ left:Lit{key=key}, right:AType{} } } => true;
+      _ => false;
+   }
+);
+
+let mk-var(val: CString): AST = (
+   ast-count = ast-count + 1;
+   Var( val, mk-token(val) )
+);
+
+let mk-var(val: String): AST = (
+   ast-count = ast-count + 1;
+   Var( val.into(type(CString)), mk-token(val) )
+);
+
+let mk-var(val: Token): AST = (
+   ast-count = ast-count + 1;
+   Var( val.key, val )
+);
+
+let mk-var(v: CString, vtk: Token): AST = (
+   ast-count = ast-count + 1;
+   Var(v,vtk);
+);
+
+let mk-lit(val: CString): AST = (
+   ast-count = ast-count + 1;
+   Lit( val, mk-token(val) )
+);
+
+let mk-lit(val: String): AST = (
+   ast-count = ast-count + 1;
+   Lit( val.into(type(CString)), mk-token(val) )
+);
+
+let mk-lit(val: Token): AST = (
+   ast-count = ast-count + 1;
+   Lit( val.key, val )
+);
+
+let mk-lit(v: CString, vtk: Token): AST = (
+   ast-count = ast-count + 1;
+   Lit(v,vtk);
+);
+
+let mk-atype(tt: Type): AST = (
+   ast-count = ast-count + 1;
+   AType(tt)
+);
+
+let .ascript(t: AST, tt: Type): AST = (
+   mk-app(
+      mk-lit(c":"),
+      mk-cons( t, mk-atype(tt) )
+   )
+);
+
+let .is-nil(t: AST): Bool = (
+   match t {
+      ASTNil{} => true;
+      _ => false;
+   }
+);
