@@ -166,3 +166,15 @@ let $"+"(lpb: PBTree<k,v>, rpb: PBTree<k,v>): PBTree<k,v> = (
       );
    }
 );
+
+let open(od: OneOwnedData<PBTree<k,v>>[]): PBTree<k,v> = (
+   if (od as U64)==0 then (PBLeaf : PBTree<k,v>) else od[0];
+);
+
+let close(d: PBTree<k,v>): OneOwnedData<PBTree<k,v>>[] = (
+   if non-zero(d) {
+      let od = mk-one-owned-data(type(PBTree<k,v>));
+      od.push(d);
+      od
+   } else (0 as OneOwnedData<PBTree<k,v>>[])
+);
