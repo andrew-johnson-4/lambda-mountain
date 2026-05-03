@@ -66,16 +66,24 @@ let .lookups-first(trs: List<TypeContextRow>, key: CString): TypeContextRow = (
    default
 );
 
-let .lookup-phi(tctx: TypeContext?, key: U64): PhiContextRow = tctx.get-or(mk-tctx()).pctx.lookup(key);
-let .lookup(trs: List<PhiContextRow>, key: U64): PhiContextRow = (
-   let default = NullPhiContextRow;
-   let continue = true;
-   while non-zero(trs) and continue {
-      let tr = head(trs); trs = tail(trs);
-      if tr.phi-id-or-zero == key {
-         default = tr;
-         if not(tr.dead-on-arrival-or-zero) then continue = false;
-      }
-   };
-   default
+let .lookup-phi(tctx: TypeContext?, key: U64): PhiContextRow = tctx.get-or(mk-tctx()).pctx.lookup(key, NullPhiContextRow);
+
+let .lookup(tree: PBTree<U64,PhiContextRow>, key: U64, default: PhiContextRow): PhiContextRow = (
+   match tree {
+      PBLeaf {} => default;
+      PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
+         if key == k11 then default = v11;
+         if (not(non-zero(default)) or default.dead-on-arrival-or-zero) and key < k11 then default = left.lookup(key, default);
+         if (not(non-zero(default)) or default.dead-on-arrival-or-zero) and key >= k11 then default = right.lookup(key, default);
+         default;
+      );
+      PBNode2 { k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+         if key == k12 then default = v12;
+         else if key == k22 then default = v22;
+         if (not(non-zero(default)) or default.dead-on-arrival-or-zero) and key < k12 then default = left.lookup(key, default);
+         if (not(non-zero(default)) or default.dead-on-arrival-or-zero) and key >= k12 and key < k22 then default = mid.lookup(key, default);
+         if (not(non-zero(default)) or default.dead-on-arrival-or-zero) and key >= k22 then default = right.lookup(key, default);
+         default;
+      );
+   }
 );

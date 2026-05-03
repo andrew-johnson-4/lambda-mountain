@@ -1,4 +1,0 @@
-
-let .datatype(tt: Type): Type = (
-   tt.without-any-phi.weaken.unenrich
-);

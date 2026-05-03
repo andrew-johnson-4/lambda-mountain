@@ -129,7 +129,7 @@ let safe-free(ptr: ?[]): Nil = (
    # TODO: wrap counter adjustments in conditional compilation
    safe-alloc-block-count = safe-alloc-block-count - 1;
 
-   #free(ptr as C<"void">[]);
+   free(ptr as C<"void">[]);
    ()
 );
 
@@ -4855,9 +4855,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
    then exit-error("Linear value used after move in call to \{fname}\nFunction: \{ft}\nArguments: \{at}", blame);
 
    # Phi: apply transitions, like (A ~> B)
-   for pr in apply-tctx.get-or(mk-tctx()).pctx {
-      tctx = tctx.bind-phi(pr.phi-id-or-zero, pr.phi-tt-or-zero, pr.blame-or-zero);
-   };
+   tctx = tctx.phi-append(apply-tctx);
 
    # Phi: move linear values, like (Linear<A> ~> Linear<Phi::Moved>)
    tctx = tctx.phi-move-args(ft.domain, at, blame);
@@ -5211,7 +5209,7 @@ let .bind-global(tctx: TypeContext?, k: CString, nt: Type, dt: Type, blame: AST)
 let .bind-phi(tctx: TypeContext?, k: U64, kt: Type, blame: AST): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
-      cons( PhiContextRow(k,kt,blame,false,tctx-currently-processing-globals) , tctx.get-or(mk-tctx()).pctx ),
+      tctx.get-or(mk-tctx()).pctx.bind(k, PhiContextRow(k,kt,blame,false,tctx-currently-processing-globals)),
       tctx.get-or(mk-tctx()).is-unsafe,
       tctx.get-or(mk-tctx()).is-blob,
       tctx.get-or(mk-tctx()).function-name
@@ -5221,7 +5219,7 @@ let .bind-phi(tctx: TypeContext?, k: U64, kt: Type, blame: AST): TypeContext? = 
 let .bind-phi(tctx: TypeContext?, k: U64, kt: Type, blame: AST, is-global: Bool): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
-      cons( PhiContextRow(k,kt,blame,false,is-global) , tctx.get-or(mk-tctx()).pctx ),
+      tctx.get-or(mk-tctx()).pctx.bind(k, PhiContextRow(k,kt,blame,false,is-global)),
       tctx.get-or(mk-tctx()).is-unsafe,
       tctx.get-or(mk-tctx()).is-blob,
       tctx.get-or(mk-tctx()).function-name
@@ -5286,7 +5284,7 @@ let .release(t: PhiContextRow): Nil = (
    mark-as-released(t);
 );
 
-type TypeContext implies MustRetain, MustRelease = { tctx:List<TypeContextRow>, pctx: List<PhiContextRow>, is-unsafe: Bool, is-blob: Bool, function-name:CString };
+type TypeContext implies MustRetain, MustRelease = { tctx:List<TypeContextRow>, pctx: PBTree<U64,PhiContextRow>, is-unsafe: Bool, is-blob: Bool, function-name:CString };
 let .retain(t: TypeContext): TypeContext = (
    if t.discriminator-case-tag==(t as Tag::TypeContext).discriminator-case-tag {
        mark-as-released((t as Tag::TypeContext).tctx.retain);
@@ -5302,7 +5300,7 @@ let .release(t: TypeContext): Nil = (
    mark-as-released(t);
 );
 
-let mk-tctx(): TypeContext = TypeContext( [] : List<TypeContextRow>, [] : List<PhiContextRow>, false, false, c"" );
+let mk-tctx(): TypeContext = TypeContext( [] : List<TypeContextRow>, mk-pbtree(type(U64), type(PhiContextRow)), false, false, c"" );
 
 let .key-or-zero(tr: TypeContextRow): CString = (
    match tr {
@@ -5366,14 +5364,37 @@ let .is-global-or-zero(tr: PhiContextRow): Bool = (
    }
 );
 
+let .with-phi-tt(tr: PhiContextRow, phi-tt: Type): PhiContextRow = (
+   match tr {
+      PhiContextRow{ phi-id=phi-id, blame=blame, dead-on-arrival=dead-on-arrival, is-global=is-global } => PhiContextRow(phi-id, phi-tt, blame, dead-on-arrival, is-global);
+      _ => tr;
+   }
+);
+
+let .into(tree: PBTree<U64,PhiContextRow>, tt: Type<String>): String = (
+   match tree {
+      PBLeaf {} => "";
+      PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
+         "\{k11} : \{v11.phi-tt-or-zero}\n" +
+         left.into(type(String)) +
+         right.into(type(String))
+      );
+      PBNode2 { k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+         "\{k12} : \{v12.phi-tt-or-zero}\n" +
+         "\{k22} : \{v22.phi-tt-or-zero}\n" +
+         left.into(type(String)) +
+         mid.into(type(String)) +
+         right.into(type(String))
+      );
+   }
+);
+
 let .into(tctx: Maybe<TypeContext>, tt: Type<String>): String = (
    let result = "";
    for tr in tctx.get-or(mk-tctx()).tctx {
       result = result + "\{tr.key-or-zero} : \{tr.direct-type}\n";
    };
-   for tr in tctx.get-or(mk-tctx()).pctx {
-      result = result + "\{tr.phi-id-or-zero} : \{tr.phi-tt-or-zero}\n";
-   };
+   result = result + tctx.get-or(mk-tctx()).pctx.into(type(String));
    result
 );
 
@@ -5444,18 +5465,26 @@ let .lookups-first(trs: List<TypeContextRow>, key: CString): TypeContextRow = (
    default
 );
 
-let .lookup-phi(tctx: TypeContext?, key: U64): PhiContextRow = tctx.get-or(mk-tctx()).pctx.lookup(key);
-let .lookup(trs: List<PhiContextRow>, key: U64): PhiContextRow = (
-   let default = NullPhiContextRow;
-   let continue = true;
-   while non-zero(trs) and continue {
-      let tr = head(trs); trs = tail(trs);
-      if tr.phi-id-or-zero == key {
-         default = tr;
-         if not(tr.dead-on-arrival-or-zero) then continue = false;
-      }
-   };
-   default
+let .lookup-phi(tctx: TypeContext?, key: U64): PhiContextRow = tctx.get-or(mk-tctx()).pctx.lookup(key, NullPhiContextRow);
+
+let .lookup(tree: PBTree<U64,PhiContextRow>, key: U64, default: PhiContextRow): PhiContextRow = (
+   match tree {
+      PBLeaf {} => default;
+      PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
+         if key == k11 then default = v11;
+         if (not(non-zero(default)) or default.dead-on-arrival-or-zero) and key < k11 then default = left.lookup(key, default);
+         if (not(non-zero(default)) or default.dead-on-arrival-or-zero) and key >= k11 then default = right.lookup(key, default);
+         default;
+      );
+      PBNode2 { k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+         if key == k12 then default = v12;
+         else if key == k22 then default = v22;
+         if (not(non-zero(default)) or default.dead-on-arrival-or-zero) and key < k12 then default = left.lookup(key, default);
+         if (not(non-zero(default)) or default.dead-on-arrival-or-zero) and key >= k12 and key < k22 then default = mid.lookup(key, default);
+         if (not(non-zero(default)) or default.dead-on-arrival-or-zero) and key >= k22 then default = right.lookup(key, default);
+         default;
+      );
+   }
 );
 
 let global-flow-tctx = None : TypeContext?;
@@ -5472,21 +5501,36 @@ let .phi-append-dead-on-arrival(tctx-primary: TypeContext?, tctx-secondary: Type
    tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,true) ) 
 );
 
-let .phi-append(tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>, dead-on-arrival: Bool): List<PhiContextRow> = (
-   let seen = mk-set(type(U64));
-   while non-zero(tctx-secondary) and not(is(tctx-secondary,tctx-primary)) {
-      let pr1 = head(tctx-secondary);
-      if not(seen.has(pr1.phi-id-or-zero)) {
-         let pr2 = tctx-primary.lookup(pr1.phi-id-or-zero);
-         if dead-on-arrival then pr1 = PhiContextRow(pr1.phi-id-or-zero, pr1.phi-tt-or-zero, pr1.blame-or-zero, dead-on-arrival, pr1.is-global-or-zero);
-         if not(is(pr1,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
-            tctx-primary = cons( pr1, tctx-primary );
-         };
-         seen = seen.bind(pr1.phi-id-or-zero);
-      };
-      tctx-secondary = tail(tctx-secondary);
-   };
-   tctx-primary
+let .phi-append(tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, dead-on-arrival: Bool): PBTree<U64,PhiContextRow> = (
+   match tctx-secondary {
+      PBLeaf{} => tctx-primary;
+      PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
+          let pr2 = tctx-primary.lookup(k11, NullPhiContextRow);
+          if dead-on-arrival then v11 = PhiContextRow(v11.phi-id-or-zero, v11.phi-tt-or-zero, v11.blame-or-zero, dead-on-arrival, v11.is-global-or-zero);
+          if not(is(v11,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
+             tctx-primary = tctx-primary.bind(k11, v11);
+          };
+          tctx-primary = tctx-primary.phi-append(left, dead-on-arrival);
+          tctx-primary = tctx-primary.phi-append(right, dead-on-arrival);
+          tctx-primary
+      );
+      PBNode2{ k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+          let pr2 = tctx-primary.lookup(k12, NullPhiContextRow);
+          if dead-on-arrival then v12 = PhiContextRow(v12.phi-id-or-zero, v12.phi-tt-or-zero, v12.blame-or-zero, dead-on-arrival, v12.is-global-or-zero);
+          if not(is(v12,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
+             tctx-primary = tctx-primary.bind(k12, v12);
+          };
+          pr2 = tctx-primary.lookup(k22, NullPhiContextRow);
+          if dead-on-arrival then v22 = PhiContextRow(v22.phi-id-or-zero, v22.phi-tt-or-zero, v22.blame-or-zero, dead-on-arrival, v22.is-global-or-zero);
+          if not(is(v22,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
+             tctx-primary = tctx-primary.bind(k22, v22);
+          };
+          tctx-primary = tctx-primary.phi-append(left, dead-on-arrival);
+          tctx-primary = tctx-primary.phi-append(mid, dead-on-arrival);
+          tctx-primary = tctx-primary.phi-append(right, dead-on-arrival);
+          tctx-primary
+      );
+   }
 );
 
 let .phi-fresh(tctx: TypeContext?, tr: TypeContextRow): (TypeContext?, TypeContextRow) = (
@@ -5547,16 +5591,30 @@ let .phi-initialize(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Ty
 );
 
 let .phi-move-all(tctx: TypeContext?): TypeContext? = (
-   let seen = mk-set(type(U64));
-   for pr in tctx.get-or(mk-tctx()).pctx {
-      if not(seen.has(pr.phi-id-or-zero)) {
-         if pr.phi-tt-or-zero.is-linear-live {
-            tctx = tctx.bind-phi(pr.phi-id-or-zero, pr.phi-tt-or-zero.move-linear, pr.blame-or-zero);
-         };
-         seen = seen.bind(pr.phi-id-or-zero);
-      }
-   };
-   tctx
+   let inner = tctx.get-or(mk-tctx());
+   inner.pctx = inner.pctx.phi-move-all;
+   Some(inner)
+);
+
+let .phi-move-all(tctx: PBTree<U64,PhiContextRow>): PBTree<U64,PhiContextRow> = (
+   match tctx {
+      PBLeaf{} => tctx;
+      PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
+          if v11.phi-tt-or-zero.is-linear-live {
+             v11 = v11.with-phi-tt(v11.phi-tt-or-zero.move-linear);
+          };
+          PBNode1(k11, v11, close(left), close(right));
+      );
+      PBNode2{ k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+          if v12.phi-tt-or-zero.is-linear-live {
+             v12 = v12.with-phi-tt(v12.phi-tt-or-zero.move-linear);
+          };
+          if v22.phi-tt-or-zero.is-linear-live {
+             v22 = v22.with-phi-tt(v22.phi-tt-or-zero.move-linear);
+          };
+          PBNode2(k12, v12, k22, v22, close(left), close(mid), close(right));
+      );
+   }
 );
 
 let .phi-move-args(tctx: TypeContext?, params: Type, args: Type, blame: AST): TypeContext? = (
@@ -5818,7 +5876,7 @@ let union(lctx: Maybe<TypeContext>, rctx: Maybe<TypeContext>): Maybe<TypeContext
                      lctx.get-or(mk-tctx()).pctx, false, false, c"" ))
 );
 
-let .with-pctx(tctx: TypeContext?, pctx: List<PhiContextRow>): TypeContext? = (
+let .with-pctx(tctx: TypeContext?, pctx: PBTree<U64,PhiContextRow>): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
       pctx,
@@ -7612,6 +7670,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       }
    }};
    (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
+   #print("Inferred \{term}\nTCTX: \{tctx}\n");
    (tctx, term);
 );
 
@@ -8102,35 +8161,84 @@ let maybe-retain(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
 
 let worst-phi-length = 0_sz;
 
-let phi-merge(tctx-globals: TypeContext?, tctx-primary: List<PhiContextRow>, tctx-secondary: List<PhiContextRow>, blame: AST): List<PhiContextRow> = (
-   let tctx-left-count = tctx-primary.length;
-   let tctx-right-count = tctx-secondary.length;
-   let seen = mk-vector(type(U64));
-   let tctx-globals-pctx = tctx-globals.get-or(mk-tctx()).pctx;
-   while non-zero(tctx-secondary) and not(is(tctx-globals-pctx,tctx-secondary)) {
-      let tr = head(tctx-secondary); tctx-secondary = tail(tctx-secondary);
-      let sid = tr.phi-id-or-zero;
-      let st = tr.phi-tt-or-zero;
-      let pblame = tr.blame-or-zero;
-      let sdead-on-arrival = tr.dead-on-arrival-or-zero;
-      let sis-global = tr.is-global-or-zero;
-      if not(seen.contains(sid)) {
-         let pt = tctx-primary.lookup(sid);
-         if not(non-zero(pt)) then tctx-primary = cons( PhiContextRow(sid,st,pblame,sdead-on-arrival,sis-global), tctx-primary )
-         else if sdead-on-arrival or pt.dead-on-arrival-or-zero
-         then {
-            # This case happens if an ethereal variable gets copied and merged somehow, it doesn't really matter which one you pick but we prefer the moved one
-            if not(pt.phi-tt-or-zero.is-linear-live) then ()
-            else tctx-primary = cons( PhiContextRow(sid,st,blame,true,sis-global), tctx-primary );
-         } else (
-            let rt = tctx-globals.phi-merge(pt.phi-tt-or-zero, st, blame);
-            if not(is(pt.phi-tt-or-zero,rt)) then tctx-primary = cons( PhiContextRow(sid,rt,blame,false,sis-global), tctx-primary );
-         );
-         seen = seen.push(sid);
-      };
-   };
-   worst-phi-length = tctx-primary.length;
-   tctx-primary
+let phi-merge(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, blame: AST): PBTree<U64,PhiContextRow> = (
+   phi-merge-inner(tctx-globals, tctx-primary, tctx-secondary, blame, mk-vector(type(U64))).second
+);
+
+
+let phi-merge-inner(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, blame: AST, seen: Vector<U64>): (Vector<U64>, PBTree<U64,PhiContextRow>) = (
+   match tctx-secondary {
+      PBLeaf{} => (seen, tctx-primary);
+      PBNode1{ k1=k1, tr=v1, left=left, right=right } => (
+         let sid = tr.phi-id-or-zero;
+         let st = tr.phi-tt-or-zero;
+         let pblame = tr.blame-or-zero;
+         let sdead-on-arrival = tr.dead-on-arrival-or-zero;
+         let sis-global = tr.is-global-or-zero;
+         if not(seen.contains(sid)) {
+            let pt = tctx-primary.lookup(sid, NullPhiContextRow);
+            if not(non-zero(pt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,pblame,sdead-on-arrival,sis-global));
+            else if sdead-on-arrival or pt.dead-on-arrival-or-zero
+            then {
+               # This case happens if an ethereal variable gets copied and merged somehow, it doesn't really matter which one you pick but we prefer the moved one
+               if not(pt.phi-tt-or-zero.is-linear-live) then ()
+               else tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,blame,true,sis-global));
+            } else (
+               let rt = tctx-globals.phi-merge(pt.phi-tt-or-zero, st, blame);
+               if not(is(pt.phi-tt-or-zero,rt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,rt,blame,false,sis-global));
+            );
+            seen = seen.push(sid);
+         };
+         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, left, blame, seen);
+         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, right, blame, seen);
+         (seen, tctx-primary)
+      );
+      PBNode2{ k12=k1, tr=v1, k22=k2, tr2=v2, left=left, mid=mid, right=right } => (
+         let sid = tr.phi-id-or-zero;
+         let st = tr.phi-tt-or-zero;
+         let pblame = tr.blame-or-zero;
+         let sdead-on-arrival = tr.dead-on-arrival-or-zero;
+         let sis-global = tr.is-global-or-zero;
+         if not(seen.contains(sid)) {
+            let pt = tctx-primary.lookup(sid, NullPhiContextRow);
+            if not(non-zero(pt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,pblame,sdead-on-arrival,sis-global));
+            else if sdead-on-arrival or pt.dead-on-arrival-or-zero
+            then {
+               # This case happens if an ethereal variable gets copied and merged somehow, it doesn't really matter which one you pick but we prefer the moved one
+               if not(pt.phi-tt-or-zero.is-linear-live) then ()
+               else tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,blame,true,sis-global));
+            } else (
+               let rt = tctx-globals.phi-merge(pt.phi-tt-or-zero, st, blame);
+               if not(is(pt.phi-tt-or-zero,rt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,rt,blame,false,sis-global));
+            );
+            seen = seen.push(sid);
+         };
+         tr = tr2;
+         sid = tr.phi-id-or-zero;
+         st = tr.phi-tt-or-zero;
+         pblame = tr.blame-or-zero;
+         sdead-on-arrival = tr.dead-on-arrival-or-zero;
+         sis-global = tr.is-global-or-zero;
+         if not(seen.contains(sid)) {
+            let pt = tctx-primary.lookup(sid, NullPhiContextRow);
+            if not(non-zero(pt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,pblame,sdead-on-arrival,sis-global));
+            else if sdead-on-arrival or pt.dead-on-arrival-or-zero
+            then {
+               # This case happens if an ethereal variable gets copied and merged somehow, it doesn't really matter which one you pick but we prefer the moved one
+               if not(pt.phi-tt-or-zero.is-linear-live) then ()
+               else tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,blame,true,sis-global));
+            } else (
+               let rt = tctx-globals.phi-merge(pt.phi-tt-or-zero, st, blame);
+               if not(is(pt.phi-tt-or-zero,rt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,rt,blame,false,sis-global));
+            );
+            seen = seen.push(sid);
+         };
+         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, left, blame, seen);
+         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, mid, blame, seen);
+         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, right, blame, seen);
+         (seen, tctx-primary)
+      );
+   }
 );
 
 let plugins-backends-index = {} : Hashtable<CString,(Nil -> Nil)[]>;
@@ -8157,6 +8265,36 @@ let register-frontend(extension: CString, hook: CString -> Nil): Nil = (
 
 let preprocess(): Nil = (
    index-typedefs(ast-parsed-program);
+);
+
+let release-locals(tctx-before: PBTree<k,v>, tctx-after: PBTree<k,v>, tctx-after-iter: PBTree<k,v>, pid-seen: Set<U64>): (Set<U64>, PBTree<k,v>) = (
+   if is(tctx-before,tctx-after) then (pid-seen, tctx-after)
+   else match tctx-after-iter {
+      PBLeaf{} => (pid-seen, tctx-after);
+      PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
+         if v11.dead-on-arrival-or-zero and not(pid-seen.has(v11.phi-id-or-zero)) and v11.phi-tt-or-zero.is-linear-live {
+            pid-seen = pid-seen.bind(v11.phi-id-or-zero);
+            tctx-after = tctx-after.bind(v11.phi-id-or-zero, v11.with-phi-tt(v11.phi-tt-or-zero.move-linear));
+         };
+         (pid-seen, tctx-after) = release-locals(tctx-before, tctx-after, left, pid-seen);
+         (pid-seen, tctx-after) = release-locals(tctx-before, tctx-after, right, pid-seen);
+         (pid-seen, tctx-after)
+      );
+      PBNode2{ k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+         if v12.dead-on-arrival-or-zero and not(pid-seen.has(v12.phi-id-or-zero)) and v12.phi-tt-or-zero.is-linear-live {
+            pid-seen = pid-seen.bind(v12.phi-id-or-zero);
+            tctx-after = tctx-after.bind(v12.phi-id-or-zero, v12.with-phi-tt(v12.phi-tt-or-zero.move-linear));
+         };
+         if v22.dead-on-arrival-or-zero and not(pid-seen.has(v22.phi-id-or-zero)) and v22.phi-tt-or-zero.is-linear-live {
+            pid-seen = pid-seen.bind(v22.phi-id-or-zero);
+            tctx-after = tctx-after.bind(v22.phi-id-or-zero, v22.with-phi-tt(v22.phi-tt-or-zero.move-linear));
+         };
+         (pid-seen, tctx-after) = release-locals(tctx-before, tctx-after, left, pid-seen);
+         (pid-seen, tctx-after) = release-locals(tctx-before, tctx-after, mid, pid-seen);
+         (pid-seen, tctx-after) = release-locals(tctx-before, tctx-after, right, pid-seen);
+         (pid-seen, tctx-after)
+      );
+   };
 );
 
 let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AST, hint: Type, release-self: Bool): (TypeContext?, AST) = (
@@ -8208,14 +8346,8 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       pid-seen = pid-seen.bind(nd.denormalized.slot(c"Phi::Id",1).l1.simple-id);
       tctx-after = tctx-after.phi-move(tctx-after.with-phi(nd.denormalized, term), term);
    };
-   while non-zero(tctx-after-pctx) and not(is(tctx-before-pctx, tctx-after-pctx)) {
-      let tr = head(tctx-after-pctx);
-      if tr.dead-on-arrival-or-zero and not(pid-seen.has(tr.phi-id-or-zero)) and tr.phi-tt-or-zero.is-linear-live {
-         pid-seen = pid-seen.bind(tr.phi-id-or-zero);
-         tctx-after = tctx-after.bind-phi(tr.phi-id-or-zero, tr.phi-tt-or-zero.move-linear, tr.blame-or-zero);
-      };
-      tctx-after-pctx = tail(tctx-after-pctx);
-   };
+   (pid-seen, tctx-after-pctx) = release-locals(tctx-before-pctx, tctx-after-pctx, tctx-after-pctx, pid-seen);
+   tctx-after.with-pctx(tctx-after-pctx);
    tctx-before = tctx-before.phi-append(tctx-after);
    if not(release-self) then (tctx-before, _) = tctx-before.resurrect(typeof-term(term), term);
    (tctx-before, term)
@@ -8834,13 +8966,14 @@ let validate-interfaces(): Nil = (
 
 let validate-pctx-release(tctx: TypeContext?): Nil = (
    let ps-seen = mk-set(type(U64));
-   for pr in tctx.get-or(mk-tctx()).pctx {
-      if not(pr.is-global-or-zero) and not(ps-seen.has(pr.phi-id-or-zero)) {
-         if pr.phi-tt-or-zero.is-linear-live
-         then exit-error("Linear Variables Must Be Used: #\{pr.phi-id-or-zero} \{pr.phi-tt-or-zero} \{pr.blame-or-zero}", pr.blame-or-zero);
-         ps-seen = ps-seen.bind(pr.phi-id-or-zero);
-      };
-   };
+   # TODO
+   #for pr in tctx.get-or(mk-tctx()).pctx {
+   #   if not(pr.is-global-or-zero) and not(ps-seen.has(pr.phi-id-or-zero)) {
+   #      if pr.phi-tt-or-zero.is-linear-live
+   #      then exit-error("Linear Variables Must Be Used: #\{pr.phi-id-or-zero} \{pr.phi-tt-or-zero} \{pr.blame-or-zero}", pr.blame-or-zero);
+   #      ps-seen = ps-seen.bind(pr.phi-id-or-zero);
+   #   };
+   #};
 );
 
 let config-hot-path = false;
