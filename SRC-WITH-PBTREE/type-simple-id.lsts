@@ -1,0 +1,7 @@
+
+let .simple-id(tt: Type): U64 = (
+   match tt {
+      TId { id=id } => id;
+      _ => 0;
+   }
+);

@@ -1,0 +1,8 @@
+
+let union(ctx: FContext, tctx: Maybe<TypeContext>): FContext = (
+   let r = ctx;
+   for TypeContextRow{ k=key } in tctx.get-or(mk-tctx()).tctx {
+      r = r.bind( k, ta, mk-fragment() );
+   };
+   r
+);

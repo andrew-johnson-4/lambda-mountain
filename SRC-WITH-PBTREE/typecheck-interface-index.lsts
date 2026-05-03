@@ -1,0 +1,9 @@
+
+let interface-index = mk-set(type((CString,U64)));
+
+let interface-shape-index = {} : Hashtable<(CString,U64),List<(CString,Type,Type)>>;
+
+let interface-self-index = {} : Hashtable<(CString,U64),(Type,Type)>;
+
+let interface-implementors = [] : List<(Type,Type,AST)>;
+

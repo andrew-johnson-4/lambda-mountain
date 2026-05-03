@@ -1,0 +1,4 @@
+
+let $"||"(lctx: Maybe<TypeContext>, rctx: Maybe<TypeContext>): Maybe<TypeContext> = (
+   if lctx.is-none then rctx else if rctx.is-none then lctx else union(lctx, rctx)
+);

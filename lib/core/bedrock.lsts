@@ -14,6 +14,7 @@ import lib/core/maybe.lsts;
 import lib/core/list.lsts;
 import lib/core/s.lsts;
 import lib/core/hashtable.lsts;
+import lib/core/persistent-btree.lsts;
 import lib/core/set.lsts;
 import lib/core/regex.lsts;
 import lib/core/functional.lsts;

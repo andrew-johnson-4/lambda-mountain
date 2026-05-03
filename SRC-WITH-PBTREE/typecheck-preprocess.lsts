@@ -1,0 +1,4 @@
+
+let preprocess(): Nil = (
+   index-typedefs(ast-parsed-program);
+);

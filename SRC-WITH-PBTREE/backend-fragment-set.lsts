@@ -1,0 +1,8 @@
+
+let .set(e: Fragment, k: CString, v: S): Fragment = (
+   Fragment (
+      e.term,
+      close(LCons( Tuple(k, v), e.keyvals )),
+      e.type, e.context, e.vararg
+   )
+);
