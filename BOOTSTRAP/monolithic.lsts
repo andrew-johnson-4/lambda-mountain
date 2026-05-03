@@ -7273,7 +7273,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.ascript(term, deref-type);
       );
       App{szof=left:Var{key:c"sizeof"}, right:AType{}} => (
-         let tt = t0(c"U64");
+         let tt = t0(c"USize");
          tctx = tctx.ascript(term, tt);
          tctx = tctx.ascript(szof, tt);
       );
