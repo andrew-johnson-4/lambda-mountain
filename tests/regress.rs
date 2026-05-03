@@ -10,7 +10,7 @@ fn rm(p: &str) {
 
 fn compile_bootstrap() {
    rm("bootstrap.exe");
-   let exit = Command::new("cc")
+   let exit = Command::new("clang")
                       .stdout(std::process::Stdio::piped())
                       .stderr(std::process::Stdio::piped())
                       .arg("-w")
