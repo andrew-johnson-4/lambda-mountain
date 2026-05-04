@@ -8,7 +8,8 @@ let .phi-append-dead-on-arrival(tctx-primary: TypeContext?, tctx-secondary: Type
 );
 
 let .phi-append(tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, dead-on-arrival: Bool): PBTree<U64,PhiContextRow> = (
-   match tctx-secondary {
+   if is(tctx-primary, tctx-secondary) then tctx-primary
+   else match tctx-secondary {
       PBLeaf{} => tctx-primary;
       PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
           let pr2 = tctx-primary.lookup(k11, NullPhiContextRow);
