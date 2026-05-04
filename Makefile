@@ -38,7 +38,7 @@ gprofng-view:
 	nano gprofng.view
 
 valgrind: install-production
-	valgrind --tool=callgrind lm SRC/index.lsts
+	valgrind --tool=callgrind lm --v3 SRC/index.lsts
 
 valgrind-view:
 	callgrind_annotate callgrind.out.18778
