@@ -80,9 +80,8 @@ let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
    };
 
    # Zero Out Memory
+   # this doubles as testing access to memory region
    dumb_memset(ptr as U8[], 0, nb);
-
-   mark-memory-as-safe(ptr as U8[], nb);
 
    ptr
 );
@@ -508,6 +507,17 @@ typed macro macro::for(item: lazy, iterable: List<?>, loop: lazy): lazy = (
 );
 
 typed macro macro::for(item: lazy, iterable: Vector<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iterable;
+   let uuid(iter-i) = 0_sz;
+   while uuid(iter-i) < uuid(iter-term).length {
+      match uuid(iter-term)[uuid(iter-i)] {
+         item => loop;
+      };
+      uuid(iter-i) = uuid(iter-i) + 1;
+   };
+);
+
+typed macro macro::for(item: lazy, iterable: VectorView<?>, loop: lazy): lazy = (
    let uuid(iter-term) = iterable;
    let uuid(iter-i) = 0_sz;
    while uuid(iter-i) < uuid(iter-term).length {
@@ -1747,6 +1757,38 @@ let close(d: PBTree<k,v>): OneOwnedData<PBTree<k,v>>[] = (
    } else (0 as OneOwnedData<PBTree<k,v>>[])
 );
 
+let .as-pbtree(v: Vector<(k,v)>): PBTree<k,v> = (
+   v.as-pbtree(0_sz, v.length)
+);
+
+let .as-pbtree(v: Vector<(k,v)>, start: USize, end: USize): PBTree<k,v> = (
+   let len = end - start;
+   if len <= 0_sz then PBLeaf
+   else if len == 1_sz {
+      (let k, let val) = v[start];
+      PBNode1(k, val, close(PBLeaf), close(PBLeaf))
+   } else if len == 2_sz {
+      (let k11, let v11) = v[start];
+      (let k21, let v21) = v[start + 1_sz];
+      PBNode2(k11, v11, k21, v21, close(PBLeaf), close(PBLeaf), close(PBLeaf))
+   } else {
+      # Split into three roughly equal parts for a 2-3 Tree node
+      let third = len / 3_sz;
+      let mid1 = start + third;
+      let mid2 = start + 2_sz * third;
+
+      (let k12, let val12) = v[mid1];
+      (let k22, let val22) = v[mid2];
+
+      PBNode2(
+         k12, val12, k22, val22,
+         close(v.as-pbtree(start, mid1)),
+         close(v.as-pbtree(mid1 + 1_sz, mid2)),
+         close(v.as-pbtree(mid2 + 1_sz, end))
+      )
+   }
+);
+
 type phi MustRelease = ToRelease{ promise:'a } | Released;
 
 let :Blob mark-as-released(x: x+(MustRelease::ToRelease<'a> ~> MustRelease::Released)+MustNotRetain): Nil = (
@@ -2808,6 +2850,7 @@ let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (
 # new allocations = 1 if realloc is necessary
 #                 | 0
 let .push(v: Vector<t>, i: t): Vector<t>+MustUse = (
+   if (v.data as USize)!=0 then print("Push length=\{v.length} occupied=\{v.data.occupied} capacity=\{v.data.capacity}\n");
    # if this vector is a view, or if it is full, then we need to reallocate
    if (v.data as USize)==0 or v.data.occupied==v.data.capacity {
       let new-capacity = if v.length==0 then 4_sz
@@ -3023,6 +3066,17 @@ let $"[:]"(s: VectorView<t>, begin: I64, end: I64): VectorView<t> = (
 
 let tail(s: Vector<t>): VectorView<t> = s[1_i64:];
 let tail(s: VectorView<t>): VectorView<t> = s[1_i64:];
+
+let .clone(s: Vector<t>): Vector<t> = (
+   let v = mk-vector(type(t), s.data.capacity);
+   for i in s { v = v.push(i) };
+   v
+);
+let .clone(s: VectorView<t>): Vector<t> = (
+   let v = mk-vector(type(t), s.data.capacity);
+   for i in s { v = v.push(i) };
+   v
+);
 
 let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
    tt = tctx.with-phi(tt, t);
@@ -5531,6 +5585,97 @@ let .phi-append(tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<
           tctx-primary = tctx-primary.phi-append(right, dead-on-arrival);
           tctx-primary
       );
+   }
+);
+
+let .phi-append(tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, dead-on-arrival: Bool): PBTree<U64,PhiContextRow> = (
+   if is(tctx-primary, tctx-secondary) then tctx-primary
+   else if not(non-zero(tctx-primary)) then tctx-secondary
+   else if not(non-zero(tctx-secondary)) then tctx-primary
+   else {
+      # 1. Flatten both trees into sorted vectors O(N + M)
+      let v1 = tctx-primary.as-vector();
+      let v2 = tctx-secondary.as-vector();
+      
+      # 2. Merge sorted vectors O(N + M)
+      let merged = merge-phi-vectors(v1, v2, dead-on-arrival);
+      
+      # 3. Rebuild balanced PBTree O(N + M)
+      merged.as-pbtree
+      build-pbtree-from-sorted-vector(merged)
+   }
+);
+
+let merge-phi-vectors(v1: Vector<(U64,PhiContextRow)>, v2: Vector<(U64,PhiContextRow)>, doa: Bool): Vector<(U64,PhiContextRow)> = (
+   let out = mk-vector(type((U64,PhiContextRow)), v1.length + v2.length);
+   let i = 0_sz;
+   let j = 0_sz;
+   
+   while i < v1.length and j < v2.length {
+      (let k1, let row1) = v1[i];
+      (let k2, let row2) = v2[j];
+      
+      if k1 < k2 {
+         out.push((k1, row1)); i = i + 1;
+      } else if k2 < k1 {
+         if doa then row2 = row2.with-phi-tt(row2.phi-tt-or-zero.move-linear);
+         out.push((k2, row2)); j = j + 1;
+      } else {
+         # Keys are equal: Apply your merge logic [cite: 885, 892]
+         if doa then {
+            # Prefer the primary if secondary is DOA [cite: 541, 544]
+            out.push((k1, row1));
+         } else {
+            let merged-tt = global-flow-tctx.phi-merge(row1.phi-tt-or-zero, row2.phi-tt-or-zero, row1.blame-or-zero);
+            out.push((k1, row1.with-phi-tt(merged-tt)));
+         };
+         i = i + 1; j = j + 1;
+      };
+   };
+   
+   # Append remainders
+   while i < v1.length { out.push(v1[i]); i = i + 1; };
+   while j < v2.length { 
+      let row = v2[j].second;
+      if doa then row = row.with-phi-tt(row.phi-tt-or-zero.move-linear);
+      out.push((v2[j].first, row)); 
+      j = j + 1; 
+   };
+   out
+);
+3. Rebuilding the PBTree
+Since the vector is sorted, we can build the 2-3 Tree in a single linear pass by recursively splitting the range.
+
+Code snippet
+let build-pbtree-from-sorted-vector(v: Vector<(U64,PhiContextRow)>): PBTree<U64,PhiContextRow> = (
+   build-pbtree-recursive(v, 0_sz, v.length)
+);
+
+let build-pbtree-recursive(v: Vector<(U64,PhiContextRow)>, start: USize, end: USize): PBTree<U64,PhiContextRow> = (
+   let len = end - start;
+   if len <= 0_sz then PBLeaf
+   else if len == 1_sz {
+      (let k, let val) = v[start];
+      PBNode1(k, val, close(PBLeaf), close(PBLeaf))
+   } else if len == 2_sz {
+      (let k1, let v1) = v[start];
+      (let k2, let v2) = v[start + 1_sz];
+      PBNode2(k1, v1, k2, v2, close(PBLeaf), close(PBLeaf), close(PBLeaf))
+   } else {
+      # Split into three roughly equal parts for a 2-3 Tree node
+      let third = len / 3_sz;
+      let mid1 = start + third;
+      let mid2 = start + 2_sz * third;
+      
+      (let k1, let val1) = v[mid1];
+      (let k2, let val2) = v[mid2];
+      
+      PBNode2(
+         k1, val1, k2, val2,
+         close(build-pbtree-recursive(v, start, mid1)),
+         close(build-pbtree-recursive(v, mid1 + 1_sz, mid2)),
+         close(build-pbtree-recursive(v, mid2 + 1_sz, end))
+      )
    }
 );
 

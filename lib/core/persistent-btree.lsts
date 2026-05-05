@@ -178,3 +178,35 @@ let close(d: PBTree<k,v>): OneOwnedData<PBTree<k,v>>[] = (
       od
    } else (0 as OneOwnedData<PBTree<k,v>>[])
 );
+
+let .as-pbtree(v: Vector<(k,v)>): PBTree<k,v> = (
+   v.as-pbtree(0_sz, v.length)
+);
+
+let .as-pbtree(v: Vector<(k,v)>, start: USize, end: USize): PBTree<k,v> = (
+   let len = end - start;
+   if len <= 0_sz then PBLeaf
+   else if len == 1_sz {
+      (let k, let val) = v[start];
+      PBNode1(k, val, close(PBLeaf), close(PBLeaf))
+   } else if len == 2_sz {
+      (let k11, let v11) = v[start];
+      (let k21, let v21) = v[start + 1_sz];
+      PBNode2(k11, v11, k21, v21, close(PBLeaf), close(PBLeaf), close(PBLeaf))
+   } else {
+      # Split into three roughly equal parts for a 2-3 Tree node
+      let third = len / 3_sz;
+      let mid1 = start + third;
+      let mid2 = start + 2_sz * third;
+
+      (let k12, let val12) = v[mid1];
+      (let k22, let val22) = v[mid2];
+
+      PBNode2(
+         k12, val12, k22, val22,
+         close(v.as-pbtree(start, mid1)),
+         close(v.as-pbtree(mid1 + 1_sz, mid2)),
+         close(v.as-pbtree(mid2 + 1_sz, end))
+      )
+   }
+);
