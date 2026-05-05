@@ -345,13 +345,10 @@ let .shrink(v: Vector<t>, l: USize): Vector<t> = (
 );
 
 let .sort-key-unique(s: Vector<(k,v)>): Vector<(k,v)> = (
-   print("To Sort \{s}\n");
    s = s.sort-by-key;
-   print("Sorted \{s}\n");
    let tail-i = 0_sz;
    let lead-i = 0_sz;
    while lead-i < s.length {
-      print("sort tail-i=\{tail-i} lead-i=\{lead-i} s.length=\{s.length}\n");
       if lead-i + 1 < s.length and s[lead-i].first == s[lead-i+1].first
       then ();
       else {
@@ -361,6 +358,5 @@ let .sort-key-unique(s: Vector<(k,v)>): Vector<(k,v)> = (
       lead-i = lead-i + 1;
    };
    if s.length > 0 then s.shrink(tail-i);
-   print("Sorted \{s} s.length=\{s.length} tail-i=\{tail-i}\n");
    s
 );
