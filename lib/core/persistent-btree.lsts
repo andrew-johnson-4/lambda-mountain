@@ -180,10 +180,11 @@ let close(d: PBTree<k,v>): OneOwnedData<PBTree<k,v>>[] = (
 );
 
 let .as-pbtree(v: Vector<(k,v)>): PBTree<k,v> = (
-   v.sort-kunique.as-pbtree(0_sz, v.length)
+   v.sort-key-unique.as-pbtree(0_sz, v.length)
 );
 
 let .as-pbtree(v: Vector<(k,v)>, start: USize, end: USize): PBTree<k,v> = (
+   print("As Pbtree \{start} \{end}\n");
    let len = end - start;
    if len <= 0_sz then PBLeaf
    else if len == 1_sz {
