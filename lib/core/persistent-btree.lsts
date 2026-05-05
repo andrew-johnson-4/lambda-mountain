@@ -211,3 +211,27 @@ let .as-pbtree(v: Vector<(k,v)>, start: USize, end: USize): PBTree<k,v> = (
       )
    }
 );
+
+let .as-vector(tree: PBTree<k,v>): Vector<(k,v)> = (
+   tree.as-vector(mk-vector(type((k,v))))
+);
+
+let .as-vector(tree: PBTree<k,v>, v: Vector<(k,v)>): Vector<(k,v)> = (
+   match tree {
+      PBLeaf {} => v;
+      PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
+         v = left.as-vector(v);
+         v = v.push((k11,v11));
+         v = right.as-vector(v);
+         v
+      );
+      PBNode2 { k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+         v = left.as-vector(v);
+         v = v.push((k12,v12));
+         v = mid.as-vector(v);
+         v = v.push((k22,v22));
+         v = right.as-vector(v);
+         v
+      );
+   }
+);

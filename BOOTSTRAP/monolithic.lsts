@@ -95,8 +95,6 @@ let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
       fail(c"realloc fail");
    };
 
-   mark-memory-as-safe(new-ptr as U8[], nb);
-
    # TODO: wrap counter adjustments in conditional compilation
    safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
    safe-alloc-block-count-monotonic-history = safe-alloc-block-count-monotonic-history + 1;
@@ -507,17 +505,6 @@ typed macro macro::for(item: lazy, iterable: List<?>, loop: lazy): lazy = (
 );
 
 typed macro macro::for(item: lazy, iterable: Vector<?>, loop: lazy): lazy = (
-   let uuid(iter-term) = iterable;
-   let uuid(iter-i) = 0_sz;
-   while uuid(iter-i) < uuid(iter-term).length {
-      match uuid(iter-term)[uuid(iter-i)] {
-         item => loop;
-      };
-      uuid(iter-i) = uuid(iter-i) + 1;
-   };
-);
-
-typed macro macro::for(item: lazy, iterable: VectorView<?>, loop: lazy): lazy = (
    let uuid(iter-term) = iterable;
    let uuid(iter-i) = 0_sz;
    while uuid(iter-i) < uuid(iter-term).length {
@@ -1758,7 +1745,8 @@ let close(d: PBTree<k,v>): OneOwnedData<PBTree<k,v>>[] = (
 );
 
 let .as-pbtree(v: Vector<(k,v)>): PBTree<k,v> = (
-   v.as-pbtree(0_sz, v.length)
+   v = v.sort-key-unique;
+   v.as-pbtree(0_sz, v.length);
 );
 
 let .as-pbtree(v: Vector<(k,v)>, start: USize, end: USize): PBTree<k,v> = (
@@ -1786,6 +1774,30 @@ let .as-pbtree(v: Vector<(k,v)>, start: USize, end: USize): PBTree<k,v> = (
          close(v.as-pbtree(mid1 + 1_sz, mid2)),
          close(v.as-pbtree(mid2 + 1_sz, end))
       )
+   }
+);
+
+let .as-vector(tree: PBTree<k,v>): Vector<(k,v)> = (
+   tree.as-vector(mk-vector(type((k,v))))
+);
+
+let .as-vector(tree: PBTree<k,v>, v: Vector<(k,v)>): Vector<(k,v)> = (
+   match tree {
+      PBLeaf {} => v;
+      PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
+         v = left.as-vector(v);
+         v = v.push((k11,v11));
+         v = right.as-vector(v);
+         v
+      );
+      PBNode2 { k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+         v = left.as-vector(v);
+         v = v.push((k12,v12));
+         v = mid.as-vector(v);
+         v = v.push((k22,v22));
+         v = right.as-vector(v);
+         v
+      );
    }
 );
 
@@ -2850,10 +2862,9 @@ let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (
 # new allocations = 1 if realloc is necessary
 #                 | 0
 let .push(v: Vector<t>, i: t): Vector<t>+MustUse = (
-   if (v.data as USize)!=0 then print("Push length=\{v.length} occupied=\{v.data.occupied} capacity=\{v.data.capacity}\n");
    # if this vector is a view, or if it is full, then we need to reallocate
    if (v.data as USize)==0 or v.data.occupied==v.data.capacity {
-      let new-capacity = if v.length==0 then 4_sz
+      let new-capacity = if v.length<=1 then 4_sz
       else (v.length >> 1_sz) + v.length; # this is mul 1.5, not 3
       v = v.realloc(new-capacity);
    };
@@ -2929,6 +2940,30 @@ let .sort(v: Vector<t>): Vector<t> = (
       let j = 0_sz;
       while j < n - i - 1_sz {
          if v[j + 1_sz] < v[j] {
+            let tmp = v[j];
+            v[j] = v[j + 1_sz];
+            v[j + 1_sz] = tmp;
+            swapped = true;
+         };
+         j = j + 1_sz;
+      };
+      i = i + 1_sz;
+      if not(swapped) {
+         i = n;
+      };
+   };
+   v
+);
+
+# new allocations = 0
+let .sort-by-key(v: Vector<(k,v)>): Vector<(k,v)> = (
+   let n = v.length;
+   let i = 0_sz;
+   if n > 1 then while i < n - 1_sz {
+      let swapped = false;
+      let j = 0_sz;
+      while j < n - i - 1_sz {
+         if v[j + 1_sz].first < v[j].first {
             let tmp = v[j];
             v[j] = v[j + 1_sz];
             v[j + 1_sz] = tmp;
@@ -3068,14 +3103,31 @@ let tail(s: Vector<t>): VectorView<t> = s[1_i64:];
 let tail(s: VectorView<t>): VectorView<t> = s[1_i64:];
 
 let .clone(s: Vector<t>): Vector<t> = (
-   let v = mk-vector(type(t), s.data.capacity);
+   let v = mk-vector(type(t), s.length);
    for i in s { v = v.push(i) };
    v
 );
-let .clone(s: VectorView<t>): Vector<t> = (
-   let v = mk-vector(type(t), s.data.capacity);
-   for i in s { v = v.push(i) };
+
+let .shrink(v: Vector<t>, l: USize): Vector<t> = (
+   while v.data.occupied > l { v.data.pop(); };
    v
+);
+
+let .sort-key-unique(s: Vector<(k,v)>): Vector<(k,v)> = (
+   s = s.sort-by-key;
+   let tail-i = 0_sz;
+   let lead-i = 0_sz;
+   while lead-i < s.length {
+      if lead-i + 1 < s.length and s[lead-i].first == s[lead-i+1].first
+      then ();
+      else {
+         s[tail-i] = s[lead-i];
+         tail-i = tail-i + 1;
+      };
+      lead-i = lead-i + 1;
+   };
+   if s.length > 0 then s.shrink(tail-i);
+   s
 );
 
 let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
@@ -5429,15 +5481,15 @@ let .into(tree: PBTree<U64,PhiContextRow>, tt: Type<String>): String = (
    match tree {
       PBLeaf {} => "";
       PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
-         "\{k11} : \{v11.phi-tt-or-zero}\n" +
          left.into(type(String)) +
+         "\{k11} : \{v11.phi-tt-or-zero}\n" +
          right.into(type(String))
       );
       PBNode2 { k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
-         "\{k12} : \{v12.phi-tt-or-zero}\n" +
-         "\{k22} : \{v22.phi-tt-or-zero}\n" +
          left.into(type(String)) +
+         "\{k12} : \{v12.phi-tt-or-zero}\n" +
          mid.into(type(String)) +
+         "\{k22} : \{v22.phi-tt-or-zero}\n" +
          right.into(type(String))
       );
    }
@@ -5557,39 +5609,6 @@ let .phi-append-dead-on-arrival(tctx-primary: TypeContext?, tctx-secondary: Type
 
 let .phi-append(tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, dead-on-arrival: Bool): PBTree<U64,PhiContextRow> = (
    if is(tctx-primary, tctx-secondary) then tctx-primary
-   else match tctx-secondary {
-      PBLeaf{} => tctx-primary;
-      PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
-          let pr2 = tctx-primary.lookup(k11, NullPhiContextRow);
-          if dead-on-arrival then v11 = PhiContextRow(v11.phi-id-or-zero, v11.phi-tt-or-zero, v11.blame-or-zero, dead-on-arrival, v11.is-global-or-zero);
-          if not(is(v11,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
-             tctx-primary = tctx-primary.bind(k11, v11);
-          };
-          tctx-primary = tctx-primary.phi-append(left, dead-on-arrival);
-          tctx-primary = tctx-primary.phi-append(right, dead-on-arrival);
-          tctx-primary
-      );
-      PBNode2{ k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
-          let pr2 = tctx-primary.lookup(k12, NullPhiContextRow);
-          if dead-on-arrival then v12 = PhiContextRow(v12.phi-id-or-zero, v12.phi-tt-or-zero, v12.blame-or-zero, dead-on-arrival, v12.is-global-or-zero);
-          if not(is(v12,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
-             tctx-primary = tctx-primary.bind(k12, v12);
-          };
-          pr2 = tctx-primary.lookup(k22, NullPhiContextRow);
-          if dead-on-arrival then v22 = PhiContextRow(v22.phi-id-or-zero, v22.phi-tt-or-zero, v22.blame-or-zero, dead-on-arrival, v22.is-global-or-zero);
-          if not(is(v22,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
-             tctx-primary = tctx-primary.bind(k22, v22);
-          };
-          tctx-primary = tctx-primary.phi-append(left, dead-on-arrival);
-          tctx-primary = tctx-primary.phi-append(mid, dead-on-arrival);
-          tctx-primary = tctx-primary.phi-append(right, dead-on-arrival);
-          tctx-primary
-      );
-   }
-);
-
-let .phi-append(tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, dead-on-arrival: Bool): PBTree<U64,PhiContextRow> = (
-   if is(tctx-primary, tctx-secondary) then tctx-primary
    else if not(non-zero(tctx-primary)) then tctx-secondary
    else if not(non-zero(tctx-secondary)) then tctx-primary
    else {
@@ -5602,7 +5621,6 @@ let .phi-append(tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<
       
       # 3. Rebuild balanced PBTree O(N + M)
       merged.as-pbtree
-      build-pbtree-from-sorted-vector(merged)
    }
 );
 
@@ -5616,44 +5634,41 @@ let merge-phi-vectors(v1: Vector<(U64,PhiContextRow)>, v2: Vector<(U64,PhiContex
       (let k2, let row2) = v2[j];
       
       if k1 < k2 {
-         out.push((k1, row1)); i = i + 1;
+         out = out.push((k1, row1)); i = i + 1;
       } else if k2 < k1 {
          if doa then row2 = row2.with-phi-tt(row2.phi-tt-or-zero.move-linear);
-         out.push((k2, row2)); j = j + 1;
+         out = out.push((k2, row2)); j = j + 1;
       } else {
          # Keys are equal: Apply your merge logic [cite: 885, 892]
          if doa then {
             # Prefer the primary if secondary is DOA [cite: 541, 544]
-            out.push((k1, row1));
+            out = out.push((k1, row1));
          } else {
             let merged-tt = global-flow-tctx.phi-merge(row1.phi-tt-or-zero, row2.phi-tt-or-zero, row1.blame-or-zero);
-            out.push((k1, row1.with-phi-tt(merged-tt)));
+            out = out.push((k1, row1.with-phi-tt(merged-tt)));
          };
          i = i + 1; j = j + 1;
       };
    };
    
    # Append remainders
-   while i < v1.length { out.push(v1[i]); i = i + 1; };
+   while i < v1.length { out = out.push(v1[i]); i = i + 1; };
    while j < v2.length { 
       let row = v2[j].second;
       if doa then row = row.with-phi-tt(row.phi-tt-or-zero.move-linear);
-      out.push((v2[j].first, row)); 
+      out = out.push((v2[j].first, row)); 
       j = j + 1; 
    };
    out
 );
-3. Rebuilding the PBTree
-Since the vector is sorted, we can build the 2-3 Tree in a single linear pass by recursively splitting the range.
 
-Code snippet
 let build-pbtree-from-sorted-vector(v: Vector<(U64,PhiContextRow)>): PBTree<U64,PhiContextRow> = (
    build-pbtree-recursive(v, 0_sz, v.length)
 );
 
 let build-pbtree-recursive(v: Vector<(U64,PhiContextRow)>, start: USize, end: USize): PBTree<U64,PhiContextRow> = (
    let len = end - start;
-   if len <= 0_sz then PBLeaf
+   if len <= 0_sz then mk-pbtree(type(U64), type(PhiContextRow))
    else if len == 1_sz {
       (let k, let val) = v[start];
       PBNode1(k, val, close(PBLeaf), close(PBLeaf))
@@ -8316,6 +8331,7 @@ let phi-merge-inner(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiCont
    match tctx-secondary {
       PBLeaf{} => (seen, tctx-primary);
       PBNode1{ k1=k1, tr=v1, left=left, right=right } => (
+         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, left, blame, seen);
          let sid = tr.phi-id-or-zero;
          let st = tr.phi-tt-or-zero;
          let pblame = tr.blame-or-zero;
@@ -8335,11 +8351,11 @@ let phi-merge-inner(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiCont
             );
             seen = seen.push(sid);
          };
-         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, left, blame, seen);
          (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, right, blame, seen);
          (seen, tctx-primary)
       );
       PBNode2{ k12=k1, tr=v1, k22=k2, tr2=v2, left=left, mid=mid, right=right } => (
+         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, left, blame, seen);
          let sid = tr.phi-id-or-zero;
          let st = tr.phi-tt-or-zero;
          let pblame = tr.blame-or-zero;
@@ -8359,6 +8375,7 @@ let phi-merge-inner(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiCont
             );
             seen = seen.push(sid);
          };
+         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, mid, blame, seen);
          tr = tr2;
          sid = tr.phi-id-or-zero;
          st = tr.phi-tt-or-zero;
@@ -8379,8 +8396,6 @@ let phi-merge-inner(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiCont
             );
             seen = seen.push(sid);
          };
-         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, left, blame, seen);
-         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, mid, blame, seen);
          (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, right, blame, seen);
          (seen, tctx-primary)
       );
