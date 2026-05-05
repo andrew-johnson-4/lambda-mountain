@@ -54,7 +54,6 @@ let .phi-append(tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<
       
       # 3. Rebuild balanced PBTree O(N + M)
       merged.as-pbtree
-      build-pbtree-from-sorted-vector(merged)
    }
 );
 
@@ -95,10 +94,7 @@ let merge-phi-vectors(v1: Vector<(U64,PhiContextRow)>, v2: Vector<(U64,PhiContex
    };
    out
 );
-3. Rebuilding the PBTree
-Since the vector is sorted, we can build the 2-3 Tree in a single linear pass by recursively splitting the range.
 
-Code snippet
 let build-pbtree-from-sorted-vector(v: Vector<(U64,PhiContextRow)>): PBTree<U64,PhiContextRow> = (
    build-pbtree-recursive(v, 0_sz, v.length)
 );

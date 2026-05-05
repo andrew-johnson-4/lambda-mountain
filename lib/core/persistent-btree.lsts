@@ -180,7 +180,7 @@ let close(d: PBTree<k,v>): OneOwnedData<PBTree<k,v>>[] = (
 );
 
 let .as-pbtree(v: Vector<(k,v)>): PBTree<k,v> = (
-   v.as-pbtree(0_sz, v.length)
+   v.sort-kunique.as-pbtree(0_sz, v.length)
 );
 
 let .as-pbtree(v: Vector<(k,v)>, start: USize, end: USize): PBTree<k,v> = (

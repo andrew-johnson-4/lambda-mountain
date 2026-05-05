@@ -314,3 +314,26 @@ let .clone(s: Vector<t>): Vector<t> = (
    for i in s { v = v.push(i) };
    v
 );
+
+let .shrink(v: Vector<t>, l: USize): Vector<t> = (
+   while v.data.occupied > l { v.data.pop(); };
+   v
+);
+
+let .sort-kunique(s: Vector<(k,v)>): Vector<(k,v)> = (
+   s = s.sort;
+   let tail-i = 0_sz;
+   let lead-i = 0_sz;
+   while lead-i < s.length {
+      if lead-i + 1 < s.length and s[lead-i].first == s[lead-i+1].first
+      then ();
+      else {
+         s[tail-i] = s[lead-i];
+         tail-i = tail-i + 1;
+      };
+      lead-i = lead-i + 1;
+   };
+   if s.length > 0 then s.shrink(tail-i);
+   print("Sorted \{s}\n");
+   s
+);
