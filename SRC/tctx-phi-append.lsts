@@ -14,89 +14,30 @@ let .phi-append(tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<
    else match tctx-secondary {
       PBLeaf{} => tctx-primary;
       PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
+          tctx-primary = tctx-primary.phi-append(left, dead-on-arrival);
           let pr2 = tctx-primary.lookup(k11, NullPhiContextRow);
           if dead-on-arrival then v11 = PhiContextRow(v11.phi-id-or-zero, v11.phi-tt-or-zero, v11.blame-or-zero, dead-on-arrival, v11.is-global-or-zero);
           if not(is(v11,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
              tctx-primary = tctx-primary.bind(k11, v11);
           };
-          tctx-primary = tctx-primary.phi-append(left, dead-on-arrival);
           tctx-primary = tctx-primary.phi-append(right, dead-on-arrival);
           tctx-primary
       );
       PBNode2{ k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+          tctx-primary = tctx-primary.phi-append(left, dead-on-arrival);
           let pr2 = tctx-primary.lookup(k12, NullPhiContextRow);
           if dead-on-arrival then v12 = PhiContextRow(v12.phi-id-or-zero, v12.phi-tt-or-zero, v12.blame-or-zero, dead-on-arrival, v12.is-global-or-zero);
           if not(is(v12,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
              tctx-primary = tctx-primary.bind(k12, v12);
           };
+          tctx-primary = tctx-primary.phi-append(mid, dead-on-arrival);
           pr2 = tctx-primary.lookup(k22, NullPhiContextRow);
           if dead-on-arrival then v22 = PhiContextRow(v22.phi-id-or-zero, v22.phi-tt-or-zero, v22.blame-or-zero, dead-on-arrival, v22.is-global-or-zero);
           if not(is(v22,pr2)) and not(dead-on-arrival and non-zero(pr2)) {
              tctx-primary = tctx-primary.bind(k22, v22);
           };
-          tctx-primary = tctx-primary.phi-append(left, dead-on-arrival);
-          tctx-primary = tctx-primary.phi-append(mid, dead-on-arrival);
           tctx-primary = tctx-primary.phi-append(right, dead-on-arrival);
           tctx-primary
       );
    }
 );
-
-#let .phi-append(tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, dead-on-arrival: Bool): PBTree<U64,PhiContextRow> = (
-#   if is(tctx-primary, tctx-secondary) then tctx-primary
-#   else if not(non-zero(tctx-primary)) then tctx-secondary
-#   else if not(non-zero(tctx-secondary)) then tctx-primary
-#   else {
-      # 1. Flatten both trees into sorted vectors O(N + M)
-#      let v1 = tctx-primary.as-vector();
-#      let v2 = tctx-secondary.as-vector();
-      
-      # 2. Merge sorted vectors O(N + M)
-#      let merged = merge-phi-vectors(v1, v2, dead-on-arrival);
-      
-      # 3. Rebuild balanced PBTree O(N + M)
-#      merged.as-pbtree
-#   }
-#);
-
-#let merge-phi-vectors(v1: Vector<(U64,PhiContextRow)>, v2: Vector<(U64,PhiContextRow)>, doa: Bool): Vector<(U64,PhiContextRow)> = (
-#   let out = mk-vector(type((U64,PhiContextRow)), v1.length + v2.length);
-#   let i = 0_sz;
-#   let j = 0_sz;
-   
-#   while i < v1.length and j < v2.length {
-#      (let k1, let row1) = v1[i];
-#      (let k2, let row2) = v2[j];
-      
-#      if k1 < k2 {
-#         out = out.push((k1, row1)); i = i + 1;
-#      } else if k2 < k1 {
-#         if doa then row2 = row2.with-phi-tt(row2.phi-tt-or-zero.move-linear);
-#         out = out.push((k2, row2)); j = j + 1;
-#      } else {
-         # Keys are equal: Apply your merge logic [cite: 885, 892]
-#         if doa then {
-            # Prefer the primary if secondary is DOA [cite: 541, 544]
-#            out = out.push((k1, row1));
-#         } else {
-#            let merged-tt = global-flow-tctx.phi-merge(row1.phi-tt-or-zero, row2.phi-tt-or-zero, row1.blame-or-zero);
-#            out = out.push((k1, row1.with-phi-tt(merged-tt)));
-#         };
-#         i = i + 1; j = j + 1;
-#      };
-#   };
-   
-   # Append remainders
-#   while i < v1.length { out = out.push(v1[i]); i = i + 1; };
-#   while j < v2.length { 
-#      let row = v2[j].second;
-#      if doa then row = row.with-phi-tt(row.phi-tt-or-zero.move-linear);
-#      out = out.push((v2[j].first, row)); 
-#      j = j + 1; 
-#   };
-#   out
-#);
-
-#let build-pbtree-from-sorted-vector(v: Vector<(U64,PhiContextRow)>): PBTree<U64,PhiContextRow> = (
-#   v.as-pbtree
-#);
