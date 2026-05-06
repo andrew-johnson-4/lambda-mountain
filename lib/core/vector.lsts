@@ -95,7 +95,7 @@ let .realloc(v: Vector<t>, target-capacity: USize): Vector<t> = (
 let .push(v: Vector<t>, i: t): Vector<t>+MustUse = (
    # if this vector is a view, or if it is full, then we need to reallocate
    if (v.data as USize)==0 or v.data.occupied==v.data.capacity {
-      let new-capacity = if v.length==0 then 4_sz
+      let new-capacity = if v.length<=1 then 4_sz
       else (v.length >> 1_sz) + v.length; # this is mul 1.5, not 3
       v = v.realloc(new-capacity);
    };
@@ -171,6 +171,30 @@ let .sort(v: Vector<t>): Vector<t> = (
       let j = 0_sz;
       while j < n - i - 1_sz {
          if v[j + 1_sz] < v[j] {
+            let tmp = v[j];
+            v[j] = v[j + 1_sz];
+            v[j + 1_sz] = tmp;
+            swapped = true;
+         };
+         j = j + 1_sz;
+      };
+      i = i + 1_sz;
+      if not(swapped) {
+         i = n;
+      };
+   };
+   v
+);
+
+# new allocations = 0
+let .sort-by-key(v: Vector<(k,v)>): Vector<(k,v)> = (
+   let n = v.length;
+   let i = 0_sz;
+   if n > 1 then while i < n - 1_sz {
+      let swapped = false;
+      let j = 0_sz;
+      while j < n - i - 1_sz {
+         if v[j + 1_sz].first < v[j].first {
             let tmp = v[j];
             v[j] = v[j + 1_sz];
             v[j + 1_sz] = tmp;
@@ -308,3 +332,31 @@ let $"[:]"(s: VectorView<t>, begin: I64, end: I64): VectorView<t> = (
 
 let tail(s: Vector<t>): VectorView<t> = s[1_i64:];
 let tail(s: VectorView<t>): VectorView<t> = s[1_i64:];
+
+let .clone(s: Vector<t>): Vector<t> = (
+   let v = mk-vector(type(t), s.length);
+   for i in s { v = v.push(i) };
+   v
+);
+
+let .shrink(v: Vector<t>, l: USize): Vector<t> = (
+   while v.data.occupied > l { v.data.pop(); };
+   v
+);
+
+let .sort-key-unique(s: Vector<(k,v)>): Vector<(k,v)> = (
+   s = s.sort-by-key;
+   let tail-i = 0_sz;
+   let lead-i = 0_sz;
+   while lead-i < s.length {
+      if lead-i + 1 < s.length and s[lead-i].first == s[lead-i+1].first
+      then ();
+      else {
+         s[tail-i] = s[lead-i];
+         tail-i = tail-i + 1;
+      };
+      lead-i = lead-i + 1;
+   };
+   if s.length > 0 then s.shrink(tail-i);
+   s
+);

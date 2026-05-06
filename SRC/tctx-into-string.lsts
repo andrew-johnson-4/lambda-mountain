@@ -3,15 +3,15 @@ let .into(tree: PBTree<U64,PhiContextRow>, tt: Type<String>): String = (
    match tree {
       PBLeaf {} => "";
       PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
-         "\{k11} : \{v11.phi-tt-or-zero}\n" +
          left.into(type(String)) +
+         "\{k11} : \{v11.phi-tt-or-zero}\n" +
          right.into(type(String))
       );
       PBNode2 { k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
-         "\{k12} : \{v12.phi-tt-or-zero}\n" +
-         "\{k22} : \{v22.phi-tt-or-zero}\n" +
          left.into(type(String)) +
+         "\{k12} : \{v12.phi-tt-or-zero}\n" +
          mid.into(type(String)) +
+         "\{k22} : \{v22.phi-tt-or-zero}\n" +
          right.into(type(String))
       );
    }

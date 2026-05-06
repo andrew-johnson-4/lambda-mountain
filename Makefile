@@ -27,6 +27,10 @@ build: compile-production
 	rm -f deploy1 deploy1.c deploy2.c
 	cargo test regression_tests
 
+gperf: install-bootstrap
+	LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libprofiler.so CPUPROFILE=out.prof lm --v3 SRC/index.lsts
+	google-pprof --text /home/andrew/.local/bin/lm out.prof > profile_results.txt
+
 deploy: build smoke-test
 deploy-lite: build smoke-test-lite
 
@@ -64,7 +68,7 @@ compile-bootstrap:
 
 compile-production: compile-bootstrap
 	rm -f production
-	$(LSTSFLAGS) ./bootstrap.exe --v3 -o production.c SRC/index.lsts
+	$(LSTSFLAGS) time ./bootstrap.exe --v3 -o production.c SRC/index.lsts
 	$(CC) $(CFLAGS) -o production production.c
 	rm -f production.c
 

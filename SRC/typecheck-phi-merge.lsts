@@ -10,6 +10,7 @@ let phi-merge-inner(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiCont
    match tctx-secondary {
       PBLeaf{} => (seen, tctx-primary);
       PBNode1{ k1=k1, tr=v1, left=left, right=right } => (
+         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, left, blame, seen);
          let sid = tr.phi-id-or-zero;
          let st = tr.phi-tt-or-zero;
          let pblame = tr.blame-or-zero;
@@ -29,11 +30,11 @@ let phi-merge-inner(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiCont
             );
             seen = seen.push(sid);
          };
-         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, left, blame, seen);
          (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, right, blame, seen);
          (seen, tctx-primary)
       );
       PBNode2{ k12=k1, tr=v1, k22=k2, tr2=v2, left=left, mid=mid, right=right } => (
+         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, left, blame, seen);
          let sid = tr.phi-id-or-zero;
          let st = tr.phi-tt-or-zero;
          let pblame = tr.blame-or-zero;
@@ -53,6 +54,7 @@ let phi-merge-inner(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiCont
             );
             seen = seen.push(sid);
          };
+         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, mid, blame, seen);
          tr = tr2;
          sid = tr.phi-id-or-zero;
          st = tr.phi-tt-or-zero;
@@ -73,8 +75,6 @@ let phi-merge-inner(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiCont
             );
             seen = seen.push(sid);
          };
-         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, left, blame, seen);
-         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, mid, blame, seen);
          (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, right, blame, seen);
          (seen, tctx-primary)
       );

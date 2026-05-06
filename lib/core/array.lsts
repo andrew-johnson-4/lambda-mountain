@@ -80,9 +80,8 @@ let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
    };
 
    # Zero Out Memory
+   # this doubles as testing access to memory region
    dumb_memset(ptr as U8[], 0, nb);
-
-   mark-memory-as-safe(ptr as U8[], nb);
 
    ptr
 );
@@ -95,8 +94,6 @@ let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
    if new-ptr as USize == 0_sz {
       fail(c"realloc fail");
    };
-
-   mark-memory-as-safe(new-ptr as U8[], nb);
 
    # TODO: wrap counter adjustments in conditional compilation
    safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
