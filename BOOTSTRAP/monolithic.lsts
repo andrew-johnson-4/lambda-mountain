@@ -5408,6 +5408,8 @@ let .release(t: PhiContextRow): Nil = (
    mark-as-released(t);
 );
 
+let .into(pr: PhiContextRow, tt: Type<String>): String = "#\{pr.phi-id-or-zero} : \{pr.phi-tt-or-zero}";
+
 type TypeContext implies MustRetain, MustRelease = { tctx:List<TypeContextRow>, pctx: PBTree<U64,PhiContextRow>, is-unsafe: Bool, is-blob: Bool, function-name:CString };
 let .retain(t: TypeContext): TypeContext = (
    if t.discriminator-case-tag==(t as Tag::TypeContext).discriminator-case-tag {
@@ -9091,33 +9093,33 @@ let validate-interfaces(): Nil = (
    };
 );
 
-let validate-pctx-release(tree: PBTree<U64,PhiContextRow>, ps-seen: Set<U64>): Set<U64> = (
+let validate-pctx-release(original-tree: PBTree<U64,PhiContextRow>, tree: PBTree<U64,PhiContextRow>, ps-seen: Set<U64>): Set<U64> = (
    match tree {
       PBLeaf {} => ps-seen;
       PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
-         ps-seen = validate-pctx-release(left, ps-seen);
+         ps-seen = validate-pctx-release(original-tree, left, ps-seen);
          if not v11.is-global-or-zero and not ps-seen.has(v11.phi-id-or-zero) {
             if v11.phi-tt-or-zero.is-linear-live
-            then exit-error("Linear Variables Must Be Used: #\{v11.phi-id-or-zero} \{v11.phi-tt-or-zero} \{v11.blame-or-zero}\n\{tree.as-vector.keys-only}", v11.blame-or-zero);
+            then exit-error("Linear Variables Must Be Used: #\{v11.phi-id-or-zero} \{v11.phi-tt-or-zero} \{v11.blame-or-zero}\n\{original-tree}", v11.blame-or-zero);
             ps-seen = ps-seen.bind(v11.phi-id-or-zero);
          };
-         ps-seen = validate-pctx-release(right, ps-seen);
+         ps-seen = validate-pctx-release(original-tree, right, ps-seen);
          ps-seen;
       );
       PBNode2 { k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
-         ps-seen = validate-pctx-release(left, ps-seen);
+         ps-seen = validate-pctx-release(original-tree, left, ps-seen);
          if not v12.is-global-or-zero and not ps-seen.has(v12.phi-id-or-zero) {
             if v12.phi-tt-or-zero.is-linear-live
-            then exit-error("Linear Variables Must Be Used: #\{v12.phi-id-or-zero} \{v12.phi-tt-or-zero} \{v12.blame-or-zero}\n\{tree.as-vector.keys-only}", v12.blame-or-zero);
+            then exit-error("Linear Variables Must Be Used: #\{v12.phi-id-or-zero} \{v12.phi-tt-or-zero} \{v12.blame-or-zero}\n\{original-tree}", v12.blame-or-zero);
             ps-seen = ps-seen.bind(v12.phi-id-or-zero);
          };
-         ps-seen = validate-pctx-release(mid, ps-seen);
+         ps-seen = validate-pctx-release(original-tree, mid, ps-seen);
          if not v22.is-global-or-zero and not ps-seen.has(v22.phi-id-or-zero) {
             if v22.phi-tt-or-zero.is-linear-live
-            then exit-error("Linear Variables Must Be Used: #\{v22.phi-id-or-zero} \{v22.phi-tt-or-zero} \{v22.blame-or-zero}\n\{tree.as-vector.keys-only}", v22.blame-or-zero);
+            then exit-error("Linear Variables Must Be Used: #\{v22.phi-id-or-zero} \{v22.phi-tt-or-zero} \{v22.blame-or-zero}\n\{original-tree}", v22.blame-or-zero);
             ps-seen = ps-seen.bind(v22.phi-id-or-zero);
          };
-         ps-seen = validate-pctx-release(right, ps-seen);
+         ps-seen = validate-pctx-release(original-tree, right, ps-seen);
          ps-seen;
       );
    }
@@ -9125,7 +9127,7 @@ let validate-pctx-release(tree: PBTree<U64,PhiContextRow>, ps-seen: Set<U64>): S
 
 
 let validate-pctx-release(tctx: TypeContext?): Nil = (
-   validate-pctx-release(tctx.get-or(mk-tctx()).pctx, mk-set(type(U64))); ()
+   validate-pctx-release(tctx.get-or(mk-tctx()).pctx, tctx.get-or(mk-tctx()).pctx, mk-set(type(U64))); ()
 );
 
 let config-hot-path = false;

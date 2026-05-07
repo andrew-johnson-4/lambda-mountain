@@ -1,0 +1,25 @@
+
+import lib/core/baremetal.lsts;
+
+type Vector<t> implies MustRetain, MustRelease = {};
+
+let .release(x: Vector<t>): Nil = (
+   if (x.data as USize) != 0 {
+      x.data.release;
+   };
+   mark-as-released(x);
+);
+
+let .retain(x: Vector<t>): Vector<t> = (
+   if (x.data as USize) != 0 {
+      x.data.retain;
+   };
+   x
+);
+
+let .push(v: Vector<t>, i: t): Vector<t>+MustUse = v;
+
+let .to-hex(i: U64) = (
+   let buff = Vector : Vector<U8>;
+   buff = buff.push(48);
+);

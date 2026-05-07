@@ -7,8 +7,8 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recursion is used fairly heavily
 # recommendation: ulimit -s unlimited
 
-dev: install-production
-	lm --v3 tests/promises/phi/implied-linear-phi-reject.lsts
+dev: install-bootstrap
+	lm --v3 tests/promises/phi/pctx-validate-1.lsts
 	gcc tmp.c
 	./a.out
 	#time lm --showalloc SRC/unit-type-core.lsts > out.txt
