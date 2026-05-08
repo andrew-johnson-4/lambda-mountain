@@ -7795,12 +7795,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      new-term = mk-cons(new-term, postfix); ascript-force(new-term, typeof-term(postfix));
                      new-term = mk-cons(new-term, tmp-var); ascript-force(new-term, typeof-term(term));
                      term = new-term;
- 
-                     if var-name-if-var-or-lit(l)==c"mov" and typeof-term(r).is-t(c"Cons",2) {
-                        print("mov r : \{tctx.with-phi(typeof-term(r),term)}\n");
-                        print("mov \{term}\n");
-                     };
-                  };
+                   };
                };
                if not(is-released-after-call) and not(rt.is-t(c"Cons",2)) {
                   if function-type.is-t(c"MustRetainOnCall",0) and not(hint.is-t(c"MustNotRetain",0)) and not(tctx.get-or(mk-tctx()).is-blob) {
@@ -7825,7 +7820,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       }
    }};
    (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
-   print("Inferred \{term} : \{typeof-term(term)}\n");
    (tctx, term);
 );
 
