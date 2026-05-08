@@ -7499,8 +7499,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          # No need for new Phi types here
          if original-tt.is-t(c"Phi::State",1) {
             (tctx, tt) = tctx.phi-initialize(tt, term);
-            if typeof-term(t).is-linear-live
-            then tctx = tctx.phi-move(typeof-term(t), term);
+         };
+         if inner-tt.is-t(c"Phi::Id",1) and inner-tt.slot(c"Phi::Id",1).l1 != tt.slot(c"Phi::Id",1).l1 {
+            # This just leaks the linear variable!
+            # TODO: find a better way to handle this more strictly
+            tctx = tctx.phi-move(inner-tt, term);
          };
          tctx = tctx.ascript(term, tt);
       );
@@ -7820,6 +7823,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       }
    }};
    (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
+   print("\{term} : \{typeof-term(term)}\n");
    (tctx, term);
 );
 

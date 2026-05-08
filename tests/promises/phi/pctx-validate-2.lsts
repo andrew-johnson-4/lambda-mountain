@@ -48,7 +48,7 @@ let .pop(od: OwnedData<t>[]): t = (
 let .pop(v: Vector<t>): t = v.data.pop;
 
 let .shrink(v: Vector<t>, l: USize): Vector<t> = (
-   while v.data.occupied > l { v.data.pop; };
+   primitive::while( true, v.data.pop as Nil );
    v
 );
 
