@@ -5615,6 +5615,25 @@ let .lookup(tree: PBTree<U64,PhiContextRow>, key: U64, default: PhiContextRow): 
 
 let global-flow-tctx = None : TypeContext?;
 
+let .move-diff(tctx: TypeContext?, old-tt: Type, new-tt: Type, blame: AST): TypeContext? = (
+   match (old-tt, new-tt) {
+      Tuple{ first:TGround{tag:c"Cons",parameters:[o1..o2..]}, second:TGround{tag:c"Cons",parameters:[n1..n2..]} } => (
+         tctx = tctx.move-diff(o1, n1, blame);
+         tctx = tctx.move-diff(o2, n2, blame);
+      );
+      Tuple{ first:_, second:TGround{tag:c"Cons",parameters:[n1..n2..]} } => (
+         tctx = tctx.phi-move(old-tt, blame);
+      );
+      Tuple{ first:TGround{tag:c"Cons",parameters:[n1..n2..]}, second:_ } => ();
+      Tuple{ first:_, second:_ } => (
+         if old-tt.is-t(c"Phi::Id",1) and (
+            not new-tt.is-t(c"Phi::Id",1) or old-tt.slot(c"Phi::Id",1).l1 != new-tt.slot(c"Phi::Id",1).l1
+         ) then tctx = tctx.phi-move(old-tt, blame);
+      );
+   };
+   tctx
+);
+
 let $"||"(lctx: Maybe<TypeContext>, rctx: Maybe<TypeContext>): Maybe<TypeContext> = (
    if lctx.is-none then rctx else if rctx.is-none then lctx else union(lctx, rctx)
 );
@@ -7707,7 +7726,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   };
                   if ftype.domain.is-any-arg-t(c"MustNotRetain",0) {
                      pre-retain-tctx = pre-retain-tctx.phi-append-dead-on-arrival(tctx);
-                     (tctx, new-r) = std-infer-call-arg(pre-retain-tctx, r, var-name-if-var-or-lit(l), ftype.domain && rr-args-hint);
+                     (tctx, let newer-r) = std-infer-call-arg(pre-retain-tctx, r, var-name-if-var-or-lit(l), ftype.domain && rr-args-hint);
+                     tctx = tctx.move-diff(typeof-term(new-r), typeof-term(newer-r), term);
+                     new-r = newer-r;
                   };
                   if not(is(l,new-l)) or not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
                } else {
@@ -7774,6 +7795,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      new-term = mk-cons(new-term, postfix); ascript-force(new-term, typeof-term(postfix));
                      new-term = mk-cons(new-term, tmp-var); ascript-force(new-term, typeof-term(term));
                      term = new-term;
+ 
+                     if var-name-if-var-or-lit(l)==c"mov" and typeof-term(r).is-t(c"Cons",2) {
+                        print("mov r : \{tctx.with-phi(typeof-term(r),term)}\n");
+                        print("mov \{term}\n");
+                     };
                   };
                };
                if not(is-released-after-call) and not(rt.is-t(c"Cons",2)) {
@@ -7799,7 +7825,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       }
    }};
    (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
-   #print("Inferred \{term}\nTCTX: \{tctx}\n");
+   print("Inferred \{term} : \{typeof-term(term)}\n");
    (tctx, term);
 );
 
@@ -9435,6 +9461,7 @@ import SRC/tctx-phi-move-all.lsts;
 import SRC/tctx-phi-initialize.lsts;
 import SRC/tctx-misc-globals.lsts;
 import SRC/typecheck-infer-tctx.lsts;
+import SRC/tctx-move-diff.lsts;
 
 import SRC/unit-util.lsts;
 
