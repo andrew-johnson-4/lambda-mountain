@@ -235,3 +235,5 @@ let .as-vector(tree: PBTree<k,v>, v: Vector<(k,v)>): Vector<(k,v)> = (
       );
    }
 );
+
+let .into(tree: PBTree<k,v>, type: Type<String>): String = tree.as-vector.into(type(String));

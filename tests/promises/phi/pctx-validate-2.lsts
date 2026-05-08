@@ -1,0 +1,59 @@
+
+import lib/core/baremetal.lsts;
+
+type Vector<t> implies MustRetain, MustRelease = { data: OwnedData<t>[] };
+
+let .release(x: Vector<t>): Nil = (
+   mark-as-released(x);
+);
+
+let .retain(x: Vector<t>): Vector<t> = (
+   x
+);
+
+type String suffix _ss implies MustRetain, MustRelease
+          = { start-offset:USize, end-offset:USize, data:OwnedData<U8>[] };
+
+let .release(x: String): Nil = (
+   mark-as-released(x);
+);
+
+let .retain(x: String): String = (
+   x
+);
+
+type OwnedData<t> = {
+   reference-count: USize,
+   occupied: USize,
+   capacity: USize,
+   data: t[]+FlexibleArrayMember
+};
+
+let $"[]"(od: OwnedData<t>[], idx: USize): t = (
+   if (od as USize)==0
+   then fail(c"OwnedData [] Access Null Pointer");
+   if idx >= od.occupied then fail("OwnedData [\{idx}] Index Access Out of Bounds");
+   od.data[idx]
+);
+
+let .pop(od: OwnedData<t>[]): t = (
+   if (od as USize)==0
+   then fail(c"OwnedData .pop From Null Pointer");
+   if od.occupied == 0
+   then fail(c"OwnedData .pop From Empty Data");
+   od.occupied = od.occupied - 1;
+   od.data[od.occupied]
+);
+
+let .pop(v: Vector<t>): t = v.data.pop;
+
+let .shrink(v: Vector<t>, l: USize): Vector<t> = (
+   primitive::while( true, v.data.pop as Nil );
+   v
+);
+
+let .to-hex(i: U64) = (
+   let buff = Vector(0 as OwnedData<String>[]);
+   buff.shrink(1);
+   ()
+);

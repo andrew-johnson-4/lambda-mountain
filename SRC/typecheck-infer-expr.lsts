@@ -123,8 +123,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          # No need for new Phi types here
          if original-tt.is-t(c"Phi::State",1) {
             (tctx, tt) = tctx.phi-initialize(tt, term);
-            if typeof-term(t).is-linear-live
-            then tctx = tctx.phi-move(typeof-term(t), term);
+         };
+         if inner-tt.is-t(c"Phi::Id",1) and inner-tt.slot(c"Phi::Id",1).l1 != tt.slot(c"Phi::Id",1).l1 {
+            # This just leaks the linear variable!
+            # TODO: find a better way to handle this more strictly
+            tctx = tctx.phi-move(inner-tt, term);
          };
          tctx = tctx.ascript(term, tt);
       );
@@ -350,7 +353,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   };
                   if ftype.domain.is-any-arg-t(c"MustNotRetain",0) {
                      pre-retain-tctx = pre-retain-tctx.phi-append-dead-on-arrival(tctx);
-                     (tctx, new-r) = std-infer-call-arg(pre-retain-tctx, r, var-name-if-var-or-lit(l), ftype.domain && rr-args-hint);
+                     (tctx, let newer-r) = std-infer-call-arg(pre-retain-tctx, r, var-name-if-var-or-lit(l), ftype.domain && rr-args-hint);
+                     tctx = tctx.move-diff(typeof-term(new-r), typeof-term(newer-r), term);
+                     new-r = newer-r;
                   };
                   if not(is(l,new-l)) or not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
                } else {
@@ -417,7 +422,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      new-term = mk-cons(new-term, postfix); ascript-force(new-term, typeof-term(postfix));
                      new-term = mk-cons(new-term, tmp-var); ascript-force(new-term, typeof-term(term));
                      term = new-term;
-                  };
+                   };
                };
                if not(is-released-after-call) and not(rt.is-t(c"Cons",2)) {
                   if function-type.is-t(c"MustRetainOnCall",0) and not(hint.is-t(c"MustNotRetain",0)) and not(tctx.get-or(mk-tctx()).is-blob) {
@@ -442,7 +447,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       }
    }};
    (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
-   #print("Inferred \{term}\nTCTX: \{tctx}\n");
    (tctx, term);
 );
 

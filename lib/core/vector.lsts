@@ -360,3 +360,19 @@ let .sort-key-unique(s: Vector<(k,v)>): Vector<(k,v)> = (
    if s.length > 0 then s.shrink(tail-i);
    s
 );
+
+let .keys-only(v: Vector<(k,v)>): Vector<k> = (
+   let out = mk-vector(type(k));
+   for kv in v {
+      out = out.push(kv.first);
+   };
+   out
+);
+
+let .values-only(v: Vector<(k,v)>): Vector<v> = (
+   let out = mk-vector(type(v));
+   for kv in v {
+      out = out.push(kv.second);
+   };
+   out
+);

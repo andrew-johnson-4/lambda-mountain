@@ -36,6 +36,8 @@ let .release(t: PhiContextRow): Nil = (
    mark-as-released(t);
 );
 
+let .into(pr: PhiContextRow, tt: Type<String>): String = "#\{pr.phi-id-or-zero} : \{pr.phi-tt-or-zero}";
+
 type TypeContext implies MustRetain, MustRelease = { tctx:List<TypeContextRow>, pctx: PBTree<U64,PhiContextRow>, is-unsafe: Bool, is-blob: Bool, function-name:CString };
 let .retain(t: TypeContext): TypeContext = (
    if t.discriminator-case-tag==(t as Tag::TypeContext).discriminator-case-tag {

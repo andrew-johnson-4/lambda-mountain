@@ -1801,6 +1801,8 @@ let .as-vector(tree: PBTree<k,v>, v: Vector<(k,v)>): Vector<(k,v)> = (
    }
 );
 
+let .into(tree: PBTree<k,v>, type: Type<String>): String = tree.as-vector.into(type(String));
+
 type phi MustRelease = ToRelease{ promise:'a } | Released;
 
 let :Blob mark-as-released(x: x+(MustRelease::ToRelease<'a> ~> MustRelease::Released)+MustNotRetain): Nil = (
@@ -3128,6 +3130,22 @@ let .sort-key-unique(s: Vector<(k,v)>): Vector<(k,v)> = (
    };
    if s.length > 0 then s.shrink(tail-i);
    s
+);
+
+let .keys-only(v: Vector<(k,v)>): Vector<k> = (
+   let out = mk-vector(type(k));
+   for kv in v {
+      out = out.push(kv.first);
+   };
+   out
+);
+
+let .values-only(v: Vector<(k,v)>): Vector<v> = (
+   let out = mk-vector(type(v));
+   for kv in v {
+      out = out.push(kv.second);
+   };
+   out
 );
 
 let .ascript(tctx: TypeContext?, t: AST, tt: Type): TypeContext? = (
@@ -5390,6 +5408,8 @@ let .release(t: PhiContextRow): Nil = (
    mark-as-released(t);
 );
 
+let .into(pr: PhiContextRow, tt: Type<String>): String = "#\{pr.phi-id-or-zero} : \{pr.phi-tt-or-zero}";
+
 type TypeContext implies MustRetain, MustRelease = { tctx:List<TypeContextRow>, pctx: PBTree<U64,PhiContextRow>, is-unsafe: Bool, is-blob: Bool, function-name:CString };
 let .retain(t: TypeContext): TypeContext = (
    if t.discriminator-case-tag==(t as Tag::TypeContext).discriminator-case-tag {
@@ -5594,6 +5614,25 @@ let .lookup(tree: PBTree<U64,PhiContextRow>, key: U64, default: PhiContextRow): 
 );
 
 let global-flow-tctx = None : TypeContext?;
+
+let .move-diff(tctx: TypeContext?, old-tt: Type, new-tt: Type, blame: AST): TypeContext? = (
+   match (old-tt, new-tt) {
+      Tuple{ first:TGround{tag:c"Cons",parameters:[o1..o2..]}, second:TGround{tag:c"Cons",parameters:[n1..n2..]} } => (
+         tctx = tctx.move-diff(o1, n1, blame);
+         tctx = tctx.move-diff(o2, n2, blame);
+      );
+      Tuple{ first:_, second:TGround{tag:c"Cons",parameters:[n1..n2..]} } => (
+         tctx = tctx.phi-move(old-tt, blame);
+      );
+      Tuple{ first:TGround{tag:c"Cons",parameters:[n1..n2..]}, second:_ } => ();
+      Tuple{ first:_, second:_ } => (
+         if old-tt.is-t(c"Phi::Id",1) and (
+            not new-tt.is-t(c"Phi::Id",1) or old-tt.slot(c"Phi::Id",1).l1 != new-tt.slot(c"Phi::Id",1).l1
+         ) then tctx = tctx.phi-move(old-tt, blame);
+      );
+   };
+   tctx
+);
 
 let $"||"(lctx: Maybe<TypeContext>, rctx: Maybe<TypeContext>): Maybe<TypeContext> = (
    if lctx.is-none then rctx else if rctx.is-none then lctx else union(lctx, rctx)
@@ -7460,8 +7499,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          # No need for new Phi types here
          if original-tt.is-t(c"Phi::State",1) {
             (tctx, tt) = tctx.phi-initialize(tt, term);
-            if typeof-term(t).is-linear-live
-            then tctx = tctx.phi-move(typeof-term(t), term);
+         };
+         if inner-tt.is-t(c"Phi::Id",1) and inner-tt.slot(c"Phi::Id",1).l1 != tt.slot(c"Phi::Id",1).l1 {
+            # This just leaks the linear variable!
+            # TODO: find a better way to handle this more strictly
+            tctx = tctx.phi-move(inner-tt, term);
          };
          tctx = tctx.ascript(term, tt);
       );
@@ -7687,7 +7729,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                   };
                   if ftype.domain.is-any-arg-t(c"MustNotRetain",0) {
                      pre-retain-tctx = pre-retain-tctx.phi-append-dead-on-arrival(tctx);
-                     (tctx, new-r) = std-infer-call-arg(pre-retain-tctx, r, var-name-if-var-or-lit(l), ftype.domain && rr-args-hint);
+                     (tctx, let newer-r) = std-infer-call-arg(pre-retain-tctx, r, var-name-if-var-or-lit(l), ftype.domain && rr-args-hint);
+                     tctx = tctx.move-diff(typeof-term(new-r), typeof-term(newer-r), term);
+                     new-r = newer-r;
                   };
                   if not(is(l,new-l)) or not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-app(l,r); };
                } else {
@@ -7754,7 +7798,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      new-term = mk-cons(new-term, postfix); ascript-force(new-term, typeof-term(postfix));
                      new-term = mk-cons(new-term, tmp-var); ascript-force(new-term, typeof-term(term));
                      term = new-term;
-                  };
+                   };
                };
                if not(is-released-after-call) and not(rt.is-t(c"Cons",2)) {
                   if function-type.is-t(c"MustRetainOnCall",0) and not(hint.is-t(c"MustNotRetain",0)) and not(tctx.get-or(mk-tctx()).is-blob) {
@@ -7779,7 +7823,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       }
    }};
    (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
-   #print("Inferred \{term}\nTCTX: \{tctx}\n");
    (tctx, term);
 );
 
@@ -9073,16 +9116,41 @@ let validate-interfaces(): Nil = (
    };
 );
 
+let validate-pctx-release(original-tree: PBTree<U64,PhiContextRow>, tree: PBTree<U64,PhiContextRow>, ps-seen: Set<U64>): Set<U64> = (
+   match tree {
+      PBLeaf {} => ps-seen;
+      PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
+         ps-seen = validate-pctx-release(original-tree, left, ps-seen);
+         if not v11.is-global-or-zero and not ps-seen.has(v11.phi-id-or-zero) {
+            if v11.phi-tt-or-zero.is-linear-live
+            then exit-error("Linear Variables Must Be Used: #\{v11.phi-id-or-zero} \{v11.phi-tt-or-zero} \{v11.blame-or-zero}", v11.blame-or-zero);
+            ps-seen = ps-seen.bind(v11.phi-id-or-zero);
+         };
+         ps-seen = validate-pctx-release(original-tree, right, ps-seen);
+         ps-seen;
+      );
+      PBNode2 { k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+         ps-seen = validate-pctx-release(original-tree, left, ps-seen);
+         if not v12.is-global-or-zero and not ps-seen.has(v12.phi-id-or-zero) {
+            if v12.phi-tt-or-zero.is-linear-live
+            then exit-error("Linear Variables Must Be Used: #\{v12.phi-id-or-zero} \{v12.phi-tt-or-zero} \{v12.blame-or-zero}", v12.blame-or-zero);
+            ps-seen = ps-seen.bind(v12.phi-id-or-zero);
+         };
+         ps-seen = validate-pctx-release(original-tree, mid, ps-seen);
+         if not v22.is-global-or-zero and not ps-seen.has(v22.phi-id-or-zero) {
+            if v22.phi-tt-or-zero.is-linear-live
+            then exit-error("Linear Variables Must Be Used: #\{v22.phi-id-or-zero} \{v22.phi-tt-or-zero} \{v22.blame-or-zero}", v22.blame-or-zero);
+            ps-seen = ps-seen.bind(v22.phi-id-or-zero);
+         };
+         ps-seen = validate-pctx-release(original-tree, right, ps-seen);
+         ps-seen;
+      );
+   }
+);
+
+
 let validate-pctx-release(tctx: TypeContext?): Nil = (
-   let ps-seen = mk-set(type(U64));
-   # TODO
-   #for pr in tctx.get-or(mk-tctx()).pctx {
-   #   if not(pr.is-global-or-zero) and not(ps-seen.has(pr.phi-id-or-zero)) {
-   #      if pr.phi-tt-or-zero.is-linear-live
-   #      then exit-error("Linear Variables Must Be Used: #\{pr.phi-id-or-zero} \{pr.phi-tt-or-zero} \{pr.blame-or-zero}", pr.blame-or-zero);
-   #      ps-seen = ps-seen.bind(pr.phi-id-or-zero);
-   #   };
-   #};
+   validate-pctx-release(tctx.get-or(mk-tctx()).pctx, tctx.get-or(mk-tctx()).pctx, mk-set(type(U64))); ()
 );
 
 let config-hot-path = false;
@@ -9390,6 +9458,7 @@ import SRC/tctx-phi-move-all.lsts;
 import SRC/tctx-phi-initialize.lsts;
 import SRC/tctx-misc-globals.lsts;
 import SRC/typecheck-infer-tctx.lsts;
+import SRC/tctx-move-diff.lsts;
 
 import SRC/unit-util.lsts;
 
