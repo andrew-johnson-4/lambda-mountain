@@ -7823,7 +7823,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       }
    }};
    (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
-   print("\{term} : \{typeof-term(term)}\n");
    (tctx, term);
 );
 
@@ -9124,7 +9123,7 @@ let validate-pctx-release(original-tree: PBTree<U64,PhiContextRow>, tree: PBTree
          ps-seen = validate-pctx-release(original-tree, left, ps-seen);
          if not v11.is-global-or-zero and not ps-seen.has(v11.phi-id-or-zero) {
             if v11.phi-tt-or-zero.is-linear-live
-            then exit-error("Linear Variables Must Be Used: #\{v11.phi-id-or-zero} \{v11.phi-tt-or-zero} \{v11.blame-or-zero}\n\{original-tree}", v11.blame-or-zero);
+            then exit-error("Linear Variables Must Be Used: #\{v11.phi-id-or-zero} \{v11.phi-tt-or-zero} \{v11.blame-or-zero}", v11.blame-or-zero);
             ps-seen = ps-seen.bind(v11.phi-id-or-zero);
          };
          ps-seen = validate-pctx-release(original-tree, right, ps-seen);
@@ -9134,13 +9133,13 @@ let validate-pctx-release(original-tree: PBTree<U64,PhiContextRow>, tree: PBTree
          ps-seen = validate-pctx-release(original-tree, left, ps-seen);
          if not v12.is-global-or-zero and not ps-seen.has(v12.phi-id-or-zero) {
             if v12.phi-tt-or-zero.is-linear-live
-            then exit-error("Linear Variables Must Be Used: #\{v12.phi-id-or-zero} \{v12.phi-tt-or-zero} \{v12.blame-or-zero}\n\{original-tree}", v12.blame-or-zero);
+            then exit-error("Linear Variables Must Be Used: #\{v12.phi-id-or-zero} \{v12.phi-tt-or-zero} \{v12.blame-or-zero}", v12.blame-or-zero);
             ps-seen = ps-seen.bind(v12.phi-id-or-zero);
          };
          ps-seen = validate-pctx-release(original-tree, mid, ps-seen);
          if not v22.is-global-or-zero and not ps-seen.has(v22.phi-id-or-zero) {
             if v22.phi-tt-or-zero.is-linear-live
-            then exit-error("Linear Variables Must Be Used: #\{v22.phi-id-or-zero} \{v22.phi-tt-or-zero} \{v22.blame-or-zero}\n\{original-tree}", v22.blame-or-zero);
+            then exit-error("Linear Variables Must Be Used: #\{v22.phi-id-or-zero} \{v22.phi-tt-or-zero} \{v22.blame-or-zero}", v22.blame-or-zero);
             ps-seen = ps-seen.bind(v22.phi-id-or-zero);
          };
          ps-seen = validate-pctx-release(original-tree, right, ps-seen);
