@@ -7507,6 +7507,17 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          };
          tctx = tctx.ascript(term, tt);
       );
+      App{left:Var{key:c"macro::for"}, right:App{
+         left:App{
+            item=left,
+            right:App{
+               left:Var{key:c"$fields-of"},
+               iterable=right
+            }
+         }, loop=right
+      }} => (
+         fail("Meta Query $field-of\nitem=\{item}\niterable=\{iterable}\nloop=\{loop}\n");
+      );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
          let short-circuit = ASTEOF;
          match cond {
@@ -15411,9 +15422,7 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
          tokens = cons(text[:id.length], tokens); text = rest;
       );
 
-      "$".. rest => (tokens = cons(text[:"$".length], tokens); text = rest;);
-
-      (id=r/^[a-zA-Z0-9_-]+/).. rest => (
+      (id=r/^[$a-zA-Z0-9_-]+/).. rest => (
          tokens = cons(text[:id.length], tokens); text = rest;
       );
 
