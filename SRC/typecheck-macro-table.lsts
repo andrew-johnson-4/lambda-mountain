@@ -8,6 +8,7 @@ index-macro-table = index-macro-table.bind(c"macro::underscore", [] : List<(Type
 index-macro-table = index-macro-table.bind(c"macro::nil", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::constant", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::tag", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::for", [] : List<(Type,Type,AST)>);
 
 # Meta variables can be used to match syntax patterns
 let index-macro-meta = {} : Hashtable<CString,List<(Type,Type,AST)>>;

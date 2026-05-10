@@ -1,6 +1,6 @@
 
-#import lib/core/bedrock.lsts;
+import lib/core/bedrock.lsts;
 
-for x in $fields-of([1, 2, 3]) {
+for x in $fields-of([1]) {
    print("field \{x}\n");
 };
