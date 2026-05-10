@@ -70,6 +70,21 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.ascript(inner, type-nil);
          tctx = tctx.ascript(term, tt);
       );
+      App{left:Var{key:c"macro::for"}, right:App{
+         left:App{
+            item=left,
+            right:App{
+               left:Var{key:c"$fields-of"},
+               iterable=right
+            }
+         }, loop=right
+      }} => (
+         (tctx, iterable) = std-infer-expr(tctx, iterable, false, Used, ta);
+         tctx = tctx.phi-move(typeof-term(iterable), iterable);
+         let i-tt = typeof-term(iterable);
+         if i-tt.is-t(c"Type",1) then i-tt = i-tt.slot(c"Type",1).l1;
+         fail("Meta Query $field-of \{i-tt}\n");
+      );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
          if tt.is-t(c"Hashtable",2) { match t {
             App{ left:Var{key:c"map::cons"} } => tt = tt && t0(c"ReturnHint");
@@ -130,17 +145,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             tctx = tctx.phi-move(inner-tt, term);
          };
          tctx = tctx.ascript(term, tt);
-      );
-      App{left:Var{key:c"macro::for"}, right:App{
-         left:App{
-            item=left,
-            right:App{
-               left:Var{key:c"$fields-of"},
-               iterable=right
-            }
-         }, loop=right
-      }} => (
-         fail("Meta Query $field-of\nitem=\{item}\niterable=\{iterable}\nloop=\{loop}\n");
       );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
          let short-circuit = ASTEOF;

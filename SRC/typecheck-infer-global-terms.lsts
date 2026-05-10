@@ -81,7 +81,7 @@ let infer-global-context-prim(term: AST): AST = (
          };
       );
       App{l=left, margs=right} => (
-         if index-macro-table.has-key(var-name-if-var(l)) {
+         if var-name-if-var(l)!=c"macro::for" and index-macro-table.has-key(var-name-if-var(l)) {
             (global-flow-tctx, let rterm) = std-apply-macro-super-weak(global-flow-tctx, var-name-if-var(l), margs, Used);
             match rterm {
                Seq{rseq=seq} => (
