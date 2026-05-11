@@ -8714,25 +8714,6 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
    let result = mk-eof();
    let peeped-type = ta;
    let return-type = ta;
-   if mname==c"macro::for" {
-      match margs {
-         App {
-            left:App{
-               item=left,
-               right:App{
-                  left:Var{key:c"$fields-of"},
-                  iterable=right
-               }
-            }, loop=right
-         } => (
-            (tctx, iterable) = std-infer-expr(tctx, iterable, false, Used, ta);
-            tctx = tctx.phi-move(typeof-term(iterable), iterable);
-            let i-tt = typeof-term(iterable);
-            if i-tt.is-t(c"Type",1) then i-tt = i-tt.slot(c"Type",1).l1;
-            fail("Meta Query $field-of \{i-tt}\n");
-         );
-      }
-   };
    if mname==c"macro::concat" then (tctx, result) = std-apply-macro-concat(tctx, mname, margs)
    else if mname==c"macro::location" then (tctx, result) = std-apply-macro-location(tctx, mname, margs)
    else if mname==c"macro::variable" then (tctx, result) = std-apply-macro-variable(tctx, mname, margs)
