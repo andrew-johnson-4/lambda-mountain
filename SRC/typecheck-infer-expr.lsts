@@ -83,7 +83,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.phi-move(typeof-term(iterable), iterable);
          let i-tt = typeof-term(iterable);
          if i-tt.is-t(c"Type",1) then i-tt = i-tt.slot(c"Type",1).l1;
-         fail("Meta Query $field-of \{i-tt}\n");
+         let dt = i-tt.with-only-datatype.ground-tag-and-arity;
+         let tg = i-tt.with-only-tag.simple-tag;
+         fail("Meta Query $field-of (\{dt.first},\{dt.second},\{tg})\n");
       );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
          if tt.is-t(c"Hashtable",2) { match t {

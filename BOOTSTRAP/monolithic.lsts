@@ -6990,6 +6990,20 @@ let .slot(tt: Type, sl: CString, si: U64): Type = (
 
 let .with-only-phi(tt: Type): Type = tt.slot(c"Phi::State",1).l1;
 
+let .with-only-tag(tt: Type): Type = (
+   match tt {
+      TAnd{ conjugate=conjugate } => (
+         let result = ta;
+         for c in conjugate { if not(non-zero(result)) then result = c.with-only-tag };
+         result;
+      );
+      TGround{ tag=tag, parameters=parameters } => (
+         if tag.has-prefix(c"Tag::") then tt else ta
+      );
+      _ => ta;
+   }
+);
+
 # .without-any-phi removes all top-level phi information
 # i.e. phi types for *this* type
 # Arrow parameters keep phi state because it is still part of that compound type
@@ -7328,6 +7342,7 @@ let frontend(fp: CString): Nil = (
 
 let index-typedef-fields = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
 let index-typedef = {} : Hashtable<(CString,U64),AST>;
+let index-fields-of = {} : Hashtable<(CString,U64,CString),Vector<(CString,Type)>>;
 
 let index-typedefs(program: AST): Nil = (
    for def in program.unroll-seq { match def {
@@ -7335,7 +7350,6 @@ let index-typedefs(program: AST): Nil = (
          let lhs-type = (def as Tag::Typedef).lhs-type;
          let cases = (def as Tag::Typedef).cases;
          let has-cases = false;
-         let fields = mk-vector(type((Type,Type)));
          for case in cases {
             if non-zero(case.first) {
                has-cases = true;
@@ -7352,6 +7366,23 @@ let index-typedefs(program: AST): Nil = (
             }
          };
          if cases.length>0 then index-typedef = index-typedef.bind(lhs-type.ground-tag-and-arity, def);
+
+         let common-fields = mk-vector(type((CString,Type)));
+         # index fields-of
+         for case in cases {
+            if not(non-zero(case.first)) then common-fields = case.second;
+         };
+         let gta = lhs-type.ground-tag-and-arity;
+         index-fields-of = index-fields-of.bind((gta.first, gta.second, c""), common-fields);
+         for case in cases {
+            let uncommon-fields = common-fields.clone;
+            if non-zero(case.first) {
+               for kv in case.second {
+                  uncommon-fields = uncommon-fields.push(kv);
+               };
+               index-fields-of = index-fields-of.bind((gta.first, gta.second, c"Tag::" + case.first), uncommon-fields);
+            };
+         };
       );
       _ => ();
    }}
@@ -7459,7 +7490,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.phi-move(typeof-term(iterable), iterable);
          let i-tt = typeof-term(iterable);
          if i-tt.is-t(c"Type",1) then i-tt = i-tt.slot(c"Type",1).l1;
-         fail("Meta Query $field-of \{i-tt}\n");
+         let dt = i-tt.with-only-datatype.ground-tag-and-arity;
+         let tg = i-tt.with-only-tag.simple-tag;
+         fail("Meta Query $field-of (\{dt.first},\{dt.second},\{tg})\n");
       );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
          if tt.is-t(c"Hashtable",2) { match t {
@@ -9519,6 +9552,7 @@ import SRC/type-with-only-phi.lsts;
 import SRC/type-reify-type-variables.lsts;
 import SRC/type-is-linear.lsts;
 import SRC/type-simple-id.lsts;
+import SRC/type-with-only-tag.lsts;
 
 import SRC/unit-ascript-core.lsts;
 
