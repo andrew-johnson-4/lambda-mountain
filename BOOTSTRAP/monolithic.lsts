@@ -7373,6 +7373,7 @@ let index-typedefs(program: AST): Nil = (
             if not(non-zero(case.first)) then common-fields = case.second;
          };
          let gta = lhs-type.ground-tag-and-arity;
+         print("Index fields of (\{gta.first},\{gta.second},) = \{common-fields}\n");
          index-fields-of = index-fields-of.bind((gta.first, gta.second, c""), common-fields);
          for case in cases {
             let uncommon-fields = common-fields.clone;
@@ -7381,6 +7382,7 @@ let index-typedefs(program: AST): Nil = (
                   uncommon-fields = uncommon-fields.push(kv);
                };
                index-fields-of = index-fields-of.bind((gta.first, gta.second, c"Tag::" + case.first), uncommon-fields);
+               print("Index fields of (\{gta.first},\{gta.second},Tag::\{case.first}) = \{uncommon-fields}\n");
             };
          };
       );
@@ -7492,7 +7494,16 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          if i-tt.is-t(c"Type",1) then i-tt = i-tt.slot(c"Type",1).l1;
          let dt = i-tt.with-only-datatype.ground-tag-and-arity;
          let tg = i-tt.with-only-tag.simple-tag;
-         fail("Meta Query $field-of (\{dt.first},\{dt.second},\{tg})\n");
+         let index-fields-of = {} : Hashtable<(CString,U64,CString),Vector<(CString,Type)>>;
+         term = mk-eof();
+         print("$fields of (\{dt.first},\{dt.second},\{tg}) = \{index-fields-of.lookup((dt.first,dt.second,tg), mk-vector(type((CString,Type))))}\n");
+         for kt in index-fields-of.lookup((dt.first,dt.second,tg), mk-vector(type((CString,Type)))) {
+            print("Field (\{dt.first},\{dt.second},\{tg}) = \{kt.first} : \{kt.second}\n");
+         };
+         if not(non-zero(term)) {
+            term = mk-nil();
+            tctx = tctx.ascript(term, type-nil);
+         };
       );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
          if tt.is-t(c"Hashtable",2) { match t {

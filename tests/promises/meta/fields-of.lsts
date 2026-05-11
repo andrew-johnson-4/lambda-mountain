@@ -4,3 +4,12 @@ import lib/core/bedrock.lsts;
 for x in $fields-of([1]) {
    print("field \{x}\n");
 };
+
+for x in $fields-of([1] as Tag::LCons) {
+   print("LCons field \{x}\n");
+};
+
+for x in $fields-of([1] as Tag::LEOF) {
+   print("LEOF field \{x}\n");
+};
+
