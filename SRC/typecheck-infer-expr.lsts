@@ -93,9 +93,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.ascript(term, type-nil);
          for kt in index-fields-of.lookup((dt.first,dt.second,tg), mk-vector(type((CString,Type)))) {
             let actx = mk-actx().bind(field-item,mk-var(kt.first));
-            body = substitute(actx,body);
-            (tctx, body) = std-infer-expr(tctx, body, false, Used, ta);
-            term = mk-cons(term, body);
+            let re-body = substitute(actx,body);
+            (tctx, re-body) = std-infer-expr(tctx, re-body, false, Used, ta);
+            term = mk-cons(term, re-body);
             tctx = tctx.ascript(term, type-nil);
          };
       );
@@ -120,9 +120,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             # this convention is used to *discard* any tag information that exists in terms like (x as Tag::)
             # so effectively this is still a good and perfectly valid tag
             let actx = mk-actx().bind(case-item,mk-atype(t0(c"Tag::" + k)));
-            body = substitute(actx,body);
-            (tctx, body) = std-infer-expr(tctx, body, false, Used, ta);
-            term = mk-cons(term, body);
+            let re-body = substitute(actx,body);
+            (tctx, re-body) = std-infer-expr(tctx, re-body, false, Used, ta);
+            term = mk-cons(term, re-body);
             tctx = tctx.ascript(term, type-nil);
          };
       );
