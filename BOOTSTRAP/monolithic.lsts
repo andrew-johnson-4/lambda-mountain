@@ -7391,8 +7391,6 @@ let index-typedefs(program: AST): Nil = (
       );
       _ => ();
    }};
-   let found = index-fields-of.lookup((c"List", 1_u64, c"Tag::LCons"), mk-vector(type((CString,Type))));
-   print("Index fields of (List,1,Tag::LCons) = \{found}\n");
 );
 
 let infer-ctx(tctx: TypeContext?, lhs: AST): TypeContext? = (
@@ -7502,10 +7500,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          term = mk-nil();
          tctx = tctx.ascript(term, type-nil);
          for kt in index-fields-of.lookup((dt.first,dt.second,tg), mk-vector(type((CString,Type)))) {
-            print("Field (\{dt.first},\{dt.second},\{tg}) = \{kt.first} : \{kt.second}\n");
             let actx = mk-actx().bind(item,mk-var(kt.first));
             body = substitute(actx,body);
-            print("Body \{body}\n");
             (tctx, body) = std-infer-expr(tctx, body, false, Used, ta);
             term = mk-cons(term, body);
             tctx = tctx.ascript(term, type-nil);
