@@ -1,0 +1,50 @@
+
+import lib/core/baremetal.lsts;
+import lib/core/one-owned-data.lsts;
+
+type List<x> implies MustRetain, MustRelease zero LEOF = LEOF | LCons { head: x, tail: OneOwnedData<List<x>>[] };
+
+let .retain(x: xt): xt = (
+   for case in $cases-of(x) {
+      if x.discriminator-case-tag==(x as case).discriminator-case-tag {
+         for field in $fields-of(x as case) {
+            if typeof( macro::concat($".", field) ) <: type(MustRetain) {
+               mark-as-released( macro::concat($".", field)(x as case).retain );
+            };
+            if typeof( macro::concat($".", field)(x) ) <: type(OwnedData<?>) {
+               mark-as-released( macro::concat($".", field)(x as case).retain );
+            };
+            if typeof( macro::concat($".", field)(x) ) <: type(OneOwnedData<?>) {
+               mark-as-released( macro::concat($".", field)(x as case).retain );
+            };
+            if typeof( macro::concat($".", field)(x) ) <: type(SparseOwnedData<?>) {
+               mark-as-released( macro::concat($".", field)(x as case).retain );
+            };
+         };
+      };
+   };
+   x
+);
+
+let .release(x: xt): Nil = (
+   for case in $cases-of(x) {
+      if x.discriminator-case-tag==(x as case).discriminator-case-tag {
+         for field in $fields-of(x) {
+            if typeof( macro::concat($".", field)(x) ) <: type(MustRetain) {
+               macro::concat($".", field)(x as case).release;
+            };
+            if typeof( macro::concat($".", field)(x) ) <: type(OwnedData<?>) {
+               macro::concat($".", field)(x as case).release;
+            };
+            if typeof( macro::concat($".", field)(x) ) <: type(OneOwnedData<?>) {
+               macro::concat($".", field)(x as case).release;
+            };
+            if typeof( macro::concat($".", field)(x) ) <: type(SparseOwnedData<?>) {
+               macro::concat($".", field)(x as case).release;
+            };
+         };
+      };
+   };
+);
+
+[1];
