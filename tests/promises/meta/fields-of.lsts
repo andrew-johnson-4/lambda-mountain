@@ -1,15 +1,23 @@
 
 import lib/core/bedrock.lsts;
 
-for x in $fields-of([1]) {
-   print("field \{x}\n");
-};
+type A = {a:U8} | B{b:U8} | C{c:U8,d:U8};
 
-for x in $fields-of([1] as Tag::LCons) {
-   print("LCons field \{x}\n");
-};
+let fields-count = 0;
 
-for x in $fields-of([1] as Tag::LEOF) {
-   print("LEOF field \{x}\n");
-};
+fields-count = 0;
+for field in $fields-of(B(1,2)) { fields-count = fields-count + 1; };
+assert( fields-count == 1 );
+
+fields-count = 0;
+for field in $fields-of(C(1,2,3)) { fields-count = fields-count + 1; };
+assert( fields-count == 1 );
+
+fields-count = 0;
+for field in $fields-of(B(1,2) as Tag::B) { fields-count = fields-count + 1; };
+assert( fields-count == 2 );
+
+fields-count = 0;
+for field in $fields-of(C(1,2,3) as Tag::C) { fields-count = fields-count + 1; };
+assert( fields-count == 3 );
 

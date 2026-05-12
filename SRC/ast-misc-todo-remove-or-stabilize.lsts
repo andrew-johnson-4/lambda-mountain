@@ -5,6 +5,7 @@ type AST implements DefaultFormattable;
 # constructor with a default argument
 
 type alias AContext = List<(CString,AST)>;
+let mk-actx(): AContext = [] : AContext;
 
 type ParsePartial = PME{ term:AST , remainder:List<Token> };
 
