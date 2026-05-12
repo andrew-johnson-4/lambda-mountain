@@ -1823,6 +1823,49 @@ let :Blob destroy(x: x+MustNotRetain): Nil = (
    $":expression"(l"memset(&"; $":expression"(x); l",0,sizeof "; $":expression"(x); l");");
 );
 
+let .retain(x: xt): xt = (
+   for case in $cases-of(x) {
+      if x.discriminator-case-tag==(x as case).discriminator-case-tag {
+         for field in $fields-of(x as case) {
+            if typeof( macro::concat($".", field) ) <: type(MustRetain) {
+               mark-as-released( macro::concat($".", field)(x as case).retain );
+            };
+            if typeof( macro::concat($".", field)(x) ) <: type(OwnedData<?>) {
+               mark-as-released( macro::concat($".", field)(x as case).retain );
+            };
+            if typeof( macro::concat($".", field)(x) ) <: type(OneOwnedData<?>) {
+               mark-as-released( macro::concat($".", field)(x as case).retain );
+            };
+            if typeof( macro::concat($".", field)(x) ) <: type(SparseOwnedData<?>) {
+               mark-as-released( macro::concat($".", field)(x as case).retain );
+            };
+         };
+      };
+   };
+   x
+);
+
+let .release(x: xt): Nil = (
+   for case in $cases-of(x) {
+      if x.discriminator-case-tag==(x as case).discriminator-case-tag {
+         for field in $fields-of(x) {
+            if typeof( macro::concat($".", field)(x) ) <: type(MustRetain) {
+               macro::concat($".", field)(x as case).release;
+            };
+            if typeof( macro::concat($".", field)(x) ) <: type(OwnedData<?>) {
+               macro::concat($".", field)(x as case).release;
+            };
+            if typeof( macro::concat($".", field)(x) ) <: type(OneOwnedData<?>) {
+               macro::concat($".", field)(x as case).release;
+            };
+            if typeof( macro::concat($".", field)(x) ) <: type(SparseOwnedData<?>) {
+               macro::concat($".", field)(x as case).release;
+            };
+         };
+      };
+   };
+);
+
 typed macro declare-zop(op-alias: lazy, r-type: lazy, op-expr: lazy): lazy = {
    let :Blob op-alias(): r-type = (
       $":expression"(op-expr);
@@ -7348,6 +7391,7 @@ let frontend(fp: CString): Nil = (
 let index-typedef-fields = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
 let index-typedef = {} : Hashtable<(CString,U64),AST>;
 let index-fields-of = {} : Hashtable<(CString,U64,CString),Vector<(CString,Type)>>;
+let index-cases-of = {} : Hashtable<(CString,U64),Vector<CString>>;
 
 let index-typedefs(program: AST): Nil = (
    for def in program.unroll-seq { match def {
@@ -7372,6 +7416,7 @@ let index-typedefs(program: AST): Nil = (
          };
          if cases.length>0 then index-typedef = index-typedef.bind(lhs-type.ground-tag-and-arity, def);
 
+         let cases-of = mk-vector(type(CString));
          let common-fields = mk-vector(type((CString,Type)));
          # index fields-of
          for case in cases {
@@ -7382,12 +7427,15 @@ let index-typedefs(program: AST): Nil = (
          for case in cases {
             let uncommon-fields = common-fields.clone;
             if non-zero(case.first) {
+               cases-of = cases-of.push(case.first);
                for kv in case.second {
                   uncommon-fields = uncommon-fields.push(kv);
                };
                index-fields-of = index-fields-of.bind((gta.first, gta.second, c"Tag::" + case.first), uncommon-fields);
             };
          };
+         if cases-of.length==0 then cases-of = cases-of.push(c"");
+         index-cases-of = index-cases-of.bind(gta, cases-of);
       );
       _ => ();
    }};
@@ -7484,7 +7532,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       App{left:Var{key:c"macro::for"}, right:App{
          left:App{
-            left:Var{item=key},
+            left:Var{field-item=key},
             right:App{
                left:Var{key:c"$fields-of"},
                iterable=right
@@ -7500,7 +7548,34 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          term = mk-nil();
          tctx = tctx.ascript(term, type-nil);
          for kt in index-fields-of.lookup((dt.first,dt.second,tg), mk-vector(type((CString,Type)))) {
-            let actx = mk-actx().bind(item,mk-var(kt.first));
+            let actx = mk-actx().bind(field-item,mk-var(kt.first));
+            body = substitute(actx,body);
+            (tctx, body) = std-infer-expr(tctx, body, false, Used, ta);
+            term = mk-cons(term, body);
+            tctx = tctx.ascript(term, type-nil);
+         };
+      );
+      App{left:Var{key:c"macro::for"}, right:App{
+         left:App{
+            left:Var{case-item=key},
+            right:App{
+               left:Var{key:c"$cases-of"},
+               iterable=right
+            }
+         }, body=right
+      }} => (
+         (tctx, iterable) = std-infer-expr(tctx, iterable, false, Used, ta);
+         tctx = tctx.phi-move(typeof-term(iterable), iterable);
+         let i-tt = typeof-term(iterable);
+         if i-tt.is-t(c"Type",1) then i-tt = i-tt.slot(c"Type",1).l1;
+         let dt = i-tt.with-only-datatype.ground-tag-and-arity;
+         term = mk-nil();
+         tctx = tctx.ascript(term, type-nil);
+         for k in index-cases-of.lookup(dt, mk-vector(type(CString))) {
+            # for the untagged case, the case will become Tag::
+            # this convention is used to *discard* any tag information that exists in terms like (x as Tag::)
+            # so effectively this is still a good and perfectly valid tag
+            let actx = mk-actx().bind(case-item,mk-atype(t0(c"Tag::" + k)));
             body = substitute(actx,body);
             (tctx, body) = std-infer-expr(tctx, body, false, Used, ta);
             term = mk-cons(term, body);
