@@ -47,4 +47,4 @@ let .release(x: xt): Nil = (
    };
 );
 
-[1];
+[] : List<U8>;
