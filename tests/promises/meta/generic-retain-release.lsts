@@ -47,4 +47,8 @@ let .release(x: xt): Nil = (
    };
 );
 
-[] : List<U8>;
+let x = [] : List<U8>;
+x.retain;
+print(c"Retained\n");
+x.release;
+print(c"Released\n");

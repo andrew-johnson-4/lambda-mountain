@@ -4,20 +4,41 @@ import lib/core/bedrock.lsts;
 type A = {a:U8} | B{b:U8} | C{c:U8,d:U8};
 
 let fields-count = 0;
+let fields-cat = c"";
 
 fields-count = 0;
-for field in $fields-of(B(1,2)) { fields-count = fields-count + 1; };
+fields-cat = c"";
+for field in $fields-of(B(1,2)) {
+   fields-count = fields-count + 1;
+   fields-cat = fields-cat + stringof(field);
+};
+print("fields B \{fields-cat}\n");
 assert( fields-count == 1 );
 
 fields-count = 0;
-for field in $fields-of(C(1,2,3)) { fields-count = fields-count + 1; };
+fields-cat = c"";
+for field in $fields-of(C(1,2,3)) {
+   fields-count = fields-count + 1;
+   fields-cat = fields-cat + stringof(field);
+};
+print("fields C \{fields-cat}\n");
 assert( fields-count == 1 );
 
 fields-count = 0;
-for field in $fields-of(B(1,2) as Tag::B) { fields-count = fields-count + 1; };
+fields-cat = c"";
+for field in $fields-of(B(1,2) as Tag::B) {
+   fields-count = fields-count + 1;
+   fields-cat = fields-cat + stringof(field);
+};
+print("fields B as Tag::B \{fields-cat}\n");
 assert( fields-count == 2 );
 
 fields-count = 0;
-for field in $fields-of(C(1,2,3) as Tag::C) { fields-count = fields-count + 1; };
+fields-cat = c"";
+for field in $fields-of(C(1,2,3) as Tag::C) {
+   fields-count = fields-count + 1;
+   fields-cat = fields-cat + stringof(field);
+};
+print("fields C as Tag::C \{fields-cat}\n");
 assert( fields-count == 3 );
 

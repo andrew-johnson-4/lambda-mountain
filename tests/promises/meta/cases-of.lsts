@@ -5,23 +5,49 @@ type A = {a:U8} | B{b:U8} | C{c:U8,d:U8};
 type D = {a: U8, b: U8, c: U8, d: U8};
 
 let cases-count = 0;
+let cases-cat = c"";
 
 cases-count = 0;
-for case in $cases-of(B(1,2)) { cases-count = cases-count + 1; };
+case-cat = c"";
+for case in $cases-of(B(1,2)) {
+   cases-count = cases-count + 1;
+   cases-cat = cases-cat + stringof(case);
+};
+print("case cat of B = \{cases-cat}\n");
 assert( cases-count == 2 );
 
 cases-count = 0;
-for case in $cases-of(C(1,2,3)) { cases-count = cases-count + 1; };
+case-cat = c"";
+for case in $cases-of(C(1,2,3)) {
+   cases-count = cases-count + 1;
+   cases-cat = cases-cat + stringof(case);
+};
+print("case cat of C = \{cases-cat}\n");
 assert( cases-count == 2 );
 
 cases-count = 0;
-for case in $cases-of(B(1,2) as Tag::B) { cases-count = cases-count + 1; };
+case-cat = c"";
+for case in $cases-of(B(1,2) as Tag::B) {
+   cases-count = cases-count + 1;
+   cases-cat = cases-cat + stringof(case);
+};
+print("case cat of B as Tag::B = \{cases-cat}\n");
 assert( cases-count == 2 );
 
 cases-count = 0;
-for case in $cases-of(C(1,2,3) as Tag::C) { cases-count = cases-count + 1; };
+case-cat = c"";
+for case in $cases-of(C(1,2,3) as Tag::C) {
+   cases-count = cases-count + 1;
+   cases-cat = cases-cat + stringof(case);
+};
+print("case cat of C as Tag::C = \{cases-cat}\n");
 assert( cases-count == 2 );
 
 cases-count = 0;
-for case in $cases-of(D(1,2,3,4)) { cases-count = cases-count + 1; };
+case-cat = c"";
+for case in $cases-of(D(1,2,3,4)) {
+   cases-count = cases-count + 1;
+   cases-cat = cases-cat + stringof(case);
+};
+print("cases cat of D = \{cases-cat}\n");
 assert( cases-count == 1 );

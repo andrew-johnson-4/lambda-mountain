@@ -8,9 +8,13 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm --v3 tests/promises/meta/generic-retain-release.lsts > out.txt
+	#lm --v3 tests/promises/meta/generic-retain-release.lsts > out.txt
+	lm --v3 tests/promises/meta/fields-of.lsts
 	gcc tmp.c
-	#./a.out
+	./a.out
+	lm --v3 tests/promises/meta/cases-of.lsts
+	gcc tmp.c
+	./a.out
 
 build: compile-production
 	time env $(LSTSFLAGS) ./production --v3 -o deploy1.c SRC/index.lsts

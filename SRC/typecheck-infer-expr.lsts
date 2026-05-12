@@ -31,6 +31,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.ascript(term, t1(c"Type",typeof-term(r)));
          tctx = tctx.phi-move(typeof-term(r), term);
       );
+      App{o-t=left:Var{key:c"stringof"}, r=right} => (
+         let literal = mk-lit(r.into(type(CString))).ascript(type-cstring-literal);
+         (tctx, term) = std-infer-expr(tctx, literal, false, Used, ta);
+      );
       App{o-t=left:Var{key:c"open"}, r=right} => (
          (tctx, let new-r) = std-infer-expr(tctx, r, false, Used(), ta);
          if not(is(r,new-r)) then { r = new-r; term = mk-app(o-t, r); };
@@ -133,7 +137,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             _ => ();
          }};
          if tt.is-t(c"String",0) {
-            term = t.ascript(t0(c"CString") && t0(c"Literal"));
+            term = t.ascript(type-cstring-literal);
             term = mk-app(mk-var(c"intern"),term);
             (tctx, term) = std-infer-expr(tctx, term, false, Tail, ta);
          } else {
