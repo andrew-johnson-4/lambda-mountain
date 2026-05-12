@@ -1,6 +1,7 @@
 
 let index-typedef-fields = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
 let index-typedef = {} : Hashtable<(CString,U64),AST>;
+let index-fields-of = {} : Hashtable<(CString,U64,CString),Vector<(CString,Type)>>;
 
 let index-typedefs(program: AST): Nil = (
    for def in program.unroll-seq { match def {
@@ -8,7 +9,6 @@ let index-typedefs(program: AST): Nil = (
          let lhs-type = (def as Tag::Typedef).lhs-type;
          let cases = (def as Tag::Typedef).cases;
          let has-cases = false;
-         let fields = mk-vector(type((Type,Type)));
          for case in cases {
             if non-zero(case.first) {
                has-cases = true;
@@ -25,7 +25,24 @@ let index-typedefs(program: AST): Nil = (
             }
          };
          if cases.length>0 then index-typedef = index-typedef.bind(lhs-type.ground-tag-and-arity, def);
+
+         let common-fields = mk-vector(type((CString,Type)));
+         # index fields-of
+         for case in cases {
+            if not(non-zero(case.first)) then common-fields = case.second;
+         };
+         let gta = lhs-type.ground-tag-and-arity;
+         index-fields-of = index-fields-of.bind((gta.first, gta.second, c""), common-fields);
+         for case in cases {
+            let uncommon-fields = common-fields.clone;
+            if non-zero(case.first) {
+               for kv in case.second {
+                  uncommon-fields = uncommon-fields.push(kv);
+               };
+               index-fields-of = index-fields-of.bind((gta.first, gta.second, c"Tag::" + case.first), uncommon-fields);
+            };
+         };
       );
       _ => ();
-   }}
+   }};
 );

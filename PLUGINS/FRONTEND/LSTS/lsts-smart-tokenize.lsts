@@ -85,9 +85,7 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
          tokens = cons(text[:id.length], tokens); text = rest;
       );
 
-      "$".. rest => (tokens = cons(text[:"$".length], tokens); text = rest;);
-
-      (id=r/^[a-zA-Z0-9_-]+/).. rest => (
+      (id=r/^[$a-zA-Z0-9_-]+/).. rest => (
          tokens = cons(text[:id.length], tokens); text = rest;
       );
 

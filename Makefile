@@ -8,15 +8,9 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm --v3 tests/promises/persistent-btree/core.lsts > out.txt
+	lm --v3 tests/promises/meta/fields-of.lsts
 	gcc tmp.c
 	./a.out
-	#time lm --showalloc SRC/unit-type-core.lsts > out.txt
-	#time lm --showalloc SRC/unit-tctx-core.lsts > out.txt
-	#time lm --showalloc SRC/unit-prop-core.lsts > out.txt
-	#time lm --showalloc SRC/unit-ascript-core.lsts > out.txt
-	#time lm --showalloc SRC/index.lsts > out.txt
-	#time lm --showalloc SRC/index.lsts > out.txt
 
 build: compile-production
 	time env $(LSTSFLAGS) ./production --v3 -o deploy1.c SRC/index.lsts

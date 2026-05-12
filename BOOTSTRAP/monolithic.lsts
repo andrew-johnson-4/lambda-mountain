@@ -3332,6 +3332,10 @@ let .bind(ctx: Maybe<AContext>, key: CString, val: AST): Maybe<AContext> = (
    Some( cons( Tuple(key,val), ctx.get-or([] : AContext) ) )
 );
 
+let .bind(ctx: AContext, key: CString, val: AST): AContext = (
+   cons( Tuple(key,val), ctx )
+);
+
 let substitute(ctx: AContext, v: Token): Token = (
    match ctx.lookup(v.key, mk-eof()) {
       Lit{t=token} => t;
@@ -3997,6 +4001,7 @@ type AST implements DefaultFormattable;
 # constructor with a default argument
 
 type alias AContext = List<(CString,AST)>;
+let mk-actx(): AContext = [] : AContext;
 
 type ParsePartial = PME{ term:AST , remainder:List<Token> };
 
@@ -6990,6 +6995,20 @@ let .slot(tt: Type, sl: CString, si: U64): Type = (
 
 let .with-only-phi(tt: Type): Type = tt.slot(c"Phi::State",1).l1;
 
+let .with-only-tag(tt: Type): Type = (
+   match tt {
+      TAnd{ conjugate=conjugate } => (
+         let result = ta;
+         for c in conjugate { if not(non-zero(result)) then result = c.with-only-tag };
+         result;
+      );
+      TGround{ tag=tag, parameters=parameters } => (
+         if tag.has-prefix(c"Tag::") then tt else ta
+      );
+      _ => ta;
+   }
+);
+
 # .without-any-phi removes all top-level phi information
 # i.e. phi types for *this* type
 # Arrow parameters keep phi state because it is still part of that compound type
@@ -7328,6 +7347,7 @@ let frontend(fp: CString): Nil = (
 
 let index-typedef-fields = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
 let index-typedef = {} : Hashtable<(CString,U64),AST>;
+let index-fields-of = {} : Hashtable<(CString,U64,CString),Vector<(CString,Type)>>;
 
 let index-typedefs(program: AST): Nil = (
    for def in program.unroll-seq { match def {
@@ -7335,7 +7355,6 @@ let index-typedefs(program: AST): Nil = (
          let lhs-type = (def as Tag::Typedef).lhs-type;
          let cases = (def as Tag::Typedef).cases;
          let has-cases = false;
-         let fields = mk-vector(type((Type,Type)));
          for case in cases {
             if non-zero(case.first) {
                has-cases = true;
@@ -7352,9 +7371,26 @@ let index-typedefs(program: AST): Nil = (
             }
          };
          if cases.length>0 then index-typedef = index-typedef.bind(lhs-type.ground-tag-and-arity, def);
+
+         let common-fields = mk-vector(type((CString,Type)));
+         # index fields-of
+         for case in cases {
+            if not(non-zero(case.first)) then common-fields = case.second;
+         };
+         let gta = lhs-type.ground-tag-and-arity;
+         index-fields-of = index-fields-of.bind((gta.first, gta.second, c""), common-fields);
+         for case in cases {
+            let uncommon-fields = common-fields.clone;
+            if non-zero(case.first) {
+               for kv in case.second {
+                  uncommon-fields = uncommon-fields.push(kv);
+               };
+               index-fields-of = index-fields-of.bind((gta.first, gta.second, c"Tag::" + case.first), uncommon-fields);
+            };
+         };
       );
       _ => ();
-   }}
+   }};
 );
 
 let infer-ctx(tctx: TypeContext?, lhs: AST): TypeContext? = (
@@ -7445,6 +7481,31 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          add-concrete-type-instance(tt, term);
          tctx = tctx.ascript(inner, type-nil);
          tctx = tctx.ascript(term, tt);
+      );
+      App{left:Var{key:c"macro::for"}, right:App{
+         left:App{
+            left:Var{item=key},
+            right:App{
+               left:Var{key:c"$fields-of"},
+               iterable=right
+            }
+         }, body=right
+      }} => (
+         (tctx, iterable) = std-infer-expr(tctx, iterable, false, Used, ta);
+         tctx = tctx.phi-move(typeof-term(iterable), iterable);
+         let i-tt = typeof-term(iterable);
+         if i-tt.is-t(c"Type",1) then i-tt = i-tt.slot(c"Type",1).l1;
+         let dt = i-tt.with-only-datatype.ground-tag-and-arity;
+         let tg = i-tt.with-only-tag.simple-tag;
+         term = mk-nil();
+         tctx = tctx.ascript(term, type-nil);
+         for kt in index-fields-of.lookup((dt.first,dt.second,tg), mk-vector(type((CString,Type)))) {
+            let actx = mk-actx().bind(item,mk-var(kt.first));
+            body = substitute(actx,body);
+            (tctx, body) = std-infer-expr(tctx, body, false, Used, ta);
+            term = mk-cons(term, body);
+            tctx = tctx.ascript(term, type-nil);
+         };
       );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
          if tt.is-t(c"Hashtable",2) { match t {
@@ -7951,7 +8012,7 @@ let infer-global-context-prim(term: AST): AST = (
          };
       );
       App{l=left, margs=right} => (
-         if index-macro-table.has-key(var-name-if-var(l)) {
+         if var-name-if-var(l)!=c"macro::for" and index-macro-table.has-key(var-name-if-var(l)) {
             (global-flow-tctx, let rterm) = std-apply-macro-super-weak(global-flow-tctx, var-name-if-var(l), margs, Used);
             match rterm {
                Seq{rseq=seq} => (
@@ -8251,6 +8312,7 @@ index-macro-table = index-macro-table.bind(c"macro::underscore", [] : List<(Type
 index-macro-table = index-macro-table.bind(c"macro::nil", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::constant", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::tag", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::for", [] : List<(Type,Type,AST)>);
 
 # Meta variables can be used to match syntax patterns
 let index-macro-meta = {} : Hashtable<CString,List<(Type,Type,AST)>>;
@@ -9503,6 +9565,7 @@ import SRC/type-with-only-phi.lsts;
 import SRC/type-reify-type-variables.lsts;
 import SRC/type-is-linear.lsts;
 import SRC/type-simple-id.lsts;
+import SRC/type-with-only-tag.lsts;
 
 import SRC/unit-ascript-core.lsts;
 
@@ -13376,7 +13439,7 @@ let lsts-parse-head(tokens: List<Token>): CString = (
 );
 
 let lsts-unwrap-identifier(ident: CString): CString = (
-   if ident.has-prefix(c"$") {
+   if ident.has-prefix(c"$\"") {
       ident.remove-prefix(c"$\"").get-or(c"").remove-suffix(c"\"").get-or(c"")
    } else ident
 );
@@ -15411,9 +15474,7 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
          tokens = cons(text[:id.length], tokens); text = rest;
       );
 
-      "$".. rest => (tokens = cons(text[:"$".length], tokens); text = rest;);
-
-      (id=r/^[a-zA-Z0-9_-]+/).. rest => (
+      (id=r/^[$a-zA-Z0-9_-]+/).. rest => (
          tokens = cons(text[:id.length], tokens); text = rest;
       );
 

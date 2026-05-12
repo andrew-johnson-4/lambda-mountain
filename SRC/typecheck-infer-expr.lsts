@@ -70,6 +70,31 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.ascript(inner, type-nil);
          tctx = tctx.ascript(term, tt);
       );
+      App{left:Var{key:c"macro::for"}, right:App{
+         left:App{
+            left:Var{item=key},
+            right:App{
+               left:Var{key:c"$fields-of"},
+               iterable=right
+            }
+         }, body=right
+      }} => (
+         (tctx, iterable) = std-infer-expr(tctx, iterable, false, Used, ta);
+         tctx = tctx.phi-move(typeof-term(iterable), iterable);
+         let i-tt = typeof-term(iterable);
+         if i-tt.is-t(c"Type",1) then i-tt = i-tt.slot(c"Type",1).l1;
+         let dt = i-tt.with-only-datatype.ground-tag-and-arity;
+         let tg = i-tt.with-only-tag.simple-tag;
+         term = mk-nil();
+         tctx = tctx.ascript(term, type-nil);
+         for kt in index-fields-of.lookup((dt.first,dt.second,tg), mk-vector(type((CString,Type)))) {
+            let actx = mk-actx().bind(item,mk-var(kt.first));
+            body = substitute(actx,body);
+            (tctx, body) = std-infer-expr(tctx, body, false, Used, ta);
+            term = mk-cons(term, body);
+            tctx = tctx.ascript(term, type-nil);
+         };
+      );
       App{asc=left:Lit{key:c":"}, right:App{t=left,right:AType{tt=tt}}} => (
          if tt.is-t(c"Hashtable",2) { match t {
             App{ left:Var{key:c"map::cons"} } => tt = tt && t0(c"ReturnHint");

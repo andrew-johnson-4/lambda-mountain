@@ -7,7 +7,7 @@ let lsts-parse-head(tokens: List<Token>): CString = (
 );
 
 let lsts-unwrap-identifier(ident: CString): CString = (
-   if ident.has-prefix(c"$") {
+   if ident.has-prefix(c"$\"") {
       ident.remove-prefix(c"$\"").get-or(c"").remove-suffix(c"\"").get-or(c"")
    } else ident
 );
