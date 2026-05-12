@@ -3332,6 +3332,10 @@ let .bind(ctx: Maybe<AContext>, key: CString, val: AST): Maybe<AContext> = (
    Some( cons( Tuple(key,val), ctx.get-or([] : AContext) ) )
 );
 
+let .bind(ctx: AContext, key: CString, val: AST): AContext = (
+   cons( Tuple(key,val), ctx )
+);
+
 let substitute(ctx: AContext, v: Token): Token = (
    match ctx.lookup(v.key, mk-eof()) {
       Lit{t=token} => t;
@@ -3997,6 +4001,7 @@ type AST implements DefaultFormattable;
 # constructor with a default argument
 
 type alias AContext = List<(CString,AST)>;
+let mk-actx(): AContext = [] : AContext;
 
 type ParsePartial = PME{ term:AST , remainder:List<Token> };
 
@@ -7373,7 +7378,6 @@ let index-typedefs(program: AST): Nil = (
             if not(non-zero(case.first)) then common-fields = case.second;
          };
          let gta = lhs-type.ground-tag-and-arity;
-         print("Index fields of (\{gta.first},\{gta.second},) = \{common-fields}\n");
          index-fields-of = index-fields-of.bind((gta.first, gta.second, c""), common-fields);
          for case in cases {
             let uncommon-fields = common-fields.clone;
@@ -7382,12 +7386,13 @@ let index-typedefs(program: AST): Nil = (
                   uncommon-fields = uncommon-fields.push(kv);
                };
                index-fields-of = index-fields-of.bind((gta.first, gta.second, c"Tag::" + case.first), uncommon-fields);
-               print("Index fields of (\{gta.first},\{gta.second},Tag::\{case.first}) = \{uncommon-fields}\n");
             };
          };
       );
       _ => ();
-   }}
+   }};
+   let found = index-fields-of.lookup((c"List", 1_u64, c"Tag::LCons"), mk-vector(type((CString,Type))));
+   print("Index fields of (List,1,Tag::LCons) = \{found}\n");
 );
 
 let infer-ctx(tctx: TypeContext?, lhs: AST): TypeContext? = (
@@ -7481,12 +7486,12 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       App{left:Var{key:c"macro::for"}, right:App{
          left:App{
-            item=left,
+            left:Var{item=key},
             right:App{
                left:Var{key:c"$fields-of"},
                iterable=right
             }
-         }, loop=right
+         }, body=right
       }} => (
          (tctx, iterable) = std-infer-expr(tctx, iterable, false, Used, ta);
          tctx = tctx.phi-move(typeof-term(iterable), iterable);
@@ -7494,14 +7499,15 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          if i-tt.is-t(c"Type",1) then i-tt = i-tt.slot(c"Type",1).l1;
          let dt = i-tt.with-only-datatype.ground-tag-and-arity;
          let tg = i-tt.with-only-tag.simple-tag;
-         let index-fields-of = {} : Hashtable<(CString,U64,CString),Vector<(CString,Type)>>;
-         term = mk-eof();
-         print("$fields of (\{dt.first},\{dt.second},\{tg}) = \{index-fields-of.lookup((dt.first,dt.second,tg), mk-vector(type((CString,Type))))}\n");
+         term = mk-nil();
+         tctx = tctx.ascript(term, type-nil);
          for kt in index-fields-of.lookup((dt.first,dt.second,tg), mk-vector(type((CString,Type)))) {
             print("Field (\{dt.first},\{dt.second},\{tg}) = \{kt.first} : \{kt.second}\n");
-         };
-         if not(non-zero(term)) {
-            term = mk-nil();
+            let actx = mk-actx().bind(item,mk-var(kt.first));
+            body = substitute(actx,body);
+            print("Body \{body}\n");
+            (tctx, body) = std-infer-expr(tctx, body, false, Used, ta);
+            term = mk-cons(term, body);
             tctx = tctx.ascript(term, type-nil);
          };
       );

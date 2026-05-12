@@ -45,6 +45,4 @@ let index-typedefs(program: AST): Nil = (
       );
       _ => ();
    }};
-   let found = index-fields-of.lookup((c"List", 1_u64, c"Tag::LCons"), mk-vector(type((CString,Type))));
-   print("Index fields of (List,1,Tag::LCons) = \{found}\n");
 );
