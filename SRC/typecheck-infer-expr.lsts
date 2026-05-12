@@ -190,9 +190,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
          let short-circuit = ASTEOF;
          match cond {
-            App{ left:Var{key:c"<:"}, right:App{left:AType{lt=tt},right:AType{rt=tt}} } => (
-               lt = denormalize-strong(lt.slot(c"Type",1).l1);
-               rt = denormalize-strong(rt.slot(c"Type",1).l1);
+            App{ left:Var{key:c"<:"}, right:App{short-left=left, short-right=right} } => (
+               (tctx, short-left) = std-infer-expr(tctx, short-left, false, Used, ta);
+               (tctx, short-right) = std-infer-expr(tctx, short-right, false, Used, ta);
+               let lt = denormalize-strong(typeof-term(short-left).slot(c"Type",1).l1);
+               let rt = denormalize-strong(typeof-term(short-right).slot(c"Type",1).l1);
                if non-zero(lt) and non-zero(rt) {
                   if can-unify(rt, lt) {
                      (tctx, short-circuit) = std-infer-expr(tctx, t, false, Tail, ta);

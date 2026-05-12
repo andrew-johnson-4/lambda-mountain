@@ -60,4 +60,5 @@ let .release(x: xt): Nil = (
          };
       };
    };
+   mark-as-released(x);
 );
