@@ -13,27 +13,3 @@ type Type zero TAny implies MustRetain, MustRelease
         | TAny
         | TVar { name:CString, parameters:Vector<Type> }
         | TAnd { conjugate:Vector<Type> };
-
-let .release(t: Type): Nil = (
-   if t.discriminator-case-tag==(t as Tag::TGround).discriminator-case-tag {
-      (t as Tag::TGround).parameters.release;
-   };
-   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
-      (t as Tag::TAnd).conjugate.release;
-   };
-   mark-as-released(t);
-);
-
-let .retain(t: Type): Type = (
-   if t.discriminator-case-tag==(t as Tag::TGround).discriminator-case-tag {
-      mark-as-released((t as Tag::TGround).parameters.retain);
-   };
-   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
-      mark-as-released((t as Tag::TAnd).conjugate.retain);
-   };
-   t
-);
-
-# TODO: remove
-let .release(tt: x[]): Nil = ();
-let .retain(tt: x[]): x[] = tt;
