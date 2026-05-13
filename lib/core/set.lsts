@@ -2,21 +2,6 @@
 type Set<k> implies MustRetain, MustRelease
    = { data: SparseOwnedData<(k,Bool)>[] };
 
-
-let .release(x: Set<k>): Nil = (
-   if (x.data as USize) != 0 {
-      x.data.release;
-   };
-   mark-as-released(x);
-);
-
-let .retain(x: Set<k>): Set<k> = (
-   if (x.data as USize) != 0 {
-      x.data.retain;
-   };
-   x
-);
-
 # new allocations = 0 if capacity==0
 #                 | 1
 let mk-set(tyk: Type<k>, capacity: USize): Set<k> = (
