@@ -914,21 +914,6 @@ type HashtableRowExists = HashtableRowEmpty | HashtableRowFilled | HashtableRowM
 type Hashtable<k,v> implies MustRetain, MustRelease
    = { data: SparseOwnedData<(HashtableRowExists,k,v)>[] };
 
-
-let .release(x: Hashtable<k,v>): Nil = (
-   if (x.data as USize) != 0 {
-      x.data.release;
-   };
-   mark-as-released(x);
-);
-
-let .retain(x: Hashtable<k,v>): Hashtable<k,v> = (
-   if (x.data as USize) != 0 {
-      x.data.retain;
-   };
-   x
-);
-
 # new allocations = 0 if capacity==0
 #                 | 1
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>, capacity: USize): Hashtable<k,v> = (
@@ -1326,20 +1311,6 @@ let .contains(v: List<t>, i: t): Bool = (
 
 type Maybe<x> implies MustRetain, MustRelease zero None = None | Some { content: x };
 
-let .release(t: Maybe<x>): Nil = (
-   if t.discriminator-case-tag==(t as Tag::Some).discriminator-case-tag {
-      if type(x) <: type(MustRelease) { (t as Tag::Some).content.release; };
-   };
-   mark-as-released(t);
-);
-
-let .retain(t: Maybe<x>): Maybe<x> = (
-   if t.discriminator-case-tag==(t as Tag::Some).discriminator-case-tag {
-      if type(x) <: type(MustRetain) { mark-as-released((t as Tag::Some).content.retain); };
-   };
-   t
-);
-
 let cmp(l: Maybe<x>, r: Maybe<x>): Ord = (
    if l.discriminator-case-tag==(l as Tag::Some).discriminator-case-tag
    and r.discriminator-case-tag==(r as Tag::Some).discriminator-case-tag
@@ -1554,48 +1525,6 @@ type PBTree<k,v> implies MustRetain, MustRelease zero PBLeaf
    | PBNode1 { k1: k, v1: v, left: OneOwnedData<PBTree<k,v>>[], right: OneOwnedData<PBTree<k,v>>[] }
    | PBNode2 { k1: k, v1: v, k2: k, v2: v, left: OneOwnedData<PBTree<k,v>>[], mid: OneOwnedData<PBTree<k,v>>[], right: OneOwnedData<PBTree<k,v>>[] };
 
-# LSTS requires explicit release propagation for types implying MustRelease
-let .release(t: PBTree<k,v>): Nil = (
-   if t.discriminator-case-tag == (t as Tag::PBNode1).discriminator-case-tag {
-      if type(k) <: type(MustRelease) { (t as Tag::PBNode1).k1.release; };
-      if type(v) <: type(MustRelease) { (t as Tag::PBNode1).v1.release; };
-      (t as Tag::PBNode1).left.release;
-      (t as Tag::PBNode1).right.release;
-   };
-   if t.discriminator-case-tag == (t as Tag::PBNode2).discriminator-case-tag {
-      if type(k) <: type(MustRelease) { (t as Tag::PBNode2).k1.release; (t as Tag::PBNode2).k2.release; };
-      if type(v) <: type(MustRelease) { (t as Tag::PBNode2).v1.release; (t as Tag::PBNode2).v2.release; };
-      (t as Tag::PBNode2).left.release;
-      (t as Tag::PBNode2).mid.release;
-      (t as Tag::PBNode2).right.release;
-   };
-   mark-as-released(t);
-);
-
-# Explicit retain propagation for types implying MustRetain
-let .retain(t: PBTree<k,v>): PBTree<k,v> = (
-   if t.discriminator-case-tag == (t as Tag::PBNode1).discriminator-case-tag {
-      if type(k) <: type(MustRetain) { mark-as-released((t as Tag::PBNode1).k1.retain); };
-      if type(v) <: type(MustRetain) { mark-as-released((t as Tag::PBNode1).v1.retain); };
-      (t as Tag::PBNode1).left.retain;
-      (t as Tag::PBNode1).right.retain;
-   };
-   if t.discriminator-case-tag == (t as Tag::PBNode2).discriminator-case-tag {
-      if type(k) <: type(MustRetain) {
-         mark-as-released((t as Tag::PBNode2).k1.retain);
-         mark-as-released((t as Tag::PBNode2).k2.retain);
-      };
-      if type(v) <: type(MustRetain) {
-         mark-as-released((t as Tag::PBNode2).v1.retain);
-         mark-as-released((t as Tag::PBNode2).v2.retain);
-      };
-      (t as Tag::PBNode2).left.retain;
-      (t as Tag::PBNode2).mid.retain;
-      (t as Tag::PBNode2).right.retain;
-   };
-   t
-);
-
 # Constructor for an empty tree
 let mk-pbtree(): PBTree<k,v> = PBLeaf : PBTree<k,v>;
 let mk-pbtree(tk: Type<k>, tv: Type<v>): PBTree<k,v> = PBLeaf : PBTree<k,v>;
@@ -1625,32 +1554,6 @@ let .lookup(tree: PBTree<k,v>, key: k, default: v): v = (
 type PBTreeInsert<k,v> implies MustRetain, MustRelease
    = PBTreeDone { tree: PBTree<k,v> }
    | PBTreeUp { k1: k, v1: v, left: OneOwnedData<PBTree<k,v>>[], right: OneOwnedData<PBTree<k,v>>[] };
-
-let .release(t: PBTreeInsert<k,v>): Nil = (
-   if t.discriminator-case-tag == (t as Tag::PBTreeDone).discriminator-case-tag {
-      (t as Tag::PBTreeDone).tree.release;
-   };
-   if t.discriminator-case-tag == (t as Tag::PBTreeUp).discriminator-case-tag {
-      if type(k) <: type(MustRelease) { (t as Tag::PBTreeUp).k1.release; };
-      if type(v) <: type(MustRelease) { (t as Tag::PBTreeUp).v1.release; };
-      (t as Tag::PBTreeUp).left.release;
-      (t as Tag::PBTreeUp).right.release;
-   };
-   mark-as-released(t);
-);
-
-let .retain(t: PBTreeInsert<k,v>): PBTreeInsert<k,v> = (
-   if t.discriminator-case-tag == (t as Tag::PBTreeDone).discriminator-case-tag {
-      mark-as-released((t as Tag::PBTreeDone).tree.retain);
-   };
-   if t.discriminator-case-tag == (t as Tag::PBTreeUp).discriminator-case-tag {
-      if type(k) <: type(MustRetain) { mark-as-released((t as Tag::PBTreeUp).k1.retain); };
-      if type(v) <: type(MustRetain) { mark-as-released((t as Tag::PBTreeUp).v1.retain); };
-      (t as Tag::PBTreeUp).left.retain;
-      (t as Tag::PBTreeUp).right.retain;
-   };
-   t
-);
 
 let insert-rec(tree: PBTree<k,v>, key: k, val: v): PBTreeInsert<k,v> = (
    match tree {
@@ -2108,21 +2011,6 @@ let $"||"(ls: S, rs: S): S = if non-zero(ls) then ls else rs;
 type Set<k> implies MustRetain, MustRelease
    = { data: SparseOwnedData<(k,Bool)>[] };
 
-
-let .release(x: Set<k>): Nil = (
-   if (x.data as USize) != 0 {
-      x.data.release;
-   };
-   mark-as-released(x);
-);
-
-let .retain(x: Set<k>): Set<k> = (
-   if (x.data as USize) != 0 {
-      x.data.retain;
-   };
-   x
-);
-
 # new allocations = 0 if capacity==0
 #                 | 1
 let mk-set(tyk: Type<k>, capacity: USize): Set<k> = (
@@ -2364,32 +2252,6 @@ type String suffix _ss implies MustRetain, MustRelease
 
 # String is NOT null terminated like a C String, it is more like a PASCAL style string
 
-let .release(x: String): Nil = (
-   if mem-is-non-zero(x) {
-      # normally if x is not released by the end of scope, then it will be auto-released
-      # however, mark-as-released prevents this case of infinite recursion
-      # this is necessary when writing custom .release implementations
-      # but normally most users won't need to use "mark-as-released" very often
-      x.data.release;
-   };
-   mark-as-released(x);
-);
-
-let .retain(x: String): String = (
-   if mem-is-non-zero(x) {
-      # Several inference rules are at play here
-      # > normally a reference to a variable will auto-retain
-      # > however field access is marked as MustNotRetain, so x.data does not auto-retain
-      # > the second case of the return value is also not retained
-      # > when a local variable is returned
-      #    1) the local variable is referenced (retain)
-      #    2) the local variable goes out of scope (release)
-      #    3) so they cancel each other out
-      x.data.retain;
-   };
-   x
-);
-
 # new allocations = 0
 let .length(s: String): USize = s.end-offset - s.start-offset;
 
@@ -2571,18 +2433,6 @@ type Tuple<x,y> implies MustRetain, MustRelease = { first: x, second: y };
 type Tuple<x,y,z> implies MustRetain, MustRelease = { first: x, second: y, third: z };
 type Tuple<w,x,y,z> implies MustRetain, MustRelease = { first: w, second: x, third: y, fourth: z };
 
-let .release(t: Tuple<x,y>): Nil = (
-   if type(x) <: type(MustRelease) { t.first.release; };
-   if type(y) <: type(MustRelease) { t.second.release; };
-   mark-as-released(t);
-);
-
-let .retain(t: Tuple<x,y>): Tuple<x,y> = (
-   if type(x) <: type(MustRetain) { let r = t.first.retain; mark-as-released(r); };
-   if type(y) <: type(MustRetain) { let r = t.second.retain; mark-as-released(r); };
-   t
-);
-
 let cmp(l: Tuple<x,y>, r: Tuple<x,y>): Ord = (
    cmp(l.first, r.first) && cmp(l.second, r.second)
 );
@@ -2594,20 +2444,6 @@ let hash(l: Tuple<x,y>): U64 = (
 let .into(l: Tuple<x,y>, tt: Type<String>): String = (
    "(" + l.first.into(type(String)) + ","
        + l.second.into(type(String)) + ")"
-);
-
-let .release(t: Tuple<x,y,z>): Nil = (
-   if type(x) <: type(MustRelease) { t.first.release; };
-   if type(y) <: type(MustRelease) { t.second.release; };
-   if type(z) <: type(MustRelease) { t.third.release; };
-   mark-as-released(t);
-);
-
-let .retain(t: Tuple<x,y,z>): Tuple<x,y,z> = (
-   if type(x) <: type(MustRetain) { let r = t.first.retain; mark-as-released(r); };
-   if type(y) <: type(MustRetain) { let r = t.second.retain; mark-as-released(r); };
-   if type(z) <: type(MustRetain) { let r = t.third.retain; mark-as-released(r); };
-   t
 );
 
 let cmp(l: Tuple<x,y,z>, r: Tuple<x,y,z>): Ord = (
@@ -2622,22 +2458,6 @@ let .into(l: Tuple<x,y,z>, tt: Type<String>): String = (
    "(" + l.first.into(type(String)) + ","
        + l.second.into(type(String)) + ","
        + l.third.into(type(String)) + ")"
-);
-
-let .release(t: Tuple<w,x,y,z>): Nil = (
-   if type(w) <: type(MustRelease) { t.first.release; };
-   if type(x) <: type(MustRelease) { t.second.release; };
-   if type(y) <: type(MustRelease) { t.third.release; };
-   if type(z) <: type(MustRelease) { t.fourth.release; };
-   mark-as-released(t);
-);
-
-let .retain(t: Tuple<w,x,y,z>): Tuple<w,x,y,z> = (
-   if type(w) <: type(MustRetain) { let r = t.first.retain; mark-as-released(r); };
-   if type(x) <: type(MustRetain) { let r = t.second.retain; mark-as-released(r); };
-   if type(y) <: type(MustRetain) { let r = t.third.retain; mark-as-released(r); };
-   if type(z) <: type(MustRetain) { let r = t.fourth.retain; mark-as-released(r); };
-   t
 );
 
 let cmp(l: Tuple<w,x,y,z>, r: Tuple<w,x,y,z>): Ord = (
@@ -2806,33 +2626,9 @@ let hash(x: USize): U64 = x as U64;
 type Vector<t> implies MustRetain, MustRelease
    = { data: OwnedData<t>[] };
 
-let .release(x: Vector<t>): Nil = (
-   if (x.data as USize) != 0 {
-      x.data.release;
-   };
-   mark-as-released(x);
-);
-
-let .retain(x: Vector<t>): Vector<t> = (
-   if (x.data as USize) != 0 {
-      x.data.retain;
-   };
-   x
-);
-
 ## Vector slices etc. are not cheap, so we use views, which can be collapsed back into Vectors
 type VectorView<t> implies MustRetain, MustRelease
    = { data: Vector<t>, start-offset: USize, end-offset: USize };
-
-let .release(x: VectorView<t>): Nil = (
-   x.data.release;
-   mark-as-released(x);
-);
-
-let .retain(x: VectorView<t>): VectorView<t> = (
-   mark-as-released(x.data.retain);
-   x
-);
 
 # new allocations = 0 if capacity==0
 #                 | 1
@@ -7442,7 +7238,12 @@ let index-typedefs(program: AST): Nil = (
             };
          };
          if cases-of.length==0 then cases-of = cases-of.push(c"");
-         index-cases-of = index-cases-of.bind(gta, cases-of);
+         # TODO: review type definition merges where there are multiple terms for one typedef and ensure that they are logically unified
+         # TODO: maybe diff-merge them into one typedef before processing
+         # TODO: identify logical conflicts between common typedefs merging logic vs unintentional redefinition
+         if index-cases-of.lookup(gta, mk-vector(type(CString))).length <= 1 {
+            index-cases-of = index-cases-of.bind(gta, cases-of);
+         };
       );
       _ => ();
    }};
