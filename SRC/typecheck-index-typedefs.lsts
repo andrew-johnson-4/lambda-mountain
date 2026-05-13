@@ -46,7 +46,12 @@ let index-typedefs(program: AST): Nil = (
             };
          };
          if cases-of.length==0 then cases-of = cases-of.push(c"");
-         index-cases-of = index-cases-of.bind(gta, cases-of);
+         # TODO: review type definition merges where there are multiple terms for one typedef and ensure that they are logically unified
+         # TODO: maybe diff-merge them into one typedef before processing
+         # TODO: identify logical conflicts between common typedefs merging logic vs unintentional redefinition
+         if index-cases-of.lookup(gta, mk-vector(type(CString))).length <= 1 {
+            index-cases-of = index-cases-of.bind(gta, cases-of);
+         };
       );
       _ => ();
    }};

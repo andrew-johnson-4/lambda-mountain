@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm --v3 tests/promises/list/comparison.lsts
+	lm --v3 --print-ast tests/promises/lm-ast/constructor.lsts > out.txt
 	gcc tmp.c
 	./a.out
 

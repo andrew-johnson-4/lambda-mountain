@@ -1,6 +1,9 @@
 
 import SRC/unit-ast-core.lsts;
 
+# blocks are held in globals, so need to ignore those and only track allocations here
+safe-alloc-block-count = 0;
+
 assert( mk-eof() == mk-eof() );
 assert( mk-nil() == mk-nil() );
 assert( mk-eof() != mk-nil() );
