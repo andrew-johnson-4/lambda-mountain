@@ -1,0 +1,16 @@
+
+let .has-t(tt: Type, tt-tag: CString, tt-length: U64): Bool = (
+   match tt {
+      TAnd { conjugate=conjugate } => (
+         let result = false;
+         for c in conjugate { result = result or c.is-t(tt-tag, tt-length) };
+         result
+      );
+      TGround { tag=tag, parameters=parameters } => (
+         let result = tag == tt-tag and parameters.length == tt-length;
+         for p in parameters { result = result or p.has-t(tt-tag, tt-length) };
+         result;
+      );
+      _ => false;
+   }
+);

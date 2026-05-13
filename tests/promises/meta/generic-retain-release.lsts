@@ -48,5 +48,8 @@ let .release(x: xt): Nil = (
    };
 );
 
-[1];
+if true {
+   [1];
+};
+let count = safe-alloc-block-count;
 assert( safe-alloc-block-count == 0 );
