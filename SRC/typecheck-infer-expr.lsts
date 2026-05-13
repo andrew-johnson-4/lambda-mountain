@@ -197,13 +197,13 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                let rt = denormalize-strong(typeof-term(short-right).slot(c"Type",1).l1);
                if non-zero(lt) and non-zero(rt) {
                   if can-unify(rt, lt) {
-                     print("Can Unify \{typeof-term(short-left)} <: \{typeof-term(short-right)}\n");
                      (tctx, short-circuit) = std-infer-expr(tctx, t, false, Tail, ta);
                   } else {
-                     print("Cannot Unify \{typeof-term(short-left)} <: \{typeof-term(short-right)}\n");
                      (tctx, short-circuit) = std-infer-expr(tctx, f, false, Tail, ta);
                   }
                };
+               tctx = tctx.phi-move(typeof-term(short-left), term);
+               tctx = tctx.phi-move(typeof-term(short-right), term);
             );
             _ => ();
          };
@@ -294,7 +294,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                mark-var-to-def(new-term, term);
                term = new-term;
             };
-            print("Inferred \{term} : \{typeof-term(term)}\n");
          };
       );
       Var{key2=key, token=token} => (
