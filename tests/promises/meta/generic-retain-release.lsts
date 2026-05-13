@@ -3,6 +3,7 @@ import lib/core/baremetal.lsts;
 import lib/core/one-owned-data.lsts;
 
 type List<x> implies MustRetain, MustRelease zero LEOF = LEOF | LCons { head: x, tail: OneOwnedData<List<x>>[] };
+let $"list::cons"(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
 
 let .retain(x: xt): xt = (
    for case in $cases-of(x) {
@@ -47,8 +48,5 @@ let .release(x: xt): Nil = (
    };
 );
 
-let x = [] : List<U8>;
-x.retain;
-print(c"Retained\n");
-x.release;
-print(c"Released\n");
+[1];
+assert( safe-alloc-block-count == 0 );

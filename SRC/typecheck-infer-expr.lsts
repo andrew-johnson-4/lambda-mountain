@@ -195,6 +195,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                (tctx, short-right) = std-infer-expr(tctx, short-right, false, Used, ta);
                let lt = denormalize-strong(typeof-term(short-left).slot(c"Type",1).l1);
                let rt = denormalize-strong(typeof-term(short-right).slot(c"Type",1).l1);
+               print("\{typeof-term(short-left)} <: \{typeof-term(short-right)}\n");
                if non-zero(lt) and non-zero(rt) {
                   if can-unify(rt, lt) {
                      (tctx, short-circuit) = std-infer-expr(tctx, t, false, Tail, ta);
