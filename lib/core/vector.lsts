@@ -1,11 +1,34 @@
 
-## faster than [type(List<t>)]. should be used when you append or remove data a lot
 type Vector<t> implies MustRetain, MustRelease
    = { data: OwnedData<t>[] };
+
+let .release(x: Vector<t>): Nil = (
+   if (x.data as USize) != 0 {
+      x.data.release;
+   };
+   mark-as-released(x);
+);
+
+let .retain(x: Vector<t>): Vector<t> = (
+   if (x.data as USize) != 0 {
+      x.data.retain;
+   };
+   x
+);
 
 ## Vector slices etc. are not cheap, so we use views, which can be collapsed back into Vectors
 type VectorView<t> implies MustRetain, MustRelease
    = { data: Vector<t>, start-offset: USize, end-offset: USize };
+
+let .release(x: VectorView<t>): Nil = (
+   x.data.release;
+   mark-as-released(x);
+);
+
+let .retain(x: VectorView<t>): VectorView<t> = (
+   mark-as-released(x.data.retain);
+   x
+);
 
 # new allocations = 0 if capacity==0
 #                 | 1
