@@ -6,48 +6,6 @@ type PBTree<k,v> implies MustRetain, MustRelease zero PBLeaf
    | PBNode1 { k1: k, v1: v, left: OneOwnedData<PBTree<k,v>>[], right: OneOwnedData<PBTree<k,v>>[] }
    | PBNode2 { k1: k, v1: v, k2: k, v2: v, left: OneOwnedData<PBTree<k,v>>[], mid: OneOwnedData<PBTree<k,v>>[], right: OneOwnedData<PBTree<k,v>>[] };
 
-# LSTS requires explicit release propagation for types implying MustRelease
-let .release(t: PBTree<k,v>): Nil = (
-   if t.discriminator-case-tag == (t as Tag::PBNode1).discriminator-case-tag {
-      if type(k) <: type(MustRelease) { (t as Tag::PBNode1).k1.release; };
-      if type(v) <: type(MustRelease) { (t as Tag::PBNode1).v1.release; };
-      (t as Tag::PBNode1).left.release;
-      (t as Tag::PBNode1).right.release;
-   };
-   if t.discriminator-case-tag == (t as Tag::PBNode2).discriminator-case-tag {
-      if type(k) <: type(MustRelease) { (t as Tag::PBNode2).k1.release; (t as Tag::PBNode2).k2.release; };
-      if type(v) <: type(MustRelease) { (t as Tag::PBNode2).v1.release; (t as Tag::PBNode2).v2.release; };
-      (t as Tag::PBNode2).left.release;
-      (t as Tag::PBNode2).mid.release;
-      (t as Tag::PBNode2).right.release;
-   };
-   mark-as-released(t);
-);
-
-# Explicit retain propagation for types implying MustRetain
-let .retain(t: PBTree<k,v>): PBTree<k,v> = (
-   if t.discriminator-case-tag == (t as Tag::PBNode1).discriminator-case-tag {
-      if type(k) <: type(MustRetain) { mark-as-released((t as Tag::PBNode1).k1.retain); };
-      if type(v) <: type(MustRetain) { mark-as-released((t as Tag::PBNode1).v1.retain); };
-      (t as Tag::PBNode1).left.retain;
-      (t as Tag::PBNode1).right.retain;
-   };
-   if t.discriminator-case-tag == (t as Tag::PBNode2).discriminator-case-tag {
-      if type(k) <: type(MustRetain) {
-         mark-as-released((t as Tag::PBNode2).k1.retain);
-         mark-as-released((t as Tag::PBNode2).k2.retain);
-      };
-      if type(v) <: type(MustRetain) {
-         mark-as-released((t as Tag::PBNode2).v1.retain);
-         mark-as-released((t as Tag::PBNode2).v2.retain);
-      };
-      (t as Tag::PBNode2).left.retain;
-      (t as Tag::PBNode2).mid.retain;
-      (t as Tag::PBNode2).right.retain;
-   };
-   t
-);
-
 # Constructor for an empty tree
 let mk-pbtree(): PBTree<k,v> = PBLeaf : PBTree<k,v>;
 let mk-pbtree(tk: Type<k>, tv: Type<v>): PBTree<k,v> = PBLeaf : PBTree<k,v>;
@@ -77,32 +35,6 @@ let .lookup(tree: PBTree<k,v>, key: k, default: v): v = (
 type PBTreeInsert<k,v> implies MustRetain, MustRelease
    = PBTreeDone { tree: PBTree<k,v> }
    | PBTreeUp { k1: k, v1: v, left: OneOwnedData<PBTree<k,v>>[], right: OneOwnedData<PBTree<k,v>>[] };
-
-let .release(t: PBTreeInsert<k,v>): Nil = (
-   if t.discriminator-case-tag == (t as Tag::PBTreeDone).discriminator-case-tag {
-      (t as Tag::PBTreeDone).tree.release;
-   };
-   if t.discriminator-case-tag == (t as Tag::PBTreeUp).discriminator-case-tag {
-      if type(k) <: type(MustRelease) { (t as Tag::PBTreeUp).k1.release; };
-      if type(v) <: type(MustRelease) { (t as Tag::PBTreeUp).v1.release; };
-      (t as Tag::PBTreeUp).left.release;
-      (t as Tag::PBTreeUp).right.release;
-   };
-   mark-as-released(t);
-);
-
-let .retain(t: PBTreeInsert<k,v>): PBTreeInsert<k,v> = (
-   if t.discriminator-case-tag == (t as Tag::PBTreeDone).discriminator-case-tag {
-      mark-as-released((t as Tag::PBTreeDone).tree.retain);
-   };
-   if t.discriminator-case-tag == (t as Tag::PBTreeUp).discriminator-case-tag {
-      if type(k) <: type(MustRetain) { mark-as-released((t as Tag::PBTreeUp).k1.retain); };
-      if type(v) <: type(MustRetain) { mark-as-released((t as Tag::PBTreeUp).v1.retain); };
-      (t as Tag::PBTreeUp).left.retain;
-      (t as Tag::PBTreeUp).right.retain;
-   };
-   t
-);
 
 let insert-rec(tree: PBTree<k,v>, key: k, val: v): PBTreeInsert<k,v> = (
    match tree {

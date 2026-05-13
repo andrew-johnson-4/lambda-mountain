@@ -1,0 +1,53 @@
+
+import lib/core/bedrock.lsts;
+
+type A = {a:U8} | B{b:U8} | C{c:U8,d:U8};
+type D = {a: U8, b: U8, c: U8, d: U8};
+
+let cases-count = 0;
+let cases-cat = c"";
+
+cases-count = 0;
+cases-cat = c"";
+for case in $cases-of(B(1,2)) {
+   cases-count = cases-count + 1;
+   cases-cat = cases-cat + stringof(case);
+};
+assert( cases-cat == c"Tag::BTag::C" );
+assert( cases-count == 2 );
+
+cases-count = 0;
+cases-cat = c"";
+for case in $cases-of(C(1,2,3)) {
+   cases-count = cases-count + 1;
+   cases-cat = cases-cat + stringof(case);
+};
+assert( cases-cat == c"Tag::BTag::C" );
+assert( cases-count == 2 );
+
+cases-count = 0;
+cases-cat = c"";
+for case in $cases-of(B(1,2) as Tag::B) {
+   cases-count = cases-count + 1;
+   cases-cat = cases-cat + stringof(case);
+};
+assert( cases-cat == c"Tag::BTag::C" );
+assert( cases-count == 2 );
+
+cases-count = 0;
+cases-cat = c"";
+for case in $cases-of(C(1,2,3) as Tag::C) {
+   cases-count = cases-count + 1;
+   cases-cat = cases-cat + stringof(case);
+};
+assert( cases-cat == c"Tag::BTag::C" );
+assert( cases-count == 2 );
+
+cases-count = 0;
+cases-cat = c"";
+for case in $cases-of(D(1,2,3,4)) {
+   cases-count = cases-count + 1;
+   cases-cat = cases-cat + stringof(case);
+};
+assert( cases-cat == c"Tag::" );
+assert( cases-count == 1 );

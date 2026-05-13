@@ -360,11 +360,10 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          lsts-parse-expect(c"Type", non-zero(tokens), tokens);
-         if not(lsts-is-type-tag(lsts-parse-head(tokens))) and not(lsts-is-ident-head(lsts-parse-head(tokens))) {
-            lsts-parse-expect(c"[Type Tag or Variable]", tokens);
+         if lsts-is-type-tag(lsts-parse-head(tokens)) or lsts-is-ident-head(lsts-parse-head(tokens)) {
+            base = base + c"::" + lsts-substitute-type-aliases(lsts-parse-head(tokens));
+            tokens = tail(tokens);
          };
-         base = base + c"::" + lsts-substitute-type-aliases(lsts-parse-head(tokens));
-         tokens = tail(tokens);
       };
       let args = mk-vector(type(Type));
       if lsts-parse-head(tokens) == c"<" {

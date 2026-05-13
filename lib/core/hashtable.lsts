@@ -4,21 +4,6 @@ type HashtableRowExists = HashtableRowEmpty | HashtableRowFilled | HashtableRowM
 type Hashtable<k,v> implies MustRetain, MustRelease
    = { data: SparseOwnedData<(HashtableRowExists,k,v)>[] };
 
-
-let .release(x: Hashtable<k,v>): Nil = (
-   if (x.data as USize) != 0 {
-      x.data.release;
-   };
-   mark-as-released(x);
-);
-
-let .retain(x: Hashtable<k,v>): Hashtable<k,v> = (
-   if (x.data as USize) != 0 {
-      x.data.retain;
-   };
-   x
-);
-
 # new allocations = 0 if capacity==0
 #                 | 1
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>, capacity: USize): Hashtable<k,v> = (

@@ -1,0 +1,12 @@
+
+import lib/core/baremetal.lsts;
+import lib/core/one-owned-data.lsts;
+
+type List<x> implies MustRetain, MustRelease zero LEOF = LEOF | LCons { head: x, tail: OneOwnedData<List<x>>[] };
+let $"list::cons"(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
+
+if true {
+   [1];
+};
+let count = safe-alloc-block-count;
+assert( safe-alloc-block-count == 0 );

@@ -18,3 +18,59 @@ let :Blob destroy(x: x+MustNotRetain): Nil = (
    $":frame"();
    $":expression"(l"memset(&"; $":expression"(x); l",0,sizeof "; $":expression"(x); l");");
 );
+
+let .retain(x: xt): xt = (
+   for case in $cases-of(x) {
+      if x.discriminator-case-tag==(x as case).discriminator-case-tag {
+         for field in $fields-of(x as case) {
+            if typeof( macro::concat($".", field)(x as case) ) <: type(MustRetain) {
+               mark-as-released( macro::concat($".", field)(x as case).retain );
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(OwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  mark-as-released( macro::concat($".", field)(x as case).retain );
+               }
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(OneOwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  mark-as-released( macro::concat($".", field)(x as case).retain );
+               }
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(SparseOwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  mark-as-released( macro::concat($".", field)(x as case).retain );
+               }
+            };
+         };
+      };
+   };
+   x
+);
+
+let .release(x: xt): Nil = (
+   for case in $cases-of(x) {
+      if x.discriminator-case-tag==(x as case).discriminator-case-tag {
+         for field in $fields-of(x as case) {
+            if typeof( macro::concat($".", field)(x as case) ) <: type(MustRetain) {
+               macro::concat($".", field)(x as case).release;
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(OwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  macro::concat($".", field)(x as case).release;
+               }
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(OneOwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  macro::concat($".", field)(x as case).release;
+               }
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(SparseOwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  macro::concat($".", field)(x as case).release;
+               }
+            };
+         };
+      };
+   };
+   mark-as-released(x);
+);

@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm --v3 tests/promises/meta/fields-of.lsts
+	lm --v3 --print-ast tests/promises/lm-ast/constructor.lsts > out.txt
 	gcc tmp.c
 	./a.out
 
@@ -102,7 +102,7 @@ smoke-test: smoke-test-clang smoke-test-gcc smoke-test-musl
 smoke-test-lite: smoke-test-clang smoke-test-gcc
 
 install:
-	$(CC) $(CFLAGS) -o lm BOOTSTRAP/cli.c
+	time $(CC) $(CFLAGS) -o lm BOOTSTRAP/cli.c
 ifeq ($(shell test -w /usr/local/bin; echo $$?), 0)
 	mv lm /usr/local/bin/lm
 else

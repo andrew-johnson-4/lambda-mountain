@@ -2,6 +2,7 @@
 let index-typedef-fields = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
 let index-typedef = {} : Hashtable<(CString,U64),AST>;
 let index-fields-of = {} : Hashtable<(CString,U64,CString),Vector<(CString,Type)>>;
+let index-cases-of = {} : Hashtable<(CString,U64),Vector<CString>>;
 
 let index-typedefs(program: AST): Nil = (
    for def in program.unroll-seq { match def {
@@ -26,21 +27,30 @@ let index-typedefs(program: AST): Nil = (
          };
          if cases.length>0 then index-typedef = index-typedef.bind(lhs-type.ground-tag-and-arity, def);
 
+         let cases-of = mk-vector(type(CString));
          let common-fields = mk-vector(type((CString,Type)));
          # index fields-of
          for case in cases {
             if not(non-zero(case.first)) then common-fields = case.second;
          };
          let gta = lhs-type.ground-tag-and-arity;
-         index-fields-of = index-fields-of.bind((gta.first, gta.second, c""), common-fields);
+         index-fields-of = index-fields-of.bind((gta.first, gta.second, c"Tag::"), common-fields);
          for case in cases {
             let uncommon-fields = common-fields.clone;
             if non-zero(case.first) {
+               cases-of = cases-of.push(case.first);
                for kv in case.second {
                   uncommon-fields = uncommon-fields.push(kv);
                };
                index-fields-of = index-fields-of.bind((gta.first, gta.second, c"Tag::" + case.first), uncommon-fields);
             };
+         };
+         if cases-of.length==0 then cases-of = cases-of.push(c"");
+         # TODO: review type definition merges where there are multiple terms for one typedef and ensure that they are logically unified
+         # TODO: maybe diff-merge them into one typedef before processing
+         # TODO: identify logical conflicts between common typedefs merging logic vs unintentional redefinition
+         if index-cases-of.lookup(gta, mk-vector(type(CString))).length <= 1 {
+            index-cases-of = index-cases-of.bind(gta, cases-of);
          };
       );
       _ => ();

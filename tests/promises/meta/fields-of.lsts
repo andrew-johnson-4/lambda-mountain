@@ -2,22 +2,80 @@
 import lib/core/bedrock.lsts;
 
 type A = {a:U8} | B{b:U8} | C{c:U8,d:U8};
+type D = {d:U8};
 
 let fields-count = 0;
+let fields-cat = c"";
 
 fields-count = 0;
-for field in $fields-of(B(1,2)) { fields-count = fields-count + 1; };
+fields-cat = c"";
+for field in $fields-of(B(1,2)) {
+   fields-count = fields-count + 1;
+   fields-cat = fields-cat + stringof(field);
+};
+assert( fields-cat == c"a" );
 assert( fields-count == 1 );
 
 fields-count = 0;
-for field in $fields-of(C(1,2,3)) { fields-count = fields-count + 1; };
+fields-cat = c"";
+for field in $fields-of(C(1,2,3)) {
+   fields-count = fields-count + 1;
+   fields-cat = fields-cat + stringof(field);
+};
+assert( fields-cat == c"a" );
 assert( fields-count == 1 );
 
 fields-count = 0;
-for field in $fields-of(B(1,2) as Tag::B) { fields-count = fields-count + 1; };
+fields-cat = c"";
+for field in $fields-of(B(1,2) as Tag::B) {
+   fields-count = fields-count + 1;
+   fields-cat = fields-cat + stringof(field);
+};
+assert( fields-cat == c"ab" );
 assert( fields-count == 2 );
 
 fields-count = 0;
-for field in $fields-of(C(1,2,3) as Tag::C) { fields-count = fields-count + 1; };
+fields-cat = c"";
+for field in $fields-of(C(1,2,3) as Tag::C) {
+   fields-count = fields-count + 1;
+   fields-cat = fields-cat + stringof(field);
+};
+assert( fields-cat == c"acd" );
 assert( fields-count == 3 );
+
+fields-count = 0;
+fields-cat = c"";
+for field in $fields-of(D(1)) {
+   fields-count = fields-count + 1;
+   fields-cat = fields-cat + stringof(field);
+};
+assert( fields-cat == c"d" );
+assert( fields-count == 1 );
+
+fields-count = 0;
+fields-cat = c"";
+for field in $fields-of(D(1) as Tag::) {
+   fields-count = fields-count + 1;
+   fields-cat = fields-cat + stringof(field);
+};
+assert( fields-cat == c"d" );
+assert( fields-count == 1 );
+
+fields-count = 0;
+fields-cat = c"";
+for field in $fields-of(mk-vector(type(U8))) {
+   fields-count = fields-count + 1;
+   fields-cat = fields-cat + stringof(field);
+};
+assert( fields-cat == c"data" );
+assert( fields-count == 1 );
+
+fields-count = 0;
+fields-cat = c"";
+for field in $fields-of(mk-vector(type(U8)) as Tag::) {
+   fields-count = fields-count + 1;
+   fields-cat = fields-cat + stringof(field);
+};
+assert( fields-cat == c"data" );
+assert( fields-count == 1 );
 

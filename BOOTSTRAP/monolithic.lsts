@@ -914,21 +914,6 @@ type HashtableRowExists = HashtableRowEmpty | HashtableRowFilled | HashtableRowM
 type Hashtable<k,v> implies MustRetain, MustRelease
    = { data: SparseOwnedData<(HashtableRowExists,k,v)>[] };
 
-
-let .release(x: Hashtable<k,v>): Nil = (
-   if (x.data as USize) != 0 {
-      x.data.release;
-   };
-   mark-as-released(x);
-);
-
-let .retain(x: Hashtable<k,v>): Hashtable<k,v> = (
-   if (x.data as USize) != 0 {
-      x.data.retain;
-   };
-   x
-);
-
 # new allocations = 0 if capacity==0
 #                 | 1
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>, capacity: USize): Hashtable<k,v> = (
@@ -1185,22 +1170,6 @@ let :Blob mangle-post(t: Type<Any>): L;
 
 type List<x> implies MustRetain, MustRelease zero LEOF = LEOF | LCons { head: x, tail: OneOwnedData<List<x>>[] };
 
-let .release(t: List<x>): Nil = (
-   if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag {
-      if type(x) <: type(MustRelease) then (t as Tag::LCons).head.release;
-      (t as Tag::LCons).tail.release;
-   };
-   mark-as-released(t);
-);
-
-let .retain(t: List<x>): List<x> = (
-   if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag {
-      if type(x) <: type(MustRetain) then mark-as-released((t as Tag::LCons).head.retain);
-      (t as Tag::LCons).tail.retain
-   };
-   t
-);
-
 # new allocations = 1
 let $"list::cons"(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
 
@@ -1342,20 +1311,6 @@ let .contains(v: List<t>, i: t): Bool = (
 
 type Maybe<x> implies MustRetain, MustRelease zero None = None | Some { content: x };
 
-let .release(t: Maybe<x>): Nil = (
-   if t.discriminator-case-tag==(t as Tag::Some).discriminator-case-tag {
-      if type(x) <: type(MustRelease) { (t as Tag::Some).content.release; };
-   };
-   mark-as-released(t);
-);
-
-let .retain(t: Maybe<x>): Maybe<x> = (
-   if t.discriminator-case-tag==(t as Tag::Some).discriminator-case-tag {
-      if type(x) <: type(MustRetain) { mark-as-released((t as Tag::Some).content.retain); };
-   };
-   t
-);
-
 let cmp(l: Maybe<x>, r: Maybe<x>): Ord = (
    if l.discriminator-case-tag==(l as Tag::Some).discriminator-case-tag
    and r.discriminator-case-tag==(r as Tag::Some).discriminator-case-tag
@@ -1463,7 +1418,6 @@ let close(d: t): OneOwnedData<t>[] = (
 let .release(od: OneOwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
       if od.reference-count==0 then {
-         print("Release OneOwnedData<\{type(t)}>[]\n");
          fail(c"OneOwnedData.release called when reference count is already zero. This object has already been freed!");
       };
       od.reference-count = od.reference-count - 1;
@@ -1509,14 +1463,14 @@ let mk-owned-data(tt: Type<t>, capacity: USize): OwnedData<t>[] = (
 let $"[]"(od: OwnedData<t>[], idx: USize): t = (
    if (od as USize)==0
    then fail(c"OwnedData [] Access Null Pointer");
-   if idx >= od.occupied then fail("OwnedData [\{idx}] Index Access Out of Bounds");
+   if idx >= od.occupied then fail(c"OwnedData [] Index Access Out of Bounds");
    od.data[idx]
 );
 
 let $"set[]"(od: OwnedData<t>[], idx: USize, val: t): Nil = (
    if (od as USize)==0
    then fail(c"OwnedData set[] Access Null Pointer");
-   if idx >= od.occupied then fail("OwnedData set[\{idx}] Index Access Out of Bounds");
+   if idx >= od.occupied then fail(c"OwnedData set[] Index Access Out of Bounds");
    if type(t) <: type(MustRelease) then od.data[idx].release;
    od.data[idx] = val;
 );
@@ -1571,48 +1525,6 @@ type PBTree<k,v> implies MustRetain, MustRelease zero PBLeaf
    | PBNode1 { k1: k, v1: v, left: OneOwnedData<PBTree<k,v>>[], right: OneOwnedData<PBTree<k,v>>[] }
    | PBNode2 { k1: k, v1: v, k2: k, v2: v, left: OneOwnedData<PBTree<k,v>>[], mid: OneOwnedData<PBTree<k,v>>[], right: OneOwnedData<PBTree<k,v>>[] };
 
-# LSTS requires explicit release propagation for types implying MustRelease
-let .release(t: PBTree<k,v>): Nil = (
-   if t.discriminator-case-tag == (t as Tag::PBNode1).discriminator-case-tag {
-      if type(k) <: type(MustRelease) { (t as Tag::PBNode1).k1.release; };
-      if type(v) <: type(MustRelease) { (t as Tag::PBNode1).v1.release; };
-      (t as Tag::PBNode1).left.release;
-      (t as Tag::PBNode1).right.release;
-   };
-   if t.discriminator-case-tag == (t as Tag::PBNode2).discriminator-case-tag {
-      if type(k) <: type(MustRelease) { (t as Tag::PBNode2).k1.release; (t as Tag::PBNode2).k2.release; };
-      if type(v) <: type(MustRelease) { (t as Tag::PBNode2).v1.release; (t as Tag::PBNode2).v2.release; };
-      (t as Tag::PBNode2).left.release;
-      (t as Tag::PBNode2).mid.release;
-      (t as Tag::PBNode2).right.release;
-   };
-   mark-as-released(t);
-);
-
-# Explicit retain propagation for types implying MustRetain
-let .retain(t: PBTree<k,v>): PBTree<k,v> = (
-   if t.discriminator-case-tag == (t as Tag::PBNode1).discriminator-case-tag {
-      if type(k) <: type(MustRetain) { mark-as-released((t as Tag::PBNode1).k1.retain); };
-      if type(v) <: type(MustRetain) { mark-as-released((t as Tag::PBNode1).v1.retain); };
-      (t as Tag::PBNode1).left.retain;
-      (t as Tag::PBNode1).right.retain;
-   };
-   if t.discriminator-case-tag == (t as Tag::PBNode2).discriminator-case-tag {
-      if type(k) <: type(MustRetain) {
-         mark-as-released((t as Tag::PBNode2).k1.retain);
-         mark-as-released((t as Tag::PBNode2).k2.retain);
-      };
-      if type(v) <: type(MustRetain) {
-         mark-as-released((t as Tag::PBNode2).v1.retain);
-         mark-as-released((t as Tag::PBNode2).v2.retain);
-      };
-      (t as Tag::PBNode2).left.retain;
-      (t as Tag::PBNode2).mid.retain;
-      (t as Tag::PBNode2).right.retain;
-   };
-   t
-);
-
 # Constructor for an empty tree
 let mk-pbtree(): PBTree<k,v> = PBLeaf : PBTree<k,v>;
 let mk-pbtree(tk: Type<k>, tv: Type<v>): PBTree<k,v> = PBLeaf : PBTree<k,v>;
@@ -1642,32 +1554,6 @@ let .lookup(tree: PBTree<k,v>, key: k, default: v): v = (
 type PBTreeInsert<k,v> implies MustRetain, MustRelease
    = PBTreeDone { tree: PBTree<k,v> }
    | PBTreeUp { k1: k, v1: v, left: OneOwnedData<PBTree<k,v>>[], right: OneOwnedData<PBTree<k,v>>[] };
-
-let .release(t: PBTreeInsert<k,v>): Nil = (
-   if t.discriminator-case-tag == (t as Tag::PBTreeDone).discriminator-case-tag {
-      (t as Tag::PBTreeDone).tree.release;
-   };
-   if t.discriminator-case-tag == (t as Tag::PBTreeUp).discriminator-case-tag {
-      if type(k) <: type(MustRelease) { (t as Tag::PBTreeUp).k1.release; };
-      if type(v) <: type(MustRelease) { (t as Tag::PBTreeUp).v1.release; };
-      (t as Tag::PBTreeUp).left.release;
-      (t as Tag::PBTreeUp).right.release;
-   };
-   mark-as-released(t);
-);
-
-let .retain(t: PBTreeInsert<k,v>): PBTreeInsert<k,v> = (
-   if t.discriminator-case-tag == (t as Tag::PBTreeDone).discriminator-case-tag {
-      mark-as-released((t as Tag::PBTreeDone).tree.retain);
-   };
-   if t.discriminator-case-tag == (t as Tag::PBTreeUp).discriminator-case-tag {
-      if type(k) <: type(MustRetain) { mark-as-released((t as Tag::PBTreeUp).k1.retain); };
-      if type(v) <: type(MustRetain) { mark-as-released((t as Tag::PBTreeUp).v1.retain); };
-      (t as Tag::PBTreeUp).left.retain;
-      (t as Tag::PBTreeUp).right.retain;
-   };
-   t
-);
 
 let insert-rec(tree: PBTree<k,v>, key: k, val: v): PBTreeInsert<k,v> = (
    match tree {
@@ -1823,6 +1709,62 @@ let :Blob destroy(x: x+MustNotRetain): Nil = (
    $":expression"(l"memset(&"; $":expression"(x); l",0,sizeof "; $":expression"(x); l");");
 );
 
+let .retain(x: xt): xt = (
+   for case in $cases-of(x) {
+      if x.discriminator-case-tag==(x as case).discriminator-case-tag {
+         for field in $fields-of(x as case) {
+            if typeof( macro::concat($".", field)(x as case) ) <: type(MustRetain) {
+               mark-as-released( macro::concat($".", field)(x as case).retain );
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(OwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  mark-as-released( macro::concat($".", field)(x as case).retain );
+               }
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(OneOwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  mark-as-released( macro::concat($".", field)(x as case).retain );
+               }
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(SparseOwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  mark-as-released( macro::concat($".", field)(x as case).retain );
+               }
+            };
+         };
+      };
+   };
+   x
+);
+
+let .release(x: xt): Nil = (
+   for case in $cases-of(x) {
+      if x.discriminator-case-tag==(x as case).discriminator-case-tag {
+         for field in $fields-of(x as case) {
+            if typeof( macro::concat($".", field)(x as case) ) <: type(MustRetain) {
+               macro::concat($".", field)(x as case).release;
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(OwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  macro::concat($".", field)(x as case).release;
+               }
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(OneOwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  macro::concat($".", field)(x as case).release;
+               }
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(SparseOwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  macro::concat($".", field)(x as case).release;
+               }
+            };
+         };
+      };
+   };
+   mark-as-released(x);
+);
+
 typed macro declare-zop(op-alias: lazy, r-type: lazy, op-expr: lazy): lazy = {
    let :Blob op-alias(): r-type = (
       $":expression"(op-expr);
@@ -1872,12 +1814,6 @@ declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs+MustNotFresh+M
 # this only needs to be declared if you want to support casting type information into String literals
 # EXAMPLE: print(typeof(x))
 declare-binop( $".into", type(Any), type(CString), raw-type(CString), () );
-
-declare-unop( typeof, type(x), raw-type(Type<x>), () );
-
-# this operator is hard-coded in the compiler for now
-# but this definition being in the library is simplest for inference
-declare-binop( $"<:", type(Any), type(Any), raw-type(Bool), () );
 
 let :Blob $"primitive::while"(cond: Bool, body: Any): Nil = (
    $":frame"( $":frame"(cond); $":frame"(body) );
@@ -2074,21 +2010,6 @@ let $"||"(ls: S, rs: S): S = if non-zero(ls) then ls else rs;
 
 type Set<k> implies MustRetain, MustRelease
    = { data: SparseOwnedData<(k,Bool)>[] };
-
-
-let .release(x: Set<k>): Nil = (
-   if (x.data as USize) != 0 {
-      x.data.release;
-   };
-   mark-as-released(x);
-);
-
-let .retain(x: Set<k>): Set<k> = (
-   if (x.data as USize) != 0 {
-      x.data.retain;
-   };
-   x
-);
 
 # new allocations = 0 if capacity==0
 #                 | 1
@@ -2331,32 +2252,6 @@ type String suffix _ss implies MustRetain, MustRelease
 
 # String is NOT null terminated like a C String, it is more like a PASCAL style string
 
-let .release(x: String): Nil = (
-   if mem-is-non-zero(x) {
-      # normally if x is not released by the end of scope, then it will be auto-released
-      # however, mark-as-released prevents this case of infinite recursion
-      # this is necessary when writing custom .release implementations
-      # but normally most users won't need to use "mark-as-released" very often
-      x.data.release;
-   };
-   mark-as-released(x);
-);
-
-let .retain(x: String): String = (
-   if mem-is-non-zero(x) {
-      # Several inference rules are at play here
-      # > normally a reference to a variable will auto-retain
-      # > however field access is marked as MustNotRetain, so x.data does not auto-retain
-      # > the second case of the return value is also not retained
-      # > when a local variable is returned
-      #    1) the local variable is referenced (retain)
-      #    2) the local variable goes out of scope (release)
-      #    3) so they cancel each other out
-      x.data.retain;
-   };
-   x
-);
-
 # new allocations = 0
 let .length(s: String): USize = s.end-offset - s.start-offset;
 
@@ -2538,18 +2433,6 @@ type Tuple<x,y> implies MustRetain, MustRelease = { first: x, second: y };
 type Tuple<x,y,z> implies MustRetain, MustRelease = { first: x, second: y, third: z };
 type Tuple<w,x,y,z> implies MustRetain, MustRelease = { first: w, second: x, third: y, fourth: z };
 
-let .release(t: Tuple<x,y>): Nil = (
-   if type(x) <: type(MustRelease) { t.first.release; };
-   if type(y) <: type(MustRelease) { t.second.release; };
-   mark-as-released(t);
-);
-
-let .retain(t: Tuple<x,y>): Tuple<x,y> = (
-   if type(x) <: type(MustRetain) { let r = t.first.retain; mark-as-released(r); };
-   if type(y) <: type(MustRetain) { let r = t.second.retain; mark-as-released(r); };
-   t
-);
-
 let cmp(l: Tuple<x,y>, r: Tuple<x,y>): Ord = (
    cmp(l.first, r.first) && cmp(l.second, r.second)
 );
@@ -2561,20 +2444,6 @@ let hash(l: Tuple<x,y>): U64 = (
 let .into(l: Tuple<x,y>, tt: Type<String>): String = (
    "(" + l.first.into(type(String)) + ","
        + l.second.into(type(String)) + ")"
-);
-
-let .release(t: Tuple<x,y,z>): Nil = (
-   if type(x) <: type(MustRelease) { t.first.release; };
-   if type(y) <: type(MustRelease) { t.second.release; };
-   if type(z) <: type(MustRelease) { t.third.release; };
-   mark-as-released(t);
-);
-
-let .retain(t: Tuple<x,y,z>): Tuple<x,y,z> = (
-   if type(x) <: type(MustRetain) { let r = t.first.retain; mark-as-released(r); };
-   if type(y) <: type(MustRetain) { let r = t.second.retain; mark-as-released(r); };
-   if type(z) <: type(MustRetain) { let r = t.third.retain; mark-as-released(r); };
-   t
 );
 
 let cmp(l: Tuple<x,y,z>, r: Tuple<x,y,z>): Ord = (
@@ -2589,22 +2458,6 @@ let .into(l: Tuple<x,y,z>, tt: Type<String>): String = (
    "(" + l.first.into(type(String)) + ","
        + l.second.into(type(String)) + ","
        + l.third.into(type(String)) + ")"
-);
-
-let .release(t: Tuple<w,x,y,z>): Nil = (
-   if type(w) <: type(MustRelease) { t.first.release; };
-   if type(x) <: type(MustRelease) { t.second.release; };
-   if type(y) <: type(MustRelease) { t.third.release; };
-   if type(z) <: type(MustRelease) { t.fourth.release; };
-   mark-as-released(t);
-);
-
-let .retain(t: Tuple<w,x,y,z>): Tuple<w,x,y,z> = (
-   if type(w) <: type(MustRetain) { let r = t.first.retain; mark-as-released(r); };
-   if type(x) <: type(MustRetain) { let r = t.second.retain; mark-as-released(r); };
-   if type(y) <: type(MustRetain) { let r = t.third.retain; mark-as-released(r); };
-   if type(z) <: type(MustRetain) { let r = t.fourth.retain; mark-as-released(r); };
-   t
 );
 
 let cmp(l: Tuple<w,x,y,z>, r: Tuple<w,x,y,z>): Ord = (
@@ -2770,38 +2623,12 @@ let cmp(l: USize, r: USize): Ord = (
 
 let hash(x: USize): U64 = x as U64;
 
-## faster than [type(List<t>)]. should be used when you append or remove data a lot
 type Vector<t> implies MustRetain, MustRelease
    = { data: OwnedData<t>[] };
-
-let .release(x: Vector<t>): Nil = (
-   if (x.data as USize) != 0 {
-      x.data.release;
-   };
-   mark-as-released(x);
-);
-
-let .retain(x: Vector<t>): Vector<t> = (
-   if (x.data as USize) != 0 {
-      x.data.retain;
-   };
-   x
-);
 
 ## Vector slices etc. are not cheap, so we use views, which can be collapsed back into Vectors
 type VectorView<t> implies MustRetain, MustRelease
    = { data: Vector<t>, start-offset: USize, end-offset: USize };
-
-let .release(x: VectorView<t>): Nil = (
-   x.data.release;
-   mark-as-released(x);
-);
-
-let .retain(x: VectorView<t>): VectorView<t> = (
-   mark-as-released(x.data.retain);
-   x
-);
-
 
 # new allocations = 0 if capacity==0
 #                 | 1
@@ -3756,88 +3583,6 @@ type AST zero ASTEOF implies MustRetain, MustRelease
 
 let $"App"(left: OneOwnedData<AST>[], right: OneOwnedData<AST>[]): AST = App ( false, left, right );
 
-let .retain(t: ASTTypedef): ASTTypedef = (
-   mark-as-released(t.lhs-type.retain);
-   mark-as-released(t.implies.retain);
-   mark-as-released(t.implements.retain);
-   mark-as-released(t.size.retain);
-   mark-as-released(t.alias.retain);
-   mark-as-released(t.opaque-alias.retain);
-   mark-as-released(t.cases.retain);
-   mark-as-released(t.misc-type.retain);
-   mark-as-released(t.implied-phi.retain);
-   t
-);
-
-let .retain(t: AST): AST = (
-   if t.discriminator-case-tag==(t as Tag::Meta).discriminator-case-tag {
-      (t as Tag::Meta).val.retain;
-   };
-   if t.discriminator-case-tag==(t as Tag::App).discriminator-case-tag {
-      (t as Tag::App).left.retain;
-      (t as Tag::App).right.retain;
-   };
-   if t.discriminator-case-tag==(t as Tag::Abs).discriminator-case-tag {
-      (t as Tag::Abs).lhs.retain;
-      (t as Tag::Abs).rhs.retain;
-      mark-as-released((t as Tag::Abs).tt.retain);
-   };
-   if t.discriminator-case-tag==(t as Tag::AType).discriminator-case-tag {
-      mark-as-released((t as Tag::AType).tt.retain);
-   };
-   if t.discriminator-case-tag==(t as Tag::Seq).discriminator-case-tag {
-      mark-as-released((t as Tag::Seq).seq.retain);
-   };
-   if t.discriminator-case-tag==(t as Tag::Glb).discriminator-case-tag {
-      (t as Tag::Glb).val.retain;
-   };
-   if t.discriminator-case-tag==(t as Tag::Typedef).discriminator-case-tag {
-      mark-as-released((t as Tag::Typedef).td.retain);
-   };
-   t
-);
-
-let .release(t: ASTTypedef): Nil = (
-   t.lhs-type.release;
-   t.implies.release;
-   t.implements.release;
-   t.size.release;
-   t.alias.release;
-   t.opaque-alias.release;
-   t.cases.release;
-   t.misc-type.release;
-   t.implied-phi.release;
-);
-
-let .release(t: AST): Nil = (
-   if t.discriminator-case-tag==(t as Tag::Meta).discriminator-case-tag {
-      (t as Tag::Meta).val.release;
-   };
-   if t.discriminator-case-tag==(t as Tag::App).discriminator-case-tag {
-      (t as Tag::App).left.release;
-      (t as Tag::App).right.release;
-   };
-   if t.discriminator-case-tag==(t as Tag::Abs).discriminator-case-tag {
-      (t as Tag::Abs).lhs.release;
-      (t as Tag::Abs).rhs.release;
-      (t as Tag::Abs).tt.release;
-   };
-   if t.discriminator-case-tag==(t as Tag::AType).discriminator-case-tag {
-      (t as Tag::AType).tt.release;
-   };
-   if t.discriminator-case-tag==(t as Tag::Seq).discriminator-case-tag {
-      (t as Tag::Seq).seq.release;
-   };
-   if t.discriminator-case-tag==(t as Tag::Glb).discriminator-case-tag {
-      (t as Tag::Glb).val.release;
-   };
-   if t.discriminator-case-tag==(t as Tag::Typedef).discriminator-case-tag {
-      (t as Tag::Typedef).td.release;
-   };
-   mark-as-released(t);
-);
-
-
 let exit-error(msg: CString, t: AST): Nil = (
    print("\{msg}\n\{t.location}\n");
    exit(1);
@@ -3897,8 +3642,8 @@ let .into(t: AST, tgt: Type<String>): String = (
       );
       AType{tt=tt} => tt.into(type(String));
       Seq{seq=seq} => (
-         let ret = "{";
-         for s in seq { if non-zero(ret) then ret = ret + ";"; ret = ret + s.into(type(String)) };
+         let ret = "{\n";
+         for s in seq { ret = ret + "\t" + s.into(type(String)) + ";\n" };
          ret + "}"
       );
       Typedef{lhs-type=lhs-type} => (
@@ -5380,56 +5125,9 @@ let global-tctx = {} : Hashtable<CString,Vector<TypeContextRow>>;
 let tctx-currently-processing-globals = true;
 
 type TypeContextRow zero NullTypeContextRow implies MustRetain, MustRelease = NullTypeContextRow | TypeContextRow { key: CString, nt: Type, dt: Type, blame: AST };
-let .retain(t: TypeContextRow): TypeContextRow = (
-   if t.discriminator-case-tag==(t as Tag::TypeContextRow).discriminator-case-tag {
-      mark-as-released((t as Tag::TypeContextRow).nt.retain);
-      mark-as-released((t as Tag::TypeContextRow).dt.retain);
-      mark-as-released((t as Tag::TypeContextRow).blame.retain);
-   };
-   t
-);
-let .release(t: TypeContextRow): Nil = (
-   if t.discriminator-case-tag==(t as Tag::TypeContextRow).discriminator-case-tag {
-      (t as Tag::TypeContextRow).nt.release;
-      (t as Tag::TypeContextRow).dt.release;
-      (t as Tag::TypeContextRow).blame.release;
-   };
-   mark-as-released(t);
-);
-
 type PhiContextRow zero NullPhiContextRow implies MustRetain, MustRelease = NullPhiContextRow | PhiContextRow { phi-id: U64, phi-tt: Type, blame: AST, dead-on-arrival: Bool, is-global: Bool };
-let .retain(t: PhiContextRow): PhiContextRow = (
-   if t.discriminator-case-tag==(t as Tag::PhiContextRow).discriminator-case-tag {
-      mark-as-released((t as Tag::PhiContextRow).phi-tt.retain);
-      mark-as-released((t as Tag::PhiContextRow).blame.retain);
-   };
-   t
-);
-let .release(t: PhiContextRow): Nil = (
-   if t.discriminator-case-tag==(t as Tag::PhiContextRow).discriminator-case-tag {
-      (t as Tag::PhiContextRow).phi-tt.release;
-      (t as Tag::PhiContextRow).blame.release;
-   };
-   mark-as-released(t);
-);
-
-let .into(pr: PhiContextRow, tt: Type<String>): String = "#\{pr.phi-id-or-zero} : \{pr.phi-tt-or-zero}";
-
 type TypeContext implies MustRetain, MustRelease = { tctx:List<TypeContextRow>, pctx: PBTree<U64,PhiContextRow>, is-unsafe: Bool, is-blob: Bool, function-name:CString };
-let .retain(t: TypeContext): TypeContext = (
-   if t.discriminator-case-tag==(t as Tag::TypeContext).discriminator-case-tag {
-       mark-as-released((t as Tag::TypeContext).tctx.retain);
-       mark-as-released((t as Tag::TypeContext).pctx.retain);
-   };
-   t
-);
-let .release(t: TypeContext): Nil = (
-   if t.discriminator-case-tag==(t as Tag::TypeContext).discriminator-case-tag {
-      (t as Tag::TypeContext).tctx.release;
-      (t as Tag::TypeContext).pctx.release;
-   };
-   mark-as-released(t);
-);
+let .into(pr: PhiContextRow, tt: Type<String>): String = "#\{pr.phi-id-or-zero} : \{pr.phi-tt-or-zero}";
 
 let mk-tctx(): TypeContext = TypeContext( [] : List<TypeContextRow>, mk-pbtree(type(U64), type(PhiContextRow)), false, false, c"" );
 
@@ -6391,6 +6089,9 @@ let type-lazy = tv(c"lazy");
 let type-type-string = t1(c"Type",t0(c"String"));
 
 # new allocations = 0 (constant)
+let type-cstring-literal = t0(c"CString") && t0(c"Literal");
+
+# new allocations = 0 (constant)
 let type-linear-moved = t1(c"Linear",t0(c"Phi::Moved"));
 
 # new allocations = 0 (constant)
@@ -6539,30 +6240,6 @@ type Type zero TAny implies MustRetain, MustRelease
         | TVar { name:CString, parameters:Vector<Type> }
         | TAnd { conjugate:Vector<Type> };
 
-let .release(t: Type): Nil = (
-   if t.discriminator-case-tag==(t as Tag::TGround).discriminator-case-tag {
-      (t as Tag::TGround).parameters.release;
-   };
-   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
-      (t as Tag::TAnd).conjugate.release;
-   };
-   mark-as-released(t);
-);
-
-let .retain(t: Type): Type = (
-   if t.discriminator-case-tag==(t as Tag::TGround).discriminator-case-tag {
-      mark-as-released((t as Tag::TGround).parameters.retain);
-   };
-   if t.discriminator-case-tag==(t as Tag::TAnd).discriminator-case-tag {
-      mark-as-released((t as Tag::TAnd).conjugate.retain);
-   };
-   t
-);
-
-# TODO: remove
-let .release(tt: x[]): Nil = ();
-let .retain(tt: x[]): x[] = tt;
-
 let .r(tt: Type, i: USize): Type = (
    match tt {
       TGround { parameters=parameters } => parameters.nth(i).get-or(ta);
@@ -6617,6 +6294,22 @@ let .ground-tag-and-arity(tt: Type): (CString,U64) = (
    }
 );
 
+
+let .has-t(tt: Type, tt-tag: CString, tt-length: U64): Bool = (
+   match tt {
+      TAnd { conjugate=conjugate } => (
+         let result = false;
+         for c in conjugate { result = result or c.is-t(tt-tag, tt-length) };
+         result
+      );
+      TGround { tag=tag, parameters=parameters } => (
+         let result = tag == tt-tag and parameters.length == tt-length;
+         for p in parameters { result = result or p.has-t(tt-tag, tt-length) };
+         result;
+      );
+      _ => false;
+   }
+);
 
 let hash(tt: Type): U64 = (
    match tt {
@@ -7348,6 +7041,7 @@ let frontend(fp: CString): Nil = (
 let index-typedef-fields = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
 let index-typedef = {} : Hashtable<(CString,U64),AST>;
 let index-fields-of = {} : Hashtable<(CString,U64,CString),Vector<(CString,Type)>>;
+let index-cases-of = {} : Hashtable<(CString,U64),Vector<CString>>;
 
 let index-typedefs(program: AST): Nil = (
    for def in program.unroll-seq { match def {
@@ -7372,21 +7066,30 @@ let index-typedefs(program: AST): Nil = (
          };
          if cases.length>0 then index-typedef = index-typedef.bind(lhs-type.ground-tag-and-arity, def);
 
+         let cases-of = mk-vector(type(CString));
          let common-fields = mk-vector(type((CString,Type)));
          # index fields-of
          for case in cases {
             if not(non-zero(case.first)) then common-fields = case.second;
          };
          let gta = lhs-type.ground-tag-and-arity;
-         index-fields-of = index-fields-of.bind((gta.first, gta.second, c""), common-fields);
+         index-fields-of = index-fields-of.bind((gta.first, gta.second, c"Tag::"), common-fields);
          for case in cases {
             let uncommon-fields = common-fields.clone;
             if non-zero(case.first) {
+               cases-of = cases-of.push(case.first);
                for kv in case.second {
                   uncommon-fields = uncommon-fields.push(kv);
                };
                index-fields-of = index-fields-of.bind((gta.first, gta.second, c"Tag::" + case.first), uncommon-fields);
             };
+         };
+         if cases-of.length==0 then cases-of = cases-of.push(c"");
+         # TODO: review type definition merges where there are multiple terms for one typedef and ensure that they are logically unified
+         # TODO: maybe diff-merge them into one typedef before processing
+         # TODO: identify logical conflicts between common typedefs merging logic vs unintentional redefinition
+         if index-cases-of.lookup(gta, mk-vector(type(CString))).length <= 1 {
+            index-cases-of = index-cases-of.bind(gta, cases-of);
          };
       );
       _ => ();
@@ -7443,6 +7146,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.ascript(term, t1(c"Type",typeof-term(r)));
          tctx = tctx.phi-move(typeof-term(r), term);
       );
+      App{o-t=left:Var{key:c"stringof"}, r=right} => (
+         let literal = mk-lit(r.into(type(CString))).ascript(type-cstring-literal);
+         (tctx, term) = std-infer-expr(tctx, literal, false, Used, ta);
+      );
       App{o-t=left:Var{key:c"open"}, r=right} => (
          (tctx, let new-r) = std-infer-expr(tctx, r, false, Used(), ta);
          if not(is(r,new-r)) then { r = new-r; term = mk-app(o-t, r); };
@@ -7484,7 +7191,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       App{left:Var{key:c"macro::for"}, right:App{
          left:App{
-            left:Var{item=key},
+            left:Var{field-item=key},
             right:App{
                left:Var{key:c"$fields-of"},
                iterable=right
@@ -7497,13 +7204,41 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          if i-tt.is-t(c"Type",1) then i-tt = i-tt.slot(c"Type",1).l1;
          let dt = i-tt.with-only-datatype.ground-tag-and-arity;
          let tg = i-tt.with-only-tag.simple-tag;
+         if not(non-zero(tg)) then tg = c"Tag::";
          term = mk-nil();
          tctx = tctx.ascript(term, type-nil);
          for kt in index-fields-of.lookup((dt.first,dt.second,tg), mk-vector(type((CString,Type)))) {
-            let actx = mk-actx().bind(item,mk-var(kt.first));
-            body = substitute(actx,body);
-            (tctx, body) = std-infer-expr(tctx, body, false, Used, ta);
-            term = mk-cons(term, body);
+            let actx = mk-actx().bind(field-item,mk-var(kt.first));
+            let re-body = substitute(actx,body);
+            (tctx, re-body) = std-infer-expr(tctx, re-body, false, Used, ta);
+            term = mk-cons(term, re-body);
+            tctx = tctx.ascript(term, type-nil);
+         };
+      );
+      App{left:Var{key:c"macro::for"}, right:App{
+         left:App{
+            left:Var{case-item=key},
+            right:App{
+               left:Var{key:c"$cases-of"},
+               iterable=right
+            }
+         }, body=right
+      }} => (
+         (tctx, iterable) = std-infer-expr(tctx, iterable, false, Used, ta);
+         tctx = tctx.phi-move(typeof-term(iterable), iterable);
+         let i-tt = typeof-term(iterable);
+         if i-tt.is-t(c"Type",1) then i-tt = i-tt.slot(c"Type",1).l1;
+         let dt = i-tt.with-only-datatype.ground-tag-and-arity;
+         term = mk-nil();
+         tctx = tctx.ascript(term, type-nil);
+         for k in index-cases-of.lookup(dt, mk-vector(type(CString))) {
+            # for the untagged case, the case will become Tag::
+            # this convention is used to *discard* any tag information that exists in terms like (x as Tag::)
+            # so effectively this is still a good and perfectly valid tag
+            let actx = mk-actx().bind(case-item,mk-atype(t0(c"Tag::" + k)));
+            let re-body = substitute(actx,body);
+            (tctx, re-body) = std-infer-expr(tctx, re-body, false, Used, ta);
+            term = mk-cons(term, re-body);
             tctx = tctx.ascript(term, type-nil);
          };
       );
@@ -7518,7 +7253,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             _ => ();
          }};
          if tt.is-t(c"String",0) {
-            term = t.ascript(t0(c"CString") && t0(c"Literal"));
+            term = t.ascript(type-cstring-literal);
             term = mk-app(mk-var(c"intern"),term);
             (tctx, term) = std-infer-expr(tctx, term, false, Tail, ta);
          } else {
@@ -7571,9 +7306,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
          let short-circuit = ASTEOF;
          match cond {
-            App{ left:Var{key:c"<:"}, right:App{left:AType{lt=tt},right:AType{rt=tt}} } => (
-               lt = denormalize-strong(lt.slot(c"Type",1).l1);
-               rt = denormalize-strong(rt.slot(c"Type",1).l1);
+            App{ left:Var{key:c"<:"}, right:App{short-left=left, short-right=right} } => (
+               (tctx, short-left) = std-infer-expr(tctx, short-left, false, Used, ta);
+               (tctx, short-right) = std-infer-expr(tctx, short-right, false, Used, ta);
+               let lt = denormalize-strong(typeof-term(short-left).slot(c"Type",1).l1);
+               let rt = denormalize-strong(typeof-term(short-right).slot(c"Type",1).l1);
                if non-zero(lt) and non-zero(rt) {
                   if can-unify(rt, lt) {
                      (tctx, short-circuit) = std-infer-expr(tctx, t, false, Tail, ta);
@@ -7581,6 +7318,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      (tctx, short-circuit) = std-infer-expr(tctx, f, false, Tail, ta);
                   }
                };
+               tctx = tctx.phi-move(typeof-term(short-left), term);
+               tctx = tctx.phi-move(typeof-term(short-right), term);
             );
             _ => ();
          };
@@ -9331,6 +9070,7 @@ let show-alloc-count-in-program = false;
 let show-ast-count = false;
 let ast-parsed-count = 0_sz;
 let ast-typed-count = 0_sz;
+let config-print-ast = false;
 
 let main(argc: C_int, argv: CString[]): Nil = (
    config-v23 = false;
@@ -9364,6 +9104,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          c"--showallocgen" => show-alloc-count-in-program = true;
          c"--showastcount" => show-ast-count = true;
          c"--profile-ast" => config-profile-ast = true;
+         c"--print-ast" => config-print-ast = true;
          c"-o" => (
             argi = argi + 1;
             config-target = argv[argi];
@@ -9438,6 +9179,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          ast-typed-count = ast-count;
       );
    };
+   if config-print-ast then print("AST:\n\{ast-parsed-program}\n");
    if show-alloc-count then {
       print("Total blocks allocated: \{safe-alloc-block-count-monotonic}\n");
    };
@@ -9566,6 +9308,7 @@ import SRC/type-reify-type-variables.lsts;
 import SRC/type-is-linear.lsts;
 import SRC/type-simple-id.lsts;
 import SRC/type-with-only-tag.lsts;
+import SRC/type-has-t.lsts;
 
 import SRC/unit-ascript-core.lsts;
 
@@ -10473,23 +10216,6 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       App{ is-cons=is-cons, left=left, right=right } => (
           if not(is-cons) and typeof-term(left).is-arrow {
              match left {
-                Var{fname1=key:c"<:"} => (
-                   match right {
-                      App{ lt=left, rt=right } => (
-                         let lt-tt = typeof-term(lt);
-                         let rt-tt = typeof-term(rt);
-                         if lt-tt.is-t(c"Type",1) and rt-tt.is-t(c"Type",1)
-                         then (
-                            let lt-val = denormalize(lt-tt.slot(c"Type",1).l1);
-                            let rt-val = denormalize(rt-tt.slot(c"Type",1).l1);
-                            if can-unify( rt-val, lt-val )
-                            then mk-expression(c"1")
-                            else mk-expression(c"0")
-                         ) else std-c-compile-call(ctx, fname1, right);
-                      );
-                      _ => std-c-compile-call(ctx, fname1, right);
-                   }
-                );
                 Var{fname2=key:c".into"} => (
                    match right {
                       App{ lt=left, rt=right } => (
@@ -13792,11 +13518,10 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          lsts-parse-expect(c"Type", non-zero(tokens), tokens);
-         if not(lsts-is-type-tag(lsts-parse-head(tokens))) and not(lsts-is-ident-head(lsts-parse-head(tokens))) {
-            lsts-parse-expect(c"[Type Tag or Variable]", tokens);
+         if lsts-is-type-tag(lsts-parse-head(tokens)) or lsts-is-ident-head(lsts-parse-head(tokens)) {
+            base = base + c"::" + lsts-substitute-type-aliases(lsts-parse-head(tokens));
+            tokens = tail(tokens);
          };
-         base = base + c"::" + lsts-substitute-type-aliases(lsts-parse-head(tokens));
-         tokens = tail(tokens);
       };
       let args = mk-vector(type(Type));
       if lsts-parse-head(tokens) == c"<" {

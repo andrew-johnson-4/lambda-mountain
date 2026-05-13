@@ -31,6 +31,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.ascript(term, t1(c"Type",typeof-term(r)));
          tctx = tctx.phi-move(typeof-term(r), term);
       );
+      App{o-t=left:Var{key:c"stringof"}, r=right} => (
+         let literal = mk-lit(r.into(type(CString))).ascript(type-cstring-literal);
+         (tctx, term) = std-infer-expr(tctx, literal, false, Used, ta);
+      );
       App{o-t=left:Var{key:c"open"}, r=right} => (
          (tctx, let new-r) = std-infer-expr(tctx, r, false, Used(), ta);
          if not(is(r,new-r)) then { r = new-r; term = mk-app(o-t, r); };
@@ -72,7 +76,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       App{left:Var{key:c"macro::for"}, right:App{
          left:App{
-            left:Var{item=key},
+            left:Var{field-item=key},
             right:App{
                left:Var{key:c"$fields-of"},
                iterable=right
@@ -85,13 +89,41 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          if i-tt.is-t(c"Type",1) then i-tt = i-tt.slot(c"Type",1).l1;
          let dt = i-tt.with-only-datatype.ground-tag-and-arity;
          let tg = i-tt.with-only-tag.simple-tag;
+         if not(non-zero(tg)) then tg = c"Tag::";
          term = mk-nil();
          tctx = tctx.ascript(term, type-nil);
          for kt in index-fields-of.lookup((dt.first,dt.second,tg), mk-vector(type((CString,Type)))) {
-            let actx = mk-actx().bind(item,mk-var(kt.first));
-            body = substitute(actx,body);
-            (tctx, body) = std-infer-expr(tctx, body, false, Used, ta);
-            term = mk-cons(term, body);
+            let actx = mk-actx().bind(field-item,mk-var(kt.first));
+            let re-body = substitute(actx,body);
+            (tctx, re-body) = std-infer-expr(tctx, re-body, false, Used, ta);
+            term = mk-cons(term, re-body);
+            tctx = tctx.ascript(term, type-nil);
+         };
+      );
+      App{left:Var{key:c"macro::for"}, right:App{
+         left:App{
+            left:Var{case-item=key},
+            right:App{
+               left:Var{key:c"$cases-of"},
+               iterable=right
+            }
+         }, body=right
+      }} => (
+         (tctx, iterable) = std-infer-expr(tctx, iterable, false, Used, ta);
+         tctx = tctx.phi-move(typeof-term(iterable), iterable);
+         let i-tt = typeof-term(iterable);
+         if i-tt.is-t(c"Type",1) then i-tt = i-tt.slot(c"Type",1).l1;
+         let dt = i-tt.with-only-datatype.ground-tag-and-arity;
+         term = mk-nil();
+         tctx = tctx.ascript(term, type-nil);
+         for k in index-cases-of.lookup(dt, mk-vector(type(CString))) {
+            # for the untagged case, the case will become Tag::
+            # this convention is used to *discard* any tag information that exists in terms like (x as Tag::)
+            # so effectively this is still a good and perfectly valid tag
+            let actx = mk-actx().bind(case-item,mk-atype(t0(c"Tag::" + k)));
+            let re-body = substitute(actx,body);
+            (tctx, re-body) = std-infer-expr(tctx, re-body, false, Used, ta);
+            term = mk-cons(term, re-body);
             tctx = tctx.ascript(term, type-nil);
          };
       );
@@ -106,7 +138,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             _ => ();
          }};
          if tt.is-t(c"String",0) {
-            term = t.ascript(t0(c"CString") && t0(c"Literal"));
+            term = t.ascript(type-cstring-literal);
             term = mk-app(mk-var(c"intern"),term);
             (tctx, term) = std-infer-expr(tctx, term, false, Tail, ta);
          } else {
@@ -159,9 +191,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
          let short-circuit = ASTEOF;
          match cond {
-            App{ left:Var{key:c"<:"}, right:App{left:AType{lt=tt},right:AType{rt=tt}} } => (
-               lt = denormalize-strong(lt.slot(c"Type",1).l1);
-               rt = denormalize-strong(rt.slot(c"Type",1).l1);
+            App{ left:Var{key:c"<:"}, right:App{short-left=left, short-right=right} } => (
+               (tctx, short-left) = std-infer-expr(tctx, short-left, false, Used, ta);
+               (tctx, short-right) = std-infer-expr(tctx, short-right, false, Used, ta);
+               let lt = denormalize-strong(typeof-term(short-left).slot(c"Type",1).l1);
+               let rt = denormalize-strong(typeof-term(short-right).slot(c"Type",1).l1);
                if non-zero(lt) and non-zero(rt) {
                   if can-unify(rt, lt) {
                      (tctx, short-circuit) = std-infer-expr(tctx, t, false, Tail, ta);
@@ -169,6 +203,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      (tctx, short-circuit) = std-infer-expr(tctx, f, false, Tail, ta);
                   }
                };
+               tctx = tctx.phi-move(typeof-term(short-left), term);
+               tctx = tctx.phi-move(typeof-term(short-right), term);
             );
             _ => ();
          };
