@@ -22,7 +22,7 @@ let .into(t: AST, tgt: Type<String>): String = (
       AType{tt=tt} => tt.into(type(String));
       Seq{seq=seq} => (
          let ret = "{";
-         for s in seq { if non-zero(ret) then ret = ret + ";"; ret = ret + s.into(type(String)) };
+         for s in seq { ret = ret + "\t" + s.into(type(String)) + ";\n" };
          ret + "}"
       );
       Typedef{lhs-type=lhs-type} => (

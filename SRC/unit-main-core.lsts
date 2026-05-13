@@ -34,6 +34,7 @@ let show-alloc-count-in-program = false;
 let show-ast-count = false;
 let ast-parsed-count = 0_sz;
 let ast-typed-count = 0_sz;
+let config-print-ast = false;
 
 let main(argc: C_int, argv: CString[]): Nil = (
    config-v23 = false;
@@ -67,6 +68,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          c"--showallocgen" => show-alloc-count-in-program = true;
          c"--showastcount" => show-ast-count = true;
          c"--profile-ast" => config-profile-ast = true;
+         c"--print-ast" => config-print-ast = true;
          c"-o" => (
             argi = argi + 1;
             config-target = argv[argi];
@@ -135,8 +137,13 @@ let main(argc: C_int, argv: CString[]): Nil = (
          };
          ast-parsed-count = ast-count;
          match config-mode {
-            ModeTypecheck{} => (preprocess(); typecheck(););
-            ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(););
+            ModeTypecheck{} => (preprocess(););
+            ModeCompile{} => (preprocess(););
+         };
+         if config-print-ast then print("AST:\n\{ast-parsed-program}\n");
+         match config-mode {
+            ModeTypecheck{} => (typecheck(););
+            ModeCompile{} => (typecheck(); plugin-current-backend(););
          };
          ast-typed-count = ast-count;
       );
