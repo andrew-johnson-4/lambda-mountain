@@ -1463,7 +1463,6 @@ let close(d: t): OneOwnedData<t>[] = (
 let .release(od: OneOwnedData<t>[]): Nil = (
    if (od as USize)!=0 {
       if od.reference-count==0 then {
-         print("Release OneOwnedData<\{type(t)}>[]\n");
          fail(c"OneOwnedData.release called when reference count is already zero. This object has already been freed!");
       };
       od.reference-count = od.reference-count - 1;
@@ -1509,14 +1508,14 @@ let mk-owned-data(tt: Type<t>, capacity: USize): OwnedData<t>[] = (
 let $"[]"(od: OwnedData<t>[], idx: USize): t = (
    if (od as USize)==0
    then fail(c"OwnedData [] Access Null Pointer");
-   if idx >= od.occupied then fail("OwnedData [\{idx}] Index Access Out of Bounds");
+   if idx >= od.occupied then fail(c"OwnedData [] Index Access Out of Bounds");
    od.data[idx]
 );
 
 let $"set[]"(od: OwnedData<t>[], idx: USize, val: t): Nil = (
    if (od as USize)==0
    then fail(c"OwnedData set[] Access Null Pointer");
-   if idx >= od.occupied then fail("OwnedData set[\{idx}] Index Access Out of Bounds");
+   if idx >= od.occupied then fail(c"OwnedData set[] Index Access Out of Bounds");
    if type(t) <: type(MustRelease) then od.data[idx].release;
    od.data[idx] = val;
 );
@@ -1827,16 +1826,16 @@ let .retain(x: xt): xt = (
    for case in $cases-of(x) {
       if x.discriminator-case-tag==(x as case).discriminator-case-tag {
          for field in $fields-of(x as case) {
-            if typeof( macro::concat($".", field) ) <: type(MustRetain) {
+            if typeof( macro::concat($".", field)(x as case) ) <: type(MustRetain) {
                mark-as-released( macro::concat($".", field)(x as case).retain );
             };
-            if typeof( macro::concat($".", field)(x) ) <: type(OwnedData<?>) {
+            if typeof( macro::concat($".", field)(x as case) ) <: type(OwnedData<?>[]) {
                mark-as-released( macro::concat($".", field)(x as case).retain );
             };
-            if typeof( macro::concat($".", field)(x) ) <: type(OneOwnedData<?>) {
+            if typeof( macro::concat($".", field)(x as case) ) <: type(OneOwnedData<?>[]) {
                mark-as-released( macro::concat($".", field)(x as case).retain );
             };
-            if typeof( macro::concat($".", field)(x) ) <: type(SparseOwnedData<?>) {
+            if typeof( macro::concat($".", field)(x as case) ) <: type(SparseOwnedData<?>[]) {
                mark-as-released( macro::concat($".", field)(x as case).retain );
             };
          };
@@ -1848,22 +1847,23 @@ let .retain(x: xt): xt = (
 let .release(x: xt): Nil = (
    for case in $cases-of(x) {
       if x.discriminator-case-tag==(x as case).discriminator-case-tag {
-         for field in $fields-of(x) {
-            if typeof( macro::concat($".", field)(x) ) <: type(MustRetain) {
+         for field in $fields-of(x as case) {
+            if typeof( macro::concat($".", field)(x as case) ) <: type(MustRetain) {
                macro::concat($".", field)(x as case).release;
             };
-            if typeof( macro::concat($".", field)(x) ) <: type(OwnedData<?>) {
+            if typeof( macro::concat($".", field)(x as case) ) <: type(OwnedData<?>[]) {
                macro::concat($".", field)(x as case).release;
             };
-            if typeof( macro::concat($".", field)(x) ) <: type(OneOwnedData<?>) {
+            if typeof( macro::concat($".", field)(x as case) ) <: type(OneOwnedData<?>[]) {
                macro::concat($".", field)(x as case).release;
             };
-            if typeof( macro::concat($".", field)(x) ) <: type(SparseOwnedData<?>) {
+            if typeof( macro::concat($".", field)(x as case) ) <: type(SparseOwnedData<?>[]) {
                macro::concat($".", field)(x as case).release;
             };
          };
       };
    };
+   mark-as-released(x);
 );
 
 typed macro declare-zop(op-alias: lazy, r-type: lazy, op-expr: lazy): lazy = {
@@ -1915,8 +1915,6 @@ declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs+MustNotFresh+M
 # this only needs to be declared if you want to support casting type information into String literals
 # EXAMPLE: print(typeof(x))
 declare-binop( $".into", type(Any), type(CString), raw-type(CString), () );
-
-declare-unop( typeof, type(x), raw-type(Type<x>), () );
 
 # this operator is hard-coded in the compiler for now
 # but this definition being in the library is simplest for inference
@@ -6434,6 +6432,9 @@ let type-lazy = tv(c"lazy");
 let type-type-string = t1(c"Type",t0(c"String"));
 
 # new allocations = 0 (constant)
+let type-cstring-literal = t0(c"CString") && t0(c"Literal");
+
+# new allocations = 0 (constant)
 let type-linear-moved = t1(c"Linear",t0(c"Phi::Moved"));
 
 # new allocations = 0 (constant)
@@ -6660,6 +6661,22 @@ let .ground-tag-and-arity(tt: Type): (CString,U64) = (
    }
 );
 
+
+let .has-t(tt: Type, tt-tag: CString, tt-length: U64): Bool = (
+   match tt {
+      TAnd { conjugate=conjugate } => (
+         let result = false;
+         for c in conjugate { result = result or c.is-t(tt-tag, tt-length) };
+         result
+      );
+      TGround { tag=tag, parameters=parameters } => (
+         let result = tag == tt-tag and parameters.length == tt-length;
+         for p in parameters { result = result or p.has-t(tt-tag, tt-length) };
+         result;
+      );
+      _ => false;
+   }
+);
 
 let hash(tt: Type): U64 = (
    match tt {
@@ -7471,7 +7488,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type, rewritten-constant: Bool): (TypeContext?, AST) = (
-   print("Infer \{term}\n");
    profile-visit-ast-unique(term);
    profile-visit-ast-equal(term);
    if not(term.is-free-and-seen) { match term {
@@ -7491,6 +7507,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.ascript(o-t, t2(c"Arrow",typeof-term(r),t1(c"Type",typeof-term(r))));
          tctx = tctx.ascript(term, t1(c"Type",typeof-term(r)));
          tctx = tctx.phi-move(typeof-term(r), term);
+      );
+      App{o-t=left:Var{key:c"stringof"}, r=right} => (
+         let literal = mk-lit(r.into(type(CString))).ascript(type-cstring-literal);
+         (tctx, term) = std-infer-expr(tctx, literal, false, Used, ta);
       );
       App{o-t=left:Var{key:c"open"}, r=right} => (
          (tctx, let new-r) = std-infer-expr(tctx, r, false, Used(), ta);
@@ -7550,9 +7570,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.ascript(term, type-nil);
          for kt in index-fields-of.lookup((dt.first,dt.second,tg), mk-vector(type((CString,Type)))) {
             let actx = mk-actx().bind(field-item,mk-var(kt.first));
-            body = substitute(actx,body);
-            (tctx, body) = std-infer-expr(tctx, body, false, Used, ta);
-            term = mk-cons(term, body);
+            let re-body = substitute(actx,body);
+            (tctx, re-body) = std-infer-expr(tctx, re-body, false, Used, ta);
+            term = mk-cons(term, re-body);
             tctx = tctx.ascript(term, type-nil);
          };
       );
@@ -7577,9 +7597,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             # this convention is used to *discard* any tag information that exists in terms like (x as Tag::)
             # so effectively this is still a good and perfectly valid tag
             let actx = mk-actx().bind(case-item,mk-atype(t0(c"Tag::" + k)));
-            body = substitute(actx,body);
-            (tctx, body) = std-infer-expr(tctx, body, false, Used, ta);
-            term = mk-cons(term, body);
+            let re-body = substitute(actx,body);
+            (tctx, re-body) = std-infer-expr(tctx, re-body, false, Used, ta);
+            term = mk-cons(term, re-body);
             tctx = tctx.ascript(term, type-nil);
          };
       );
@@ -7594,7 +7614,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             _ => ();
          }};
          if tt.is-t(c"String",0) {
-            term = t.ascript(t0(c"CString") && t0(c"Literal"));
+            term = t.ascript(type-cstring-literal);
             term = mk-app(mk-var(c"intern"),term);
             (tctx, term) = std-infer-expr(tctx, term, false, Tail, ta);
          } else {
@@ -7647,9 +7667,11 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
          let short-circuit = ASTEOF;
          match cond {
-            App{ left:Var{key:c"<:"}, right:App{left:AType{lt=tt},right:AType{rt=tt}} } => (
-               lt = denormalize-strong(lt.slot(c"Type",1).l1);
-               rt = denormalize-strong(rt.slot(c"Type",1).l1);
+            App{ left:Var{key:c"<:"}, right:App{short-left=left, short-right=right} } => (
+               (tctx, short-left) = std-infer-expr(tctx, short-left, false, Used, ta);
+               (tctx, short-right) = std-infer-expr(tctx, short-right, false, Used, ta);
+               let lt = denormalize-strong(typeof-term(short-left).slot(c"Type",1).l1);
+               let rt = denormalize-strong(typeof-term(short-right).slot(c"Type",1).l1);
                if non-zero(lt) and non-zero(rt) {
                   if can-unify(rt, lt) {
                      (tctx, short-circuit) = std-infer-expr(tctx, t, false, Tail, ta);
@@ -7657,6 +7679,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                      (tctx, short-circuit) = std-infer-expr(tctx, f, false, Tail, ta);
                   }
                };
+               tctx = tctx.phi-move(typeof-term(short-left), term);
+               tctx = tctx.phi-move(typeof-term(short-right), term);
             );
             _ => ();
          };
@@ -7960,7 +7984,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       }
    }};
    (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(c"MustNotFresh",0) or hint.is-t(c"TailPosition",0));
-   print("Inferred \{term} : \{typeof-term(term)}\n");
    (tctx, term);
 );
 
@@ -9643,6 +9666,7 @@ import SRC/type-reify-type-variables.lsts;
 import SRC/type-is-linear.lsts;
 import SRC/type-simple-id.lsts;
 import SRC/type-with-only-tag.lsts;
+import SRC/type-has-t.lsts;
 
 import SRC/unit-ascript-core.lsts;
 
@@ -10550,23 +10574,6 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       App{ is-cons=is-cons, left=left, right=right } => (
           if not(is-cons) and typeof-term(left).is-arrow {
              match left {
-                Var{fname1=key:c"<:"} => (
-                   match right {
-                      App{ lt=left, rt=right } => (
-                         let lt-tt = typeof-term(lt);
-                         let rt-tt = typeof-term(rt);
-                         if lt-tt.is-t(c"Type",1) and rt-tt.is-t(c"Type",1)
-                         then (
-                            let lt-val = denormalize(lt-tt.slot(c"Type",1).l1);
-                            let rt-val = denormalize(rt-tt.slot(c"Type",1).l1);
-                            if can-unify( rt-val, lt-val )
-                            then mk-expression(c"1")
-                            else mk-expression(c"0")
-                         ) else std-c-compile-call(ctx, fname1, right);
-                      );
-                      _ => std-c-compile-call(ctx, fname1, right);
-                   }
-                );
                 Var{fname2=key:c".into"} => (
                    match right {
                       App{ lt=left, rt=right } => (
