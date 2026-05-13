@@ -2,6 +2,7 @@
 import lib/core/bedrock.lsts;
 
 type A = {a:U8} | B{b:U8} | C{c:U8,d:U8};
+type D = {d:U8};
 
 let fields-count = 0;
 let fields-cat = c"";
@@ -41,4 +42,42 @@ for field in $fields-of(C(1,2,3) as Tag::C) {
 };
 assert( fields-cat == c"acd" );
 assert( fields-count == 3 );
+
+fields-count = 0;
+fields-cat = c"";
+for field in $fields-of(D(1)) {
+   fields-count = fields-count + 1;
+   fields-cat = fields-cat + stringof(field);
+};
+assert( fields-cat == c"d" );
+assert( fields-count == 1 );
+
+fields-count = 0;
+fields-cat = c"";
+for field in $fields-of(D(1) as Tag::) {
+   fields-count = fields-count + 1;
+   fields-cat = fields-cat + stringof(field);
+};
+assert( fields-cat == c"d" );
+assert( fields-count == 1 );
+
+fields-count = 0;
+fields-cat = c"";
+for field in $fields-of(mk-vector(type(U8))) {
+   fields-count = fields-count + 1;
+   fields-cat = fields-cat + stringof(field);
+};
+print(fields-cat);
+assert( fields-cat == c"d" );
+assert( fields-count == 1 );
+
+fields-count = 0;
+fields-cat = c"";
+for field in $fields-of(mk-vector(type(U8)) as Tag::) {
+   fields-count = fields-count + 1;
+   fields-cat = fields-cat + stringof(field);
+};
+print(fields-cat);
+assert( fields-cat == c"d" );
+assert( fields-count == 1 );
 

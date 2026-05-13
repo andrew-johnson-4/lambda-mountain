@@ -1185,22 +1185,6 @@ let :Blob mangle-post(t: Type<Any>): L;
 
 type List<x> implies MustRetain, MustRelease zero LEOF = LEOF | LCons { head: x, tail: OneOwnedData<List<x>>[] };
 
-let .release(t: List<x>): Nil = (
-   if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag {
-      if type(x) <: type(MustRelease) then (t as Tag::LCons).head.release;
-      (t as Tag::LCons).tail.release;
-   };
-   mark-as-released(t);
-);
-
-let .retain(t: List<x>): List<x> = (
-   if t.discriminator-case-tag==(t as Tag::LCons).discriminator-case-tag {
-      if type(x) <: type(MustRetain) then mark-as-released((t as Tag::LCons).head.retain);
-      (t as Tag::LCons).tail.retain
-   };
-   t
-);
-
 # new allocations = 1
 let $"list::cons"(hd: x, tl: List<x>): List<x> = LCons(hd, close(tl));
 
@@ -1830,13 +1814,19 @@ let .retain(x: xt): xt = (
                mark-as-released( macro::concat($".", field)(x as case).retain );
             };
             if typeof( macro::concat($".", field)(x as case) ) <: type(OwnedData<?>[]) {
-               mark-as-released( macro::concat($".", field)(x as case).retain );
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  mark-as-released( macro::concat($".", field)(x as case).retain );
+               }
             };
             if typeof( macro::concat($".", field)(x as case) ) <: type(OneOwnedData<?>[]) {
-               mark-as-released( macro::concat($".", field)(x as case).retain );
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  mark-as-released( macro::concat($".", field)(x as case).retain );
+               }
             };
             if typeof( macro::concat($".", field)(x as case) ) <: type(SparseOwnedData<?>[]) {
-               mark-as-released( macro::concat($".", field)(x as case).retain );
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  mark-as-released( macro::concat($".", field)(x as case).retain );
+               }
             };
          };
       };
@@ -1852,13 +1842,19 @@ let .release(x: xt): Nil = (
                macro::concat($".", field)(x as case).release;
             };
             if typeof( macro::concat($".", field)(x as case) ) <: type(OwnedData<?>[]) {
-               macro::concat($".", field)(x as case).release;
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  macro::concat($".", field)(x as case).release;
+               }
             };
             if typeof( macro::concat($".", field)(x as case) ) <: type(OneOwnedData<?>[]) {
-               macro::concat($".", field)(x as case).release;
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  macro::concat($".", field)(x as case).release;
+               }
             };
             if typeof( macro::concat($".", field)(x as case) ) <: type(SparseOwnedData<?>[]) {
-               macro::concat($".", field)(x as case).release;
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  macro::concat($".", field)(x as case).release;
+               }
             };
          };
       };
@@ -1915,10 +1911,6 @@ declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs+MustNotFresh+M
 # this only needs to be declared if you want to support casting type information into String literals
 # EXAMPLE: print(typeof(x))
 declare-binop( $".into", type(Any), type(CString), raw-type(CString), () );
-
-# this operator is hard-coded in the compiler for now
-# but this definition being in the library is simplest for inference
-declare-binop( $"<:", type(Any), type(Any), raw-type(Bool), () );
 
 let :Blob $"primitive::while"(cond: Bool, body: Any): Nil = (
    $":frame"( $":frame"(cond); $":frame"(body) );
@@ -2815,34 +2807,9 @@ let hash(x: USize): U64 = x as U64;
 type Vector<t> implies MustRetain, MustRelease
    = { data: OwnedData<t>[] };
 
-let .release(x: Vector<t>): Nil = (
-   if (x.data as USize) != 0 {
-      x.data.release;
-   };
-   mark-as-released(x);
-);
-
-let .retain(x: Vector<t>): Vector<t> = (
-   if (x.data as USize) != 0 {
-      x.data.retain;
-   };
-   x
-);
-
 ## Vector slices etc. are not cheap, so we use views, which can be collapsed back into Vectors
 type VectorView<t> implies MustRetain, MustRelease
    = { data: Vector<t>, start-offset: USize, end-offset: USize };
-
-let .release(x: VectorView<t>): Nil = (
-   x.data.release;
-   mark-as-released(x);
-);
-
-let .retain(x: VectorView<t>): VectorView<t> = (
-   mark-as-released(x.data.retain);
-   x
-);
-
 
 # new allocations = 0 if capacity==0
 #                 | 1
@@ -3938,8 +3905,8 @@ let .into(t: AST, tgt: Type<String>): String = (
       );
       AType{tt=tt} => tt.into(type(String));
       Seq{seq=seq} => (
-         let ret = "{";
-         for s in seq { if non-zero(ret) then ret = ret + ";"; ret = ret + s.into(type(String)) };
+         let ret = "{\n";
+         for s in seq { ret = ret + "\t" + s.into(type(String)) + ";\n" };
          ret + "}"
       );
       Typedef{lhs-type=lhs-type} => (
@@ -7440,7 +7407,7 @@ let index-typedefs(program: AST): Nil = (
             if not(non-zero(case.first)) then common-fields = case.second;
          };
          let gta = lhs-type.ground-tag-and-arity;
-         index-fields-of = index-fields-of.bind((gta.first, gta.second, c""), common-fields);
+         index-fields-of = index-fields-of.bind((gta.first, gta.second, c"Tag::"), common-fields);
          for case in cases {
             let uncommon-fields = common-fields.clone;
             if non-zero(case.first) {
@@ -7566,6 +7533,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          if i-tt.is-t(c"Type",1) then i-tt = i-tt.slot(c"Type",1).l1;
          let dt = i-tt.with-only-datatype.ground-tag-and-arity;
          let tg = i-tt.with-only-tag.simple-tag;
+         if not(non-zero(tg)) then tg = c"Tag::";
          term = mk-nil();
          tctx = tctx.ascript(term, type-nil);
          for kt in index-fields-of.lookup((dt.first,dt.second,tg), mk-vector(type((CString,Type)))) {
@@ -9431,6 +9399,7 @@ let show-alloc-count-in-program = false;
 let show-ast-count = false;
 let ast-parsed-count = 0_sz;
 let ast-typed-count = 0_sz;
+let config-print-ast = false;
 
 let main(argc: C_int, argv: CString[]): Nil = (
    config-v23 = false;
@@ -9464,6 +9433,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          c"--showallocgen" => show-alloc-count-in-program = true;
          c"--showastcount" => show-ast-count = true;
          c"--profile-ast" => config-profile-ast = true;
+         c"--print-ast" => config-print-ast = true;
          c"-o" => (
             argi = argi + 1;
             config-target = argv[argi];
@@ -9538,6 +9508,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
          ast-typed-count = ast-count;
       );
    };
+   if config-print-ast then print("AST:\n\{ast-parsed-program}\n");
    if show-alloc-count then {
       print("Total blocks allocated: \{safe-alloc-block-count-monotonic}\n");
    };
@@ -13876,11 +13847,10 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          lsts-parse-expect(c"Type", non-zero(tokens), tokens);
-         if not(lsts-is-type-tag(lsts-parse-head(tokens))) and not(lsts-is-ident-head(lsts-parse-head(tokens))) {
-            lsts-parse-expect(c"[Type Tag or Variable]", tokens);
+         if lsts-is-type-tag(lsts-parse-head(tokens)) or lsts-is-ident-head(lsts-parse-head(tokens)) {
+            base = base + c"::" + lsts-substitute-type-aliases(lsts-parse-head(tokens));
+            tokens = tail(tokens);
          };
-         base = base + c"::" + lsts-substitute-type-aliases(lsts-parse-head(tokens));
-         tokens = tail(tokens);
       };
       let args = mk-vector(type(Type));
       if lsts-parse-head(tokens) == c"<" {

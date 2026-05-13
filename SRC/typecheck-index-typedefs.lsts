@@ -34,7 +34,7 @@ let index-typedefs(program: AST): Nil = (
             if not(non-zero(case.first)) then common-fields = case.second;
          };
          let gta = lhs-type.ground-tag-and-arity;
-         index-fields-of = index-fields-of.bind((gta.first, gta.second, c""), common-fields);
+         index-fields-of = index-fields-of.bind((gta.first, gta.second, c"Tag::"), common-fields);
          for case in cases {
             let uncommon-fields = common-fields.clone;
             if non-zero(case.first) {

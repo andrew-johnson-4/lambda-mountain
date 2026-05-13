@@ -126,7 +126,7 @@ let safe-free(ptr: ?[]): Nil = (
    # TODO: wrap counter adjustments in conditional compilation
    safe-alloc-block-count = safe-alloc-block-count - 1;
 
-   #free(ptr as C<"void">[]);
+   free(ptr as C<"void">[]);
    ()
 );
 

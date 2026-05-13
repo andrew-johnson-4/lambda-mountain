@@ -89,6 +89,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          if i-tt.is-t(c"Type",1) then i-tt = i-tt.slot(c"Type",1).l1;
          let dt = i-tt.with-only-datatype.ground-tag-and-arity;
          let tg = i-tt.with-only-tag.simple-tag;
+         if not(non-zero(tg)) then tg = c"Tag::";
          term = mk-nil();
          tctx = tctx.ascript(term, type-nil);
          for kt in index-fields-of.lookup((dt.first,dt.second,tg), mk-vector(type((CString,Type)))) {
