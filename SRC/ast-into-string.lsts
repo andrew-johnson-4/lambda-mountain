@@ -21,7 +21,7 @@ let .into(t: AST, tgt: Type<String>): String = (
       );
       AType{tt=tt} => tt.into(type(String));
       Seq{seq=seq} => (
-         let ret = "{";
+         let ret = "{\n";
          for s in seq { ret = ret + "\t" + s.into(type(String)) + ";\n" };
          ret + "}"
       );

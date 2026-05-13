@@ -137,17 +137,13 @@ let main(argc: C_int, argv: CString[]): Nil = (
          };
          ast-parsed-count = ast-count;
          match config-mode {
-            ModeTypecheck{} => (preprocess(););
-            ModeCompile{} => (preprocess(););
-         };
-         if config-print-ast then print("AST:\n\{ast-parsed-program}\n");
-         match config-mode {
-            ModeTypecheck{} => (typecheck(););
-            ModeCompile{} => (typecheck(); plugin-current-backend(););
+            ModeTypecheck{} => (preprocess(); typecheck(););
+            ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(););
          };
          ast-typed-count = ast-count;
       );
    };
+   if config-print-ast then print("AST:\n\{ast-parsed-program}\n");
    if show-alloc-count then {
       print("Total blocks allocated: \{safe-alloc-block-count-monotonic}\n");
    };

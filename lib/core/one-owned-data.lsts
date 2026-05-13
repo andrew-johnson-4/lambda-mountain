@@ -56,6 +56,9 @@ let .release(od: OneOwnedData<t>[]): Nil = (
       };
       od.reference-count = od.reference-count - 1;
       if od.reference-count == 0 {
+         if type(t) <: type(List<?>) {
+            print("Release Finalize \{od.data[0_sz]}\n");
+         };
          if type(t) <: type(MustRelease) {
             od.data[0_sz].release;
          };
