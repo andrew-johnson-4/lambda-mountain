@@ -1,0 +1,66 @@
+
+let .prune-moved(tctx: TypeContext?): TypeContext? = (
+   let inner-tctx = tctx.get-or(mk-tctx());
+   (let moved, let live) = inner-tctx.pctx.find-moved(mk-set(type(U64)), mk-set(type(U64)));
+   inner-tctx.pctx = inner-tctx.pctx.prune-moved(mk-pbtree(type(U64),type(PhiContextRow)), moved);
+   Some(inner-tctx)
+);
+
+let .prune-moved(from: PBTree<U64,PhiContextRow>, to: PBTree<U64,PhiContextRow>, moved: Set<U64>): PBTree<U64,PhiContextRow> = (
+   match from {
+      PBLeaf{} => to;
+      PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
+          if moved.has(k11) then ();
+          else if not to.has-key(k11) then to = to.bind(k11, v11);
+          to = left.prune-moved(to, moved);
+          to = right.prune-moved(to, moved);
+          to
+      );
+      PBNode2{ k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+          if moved.has(k12) then ();
+          else if not to.has-key(k12) then to = to.bind(k12, v12);
+          if moved.has(k22) then ();
+          else if not to.has-key(k22) then to = to.bind(k22, v22);
+          to = left.prune-moved(to, moved);
+          to = mid.prune-moved(to, moved);
+          to = right.prune-moved(to, moved);
+          to
+      );
+   }
+);
+
+let .find-moved(tctx: PBTree<U64,PhiContextRow>, moved: Set<U64>, live: Set<U64>): (Set<U64>, Set<U64>) = (
+   match tctx {
+      PBLeaf{} => (moved, live);
+      PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
+          if moved.has(k11) then ();
+          else if not live.has(k11) {
+             if v11.phi-tt-or-zero.is-linear-live
+             then live = live.bind(k11)
+             else moved = moved.bind(k11)
+          };
+          (moved, live) = left.find-moved(moved, live);
+          (moved, live) = right.find-moved(moved, live);
+          (moved, live)
+      );
+      PBNode2{ k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+          if moved.has(k12) then ();
+          else if not live.has(k12) {
+             if v12.phi-tt-or-zero.is-linear-live
+             then live = live.bind(k12)
+             else moved = moved.bind(k12)
+          };
+          if moved.has(k22) then ();
+          else if not live.has(k22) {
+             if v22.phi-tt-or-zero.is-linear-live
+             then live = live.bind(k22)
+             else moved = moved.bind(k22)
+          };
+          (moved, live) = left.find-moved(moved, live);
+          (moved, live) = mid.find-moved(moved, live);
+          (moved, live) = right.find-moved(moved, live);
+          (moved, live)
+      );
+   }
+);
+

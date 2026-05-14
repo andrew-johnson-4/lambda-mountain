@@ -42,6 +42,9 @@ let type-tail-position = t0(c"TailPosition");
 let type-lazy = tv(c"lazy");
 
 # new allocations = 0 (constant)
+let type-release-phi-moved = t1(c"MustRelease::ToRelease",t1(c"Linear",t0(c"Phi::Moved")));
+
+# new allocations = 0 (constant)
 let type-type-string = t1(c"Type",t0(c"String"));
 
 # new allocations = 0 (constant)

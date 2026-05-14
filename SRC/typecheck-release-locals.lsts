@@ -82,5 +82,5 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    tctx-after.with-pctx(tctx-after-pctx);
    tctx-before = tctx-before.phi-append(tctx-after);
    if not(release-self) then (tctx-before, _) = tctx-before.resurrect(typeof-term(term), term);
-   (tctx-before, term)
+   (tctx-before.prune-moved, term)
 );

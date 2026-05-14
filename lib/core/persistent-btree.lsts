@@ -29,6 +29,25 @@ let .lookup(tree: PBTree<k,v>, key: k, default: v): v = (
    }
 );
 
+# O(log N) Persistent Lookup
+let .has-key(tree: PBTree<k,v>, key: k): Bool = (
+   match tree {
+      PBLeaf {} => false;
+      PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
+         if key == k11 then true
+         else if key < k11 then left.has-key(key)
+         else right.has-key(key)
+      );
+      PBNode2 { k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+         if key == k12 then true
+         else if key == k22 then true
+         else if key < k12 then left.has-key(key)
+         else if key < k22 then mid.has-key(key)
+         else right.has-key(key)
+      );
+   }
+);
+
 # --- Internal Insert Mechanism ---
 
 # We need an intermediary state type to handle nodes splitting as they bubble up

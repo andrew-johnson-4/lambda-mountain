@@ -24,3 +24,4 @@ import SRC/tctx-phi-initialize.lsts;
 import SRC/tctx-misc-globals.lsts;
 import SRC/typecheck-infer-tctx.lsts;
 import SRC/tctx-move-diff.lsts;
+import SRC/tctx-prune-moved.lsts;
