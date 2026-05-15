@@ -3755,10 +3755,6 @@ let ast-parsed-program = mk-eof();
 let parse-suffixes = [] : List<(CString,Type)>;
 non-zero(parse-suffixes); # TODO remove
 
-let config-v3 = true;
-let config-v1 = false;
-let config-v0 = false;
-
 let .skey(t: Token): String = intern(t.key);
 type AST implements DefaultFormattable;
 
@@ -5362,12 +5358,10 @@ let $"||"(lctx: Maybe<TypeContext>, rctx: Maybe<TypeContext>): Maybe<TypeContext
 
 let .phi-append(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeContext? = (
    tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,false) ) 
-   #tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,false).prune-moved ) 
 );
 
 let .phi-append-dead-on-arrival(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeContext? = (
    tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,true) ) 
-#   tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,true).prune-moved ) 
 );
 
 let .phi-append(tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, dead-on-arrival: Bool): PBTree<U64,PhiContextRow> = (
@@ -7752,9 +7746,7 @@ let std-infer-call-arg(tctx: TypeContext?, term: AST, function-name: CString, hi
    }} else if function-name==c"map::cons" { match term {
       App{k=left, m=right} => (
          (tctx, let new-k) = std-infer-expr(tctx, k, false, Call(function-name), ta);
-         let direct-hint = if config-v3 or config-v23
-         then t2(c"Hashtable",typeof-term(new-k).normalize.slot(c"Cons",2).l1,typeof-term(new-k).normalize.slot(c"Cons",2).l2) && t0(c"ReturnHint")
-         else t2(c"HashtableEq",typeof-term(new-k).normalize.slot(c"Cons",2).l1,typeof-term(new-k).normalize.slot(c"Cons",2).l2);
+         let direct-hint = t2(c"Hashtable",typeof-term(new-k).normalize.slot(c"Cons",2).l1,typeof-term(new-k).normalize.slot(c"Cons",2).l2) && t0(c"ReturnHint");
          (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), direct-hint);
          if not(is(k,new-k)) or not(is(m,new-m)) then { k = new-k; m = new-m; term = mk-cons(k, m); };
          tctx = tctx.ascript(term, t2(c"Cons",typeof-term(k),typeof-term(m)));
@@ -9168,7 +9160,6 @@ let ast-typed-count = 0_sz;
 let config-print-ast = false;
 
 let main(argc: C_int, argv: CString[]): Nil = (
-   config-v23 = false;
    let argi = 1_sz;
    let input = [] : List<CString>;
    let highlight = false;
@@ -9181,11 +9172,6 @@ let main(argc: C_int, argv: CString[]): Nil = (
          c"--parse" => config-mode = ModeParse();
          c"--preprocess" => config-mode = ModePreprocess();
          c"--compile" => config-mode = ModeCompile();
-         c"--v0" => (config-v3 = false; config-v0 = true;);
-         c"--v1" => (config-v3 = false; config-v1 = true;);
-         c"--v2" => config-v3 = false;
-         c"--v23" => (config-v3 = false; config-v23 = true;);
-         c"--v3" => config-v3 = true;
          c"--highlight" => (
             config-mode = ModeTokenize();
             highlight = true;
@@ -13609,7 +13595,6 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          lsts-parse-expect(c"[Type Tag]", tokens);
       };
       let base = lsts-substitute-type-aliases(lsts-parse-head(tokens)); tokens = tail(tokens);
-      if not(config-v3) and not(config-v23) and base==c"Hashtable" then base = c"HashtableEq";
       while non-zero(tokens) and lsts-parse-head(tokens)==c":" and lsts-parse-head(tail(tokens))==c":" {
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
@@ -13633,11 +13618,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          };
          lsts-parse-expect(c">", tokens); tokens = tail(tokens);
       };
-      if not(config-v3) and not(config-v23) and base==c"OwnedData" and args.length==1 {
-         head(args);
-      } else if base==c"CompatOwnedData" and args.length==1 {
-         t1(c"OwnedData",head(args));
-      } else ts( base, args );
+      ts( base, args );
    };
    while lsts-parse-head(tokens) == c"[" or lsts-parse-head(tokens)==c"?" {
       if lsts-parse-head(tokens)==c"[" {
@@ -13949,9 +13930,7 @@ let lsts-parse-mul(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-parse-map(tokens: List<Token>): Tuple<AST,List<Token>> = (
    lsts-parse-expect(c"{", tokens); let loc = head(tokens).location; tokens = tail(tokens);
-   let term = if config-v3 or config-v23
-   then mk-app( Var( c"mk-hashtable", with-location(mk-token("mk-hashtable"),loc) ), mk-nil() )
-   else Lit( c"HashtableEqEOF", with-location(mk-token("HashtableEqEOF"),loc) );
+   let term = mk-app( Var( c"mk-hashtable", with-location(mk-token("mk-hashtable"),loc) ), mk-nil() );
    if lsts-parse-head(tokens)==c"for" {
       fail("TODO map comprehension at \{loc}\n")
    } else {
@@ -14202,15 +14181,11 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
          lsts-parse-expect(c"implies", tokens); tokens = tail(tokens);
          (let i, tokens) = lsts-parse-type(tokens);
          if i.is-t(c"CompatMustRelease",0) then infers = infers.push(t0(c"MustRelease"));
-         else if config-v23 and i.is-t(c"MustRelease",0) then ()
-         else if config-v23 and i.is-t(c"MustRetain",0) then ()
          else infers = infers.push(i);
          while lsts-parse-head(tokens)==c"," {
             lsts-parse-expect(c",", tokens); tokens = tail(tokens);
             (i, tokens) = lsts-parse-type(tokens);
             if i.is-t(c"CompatMustRelease",0) then infers = infers.push(t0(c"MustRelease"));
-            else if config-v23 and i.is-t(c"MustRelease",0) then ()
-            else if config-v23 and i.is-t(c"MustRetain",0) then ()
             else infers = infers.push(i);
          }
       };
