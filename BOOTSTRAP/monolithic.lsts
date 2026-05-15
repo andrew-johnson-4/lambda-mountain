@@ -1548,6 +1548,25 @@ let .lookup(tree: PBTree<k,v>, key: k, default: v): v = (
    }
 );
 
+# O(log N) Persistent Lookup
+let .has-key(tree: PBTree<k,v>, key: k): Bool = (
+   match tree {
+      PBLeaf {} => false;
+      PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
+         if key == k11 then true
+         else if key < k11 then left.has-key(key)
+         else right.has-key(key)
+      );
+      PBNode2 { k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+         if key == k12 then true
+         else if key == k22 then true
+         else if key < k12 then left.has-key(key)
+         else if key < k22 then mid.has-key(key)
+         else right.has-key(key)
+      );
+   }
+);
+
 # --- Internal Insert Mechanism ---
 
 # We need an intermediary state type to handle nodes splitting as they bubble up
@@ -5343,10 +5362,12 @@ let $"||"(lctx: Maybe<TypeContext>, rctx: Maybe<TypeContext>): Maybe<TypeContext
 
 let .phi-append(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeContext? = (
    tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,false) ) 
+   #tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,false).prune-moved ) 
 );
 
 let .phi-append-dead-on-arrival(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeContext? = (
    tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,true) ) 
+#   tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,true).prune-moved ) 
 );
 
 let .phi-append(tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, dead-on-arrival: Bool): PBTree<U64,PhiContextRow> = (
@@ -5491,6 +5512,77 @@ let .phi-move(tctx: TypeContext?, tt: Type, blame: AST): TypeContext? = (
    };
    tctx
 );
+
+let .prune-moved(tctx: TypeContext?): TypeContext? = (
+   let inner-tctx = tctx.get-or(mk-tctx());
+   (let moved, let live) = inner-tctx.pctx.find-moved(mk-set(type(U64)), mk-set(type(U64)));
+   inner-tctx.pctx = inner-tctx.pctx.prune-moved(mk-pbtree(type(U64),type(PhiContextRow)), moved);
+   Some(inner-tctx)
+);
+
+let .prune-moved(pctx: PBTree<U64,PhiContextRow>): PBTree<U64,PhiContextRow> = (
+   (let moved, let live) = pctx.find-moved(mk-set(type(U64)), mk-set(type(U64)));
+   pctx.prune-moved(mk-pbtree(type(U64),type(PhiContextRow)), moved);
+);
+
+let .prune-moved(from: PBTree<U64,PhiContextRow>, to: PBTree<U64,PhiContextRow>, moved: Set<U64>): PBTree<U64,PhiContextRow> = (
+   match from {
+      PBLeaf{} => to;
+      PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
+          if moved.has(k11) then ();
+          else if not to.has-key(k11) then to = to.bind(k11, v11);
+          to = left.prune-moved(to, moved);
+          to = right.prune-moved(to, moved);
+          to
+      );
+      PBNode2{ k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+          if moved.has(k12) then ();
+          else if not to.has-key(k12) then to = to.bind(k12, v12);
+          if moved.has(k22) then ();
+          else if not to.has-key(k22) then to = to.bind(k22, v22);
+          to = left.prune-moved(to, moved);
+          to = mid.prune-moved(to, moved);
+          to = right.prune-moved(to, moved);
+          to
+      );
+   }
+);
+
+let .find-moved(tctx: PBTree<U64,PhiContextRow>, moved: Set<U64>, live: Set<U64>): (Set<U64>, Set<U64>) = (
+   match tctx {
+      PBLeaf{} => (moved, live);
+      PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
+          if moved.has(k11) then ();
+          else if not live.has(k11) {
+             if v11.phi-tt-or-zero.is-linear-live
+             then live = live.bind(k11)
+             else moved = moved.bind(k11)
+          };
+          (moved, live) = left.find-moved(moved, live);
+          (moved, live) = right.find-moved(moved, live);
+          (moved, live)
+      );
+      PBNode2{ k12=k1, v12=v1, k22=k2, v22=v2, left=left, mid=mid, right=right } => (
+          if moved.has(k12) then ();
+          else if not live.has(k12) {
+             if v12.phi-tt-or-zero.is-linear-live
+             then live = live.bind(k12)
+             else moved = moved.bind(k12)
+          };
+          if moved.has(k22) then ();
+          else if not live.has(k22) {
+             if v22.phi-tt-or-zero.is-linear-live
+             then live = live.bind(k22)
+             else moved = moved.bind(k22)
+          };
+          (moved, live) = left.find-moved(moved, live);
+          (moved, live) = mid.find-moved(moved, live);
+          (moved, live) = right.find-moved(moved, live);
+          (moved, live)
+      );
+   }
+);
+
 
 let .substitute(tctx: TypeContext?, tt: Vector<Type>): Vector<Type> = (
    let next = mk-vector(type(Type));
@@ -5752,7 +5844,7 @@ let .with-phi(tctx: TypeContext?, tt: Type, blame: AST): Type = (
       tt = t2(c"Cons", tctx.with-phi(ct.l1,blame), tctx.with-phi(ct.l2,blame));
    } else if tt.is-t(c"Phi::Id",1) {
       let phi-state = tctx.lookup-phi(tt.slot(c"Phi::Id",1).l1.simple-id).phi-tt-or-zero;
-      if not(non-zero(phi-state)) then fail("Could not find phi state \{tt} at \{blame.location}\n");
+      if not(non-zero(phi-state)) then phi-state = type-release-phi-moved;
       if tt.is-t(c"Phi::State",1) and tt.slot(c"Phi::State",1).l1 != phi-state
       then tt = tt.without-slot(c"Phi::State",1) && t1(c"Phi::State", phi-state);
       else if not tt.is-t(c"Phi::State",1)
@@ -6084,6 +6176,9 @@ let type-tail-position = t0(c"TailPosition");
 
 # new allocations = 0 (constant)
 let type-lazy = tv(c"lazy");
+
+# new allocations = 0 (constant)
+let type-release-phi-moved = t1(c"MustRelease::ToRelease",t1(c"Linear",t0(c"Phi::Moved")));
 
 # new allocations = 0 (constant)
 let type-type-string = t1(c"Type",t0(c"String"));
@@ -8115,7 +8210,7 @@ let maybe-retain(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
 let worst-phi-length = 0_sz;
 
 let phi-merge(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, blame: AST): PBTree<U64,PhiContextRow> = (
-   phi-merge-inner(tctx-globals, tctx-primary, tctx-secondary, blame, mk-vector(type(U64))).second
+   phi-merge-inner(tctx-globals, tctx-primary, tctx-secondary, blame, mk-vector(type(U64))).second.prune-moved
 );
 
 
@@ -8303,7 +8398,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    tctx-after.with-pctx(tctx-after-pctx);
    tctx-before = tctx-before.phi-append(tctx-after);
    if not(release-self) then (tctx-before, _) = tctx-before.resurrect(typeof-term(term), term);
-   (tctx-before, term)
+   (tctx-before.prune-moved, term)
 );
 
 let specialize(key: CString, unify-ctx: TypeContext?, result-type: Type, term: AST): Nil = (
@@ -9263,6 +9358,7 @@ import SRC/tctx-phi-initialize.lsts;
 import SRC/tctx-misc-globals.lsts;
 import SRC/typecheck-infer-tctx.lsts;
 import SRC/tctx-move-diff.lsts;
+import SRC/tctx-prune-moved.lsts;
 
 import SRC/unit-util.lsts;
 
