@@ -2,7 +2,7 @@
 let worst-phi-length = 0_sz;
 
 let phi-merge(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, blame: AST): PBTree<U64,PhiContextRow> = (
-   phi-merge-inner(tctx-globals, tctx-primary, tctx-secondary, blame, mk-vector(type(U64))).second
+   phi-merge-inner(tctx-globals, tctx-primary, tctx-secondary, blame, mk-vector(type(U64))).second.prune-moved
 );
 
 

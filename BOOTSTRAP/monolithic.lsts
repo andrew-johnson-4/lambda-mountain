@@ -5362,10 +5362,12 @@ let $"||"(lctx: Maybe<TypeContext>, rctx: Maybe<TypeContext>): Maybe<TypeContext
 
 let .phi-append(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeContext? = (
    tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,false) ) 
+   #tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,false).prune-moved ) 
 );
 
 let .phi-append-dead-on-arrival(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeContext? = (
    tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,true) ) 
+#   tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,true).prune-moved ) 
 );
 
 let .phi-append(tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, dead-on-arrival: Bool): PBTree<U64,PhiContextRow> = (
@@ -5516,6 +5518,11 @@ let .prune-moved(tctx: TypeContext?): TypeContext? = (
    (let moved, let live) = inner-tctx.pctx.find-moved(mk-set(type(U64)), mk-set(type(U64)));
    inner-tctx.pctx = inner-tctx.pctx.prune-moved(mk-pbtree(type(U64),type(PhiContextRow)), moved);
    Some(inner-tctx)
+);
+
+let .prune-moved(pctx: PBTree<U64,PhiContextRow>): PBTree<U64,PhiContextRow> = (
+   (let moved, let live) = pctx.find-moved(mk-set(type(U64)), mk-set(type(U64)));
+   pctx.prune-moved(mk-pbtree(type(U64),type(PhiContextRow)), moved);
 );
 
 let .prune-moved(from: PBTree<U64,PhiContextRow>, to: PBTree<U64,PhiContextRow>, moved: Set<U64>): PBTree<U64,PhiContextRow> = (
@@ -8203,7 +8210,7 @@ let maybe-retain(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
 let worst-phi-length = 0_sz;
 
 let phi-merge(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, blame: AST): PBTree<U64,PhiContextRow> = (
-   phi-merge-inner(tctx-globals, tctx-primary, tctx-secondary, blame, mk-vector(type(U64))).second
+   phi-merge-inner(tctx-globals, tctx-primary, tctx-secondary, blame, mk-vector(type(U64))).second.prune-moved
 );
 
 

@@ -6,6 +6,11 @@ let .prune-moved(tctx: TypeContext?): TypeContext? = (
    Some(inner-tctx)
 );
 
+let .prune-moved(pctx: PBTree<U64,PhiContextRow>): PBTree<U64,PhiContextRow> = (
+   (let moved, let live) = pctx.find-moved(mk-set(type(U64)), mk-set(type(U64)));
+   pctx.prune-moved(mk-pbtree(type(U64),type(PhiContextRow)), moved);
+);
+
 let .prune-moved(from: PBTree<U64,PhiContextRow>, to: PBTree<U64,PhiContextRow>, moved: Set<U64>): PBTree<U64,PhiContextRow> = (
    match from {
       PBLeaf{} => to;
