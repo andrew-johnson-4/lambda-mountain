@@ -28,7 +28,7 @@ gperf: install-bootstrap
 deploy: build smoke-test
 deploy-lite: build smoke-test-lite
 
-gprofng: install-production
+gprofng: install-bootstrap
 	gprofng collect app lm SRC/index.lsts
 
 gprofng-view:
