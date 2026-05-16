@@ -1,0 +1,21 @@
+
+let type-tag-intern-index = {} : Hashtable<CString,U64>;
+
+let intern-type-tag(tag: CString): (U64, U64) = (
+   if tag.contains(c"::") {
+      let prefix = tag.split(c"::")[0] + c"::";
+      (intern-type-tag-single(prefix), intern-type-tag-single(tag))
+   } else {
+      (intern-type-tag-single(tag), 0_u64)
+   }
+);
+
+let intern-type-tag-single(tag: CString): U64 = (
+   if type-tag-intern-index.has-key(tag)
+   then type-tag-intern-index.lookup(tag, 0_u64);
+   else {
+      let index = (type-tag-intern-index.length + 1) as U64;
+      type-tag-intern-index = type-tag-intern-index.bind(tag, index);
+      index
+   }
+);
