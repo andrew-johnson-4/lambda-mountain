@@ -8,7 +8,7 @@ let .move-linear(tt: Type): Type = (
          };
          TAnd(new-conjugate)
       );
-      TGround{tag:c"Linear", parameters:[_..]} => type-linear-moved;
+      TGround{tag:interned-tag-linear, parameters:[_..]} => type-linear-moved;
       TGround{tag=tag, parameters=parameters} => (
          let new-parameters = mk-vector(type(Type), parameters.length);
          for p in parameters {

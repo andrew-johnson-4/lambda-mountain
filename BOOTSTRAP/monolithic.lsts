@@ -4996,7 +4996,7 @@ let substitute-normalized(tctx: Maybe<TypeContext>, tt: Type): Type = (
          else if result.length==1 then result[0]
          else tand(result)
       );
-      TGround{tag:c"Linear",parameters:[TGround{tag:c"Phi::Live"}..]} => tt;
+      TGround{tag:interned-tag-linear,parameters:[TGround{tag:interned-tag-phi-live}..]} => tt;
       TGround{tag=tag,parameters=parameters} => TGround(tag,substitute-normalized(tctx,parameters));
       TVar{name=name} => (
          let tn = tctx.lookup(name).normalized-type;
@@ -5029,7 +5029,7 @@ let substitute-macro(tctx: Maybe<TypeContext>, tt: Type): Type = (
          else if result.length==1 then result[0]
          else tand(result)
       );
-      TGround{tag:c"Linear",parameters:[TGround{tag:c"Phi::Live"}..]} => tt;
+      TGround{tag:interned-tag-linear,parameters:[TGround{tag:interned-tag-phi-live}..]} => tt;
       TGround{tag=tag,parameters=parameters} => TGround(tag,substitute-macro(tctx,parameters));
       TVar{name=name} => (
          let tn = tctx.lookup(name).normalized-type;
@@ -6132,6 +6132,9 @@ let .cons-tail-or-self(tt: Type): Type = (
 let interned-tag-arrow = intern-type-tag(c"Arrow");
 let interned-tag-array = intern-type-tag(c"Array");
 let interned-tag-cons = intern-type-tag(c"Cons");
+let interned-tag-phi-moved = intern-type-tag(c"Phi::Moved");
+let interned-tag-phi-live = intern-type-tag(c"Phi::Live");
+let interned-tag-linear = intern-type-tag(c"Linear");
 
 # new allocations = 0
 let ta = TAny;
@@ -6179,7 +6182,7 @@ let type-tail-position = t0(c"TailPosition");
 let type-lazy = tv(c"lazy");
 
 # new allocations = 0 (constant)
-let type-release-phi-moved = t1(c"MustRelease::ToRelease",t1(c"Linear",t0(c"Phi::Moved")));
+let type-release-phi-moved = t1(c"MustRelease::ToRelease",t1(interned-tag-linear,t0(interned-tag-phi-moved)));
 
 # new allocations = 0 (constant)
 let type-type-string = t1(c"Type",t0(c"String"));
@@ -6188,10 +6191,10 @@ let type-type-string = t1(c"Type",t0(c"String"));
 let type-cstring-literal = t0(c"CString") && t0(c"Literal");
 
 # new allocations = 0 (constant)
-let type-linear-moved = t1(c"Linear",t0(c"Phi::Moved"));
+let type-linear-moved = t1(interned-tag-linear,t0(interned-tag-phi-moved));
 
 # new allocations = 0 (constant)
-let type-linear-live = t1(c"Linear",t0(c"Phi::Live"));
+let type-linear-live = t1(interned-tag-linear,t0(interned-tag-phi-live));
 
 # new allocations = 0 (constant)
 let type-c-void = t1(c"C",t0(c"void"));
@@ -6555,7 +6558,7 @@ let .is-linear-dead(tt: Type): Bool = (
          for c in conjugate { return = return or c.is-linear-dead };
          return
       );
-      TGround{tag:c"Linear",parameters:[TGround{tag:c"Phi::Moved",parameters:[]}..]} => true;
+      TGround{tag:interned-tag-linear,parameters:[TGround{tag:interned-tag-phi-moved,parameters:[]}..]} => true;
       TGround{parameters=parameters} => (
          let return = false;
          for c in parameters { return = return or c.is-linear-dead };
@@ -6572,8 +6575,8 @@ let .is-linear-live(tt: Type): Bool = (
          for c in conjugate { return = return or c.is-linear-live };
          return
       );
-      TGround{tag:c"Linear",parameters:[TGround{tag:c"Phi::Moved",parameters:[]}..]} => false;
-      TGround{tag:c"Linear",parameters:[_..]} => true;
+      TGround{tag:interned-tag-linear,parameters:[TGround{tag:interned-tag-phi-moved,parameters:[]}..]} => false;
+      TGround{tag:interned-tag-linear,parameters:[_..]} => true;
       TGround{parameters=parameters} => (
          let return = false;
          for c in parameters { return = return or c.is-linear-live };
@@ -6594,7 +6597,7 @@ let .is-moved(tt: Type): Bool = (
          };
          moved
       );
-      TGround{tag:c"Phi::Moved",parameters:[]} => true;
+      TGround{tag:interned-tag-phi-moved,parameters:[]} => true;
       TGround{tag=tag,parameters=parameters} => (
          let moved = false;
          for c in parameters {
@@ -6626,7 +6629,7 @@ let .is-open(tt: Type): Bool = (
    }
 );
 
-let .is-t(tt: Type, tt-tag: CString, tt-length: U64): Bool = (
+let .is-t(tt: Type, tt-tag: TypeTagIntern, tt-length: U64): Bool = (
    match tt {
       TAnd { conjugate=conjugate } => (
          let result = false;
@@ -6674,7 +6677,7 @@ let .move-linear(tt: Type): Type = (
          };
          TAnd(new-conjugate)
       );
-      TGround{tag:c"Linear", parameters:[_..]} => type-linear-moved;
+      TGround{tag:interned-tag-linear, parameters:[_..]} => type-linear-moved;
       TGround{tag=tag, parameters=parameters} => (
          let new-parameters = mk-vector(type(Type), parameters.length);
          for p in parameters {
@@ -6751,7 +6754,7 @@ let remove-info(base: Type, rm: Type): Type = (
 
 let .resurrect(tt: Type): Type = (
    match tt {
-      TGround{tag:c"Linear", parameters:[TGround{tag:c"Phi::Moved",parameters:[]}..]} => (
+      TGround{tag:interned-tag-linear, parameters:[TGround{tag:interned-tag-phi-moved,parameters:[]}..]} => (
          type-linear-live
       );
       TGround{tag=tag, parameters=parameters} => (
@@ -6812,7 +6815,7 @@ let .simple-tag(tt: Type): CString = (
    }
 );
 
-let .slot(tt: Type, sl: CString, si: U64): Type = (
+let .slot(tt: Type, sl: TypeTagIntern, si: U64): Type = (
    match tt {
       TGround{ tag=tag, parameters=parameters } => (
          if tag==sl and parameters.length==si then tt else ta

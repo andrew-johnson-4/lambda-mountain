@@ -8,7 +8,7 @@ let .is-moved(tt: Type): Bool = (
          };
          moved
       );
-      TGround{tag:c"Phi::Moved",parameters:[]} => true;
+      TGround{tag:interned-tag-phi-moved,parameters:[]} => true;
       TGround{tag=tag,parameters=parameters} => (
          let moved = false;
          for c in parameters {

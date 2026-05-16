@@ -1,5 +1,6 @@
 
 let type-tag-intern-index = {} : Hashtable<CString,U64>;
+let type-tag-intern-inverse-index = {} : Hashtable<U64,CString>;
 
 type TypeTagIntern = { first: U64, second: U64 };
 
@@ -9,6 +10,10 @@ let $"=="(tti1: TypeTagIntern, tti2: TypeTagIntern): Bool = (
       tti1.second == 0 or
       tti2.second == 0
    )
+);
+
+let $"<"(tti1: TypeTagIntern, tti2: TypeTagIntern): Bool = (
+   max(tti1.first, tti1.second) < max(tti2.first, tti2.second)
 );
 
 let intern-type-tag(tag: CString): TypeTagIntern = (
@@ -25,12 +30,19 @@ let intern-type-tag(tag: CString): TypeTagIntern = (
    }
 );
 
+let untern(tag: TypeTagIntern): CString = (
+   if tag.second != 0
+   then type-tag-intern-inverse-index.lookup(tag.second, c"")
+   else type-tag-intern-inverse-index.lookup(tag.first, c"")
+);
+
 let intern-type-tag-single(tag: CString): U64 = (
    if type-tag-intern-index.has-key(tag)
    then type-tag-intern-index.lookup(tag, 0_u64);
    else {
       let index = (type-tag-intern-index.length + 1) as U64;
       type-tag-intern-index = type-tag-intern-index.bind(tag, index);
+      type-tag-intern-inverse-index = type-tag-intern-inverse-index.bind(index, tag);
       index
    }
 );

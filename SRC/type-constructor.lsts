@@ -2,6 +2,10 @@
 let interned-tag-arrow = intern-type-tag(c"Arrow");
 let interned-tag-array = intern-type-tag(c"Array");
 let interned-tag-cons = intern-type-tag(c"Cons");
+let interned-tag-phi-moved = intern-type-tag(c"Phi::Moved");
+let interned-tag-phi-live = intern-type-tag(c"Phi::Live");
+let interned-tag-linear = intern-type-tag(c"Linear");
+let interned-tag-tag = intern-type-tag(c"Tag::");
 
 # new allocations = 0
 let ta = TAny;
@@ -49,7 +53,7 @@ let type-tail-position = t0(c"TailPosition");
 let type-lazy = tv(c"lazy");
 
 # new allocations = 0 (constant)
-let type-release-phi-moved = t1(c"MustRelease::ToRelease",t1(c"Linear",t0(c"Phi::Moved")));
+let type-release-phi-moved = t1(c"MustRelease::ToRelease",t1(interned-tag-linear,t0(interned-tag-phi-moved)));
 
 # new allocations = 0 (constant)
 let type-type-string = t1(c"Type",t0(c"String"));
@@ -58,10 +62,10 @@ let type-type-string = t1(c"Type",t0(c"String"));
 let type-cstring-literal = t0(c"CString") && t0(c"Literal");
 
 # new allocations = 0 (constant)
-let type-linear-moved = t1(c"Linear",t0(c"Phi::Moved"));
+let type-linear-moved = t1(interned-tag-linear,t0(interned-tag-phi-moved));
 
 # new allocations = 0 (constant)
-let type-linear-live = t1(c"Linear",t0(c"Phi::Live"));
+let type-linear-live = t1(interned-tag-linear,t0(interned-tag-phi-live));
 
 # new allocations = 0 (constant)
 let type-c-void = t1(c"C",t0(c"void"));

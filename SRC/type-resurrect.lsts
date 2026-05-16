@@ -1,7 +1,7 @@
 
 let .resurrect(tt: Type): Type = (
    match tt {
-      TGround{tag:c"Linear", parameters:[TGround{tag:c"Phi::Moved",parameters:[]}..]} => (
+      TGround{tag:interned-tag-linear, parameters:[TGround{tag:interned-tag-phi-moved,parameters:[]}..]} => (
          type-linear-live
       );
       TGround{tag=tag, parameters=parameters} => (
