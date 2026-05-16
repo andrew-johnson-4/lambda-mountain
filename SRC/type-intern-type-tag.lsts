@@ -1,12 +1,27 @@
 
 let type-tag-intern-index = {} : Hashtable<CString,U64>;
 
-let intern-type-tag(tag: CString): (U64, U64) = (
+type TypeTagIntern = { first: U64, second: U64 };
+
+let $"=="(tti1: TypeTagIntern, tti2: TypeTagIntern): Bool = (
+   tti1.first == tti2.first and (
+      tti1.second == tti2.second or
+      tti1.second == 0 or
+      tti2.second == 0
+   )
+);
+
+let intern-type-tag(tag: CString): TypeTagIntern = (
    if tag.contains(c"::") {
-      let prefix = tag.split(c"::")[0] + c"::";
-      (intern-type-tag-single(prefix), intern-type-tag-single(tag))
+      let tag-split = tag.split(c"::");
+      if tag-split.length == 1
+      then TypeTagIntern(intern-type-tag-single(tag), 0_u64)
+      else {
+         let prefix = tag.split(c"::")[0] + c"::";
+         TypeTagIntern(intern-type-tag-single(prefix), intern-type-tag-single(tag))
+      }
    } else {
-      (intern-type-tag-single(tag), 0_u64)
+      TypeTagIntern(intern-type-tag-single(tag), 0_u64)
    }
 );
 
