@@ -59,13 +59,13 @@ let can-unify(fpt: Type, pt: Type): Bool = (
                TGround{ltag=tag} => (
                   let this-result-ok = false;
                   let rc = rconjugate[ri];
-                  let rtag = rc.simple-tag;
+                  let rtag = rc.simple-interned-tag;
                   if not(non-zero(rtag)) then () else (
                      while ri<rconjugate.length and rtag < ltag {
                         ri = ri + 1;
                         if ri < rconjugate.length {
                            rc = rconjugate[ri];
-                           rtag = rc.simple-tag;
+                           rtag = rc.simple-interned-tag;
                         }
                      };
                      let scan-ri = ri;
@@ -74,7 +74,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
                         scan-ri = scan-ri + 1;
                         if scan-ri < rconjugate.length {
                            rc = rconjugate[scan-ri];
-                           rtag = rc.simple-tag;
+                           rtag = rc.simple-interned-tag;
                         }
                      };
                   );
@@ -124,7 +124,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
              TGround{tag:interned-tag-vararg, parameters:[lp1..]}..
              lpr..
           ]},
-          second:rp1
+          rp1=second
       } => (
          if can-unify(lp1,rp1) then can-unify(lpr,type-nil) else can-unify(lpr,rp1)
       );
@@ -140,7 +140,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       } => true;
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
-          second:rp1
+          rp1=second
       } => can-unify(lp1,rp1);
 
       Tuple{
@@ -156,7 +156,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       Tuple{
           first:TGround{ltn=tag, lps=parameters},
           second:TGround{rtn=tag, rps=parameters}
-      } => (ltn==rtn or (ltn.has-suffix(c"::") and rtn.has-prefix(ltn))) and can-unify(lps,rps);
+      } => ltn==rtn and can-unify(lps,rps);
 
       Tuple{ first:TId{lid=id}, second:TId{rid=id} } => lid == rid;
 

@@ -52,3 +52,5 @@ let hash(t: TypeTagIntern): U64 = (
    then hash(t.second)
    else hash(t.first)
 );
+
+let non-zero(t: TypeTagIntern): Bool = t.first != 0 or t.second != 0;

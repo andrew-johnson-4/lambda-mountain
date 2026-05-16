@@ -607,7 +607,7 @@ typed macro macro::lhs-fields-with-term(term: lazy, case: macro::literal<MACRO::
 );
 
 typed macro macro::lhs-fields-with-term(term: lazy, v: macro::variable): Bool = (
-   let v = term; true
+   term == v
 );
 
 typed macro macro::lhs-fields-with-term(term: lazy, x rest: macro::lhs-head): Bool = (
@@ -4892,9 +4892,9 @@ let .least-upper-bound(tctx: TypeContext?, left: Type, right: Type, blame: AST):
                li = li + 1;
             } else if rconjugate[ri].is-t(interned-tag-phi-state,1) {
                ri = ri + 1;
-            } else if lconjugate[li].simple-tag < rconjugate[ri].simple-tag {
+            } else if lconjugate[li].simple-interned-tag < rconjugate[ri].simple-interned-tag {
                li = li + 1;
-            } else if rconjugate[ri].simple-tag < lconjugate[li].simple-tag {
+            } else if rconjugate[ri].simple-interned-tag < lconjugate[li].simple-interned-tag {
                ri = ri + 1;
             } else if lconjugate[li].simple-arity < rconjugate[ri].simple-arity {
                li = li + 1;
@@ -5672,13 +5672,13 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
                TGround{ltag=tag} => (
                   let this-result-ok = no;
                   let rc = rconjugate[ri];
-                  let rtag = rc.simple-tag;
+                  let rtag = rc.simple-interned-tag;
                   if not(non-zero(rtag)) then () else (
                      while ri<rconjugate.length and rtag < ltag {
                         ri = ri + 1;
                         if ri < rconjugate.length {
                            rc = rconjugate[ri];
-                           rtag = rc.simple-tag;
+                           rtag = rc.simple-interned-tag;
                         }
                      };
                      let scan-ri = ri;
@@ -5687,7 +5687,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
                         scan-ri = scan-ri + 1;
                         if scan-ri < rconjugate.length {
                            rc = rconjugate[scan-ri];
-                           rtag = rc.simple-tag;
+                           rtag = rc.simple-interned-tag;
                         }
                      };
                   );
@@ -5965,13 +5965,13 @@ let can-unify(fpt: Type, pt: Type): Bool = (
                TGround{ltag=tag} => (
                   let this-result-ok = false;
                   let rc = rconjugate[ri];
-                  let rtag = rc.simple-tag;
+                  let rtag = rc.simple-interned-tag;
                   if not(non-zero(rtag)) then () else (
                      while ri<rconjugate.length and rtag < ltag {
                         ri = ri + 1;
                         if ri < rconjugate.length {
                            rc = rconjugate[ri];
-                           rtag = rc.simple-tag;
+                           rtag = rc.simple-interned-tag;
                         }
                      };
                      let scan-ri = ri;
@@ -5980,7 +5980,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
                         scan-ri = scan-ri + 1;
                         if scan-ri < rconjugate.length {
                            rc = rconjugate[scan-ri];
-                           rtag = rc.simple-tag;
+                           rtag = rc.simple-interned-tag;
                         }
                      };
                   );
@@ -6030,7 +6030,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
              TGround{tag:interned-tag-vararg, parameters:[lp1..]}..
              lpr..
           ]},
-          second:rp1
+          rp1=second
       } => (
          if can-unify(lp1,rp1) then can-unify(lpr,type-nil) else can-unify(lpr,rp1)
       );
@@ -6046,7 +6046,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       } => true;
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
-          second:rp1
+          rp1=second
       } => can-unify(lp1,rp1);
 
       Tuple{
@@ -6062,7 +6062,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       Tuple{
           first:TGround{ltn=tag, lps=parameters},
           second:TGround{rtn=tag, rps=parameters}
-      } => (ltn==rtn or (ltn.has-suffix(c"::") and rtn.has-prefix(ltn))) and can-unify(lps,rps);
+      } => ltn==rtn and can-unify(lps,rps);
 
       Tuple{ first:TId{lid=id}, second:TId{rid=id} } => lid == rid;
 
@@ -6496,6 +6496,8 @@ let hash(t: TypeTagIntern): U64 = (
    then hash(t.second)
    else hash(t.first)
 );
+
+let non-zero(t: TypeTagIntern): Bool = t.first != 0 or t.second != 0;
 
 let .into(tt: Type, tgt: Type<String>): String = (
    match tt {
@@ -7469,7 +7471,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          (tctx, let new-t) = std-infer-expr(tctx, t, false, used, tt && hint);
          if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
          let inner-tt = typeof-term(t).normalize;
-         if tt.simple-tag == interned-tag-tag then tt = tt && inner-tt
+         if tt.simple-interned-tag == interned-tag-tag then tt = tt && inner-tt
          else tt = tt && inner-tt.with-only-datatype;
          # No need for new Phi types here
          if original-tt.is-t(interned-tag-phi-state,1) {
