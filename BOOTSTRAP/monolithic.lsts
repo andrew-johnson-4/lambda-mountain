@@ -3646,7 +3646,7 @@ let .into(t: AST, tgt: Type<String>): String = (
       App{left:Lit{key:c":"},right:App{inner=left, right:AType{tt=tt}}} => (
          inner.into(type(String)) + " : " + tt.into(type(String));
       );
-      App{is-cons:is-cons, left=left,right=right} => (
+      App{is-cons=is-cons, left=left, right=right} => (
          if is-cons
          then "(" + left.into(type(String)) + "," + right.into(type(String)) + ")";
          else left.into(type(String)) + "(" + right.into(type(String)) + ")";
@@ -5633,7 +5633,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       Tuple{ first:TGround{tag:interned-tag-must-not-fresh} } => ctx = yes;
       Tuple{ first:TVar{}, second:TGround{tag:interned-tag-cons} } => ctx = no;
       Tuple{ first:TVar{name=name}, second:TGround{tag=tag} } => (
-         ctx = ctx.bind(name, ta, pt, Lit(tag, mk-token(tag)));
+         ctx = ctx.bind(name, ta, pt, Lit(untern(tag), mk-token(untern(tag))));
       );
       Tuple{ first:TVar{name2=name} } => (
          ctx = ctx.bind(name2, ta, pt, mk-eof());
@@ -5730,7 +5730,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
              TGround{tag:interned-tag-vararg, parameters:[lp1..]}..
              lpr..
           ]},
-          second:rp1
+          rp1=second
       } => (
          if can-unify(lp1, rp1)
          then { ctx = unify-inner(lp1,rp1,blame) && unify-inner(lpr, type-nil, blame); }
@@ -5748,7 +5748,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       } => ctx = yes;
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
-          second:rp1
+          rp1=second
       } => ctx = unify-inner(lp1,rp1,blame);
 
       Tuple{
@@ -5768,7 +5768,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       Tuple{
           first:TGround{ltn=tag, lps=parameters},
           second:TGround{rtn=tag, rps=parameters}
-      } => if (ltn==rtn or (ltn.has-suffix(c"::") and rtn.has-prefix(ltn))) then { ctx = unify(lps,rps,blame) };
+      } => if ltn==rtn then { ctx = unify(lps,rps,blame) };
 
       Tuple{ first:TId{lid=id}, second:TId{rid=id} } => if lid == rid then yes else no;
 
@@ -6393,19 +6393,19 @@ let .domain(tt: Type): Type = (
    }
 );
 
-let .ground-tag-and-arity(tt: Type): (CString,U64) = (
+let .ground-tag-and-arity(tt: Type): (U64,U64) = (
    match tt {
-      TGround { tag:interned-tag-array, parameters:[_.. TAny{}..] } => (interned-tag-array, 2_u64);
+      TGround { tag:interned-tag-array, parameters:[_.. TAny{}..] } => (interned-tag-array.primary, 2_u64);
       TGround { tag:interned-tag-array, parameters:[_.. array-base..] } => (
          let ga = array-base.ground-tag-and-arity;
          ( ga.first, ga.second + 1000 )
       );
-      TGround { tag:interned-tag-sized, parameters:[_..] } => (c"", 9999999_u64);
-      TGround { tag=tag, parameters=parameters } => (tag, parameters.length as U64);
-      TAny {} => (c"?", 0_u64);
-      TVar {} => (c"", 9999999_u64);
+      TGround { tag:interned-tag-sized, parameters:[_..] } => (0_u64, 9999999_u64);
+      TGround { tag=tag, parameters=parameters } => (tag.primary, parameters.length as U64);
+      TAny {} => (0_u64, 0_u64);
+      TVar {} => (0_u64, 9999999_u64);
       TAnd { conjugate=conjugate } => (
-         let result = (c"", 9999999_u64);
+         let result = (0_u64, 9999999_u64);
          for c in conjugate { if result.second==9999999 then result = c.ground-tag-and-arity };
          result
       );
@@ -6413,7 +6413,7 @@ let .ground-tag-and-arity(tt: Type): (CString,U64) = (
 );
 
 
-let .has-t(tt: Type, tt-tag: CString, tt-length: U64): Bool = (
+let .has-t(tt: Type, tt-tag: TypeTagIntern, tt-length: U64): Bool = (
    match tt {
       TAnd { conjugate=conjugate } => (
          let result = false;
@@ -6447,6 +6447,8 @@ let type-tag-intern-index = {} : Hashtable<CString,U64>;
 let type-tag-intern-inverse-index = {} : Hashtable<U64,CString>;
 
 type TypeTagIntern = { first: U64, second: U64 };
+
+let .primary(t: TypeTagIntern): U64 = if t.second==0 then t.first else t.second;
 
 let $"=="(tti1: TypeTagIntern, tti2: TypeTagIntern): Bool = (
    tti1.first == tti2.first and (
@@ -6506,7 +6508,8 @@ let .into(tt: Type, tgt: Type<String>): String = (
       TId{id=id} => id.into(type(String));
       TGround{tag:interned-tag-array,parameters:[TAny{}.. base-type..]} => "\{base-type}[]";
       TGround{tag:interned-tag-array,parameters:[idx-type.. base-type..]} => "\{base-type}[\{idx-type}]";
-      TGround{tag=tag,parameters=parameters} => (
+      TGround{ttag=tag,parameters=parameters} => (
+         let tag = untern(ttag);
          let r = if tag[0] >= 97 and tag[0] <= 122 then intern("\"\{tag}\"") else intern(tag);
          if parameters.length > 0 {
             let pc = 0_u64;
@@ -6556,7 +6559,7 @@ let .is-and(tt: Type): Bool = (
    }
 );
 
-let .is-any-arg-t(tt: Type, t-expect: CString, p-expect: U64): Bool = (
+let .is-any-arg-t(tt: Type, t-expect: TypeTagIntern, p-expect: U64): Bool = (
    match tt {
       TAnd { conjugate=conjugate } => (
          let result = false;
@@ -6564,7 +6567,7 @@ let .is-any-arg-t(tt: Type, t-expect: CString, p-expect: U64): Bool = (
          result
       );
       TGround { tag:interned-tag-cons, parameters:[l1..l2..] } => l1.is-any-arg-t(t-expect,p-expect) or l2.is-any-arg-t(t-expect,p-expect);
-      TGround { tag:tag, parameters:parameters } => tag==t-expect and parameters.length==p-expect;
+      TGround { tag=tag, parameters=parameters } => tag==t-expect and parameters.length==p-expect;
       _ => false;
    }
 );
@@ -6820,7 +6823,7 @@ let .sanitize-phi(tt: Type): Type = (
          else tand(result)
       );
       TGround { tag:interned-tag-arrow } => tt.without-phi-keep-state;
-      TGround { tag:tag, parameters:parameters } => ts(tag,parameters.without-phi);
+      TGround { tag=tag, parameters=parameters } => ts(tag,parameters.without-phi);
       _ => tt;
    }
 );
@@ -6876,9 +6879,7 @@ let .with-only-tag(tt: Type): Type = (
          for c in conjugate { if not(non-zero(result)) then result = c.with-only-tag };
          result;
       );
-      TGround{ tag=tag, parameters=parameters } => (
-         if tag.has-prefix(c"Tag::") then tt else ta
-      );
+      TGround{ tag:interned-tag-tag } => tt;
       _ => ta;
    }
 );
@@ -6932,7 +6933,7 @@ let .without-modifiers(tt: Type): Type = (
          else tand(result)
       );
       TGround { tag:interned-tag-c, parameters:[TGround{tag:interned-tag-extern}..] } => ta;
-      TGround { tag:tag, parameters:parameters } => (
+      TGround { tag=tag, parameters=parameters } => (
          let new-parameters = mk-vector(type(Type), parameters.length);
          for p in parameters {
             new-parameters = new-parameters.push(p.without-modifiers);
@@ -7034,7 +7035,7 @@ let .without-phi(tt: Vector<Type>): Vector<Type> = (
    next
 );
 
-let .without-slot(tt: Type, t-tag: CString, t-arity: U64): Type = (
+let .without-slot(tt: Type, t-tag: TypeTagIntern, t-arity: U64): Type = (
    match tt {
       TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type), 0);

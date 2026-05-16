@@ -6,7 +6,8 @@ let .into(tt: Type, tgt: Type<String>): String = (
       TId{id=id} => id.into(type(String));
       TGround{tag:interned-tag-array,parameters:[TAny{}.. base-type..]} => "\{base-type}[]";
       TGround{tag:interned-tag-array,parameters:[idx-type.. base-type..]} => "\{base-type}[\{idx-type}]";
-      TGround{tag=tag,parameters=parameters} => (
+      TGround{ttag=tag,parameters=parameters} => (
+         let tag = untern(ttag);
          let r = if tag[0] >= 97 and tag[0] <= 122 then intern("\"\{tag}\"") else intern(tag);
          if parameters.length > 0 {
             let pc = 0_u64;

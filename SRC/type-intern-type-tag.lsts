@@ -4,6 +4,8 @@ let type-tag-intern-inverse-index = {} : Hashtable<U64,CString>;
 
 type TypeTagIntern = { first: U64, second: U64 };
 
+let .primary(t: TypeTagIntern): U64 = if t.second==0 then t.first else t.second;
+
 let $"=="(tti1: TypeTagIntern, tti2: TypeTagIntern): Bool = (
    tti1.first == tti2.first and (
       tti1.second == tti2.second or

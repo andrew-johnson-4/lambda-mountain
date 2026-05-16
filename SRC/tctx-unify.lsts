@@ -22,7 +22,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       Tuple{ first:TGround{tag:interned-tag-must-not-fresh} } => ctx = yes;
       Tuple{ first:TVar{}, second:TGround{tag:interned-tag-cons} } => ctx = no;
       Tuple{ first:TVar{name=name}, second:TGround{tag=tag} } => (
-         ctx = ctx.bind(name, ta, pt, Lit(tag, mk-token(tag)));
+         ctx = ctx.bind(name, ta, pt, Lit(untern(tag), mk-token(untern(tag))));
       );
       Tuple{ first:TVar{name2=name} } => (
          ctx = ctx.bind(name2, ta, pt, mk-eof());
@@ -119,7 +119,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
              TGround{tag:interned-tag-vararg, parameters:[lp1..]}..
              lpr..
           ]},
-          second:rp1
+          rp1=second
       } => (
          if can-unify(lp1, rp1)
          then { ctx = unify-inner(lp1,rp1,blame) && unify-inner(lpr, type-nil, blame); }
@@ -137,7 +137,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       } => ctx = yes;
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
-          second:rp1
+          rp1=second
       } => ctx = unify-inner(lp1,rp1,blame);
 
       Tuple{
@@ -157,7 +157,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       Tuple{
           first:TGround{ltn=tag, lps=parameters},
           second:TGround{rtn=tag, rps=parameters}
-      } => if (ltn==rtn or (ltn.has-suffix(c"::") and rtn.has-prefix(ltn))) then { ctx = unify(lps,rps,blame) };
+      } => if ltn==rtn then { ctx = unify(lps,rps,blame) };
 
       Tuple{ first:TId{lid=id}, second:TId{rid=id} } => if lid == rid then yes else no;
 

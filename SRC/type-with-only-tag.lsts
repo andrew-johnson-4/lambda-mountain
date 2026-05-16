@@ -6,9 +6,7 @@ let .with-only-tag(tt: Type): Type = (
          for c in conjugate { if not(non-zero(result)) then result = c.with-only-tag };
          result;
       );
-      TGround{ tag=tag, parameters=parameters } => (
-         if tag.has-prefix(c"Tag::") then tt else ta
-      );
+      TGround{ tag:interned-tag-tag } => tt;
       _ => ta;
    }
 );

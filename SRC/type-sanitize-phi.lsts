@@ -15,7 +15,7 @@ let .sanitize-phi(tt: Type): Type = (
          else tand(result)
       );
       TGround { tag:interned-tag-arrow } => tt.without-phi-keep-state;
-      TGround { tag:tag, parameters:parameters } => ts(tag,parameters.without-phi);
+      TGround { tag=tag, parameters=parameters } => ts(tag,parameters.without-phi);
       _ => tt;
    }
 );

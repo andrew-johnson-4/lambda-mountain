@@ -15,7 +15,7 @@ let .without-modifiers(tt: Type): Type = (
          else tand(result)
       );
       TGround { tag:interned-tag-c, parameters:[TGround{tag:interned-tag-extern}..] } => ta;
-      TGround { tag:tag, parameters:parameters } => (
+      TGround { tag=tag, parameters=parameters } => (
          let new-parameters = mk-vector(type(Type), parameters.length);
          for p in parameters {
             new-parameters = new-parameters.push(p.without-modifiers);

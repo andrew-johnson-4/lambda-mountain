@@ -6,7 +6,7 @@ let .into(t: AST, tgt: Type<String>): String = (
       App{left:Lit{key:c":"},right:App{inner=left, right:AType{tt=tt}}} => (
          inner.into(type(String)) + " : " + tt.into(type(String));
       );
-      App{is-cons:is-cons, left=left,right=right} => (
+      App{is-cons=is-cons, left=left, right=right} => (
          if is-cons
          then "(" + left.into(type(String)) + "," + right.into(type(String)) + ")";
          else left.into(type(String)) + "(" + right.into(type(String)) + ")";
