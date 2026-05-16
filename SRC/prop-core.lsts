@@ -1,5 +1,5 @@
 
-let quick-prop = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
+let quick-prop = {} : Hashtable<(U64,U64),Vector<(Type,Type)>>;
 
 let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
    let key = pre.ground-tag-and-arity;
@@ -68,7 +68,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
             );
          };
          if tag==interned-tag-array and parameters.length==2 {
-            for row in quick-prop.lookup( (interned-tag-array,2_u64), mk-vector(type((Type,Type))) ) {
+            for row in quick-prop.lookup( (interned-tag-array.primary,2_u64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if base <: lt then (
@@ -101,7 +101,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
    pre
 );
 
-let weaken-quick-prop-index = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
+let weaken-quick-prop-index = {} : Hashtable<(U64,U64),Vector<(Type,Type)>>;
 
 # core implicit weakening rules
 add-weaken-quick-prop( t1(c"Constructor",ta), t1(c"Constructor",ta), t1(c"Constructor",ta) );
@@ -145,7 +145,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             );
          };
          if tag==interned-tag-array and parameters.length==2 {
-            for row in weaken-quick-prop-index.lookup( (interned-tag-array,2_u64), mk-vector(type((Type,Type))) ) {
+            for row in weaken-quick-prop-index.lookup( (interned-tag-array.primary,2_u64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (
@@ -153,12 +153,12 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
                );
             }
          };
-         if tag.has-prefix(c"Tag::") or tag.has-prefix(c"Field::") {
+         if tag==interned-tag-tag or tag==interned-tag-field {
             # TODO: generalize to all :: types, temporary semantic regression
-            let tag-base = if tag.has-prefix(c"Tag::") then c"Tag::"
-                      else if tag.has-prefix(c"Field::") then c"Field::"
-                      else c"";
-            for row in weaken-quick-prop-index.lookup( (tag-base, parameters.length as U64), mk-vector(type((Type,Type))) ) {
+            let tag-base = if tag==interned-tag-tag then interned-tag-tag
+                      else if tag==interned-tag-field then interned-tag-field
+                      else interned-tag-unknown;
+            for row in weaken-quick-prop-index.lookup( (tag-base.primary, parameters.length as U64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (

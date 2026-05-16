@@ -33,7 +33,7 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ()
 );
 
-let phi-parameters-index = {} : Hashtable<(CString,U64),Type>;
+let phi-parameters-index = {} : Hashtable<(U64,U64),Type>;
 
 let phi-parameters(tag: CString, ps: U64): Type = phi-parameters-index.lookup((tag,ps),ta);
 
@@ -135,7 +135,7 @@ let infer-type-definition(term: AST): Nil = (
    };
 );
 
-let type-constructor-tag-ordinal-index = {} : Hashtable<(CString,U64,CString),U64>;
+let type-constructor-tag-ordinal-index = {} : Hashtable<(U64,U64,CString),U64>;
 
 let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, common-fields: List<(CString,Type)>, case-fields: List<(CString,Type)>, blame: AST, has-tag-case: Bool): Nil = (
    (let base-tag, let base-arity) = base-type.ground-tag-and-arity;

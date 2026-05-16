@@ -22,6 +22,8 @@ let interned-tag-const = intern-type-tag(c"const");
 let interned-tag-c = intern-type-tag(c"C");
 let interned-tag-sized = intern-type-tag(c"Sized");
 let interned-tag-extern = intern-type-tag(c"extern");
+let interned-tag-field = intern-type-tag(c"extern");
+let interned-tag-unknown = TypeTagIntern(0_u64, 0_u64);
 
 # new allocations = 0
 let ta = TAny;

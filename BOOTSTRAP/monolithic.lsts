@@ -3029,7 +3029,7 @@ let ascript-force(t: AST, tt: Type): Nil = (
 # A concrete type is an instance of a type that has been realized on a term
 # It is not an "in processing" or "theoretical" type anymore, but now an actual observed term
 
-let concrete-type-instances-index = {} : Hashtable<(CString,U64),Vector<Type>>;
+let concrete-type-instances-index = {} : Hashtable<(U64,U64),Vector<Type>>;
 
 let add-concrete-type-instance(tt: Type, blame: AST): Nil = (
    match tt {
@@ -4149,7 +4149,7 @@ let profile-print-ast(): Nil = (
    };
 );
 
-let type-alias-index = {} : Hashtable<Tuple<CString,U64>,Tuple<Type,Type>>;
+let type-alias-index = {} : Hashtable<Tuple<U64,U64>,Tuple<Type,Type>>;
 
 let add-type-alias(lt: Type, rt: Type): Nil = (
    type-alias-index = type-alias-index.bind( lt.ground-tag-and-arity, ( lt, rt ) );
@@ -4199,7 +4199,7 @@ let .rewrite-type-alias(lt: Vector<Type>): Vector<Type> = (
    next
 );
 
-let opaque-type-alias-index = {} : Hashtable<Tuple<CString,U64>,Tuple<Type,Type>>;
+let opaque-type-alias-index = {} : Hashtable<Tuple<U64,U64>,Tuple<Type,Type>>;
 
 let add-opaque-type-alias(lt: Type, rt: Type): Nil = (
    opaque-type-alias-index = opaque-type-alias-index.bind( lt.ground-tag-and-arity, Tuple( lt, rt ) );
@@ -4240,7 +4240,7 @@ let .rewrite-opaque-type-alias(lt: Vector<Type>): Vector<Type> = (
    next
 );
 
-let quick-prop = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
+let quick-prop = {} : Hashtable<(U64,U64),Vector<(Type,Type)>>;
 
 let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
    let key = pre.ground-tag-and-arity;
@@ -4309,7 +4309,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
             );
          };
          if tag==interned-tag-array and parameters.length==2 {
-            for row in quick-prop.lookup( (interned-tag-array,2_u64), mk-vector(type((Type,Type))) ) {
+            for row in quick-prop.lookup( (interned-tag-array.primary,2_u64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if base <: lt then (
@@ -4342,7 +4342,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
    pre
 );
 
-let weaken-quick-prop-index = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
+let weaken-quick-prop-index = {} : Hashtable<(U64,U64),Vector<(Type,Type)>>;
 
 # core implicit weakening rules
 add-weaken-quick-prop( t1(c"Constructor",ta), t1(c"Constructor",ta), t1(c"Constructor",ta) );
@@ -4386,7 +4386,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             );
          };
          if tag==interned-tag-array and parameters.length==2 {
-            for row in weaken-quick-prop-index.lookup( (interned-tag-array,2_u64), mk-vector(type((Type,Type))) ) {
+            for row in weaken-quick-prop-index.lookup( (interned-tag-array.primary,2_u64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (
@@ -4394,12 +4394,12 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
                );
             }
          };
-         if tag.has-prefix(c"Tag::") or tag.has-prefix(c"Field::") {
+         if tag==interned-tag-tag or tag==interned-tag-field {
             # TODO: generalize to all :: types, temporary semantic regression
-            let tag-base = if tag.has-prefix(c"Tag::") then c"Tag::"
-                      else if tag.has-prefix(c"Field::") then c"Field::"
-                      else c"";
-            for row in weaken-quick-prop-index.lookup( (tag-base, parameters.length as U64), mk-vector(type((Type,Type))) ) {
+            let tag-base = if tag==interned-tag-tag then interned-tag-tag
+                      else if tag==interned-tag-field then interned-tag-field
+                      else interned-tag-unknown;
+            for row in weaken-quick-prop-index.lookup( (tag-base.primary, parameters.length as U64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (
@@ -4527,7 +4527,7 @@ let denormalize-strong(tt: Type): Type = (
    tt.rewrite-type-alias.enrich-strong;
 );
 
-let implied-phi-index = {} : Hashtable<(CString,U64),Type>;
+let implied-phi-index = {} : Hashtable<(U64,U64),Type>;
 
 let .expand-implied-phi(tt: Type): Type = (
    let original-tt = tt;
@@ -6152,6 +6152,8 @@ let interned-tag-const = intern-type-tag(c"const");
 let interned-tag-c = intern-type-tag(c"C");
 let interned-tag-sized = intern-type-tag(c"Sized");
 let interned-tag-extern = intern-type-tag(c"extern");
+let interned-tag-field = intern-type-tag(c"extern");
+let interned-tag-unknown = TypeTagIntern(0_u64, 0_u64);
 
 # new allocations = 0
 let ta = TAny;
@@ -7071,7 +7073,7 @@ let .should-accept-interface(tt: Type): Bool = (
 );
 
 let assert-no-infinite-types(): Nil = (
-   let fields-of-type = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
+   let fields-of-type = {} : Hashtable<(U64,U64),Vector<(Type,Type)>>;
    for td in ast-parsed-program.unroll-seq { match td {
       Typedef{} => (
          let lhs-type = (td as Tag::Typedef).lhs-type;
@@ -7220,10 +7222,10 @@ let frontend(fp: CString): Nil = (
    }; ()
 );
 
-let index-typedef-fields = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
-let index-typedef = {} : Hashtable<(CString,U64),AST>;
-let index-fields-of = {} : Hashtable<(CString,U64,CString),Vector<(CString,Type)>>;
-let index-cases-of = {} : Hashtable<(CString,U64),Vector<CString>>;
+let index-typedef-fields = {} : Hashtable<(U64,U64),Vector<(Type,Type)>>;
+let index-typedef = {} : Hashtable<(U64,U64),AST>;
+let index-fields-of = {} : Hashtable<(U64,U64,CString),Vector<(CString,Type)>>;
+let index-cases-of = {} : Hashtable<(U64,U64),Vector<CString>>;
 
 let index-typedefs(program: AST): Nil = (
    for def in program.unroll-seq { match def {
@@ -8040,7 +8042,7 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ()
 );
 
-let phi-parameters-index = {} : Hashtable<(CString,U64),Type>;
+let phi-parameters-index = {} : Hashtable<(U64,U64),Type>;
 
 let phi-parameters(tag: CString, ps: U64): Type = phi-parameters-index.lookup((tag,ps),ta);
 
@@ -8142,7 +8144,7 @@ let infer-type-definition(term: AST): Nil = (
    };
 );
 
-let type-constructor-tag-ordinal-index = {} : Hashtable<(CString,U64,CString),U64>;
+let type-constructor-tag-ordinal-index = {} : Hashtable<(U64,U64,CString),U64>;
 
 let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, common-fields: List<(CString,Type)>, case-fields: List<(CString,Type)>, blame: AST, has-tag-case: Bool): Nil = (
    (let base-tag, let base-arity) = base-type.ground-tag-and-arity;
@@ -8213,11 +8215,11 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
 );
 
 
-let interface-index = mk-set(type((CString,U64)));
+let interface-index = mk-set(type((U64,U64)));
 
-let interface-shape-index = {} : Hashtable<(CString,U64),List<(CString,Type,Type)>>;
+let interface-shape-index = {} : Hashtable<(U64,U64),List<(CString,Type,Type)>>;
 
-let interface-self-index = {} : Hashtable<(CString,U64),(Type,Type)>;
+let interface-self-index = {} : Hashtable<(U64,U64),(Type,Type)>;
 
 let interface-implementors = [] : List<(Type,Type,AST)>;
 

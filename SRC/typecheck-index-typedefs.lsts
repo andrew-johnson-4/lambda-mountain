@@ -1,8 +1,8 @@
 
-let index-typedef-fields = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
-let index-typedef = {} : Hashtable<(CString,U64),AST>;
-let index-fields-of = {} : Hashtable<(CString,U64,CString),Vector<(CString,Type)>>;
-let index-cases-of = {} : Hashtable<(CString,U64),Vector<CString>>;
+let index-typedef-fields = {} : Hashtable<(U64,U64),Vector<(Type,Type)>>;
+let index-typedef = {} : Hashtable<(U64,U64),AST>;
+let index-fields-of = {} : Hashtable<(U64,U64,CString),Vector<(CString,Type)>>;
+let index-cases-of = {} : Hashtable<(U64,U64),Vector<CString>>;
 
 let index-typedefs(program: AST): Nil = (
    for def in program.unroll-seq { match def {

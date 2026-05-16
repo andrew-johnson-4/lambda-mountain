@@ -1,6 +1,6 @@
 
 let assert-no-infinite-types(): Nil = (
-   let fields-of-type = {} : Hashtable<(CString,U64),Vector<(Type,Type)>>;
+   let fields-of-type = {} : Hashtable<(U64,U64),Vector<(Type,Type)>>;
    for td in ast-parsed-program.unroll-seq { match td {
       Typedef{} => (
          let lhs-type = (td as Tag::Typedef).lhs-type;
