@@ -1,14 +1,14 @@
 
 let .move-diff(tctx: TypeContext?, old-tt: Type, new-tt: Type, blame: AST): TypeContext? = (
    match (old-tt, new-tt) {
-      Tuple{ first:TGround{tag:c"Cons",parameters:[o1..o2..]}, second:TGround{tag:c"Cons",parameters:[n1..n2..]} } => (
+      Tuple{ first:TGround{tag:interned-tag-cons,parameters:[o1..o2..]}, second:TGround{tag:interned-tag-cons,parameters:[n1..n2..]} } => (
          tctx = tctx.move-diff(o1, n1, blame);
          tctx = tctx.move-diff(o2, n2, blame);
       );
-      Tuple{ first:_, second:TGround{tag:c"Cons",parameters:[n1..n2..]} } => (
+      Tuple{ first:_, second:TGround{tag:interned-tag-cons,parameters:[n1..n2..]} } => (
          tctx = tctx.phi-move(old-tt, blame);
       );
-      Tuple{ first:TGround{tag:c"Cons",parameters:[n1..n2..]}, second:_ } => ();
+      Tuple{ first:TGround{tag:interned-tag-cons,parameters:[n1..n2..]}, second:_ } => ();
       Tuple{ first:_, second:_ } => (
          if old-tt.is-t(c"Phi::Id",1) and (
             not new-tt.is-t(c"Phi::Id",1) or old-tt.slot(c"Phi::Id",1).l1 != new-tt.slot(c"Phi::Id",1).l1

@@ -15,8 +15,8 @@ let .expand-implied-phi(tt: Type): Type = (
             }
          }
       );
-      TGround{tag:c"Cons",parameters:[t1..t0..]} => (
-         tt = t2(c"Cons", t0.expand-implied-phi, t1.expand-implied-phi);
+      TGround{tag:interned-tag-cons,parameters:[t1..t0..]} => (
+         tt = t2(interned-tag-cons, t0.expand-implied-phi, t1.expand-implied-phi);
       );
       TGround{} => (
          let ga = tt.ground-tag-and-arity;

@@ -6,8 +6,8 @@ let .domain(tt: Type): Type = (
          for c in conjugate { result = result || c.domain };
          result
       );
-      TGround { tag:c"Arrow", parameters:[rng.. dom..] } => dom;
-      TGround { tag:c"Array", parameters:[_.. array-base..] } => array-base.domain;
+      TGround { tag:interned-tag-arrow, parameters:[rng.. dom..] } => dom;
+      TGround { tag:interned-tag-array, parameters:[_.. array-base..] } => array-base.domain;
       _ => ta;
    }
 );

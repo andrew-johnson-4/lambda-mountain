@@ -20,7 +20,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       Tuple{ first:TGround{tag:c"MustReleaseAfterCall"} } => ctx = yes;
       Tuple{ first:TGround{tag:c"MustNotRewrite"} } => ctx = yes;
       Tuple{ first:TGround{tag:c"MustNotFresh"} } => ctx = yes;
-      Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => ctx = no;
+      Tuple{ first:TVar{}, second:TGround{tag:interned-tag-cons} } => ctx = no;
       Tuple{ first:TVar{name=name}, second:TGround{tag=tag} } => (
          ctx = ctx.bind(name, ta, pt, Lit(tag, mk-token(tag)));
       );
@@ -106,16 +106,16 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
 
       # Varargs
       Tuple{
-          first:TGround{tag:c"Cons", parameters:[
+          first:TGround{tag:interned-tag-cons, parameters:[
              TGround{tag:c"...", parameters:[lp1..]}..
              lpr..
           ]},
-          second:TGround{tag:c"Cons", parameters:[rp1..rpr..]}
+          second:TGround{tag:interned-tag-cons, parameters:[rp1..rpr..]}
       } => (
          ctx = unify-inner(lpr, pt, blame);
       );
       Tuple{
-          first:TGround{tag:c"Cons", parameters:[
+          first:TGround{tag:interned-tag-cons, parameters:[
              TGround{tag:c"...", parameters:[lp1..]}..
              lpr..
           ]},
@@ -127,7 +127,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       );
       Tuple{
           first:TGround{tag:c"...", parameters:[lp1..]},
-          second:TGround{tag:c"Cons", parameters:[rp1..rpr..]}
+          second:TGround{tag:interned-tag-cons, parameters:[rp1..rpr..]}
       } => (
          if can-unify(lp1,rp1) { ctx = unify-inner(fpt,rpr,blame) && unify-inner(lp1,rp1,blame); };
       );
@@ -141,8 +141,8 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       } => ctx = unify-inner(lp1,rp1,blame);
 
       Tuple{
-          first:TGround{tag:c"Arrow", parameters:[lrng.. ldom..]},
-          second:TGround{tag:c"Arrow", parameters:[rrng.. rdom..]}
+          first:TGround{tag:interned-tag-arrow, parameters:[lrng.. ldom..]},
+          second:TGround{tag:interned-tag-arrow, parameters:[rrng.. rdom..]}
       } => (
           let tctx = unify-inner(rdom, ldom, blame);
           if tctx.is-some {

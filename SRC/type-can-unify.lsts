@@ -25,7 +25,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       Tuple{ first:TGround{tag:c"MustReleaseAfterCall"} } => true;
       Tuple{ first:TGround{tag:c"MustNotRewrite"} } => true;
       Tuple{ first:TGround{tag:c"MustNotFresh"} } => true;
-      Tuple{ first:TVar{}, second:TGround{tag:c"Cons"} } => false;
+      Tuple{ first:TVar{}, second:TGround{tag:interned-tag-cons} } => false;
       Tuple{ first:TVar{name:c"lazy"}, second:TAny{} } => true; # this is for macros only
       Tuple{ first:TAny{}, second:TVar{name:c"lazy"} } => true; # this is for macros only
       Tuple{ first:TVar{} } => true;
@@ -111,16 +111,16 @@ let can-unify(fpt: Type, pt: Type): Bool = (
 
       # Varargs
       Tuple{
-          first:TGround{tag:c"Cons", parameters:[
+          first:TGround{tag:interned-tag-cons, parameters:[
              TGround{tag:c"...", parameters:[lp1..]}..
              lpr..
           ]},
-          second:TGround{tag:c"Cons", parameters:[rp1..rpr..]}
+          second:TGround{tag:interned-tag-cons, parameters:[rp1..rpr..]}
       } => (
          if can-unify(lp1,rp1) then can-unify(fpt,rpr) else can-unify(lpr,pt)
       );
       Tuple{
-          first:TGround{tag:c"Cons", parameters:[
+          first:TGround{tag:interned-tag-cons, parameters:[
              TGround{tag:c"...", parameters:[lp1..]}..
              lpr..
           ]},
@@ -130,7 +130,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       );
       Tuple{
           first:TGround{tag:c"...", parameters:[lp1..]},
-          second:TGround{tag:c"Cons", parameters:[rp1..rpr..]}
+          second:TGround{tag:interned-tag-cons, parameters:[rp1..rpr..]}
       } => (
          can-unify(lp1,rp1) and can-unify(fpt,rpr)
       );
@@ -144,8 +144,8 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       } => can-unify(lp1,rp1);
 
       Tuple{
-          first:TGround{tag:c"Arrow", parameters:[lrng.. ldom..]},
-          second:TGround{tag:c"Arrow", parameters:[rrng.. rdom..]}
+          first:TGround{tag:interned-tag-arrow, parameters:[lrng.. ldom..]},
+          second:TGround{tag:interned-tag-arrow, parameters:[rrng.. rdom..]}
       } => (
          let ra = if can-unify(rdom, ldom) {
             can-unify(lrng, rrng)

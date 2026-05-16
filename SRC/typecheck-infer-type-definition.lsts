@@ -14,9 +14,9 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ctx = ctx.bind( c"primitive::field-set-indirect", ta, ta, mk-var(c"set."+field-name) );
    let global-tctx = Some(mk-tctx());
    let field-get = substitute(ctx, global-tctx.find-callable(c"primitive::field-get", base-type, blame).blame-or-zero);
-   let field-set = substitute(ctx, global-tctx.find-callable(c"primitive::field-set", t2(c"Cons", base-type, field-type), blame).blame-or-zero);
-   let field-get-indirect = substitute(ctx, global-tctx.find-callable(c"primitive::field-get-indirect", t2(c"Array",base-type,ta), blame).blame-or-zero);
-   let field-set-indirect = substitute(ctx, global-tctx.find-callable(c"primitive::field-set-indirect", t2(c"Cons", t2(c"Array",base-type,ta), field-type), blame).blame-or-zero);
+   let field-set = substitute(ctx, global-tctx.find-callable(c"primitive::field-set", t2(interned-tag-cons, base-type, field-type), blame).blame-or-zero);
+   let field-get-indirect = substitute(ctx, global-tctx.find-callable(c"primitive::field-get-indirect", t2(interned-tag-array,base-type,ta), blame).blame-or-zero);
+   let field-set-indirect = substitute(ctx, global-tctx.find-callable(c"primitive::field-set-indirect", t2(interned-tag-cons, t2(interned-tag-array,base-type,ta), field-type), blame).blame-or-zero);
 
    ctx = (None : Maybe<TypeContext>)();
    ctx = ctx.bind( c"base-type", base-type, denormalize(base-type), mk-eof() );

@@ -1,10 +1,15 @@
 
+let interned-tag-arrow = intern-type-tag(c"Arrow");
+let interned-tag-array = intern-type-tag(c"Array");
+let interned-tag-cons = intern-type-tag(c"Cons");
+
 # new allocations = 0
 let ta = TAny;
 
 # new allocations = 0
 #    0 from 0 length vector
 let t0(tag: CString): Type = TGround(intern-type-tag(tag), mk-vector(type(Type)));
+let t0(tag: TypeTagIntern): Type = TGround(tag, mk-vector(type(Type)));
 
 # new allocations = 0
 let ti(id: U64): Type = TId(id);
@@ -12,10 +17,12 @@ let ti(id: U64): Type = TId(id);
 # new allocations = 1
 #    1 from 1 length vector
 let t1(tag: CString, p1: Type): Type = TGround(intern-type-tag(tag), mk-vector(type(Type)).push(p1));
+let t1(tag: TypeTagIntern, p1: Type): Type = TGround(tag, mk-vector(type(Type)).push(p1));
 
 # new allocations = 1
 #    1 from 2 length vector
 let t2(tag: CString, p1: Type, p2: Type): Type = TGround(intern-type-tag(tag), mk-vector(type(Type)).push(p2).push(p1));
+let t2(tag: TypeTagIntern, p1: Type, p2: Type): Type = TGround(tag, mk-vector(type(Type)).push(p2).push(p1));
 
 # new allocations = 0
 let tv(name: CString): Type = TVar(name, mk-vector(type(Type)));
@@ -72,7 +79,7 @@ let type-c-tany = t1(c"C",ta);
 let type-c-typedef = t1(c"C",t0(c"typedef"));
 
 # new allocations = 0 (constant)
-let type-array-c-typedef = t2(c"Array",t1(c"C",t0(c"typedef")),ta);
+let type-array-c-typedef = t2(interned-tag-array,t1(c"C",t0(c"typedef")),ta);
 
 # new allocations = 0 (constant)
 let type-c-int8 = t1(c"C",t0(c"int8_t"));
@@ -99,7 +106,7 @@ let type-c-uint32 = t1(c"C",t0(c"uint32_t"));
 let type-c-uint64 = t1(c"C",t0(c"uint64_t"));
 
 # new allocations = 0 (constant)
-let type-any-arrow = t2(c"Arrow", type-any, type-any);
+let type-any-arrow = t2(interned-tag-arrow, type-any, type-any);
 
 # new allocations = 0 if either argument is ?
 #                 | 1
@@ -174,6 +181,7 @@ let .extend(lt: Type, rt: Type): Type = (
 
 # new allocations = 0
 let ts(tag: CString, ps: Vector<Type>): Type = TGround( intern-type-tag(tag), ps );
+let ts(tag: TypeTagIntern, ps: Vector<Type>): Type = TGround( tag, ps );
 
 # new allocations = 0
 let tand(t: Vector<Type>): Type = TAnd(t.sort);
@@ -183,3 +191,4 @@ let tand(tt: Type): Type = TAnd(mk-vector(type(Type)).push(tt));
 
 # new allocations = 0
 let $"||"(lt: Type, rt: Type): Type = if non-zero(lt) then lt else rt;
+
