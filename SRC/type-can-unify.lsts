@@ -2,24 +2,14 @@
 let $"<:"(pt: Type, fpt: Type): Bool = can-unify(fpt,pt);
 
 let can-unify(fpt: Vector<Type>, pt: Vector<Type>): Bool = (
-   let fptv = fpt[:];
-   let ptv = pt[:];
-   if fptv.length == ptv.length {
-      let ok = true;
-      while ok and non-zero(fptv) {
-         if not(can-unify(head(fptv), head(ptv))) then (ok = false);
-         fptv = tail(fptv); ptv = tail(ptv);
-      };
-      ok
-   } else false
-);
-
-let can-unify(fpt: VectorView<Type>, pt: VectorView<Type>): Bool = (
+   # It is important here to unify tail first
+   # Cons<Cons<x,y>,z> should check depth first in order to check arity before anything else
    if fpt.length == pt.length {
+      let ci = fpt.length;
       let ok = true;
-      while ok and non-zero(fpt) {
-         if not(can-unify(head(fpt), head(pt))) then (ok = false);
-         fpt = tail(fpt); pt = tail(pt);
+      while ok and ci > 0 {
+         ci = ci - 1;
+         if not can-unify(fpt[ci], pt[ci]) then ok = false;
       };
       ok
    } else false
@@ -97,12 +87,22 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       );
       Tuple{ first:TAnd{ lconjugate=conjugate }, rt=second } => (
          let result = true;
-         for c in lconjugate { result = result and can-unify(c,rt) };
+         let ci1 = 0_sz;
+         while ci1 < lconjugate.length {
+            result = result and can-unify(lconjugate[ci1],rt);
+            if not result then ci1 = lconjugate.length;
+            else ci1 = ci1 + 1;
+         };
          result
       );
       Tuple{ lt=first, second:TAnd{ rconjugate=conjugate } } => (
          let result = false;
-         for c in rconjugate { result = result or can-unify(lt,c) };
+         let ci2 = 0_sz;
+         while ci2 < rconjugate.length {
+            result = result or can-unify(lt,rconjugate[ci2]);
+            if result then ci2 = rconjugate.length;
+            else ci2 = ci2 + 1;
+         };
          result
       );
 

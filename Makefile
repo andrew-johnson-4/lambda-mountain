@@ -8,27 +8,27 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm --v3 --print-ast tests/promises/lm-ast/constructor.lsts > out.txt
+	lm --print-ast tests/promises/lm-ast/constructor.lsts > out.txt
 	gcc tmp.c
 	./a.out
 
 build: compile-production
-	time env $(LSTSFLAGS) ./production --v3 -o deploy1.c SRC/index.lsts
+	time env $(LSTSFLAGS) ./production -o deploy1.c SRC/index.lsts
 	$(CC) $(CFLAGS) deploy1.c -o deploy1
-	time env $(LSTSFLAGS) ./deploy1 --v3 -o deploy2.c SRC/index.lsts
+	time env $(LSTSFLAGS) ./deploy1 -o deploy2.c SRC/index.lsts
 	diff deploy1.c deploy2.c
 	mv deploy1.c BOOTSTRAP/cli.c
 	rm -f deploy1 deploy1.c deploy2.c
 	cargo test regression_tests
 
 gperf: install-bootstrap
-	LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libprofiler.so CPUPROFILE=out.prof lm --v3 SRC/index.lsts
+	LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libprofiler.so CPUPROFILE=out.prof lm SRC/index.lsts
 	google-pprof --text /home/andrew/.local/bin/lm out.prof > profile_results.txt
 
 deploy: build smoke-test
 deploy-lite: build smoke-test-lite
 
-gprofng: install-production
+gprofng: install-bootstrap
 	gprofng collect app lm SRC/index.lsts
 
 gprofng-view:
@@ -36,7 +36,7 @@ gprofng-view:
 	nano gprofng.view
 
 valgrind: install-production
-	valgrind --tool=callgrind lm --v3 SRC/index.lsts
+	valgrind --tool=callgrind lm SRC/index.lsts
 
 valgrind-view:
 	callgrind_annotate callgrind.out.18778
@@ -52,7 +52,7 @@ gprof-view-call-graph:
 	gprof -q bootstrap.exe gmon.out
 
 profile: install-bootstrap
-	perf record lm --v2 SRC/index.lsts
+	perf record lm SRC/index.lsts
 	./report.sh
 
 compile-bootstrap:
@@ -62,7 +62,7 @@ compile-bootstrap:
 
 compile-production: compile-bootstrap
 	rm -f production
-	$(LSTSFLAGS) time ./bootstrap.exe --v3 -o production.c SRC/index.lsts
+	$(LSTSFLAGS) time ./bootstrap.exe -o production.c SRC/index.lsts
 	$(CC) $(CFLAGS) -o production production.c
 	rm -f production.c
 

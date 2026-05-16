@@ -3755,10 +3755,6 @@ let ast-parsed-program = mk-eof();
 let parse-suffixes = [] : List<(CString,Type)>;
 non-zero(parse-suffixes); # TODO remove
 
-let config-v3 = true;
-let config-v1 = false;
-let config-v0 = false;
-
 let .skey(t: Token): String = intern(t.key);
 type AST implements DefaultFormattable;
 
@@ -5362,12 +5358,10 @@ let $"||"(lctx: Maybe<TypeContext>, rctx: Maybe<TypeContext>): Maybe<TypeContext
 
 let .phi-append(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeContext? = (
    tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,false) ) 
-   #tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,false).prune-moved ) 
 );
 
 let .phi-append-dead-on-arrival(tctx-primary: TypeContext?, tctx-secondary: TypeContext?): TypeContext? = (
    tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,true) ) 
-#   tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,true).prune-moved ) 
 );
 
 let .phi-append(tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, dead-on-arrival: Bool): PBTree<U64,PhiContextRow> = (
@@ -5914,24 +5908,14 @@ let can-receive(ft: Type, pt: Type): Bool = pt <: ft.range;
 let $"<:"(pt: Type, fpt: Type): Bool = can-unify(fpt,pt);
 
 let can-unify(fpt: Vector<Type>, pt: Vector<Type>): Bool = (
-   let fptv = fpt[:];
-   let ptv = pt[:];
-   if fptv.length == ptv.length {
-      let ok = true;
-      while ok and non-zero(fptv) {
-         if not(can-unify(head(fptv), head(ptv))) then (ok = false);
-         fptv = tail(fptv); ptv = tail(ptv);
-      };
-      ok
-   } else false
-);
-
-let can-unify(fpt: VectorView<Type>, pt: VectorView<Type>): Bool = (
+   # It is important here to unify tail first
+   # Cons<Cons<x,y>,z> should check depth first in order to check arity before anything else
    if fpt.length == pt.length {
+      let ci = fpt.length;
       let ok = true;
-      while ok and non-zero(fpt) {
-         if not(can-unify(head(fpt), head(pt))) then (ok = false);
-         fpt = tail(fpt); pt = tail(pt);
+      while ok and ci > 0 {
+         ci = ci - 1;
+         if not can-unify(fpt[ci], pt[ci]) then ok = false;
       };
       ok
    } else false
@@ -6009,12 +5993,22 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       );
       Tuple{ first:TAnd{ lconjugate=conjugate }, rt=second } => (
          let result = true;
-         for c in lconjugate { result = result and can-unify(c,rt) };
+         let ci1 = 0_sz;
+         while ci1 < lconjugate.length {
+            result = result and can-unify(lconjugate[ci1],rt);
+            if not result then ci1 = lconjugate.length;
+            else ci1 = ci1 + 1;
+         };
          result
       );
       Tuple{ lt=first, second:TAnd{ rconjugate=conjugate } } => (
          let result = false;
-         for c in rconjugate { result = result or can-unify(lt,c) };
+         let ci2 = 0_sz;
+         while ci2 < rconjugate.length {
+            result = result or can-unify(lt,rconjugate[ci2]);
+            if result then ci2 = rconjugate.length;
+            else ci2 = ci2 + 1;
+         };
          result
       );
 
@@ -7752,9 +7746,7 @@ let std-infer-call-arg(tctx: TypeContext?, term: AST, function-name: CString, hi
    }} else if function-name==c"map::cons" { match term {
       App{k=left, m=right} => (
          (tctx, let new-k) = std-infer-expr(tctx, k, false, Call(function-name), ta);
-         let direct-hint = if config-v3 or config-v23
-         then t2(c"Hashtable",typeof-term(new-k).normalize.slot(c"Cons",2).l1,typeof-term(new-k).normalize.slot(c"Cons",2).l2) && t0(c"ReturnHint")
-         else t2(c"HashtableEq",typeof-term(new-k).normalize.slot(c"Cons",2).l1,typeof-term(new-k).normalize.slot(c"Cons",2).l2);
+         let direct-hint = t2(c"Hashtable",typeof-term(new-k).normalize.slot(c"Cons",2).l1,typeof-term(new-k).normalize.slot(c"Cons",2).l2) && t0(c"ReturnHint");
          (tctx, let new-m) = std-infer-expr(tctx, m, false, Used(), direct-hint);
          if not(is(k,new-k)) or not(is(m,new-m)) then { k = new-k; m = new-m; term = mk-cons(k, m); };
          tctx = tctx.ascript(term, t2(c"Cons",typeof-term(k),typeof-term(m)));
@@ -8210,79 +8202,84 @@ let maybe-retain(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
 let worst-phi-length = 0_sz;
 
 let phi-merge(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, blame: AST): PBTree<U64,PhiContextRow> = (
-   phi-merge-inner(tctx-globals, tctx-primary, tctx-secondary, blame, mk-vector(type(U64))).second.prune-moved
+   phi-merge-inner(tctx-globals, tctx-primary, tctx-secondary, blame, mk-set(type(U64))).second
 );
 
-
-let phi-merge-inner(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, blame: AST, seen: Vector<U64>): (Vector<U64>, PBTree<U64,PhiContextRow>) = (
+let phi-merge-inner(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, blame: AST, seen: Set<U64>): (Set<U64>, PBTree<U64,PhiContextRow>) = (
    match tctx-secondary {
       PBLeaf{} => (seen, tctx-primary);
       PBNode1{ k1=k1, tr=v1, left=left, right=right } => (
-         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, left, blame, seen);
-         let sid = tr.phi-id-or-zero;
+         let sid = k1;
          let st = tr.phi-tt-or-zero;
          let pblame = tr.blame-or-zero;
          let sdead-on-arrival = tr.dead-on-arrival-or-zero;
          let sis-global = tr.is-global-or-zero;
-         if not(seen.contains(sid)) {
-            let pt = tctx-primary.lookup(sid, NullPhiContextRow);
-            if not(non-zero(pt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,pblame,sdead-on-arrival,sis-global));
-            else if sdead-on-arrival or pt.dead-on-arrival-or-zero
-            then {
-               # This case happens if an ethereal variable gets copied and merged somehow, it doesn't really matter which one you pick but we prefer the moved one
-               if not(pt.phi-tt-or-zero.is-linear-live) then ()
-               else tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,blame,true,sis-global));
-            } else (
-               let rt = tctx-globals.phi-merge(pt.phi-tt-or-zero, st, blame);
-               if not(is(pt.phi-tt-or-zero,rt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,rt,blame,false,sis-global));
-            );
-            seen = seen.push(sid);
+         if not(seen.has(sid)) {
+            if not st.is-linear-dead {
+               let pt = tctx-primary.lookup(sid, NullPhiContextRow);
+               if not(non-zero(pt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,pblame,sdead-on-arrival,sis-global));
+               else if sdead-on-arrival or pt.dead-on-arrival-or-zero
+               then {
+                  # This case happens if an ethereal variable gets copied and merged somehow, it doesn't really matter which one you pick but we prefer the moved one
+                  if not(pt.phi-tt-or-zero.is-linear-live) then ()
+                  else tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,blame,true,sis-global));
+               } else (
+                  let rt = tctx-globals.phi-merge(pt.phi-tt-or-zero, st, blame);
+                  if not(is(pt.phi-tt-or-zero,rt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,rt,blame,false,sis-global));
+               );
+            };
+            seen = seen.bind(sid);
          };
+         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, left, blame, seen);
          (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, right, blame, seen);
          (seen, tctx-primary)
       );
       PBNode2{ k12=k1, tr=v1, k22=k2, tr2=v2, left=left, mid=mid, right=right } => (
-         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, left, blame, seen);
-         let sid = tr.phi-id-or-zero;
+         let sid = k12;
          let st = tr.phi-tt-or-zero;
          let pblame = tr.blame-or-zero;
          let sdead-on-arrival = tr.dead-on-arrival-or-zero;
          let sis-global = tr.is-global-or-zero;
-         if not(seen.contains(sid)) {
-            let pt = tctx-primary.lookup(sid, NullPhiContextRow);
-            if not(non-zero(pt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,pblame,sdead-on-arrival,sis-global));
-            else if sdead-on-arrival or pt.dead-on-arrival-or-zero
-            then {
-               # This case happens if an ethereal variable gets copied and merged somehow, it doesn't really matter which one you pick but we prefer the moved one
-               if not(pt.phi-tt-or-zero.is-linear-live) then ()
-               else tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,blame,true,sis-global));
-            } else (
-               let rt = tctx-globals.phi-merge(pt.phi-tt-or-zero, st, blame);
-               if not(is(pt.phi-tt-or-zero,rt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,rt,blame,false,sis-global));
-            );
-            seen = seen.push(sid);
+         if not(seen.has(sid)) {
+            if not st.is-linear-dead {
+               let pt = tctx-primary.lookup(sid, NullPhiContextRow);
+               if not(non-zero(pt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,pblame,sdead-on-arrival,sis-global));
+               else if sdead-on-arrival or pt.dead-on-arrival-or-zero
+               then {
+                  # This case happens if an ethereal variable gets copied and merged somehow, it doesn't really matter which one you pick but we prefer the moved one
+                  if not(pt.phi-tt-or-zero.is-linear-live) then ()
+                  else tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,blame,true,sis-global));
+               } else (
+                  let rt = tctx-globals.phi-merge(pt.phi-tt-or-zero, st, blame);
+                  if not(is(pt.phi-tt-or-zero,rt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,rt,blame,false,sis-global));
+               );
+            };
+            seen = seen.bind(sid);
          };
-         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, mid, blame, seen);
          tr = tr2;
-         sid = tr.phi-id-or-zero;
+         sid = k22;
          st = tr.phi-tt-or-zero;
          pblame = tr.blame-or-zero;
          sdead-on-arrival = tr.dead-on-arrival-or-zero;
          sis-global = tr.is-global-or-zero;
-         if not(seen.contains(sid)) {
-            let pt = tctx-primary.lookup(sid, NullPhiContextRow);
-            if not(non-zero(pt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,pblame,sdead-on-arrival,sis-global));
-            else if sdead-on-arrival or pt.dead-on-arrival-or-zero
-            then {
-               # This case happens if an ethereal variable gets copied and merged somehow, it doesn't really matter which one you pick but we prefer the moved one
-               if not(pt.phi-tt-or-zero.is-linear-live) then ()
-               else tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,blame,true,sis-global));
-            } else (
-               let rt = tctx-globals.phi-merge(pt.phi-tt-or-zero, st, blame);
-               if not(is(pt.phi-tt-or-zero,rt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,rt,blame,false,sis-global));
-            );
-            seen = seen.push(sid);
+         if not(seen.has(sid)) {
+            if not st.is-linear-dead {
+               let pt = tctx-primary.lookup(sid, NullPhiContextRow);
+               if not(non-zero(pt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,pblame,sdead-on-arrival,sis-global));
+               else if sdead-on-arrival or pt.dead-on-arrival-or-zero
+               then {
+                  # This case happens if an ethereal variable gets copied and merged somehow, it doesn't really matter which one you pick but we prefer the moved one
+                  if not(pt.phi-tt-or-zero.is-linear-live) then ()
+                  else tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,st,blame,true,sis-global));
+               } else (
+                  let rt = tctx-globals.phi-merge(pt.phi-tt-or-zero, st, blame);
+                  if not(is(pt.phi-tt-or-zero,rt)) then tctx-primary = tctx-primary.bind(sid, PhiContextRow(sid,rt,blame,false,sis-global));
+               );
+            };
+            seen = seen.bind(sid);
          };
+         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, left, blame, seen);
+         (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, mid, blame, seen);
          (seen, tctx-primary) = phi-merge-inner(tctx-globals, tctx-primary, right, blame, seen);
          (seen, tctx-primary)
       );
@@ -9168,7 +9165,6 @@ let ast-typed-count = 0_sz;
 let config-print-ast = false;
 
 let main(argc: C_int, argv: CString[]): Nil = (
-   config-v23 = false;
    let argi = 1_sz;
    let input = [] : List<CString>;
    let highlight = false;
@@ -9181,11 +9177,6 @@ let main(argc: C_int, argv: CString[]): Nil = (
          c"--parse" => config-mode = ModeParse();
          c"--preprocess" => config-mode = ModePreprocess();
          c"--compile" => config-mode = ModeCompile();
-         c"--v0" => (config-v3 = false; config-v0 = true;);
-         c"--v1" => (config-v3 = false; config-v1 = true;);
-         c"--v2" => config-v3 = false;
-         c"--v23" => (config-v3 = false; config-v23 = true;);
-         c"--v3" => config-v3 = true;
          c"--highlight" => (
             config-mode = ModeTokenize();
             highlight = true;
@@ -13609,7 +13600,6 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          lsts-parse-expect(c"[Type Tag]", tokens);
       };
       let base = lsts-substitute-type-aliases(lsts-parse-head(tokens)); tokens = tail(tokens);
-      if not(config-v3) and not(config-v23) and base==c"Hashtable" then base = c"HashtableEq";
       while non-zero(tokens) and lsts-parse-head(tokens)==c":" and lsts-parse-head(tail(tokens))==c":" {
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
          lsts-parse-expect(c":", tokens); tokens = tail(tokens);
@@ -13633,11 +13623,7 @@ let lsts-parse-type-conjugate(tokens: List<Token>): Tuple<Type,List<Token>> = (
          };
          lsts-parse-expect(c">", tokens); tokens = tail(tokens);
       };
-      if not(config-v3) and not(config-v23) and base==c"OwnedData" and args.length==1 {
-         head(args);
-      } else if base==c"CompatOwnedData" and args.length==1 {
-         t1(c"OwnedData",head(args));
-      } else ts( base, args );
+      ts( base, args );
    };
    while lsts-parse-head(tokens) == c"[" or lsts-parse-head(tokens)==c"?" {
       if lsts-parse-head(tokens)==c"[" {
@@ -13949,9 +13935,7 @@ let lsts-parse-mul(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-parse-map(tokens: List<Token>): Tuple<AST,List<Token>> = (
    lsts-parse-expect(c"{", tokens); let loc = head(tokens).location; tokens = tail(tokens);
-   let term = if config-v3 or config-v23
-   then mk-app( Var( c"mk-hashtable", with-location(mk-token("mk-hashtable"),loc) ), mk-nil() )
-   else Lit( c"HashtableEqEOF", with-location(mk-token("HashtableEqEOF"),loc) );
+   let term = mk-app( Var( c"mk-hashtable", with-location(mk-token("mk-hashtable"),loc) ), mk-nil() );
    if lsts-parse-head(tokens)==c"for" {
       fail("TODO map comprehension at \{loc}\n")
    } else {
@@ -14202,15 +14186,11 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
          lsts-parse-expect(c"implies", tokens); tokens = tail(tokens);
          (let i, tokens) = lsts-parse-type(tokens);
          if i.is-t(c"CompatMustRelease",0) then infers = infers.push(t0(c"MustRelease"));
-         else if config-v23 and i.is-t(c"MustRelease",0) then ()
-         else if config-v23 and i.is-t(c"MustRetain",0) then ()
          else infers = infers.push(i);
          while lsts-parse-head(tokens)==c"," {
             lsts-parse-expect(c",", tokens); tokens = tail(tokens);
             (i, tokens) = lsts-parse-type(tokens);
             if i.is-t(c"CompatMustRelease",0) then infers = infers.push(t0(c"MustRelease"));
-            else if config-v23 and i.is-t(c"MustRelease",0) then ()
-            else if config-v23 and i.is-t(c"MustRetain",0) then ()
             else infers = infers.push(i);
          }
       };
