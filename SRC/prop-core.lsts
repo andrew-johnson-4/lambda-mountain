@@ -108,17 +108,17 @@ add-weaken-quick-prop( t1(c"Constructor",ta), t1(c"Constructor",ta), t1(c"Constr
 add-weaken-quick-prop( t1(c"CaseNumber",ta), t1(c"CaseNumber",ta), t1(c"CaseNumber",ta) );
 add-weaken-quick-prop( t0(c"Constructor"), ta, t0(c"Constructor") );
 add-weaken-quick-prop( t0(c"C-FFI"), ta, t0(c"C-FFI") );
-add-weaken-quick-prop( t0(c"Raw"), ta, t0(c"Raw") );
+add-weaken-quick-prop( t0(interned-tag-vararg), ta, t0(interned-tag-vararg) );
 add-weaken-quick-prop( t0(c"LMStruct"), ta, t0(c"LMStruct") );
 add-weaken-quick-prop( t0(c"Constant"), ta, t0(c"Constant") );
 add-weaken-quick-prop( t0(c"Literal"), ta, t0(c"Literal") );
 add-weaken-quick-prop( t0(c"LocalVariable"), ta, t0(c"LocalVariable") );
 add-weaken-quick-prop( t0(c"GlobalVariable"), ta, t0(c"GlobalVariable") );
 add-weaken-quick-prop( t0(c"FlexibleArrayMember"), ta, t0(c"FlexibleArrayMember") );
-add-weaken-quick-prop( t0(c"MustNotRetain"), ta, t0(c"MustNotRetain") );
-add-weaken-quick-prop( t0(c"MustNotMove"), ta, t0(c"MustNotMove") );
-add-weaken-quick-prop( t0(c"MustNotFresh"), ta, t0(c"MustNotFresh") );
-add-weaken-quick-prop( t0(c"MustUse"), ta, t0(c"MustUse") );
+add-weaken-quick-prop( t0(interned-tag-must-not-retain), ta, t0(interned-tag-must-not-retain) );
+add-weaken-quick-prop( t0(interned-tag-must-not-move), ta, t0(interned-tag-must-not-move) );
+add-weaken-quick-prop( t0(interned-tag-must-not-fresh), ta, t0(interned-tag-must-not-fresh) );
+add-weaken-quick-prop( t0(interned-tag-must-use), ta, t0(interned-tag-must-use) );
 add-weaken-quick-prop( t1(c"Field::",ta), ta, t1(c"Field::",ta) );
 add-weaken-quick-prop( t0(c"Tag::"), ta, t0(c"Tag::") );
 

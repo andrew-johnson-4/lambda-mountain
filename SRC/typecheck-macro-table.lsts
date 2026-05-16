@@ -51,7 +51,7 @@ let param-types-of-macro(mterm: AST): Type = (
 let macro-type-peep-holes(mtype: Type): Type = (
    match mtype {
       TGround{tag:interned-tag-cons, parameters:[p2.. p1..]} => t2(interned-tag-cons,macro-type-peep-holes(p1),macro-type-peep-holes(p2));
-      TGround{} => t0(c"Yes");
+      TGround{} => t0(interned-tag-vararg);
       TAnd{conjugate=conjugate} => (
          let peep = ta;
          for c in conjugate {

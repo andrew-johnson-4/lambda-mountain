@@ -1,2 +1,2 @@
 
-let .with-only-phi(tt: Type): Type = tt.slot(c"Phi::State",1).l1;
+let .with-only-phi(tt: Type): Type = tt.slot(interned-tag-phi-state,1).l1;

@@ -60,7 +60,7 @@ let try-destructure-macro(loc: SourceLocation, lhs: AST, term: AST): AContext? =
          if index-of-tag(el9)!=unknown-index-of-tag {
             r = yes;
             let tag-i = index-of-tag(el9).into(type(CString));
-            r = r.bind(pv9, mk-app( mk-lit(c":",with-key(eltk9,c":")), mk-app( mk-lit(tag-i,with-key(eltk9,tag-i)), mk-atype(t0(c"Constant") && t0(c"Literal") && t0(c"U64")) ) ));
+            r = r.bind(pv9, mk-app( mk-lit(c":",with-key(eltk9,c":")), mk-app( mk-lit(tag-i,with-key(eltk9,tag-i)), mk-atype(t0(c"Constant") && t0(c"Literal") && t0(interned-tag-vararg)) ) ));
             let tag-tt = c"Tag::" + el9;
             r = r.bind(pt9, mk-lit(tag-tt,with-key(eltk9,tag-tt)));
          }

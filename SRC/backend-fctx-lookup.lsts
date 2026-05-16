@@ -17,7 +17,7 @@ let .lookup(ctx: FContext, k: CString, kt: Type, sloc: AST, hard: Bool): Fragmen
    while non-zero(ctx) { match ctx {
       FCtxBind { remainder=remainder, ctx-k=k, ctx-kt=kt, ctx-kv=kv } => (
          if k==ctx-k {
-            if ctx-kt.is-arrow and not(kt.is-t(c"Any",0)) {
+            if ctx-kt.is-arrow and not(kt.is-t(interned-tag-vararg,0)) {
                if kt==ta or can-unify( ctx-kt.domain, kt ) or can-unify(ctx-kt.domain, kt.domain) {
                   if non-zero(found) {
                      if can-unify(found, ctx-kt.domain) {

@@ -10,8 +10,8 @@ let .move-diff(tctx: TypeContext?, old-tt: Type, new-tt: Type, blame: AST): Type
       );
       Tuple{ first:TGround{tag:interned-tag-cons,parameters:[n1..n2..]}, second:_ } => ();
       Tuple{ first:_, second:_ } => (
-         if old-tt.is-t(c"Phi::Id",1) and (
-            not new-tt.is-t(c"Phi::Id",1) or old-tt.slot(c"Phi::Id",1).l1 != new-tt.slot(c"Phi::Id",1).l1
+         if old-tt.is-t(interned-tag-phi-id,1) and (
+            not new-tt.is-t(interned-tag-phi-id,1) or old-tt.slot(interned-tag-phi-id,1).l1 != new-tt.slot(interned-tag-phi-id,1).l1
          ) then tctx = tctx.phi-move(old-tt, blame);
       );
    };

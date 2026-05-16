@@ -9,6 +9,6 @@ let .simple-tag(tt: Type): CString = (
 let .simple-interned-tag(tt: Type): TypeTagIntern = (
    match tt {
       TGround { tag=tag } => tag;
-      _ => 0;
+      _ => TypeTagIntern(0,0);
    }
 );

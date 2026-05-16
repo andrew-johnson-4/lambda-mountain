@@ -6,9 +6,9 @@ let add-type-alias(lt: Type, rt: Type): Nil = (
 );
 let .rewrite-type-alias(lt: Type): Type = (
    match lt {
-      TGround{tag:c"Phi::State",parameters:[_..]} => lt;
-      TGround{tag:c"Phi::Id",parameters:[_..]} => lt;
-      TGround{tag:c"Phi::Transition",parameters:[_.._..]} => lt;
+      TGround{tag:interned-tag-phi-state,parameters:[_..]} => lt;
+      TGround{tag:interned-tag-phi-id,parameters:[_..]} => lt;
+      TGround{tag:interned-tag-phi-transition,parameters:[_.._..]} => lt;
       TGround{ tag=tag, parameters=parameters } => (
          let lt-rt = type-alias-index.lookup( lt.ground-tag-and-arity, ( ta, ta ) );
          if non-zero(lt-rt.first) {

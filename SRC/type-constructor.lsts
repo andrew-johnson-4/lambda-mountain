@@ -6,6 +6,22 @@ let interned-tag-phi-moved = intern-type-tag(c"Phi::Moved");
 let interned-tag-phi-live = intern-type-tag(c"Phi::Live");
 let interned-tag-linear = intern-type-tag(c"Linear");
 let interned-tag-tag = intern-type-tag(c"Tag::");
+let interned-tag-phi-id = intern-type-tag(c"Phi::Id");
+let interned-tag-phi-transition = intern-type-tag(c"Phi::Transition");
+let interned-tag-phi-state = intern-type-tag(c"Phi::State");
+let interned-tag-must-use = intern-type-tag(c"MustUse");
+let interned-tag-must-not-move = intern-type-tag(c"MustNotMove");
+let interned-tag-must-not-fresh = intern-type-tag(c"MustNotFresh");
+let interned-tag-must-not-retain = intern-type-tag(c"MustNotRetain");
+let interned-tag-must-release-after-call = intern-type-tag(c"MustReleaseAfterCall");
+let interned-tag-must-not-rewrite = intern-type-tag(c"MustNotRewrite");
+let interned-tag-vararg = intern-type-tag(c"...");
+let interned-tag-any = intern-type-tag(c"Any");
+let interned-tag-tail-position = intern-type-tag(c"TailPosition");
+let interned-tag-const = intern-type-tag(c"const");
+let interned-tag-c = intern-type-tag(c"C");
+let interned-tag-sized = intern-type-tag(c"Sized");
+let interned-tag-extern = intern-type-tag(c"extern");
 
 # new allocations = 0
 let ta = TAny;
@@ -41,13 +57,13 @@ let tv1(name: CString, p1: Type): Type = TVar(name, mk-vector(type(Type)).push(p
 let tv1(name: CString, p2: Type): Type = TVar(name, mk-vector(type(Type)).push(p1).push(p2));
 
 # new allocations = 0 (constant)
-let type-nil = t0(c"Nil");
+let type-nil = t0(interned-tag-vararg);
 
 # new allocations = 0 (constant)
-let type-any = t0(c"Any");
+let type-any = t0(interned-tag-vararg);
 
 # new allocations = 0 (constant)
-let type-tail-position = t0(c"TailPosition");
+let type-tail-position = t0(interned-tag-tail-position);
 
 # new allocations = 0 (constant)
 let type-lazy = tv(c"lazy");
@@ -68,46 +84,46 @@ let type-linear-moved = t1(interned-tag-linear,t0(interned-tag-phi-moved));
 let type-linear-live = t1(interned-tag-linear,t0(interned-tag-phi-live));
 
 # new allocations = 0 (constant)
-let type-c-void = t1(c"C",t0(c"void"));
+let type-c-void = t1(interned-tag-c,t0(c"void"));
 
 # new allocations = 0 (constant)
-let type-c-label = t1(c"C",t0(c":Label"));
+let type-c-label = t1(interned-tag-c,t0(c":Label"));
 
 # new allocations = 0 (constant)
-let type-c-vararg = t1(c"C",t0(c"..."));
+let type-c-vararg = t1(interned-tag-c,t0(interned-tag-vararg));
 
 # new allocations = 0 (constant)
-let type-c-tany = t1(c"C",ta);
+let type-c-tany = t1(interned-tag-c,ta);
 
 # new allocations = 0 (constant)
-let type-c-typedef = t1(c"C",t0(c"typedef"));
+let type-c-typedef = t1(interned-tag-c,t0(c"typedef"));
 
 # new allocations = 0 (constant)
-let type-array-c-typedef = t2(interned-tag-array,t1(c"C",t0(c"typedef")),ta);
+let type-array-c-typedef = t2(interned-tag-array,t1(interned-tag-c,t0(c"typedef")),ta);
 
 # new allocations = 0 (constant)
-let type-c-int8 = t1(c"C",t0(c"int8_t"));
+let type-c-int8 = t1(interned-tag-c,t0(c"int8_t"));
 
 # new allocations = 0 (constant)
-let type-c-int16 = t1(c"C",t0(c"int16_t"));
+let type-c-int16 = t1(interned-tag-c,t0(c"int16_t"));
 
 # new allocations = 0 (constant)
-let type-c-int32 = t1(c"C",t0(c"int32_t"));
+let type-c-int32 = t1(interned-tag-c,t0(c"int32_t"));
 
 # new allocations = 0 (constant)
-let type-c-int64 = t1(c"C",t0(c"int64_t"));
+let type-c-int64 = t1(interned-tag-c,t0(c"int64_t"));
 
 # new allocations = 0 (constant)
-let type-c-uint8 = t1(c"C",t0(c"uint8_t"));
+let type-c-uint8 = t1(interned-tag-c,t0(c"uint8_t"));
 
 # new allocations = 0 (constant)
-let type-c-uint16 = t1(c"C",t0(c"uint16_t"));
+let type-c-uint16 = t1(interned-tag-c,t0(c"uint16_t"));
 
 # new allocations = 0 (constant)
-let type-c-uint32 = t1(c"C",t0(c"uint32_t"));
+let type-c-uint32 = t1(interned-tag-c,t0(c"uint32_t"));
 
 # new allocations = 0 (constant)
-let type-c-uint64 = t1(c"C",t0(c"uint64_t"));
+let type-c-uint64 = t1(interned-tag-c,t0(c"uint64_t"));
 
 # new allocations = 0 (constant)
 let type-any-arrow = t2(interned-tag-arrow, type-any, type-any);

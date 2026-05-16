@@ -18,13 +18,13 @@ let can-unify(fpt: Vector<Type>, pt: Vector<Type>): Bool = (
 let can-unify(fpt: Type, pt: Type): Bool = (
    let return = match Tuple(fpt, pt) {
       Tuple{ first:TAny{} } => true;
-      Tuple{ first:TGround{tag:c"Any"} } => true;
-      Tuple{ first:TGround{tag:c"MustNotRetain"} } => true;
-      Tuple{ first:TGround{tag:c"MustUse"} } => true;
-      Tuple{ first:TGround{tag:c"MustNotMove"} } => true;
-      Tuple{ first:TGround{tag:c"MustReleaseAfterCall"} } => true;
-      Tuple{ first:TGround{tag:c"MustNotRewrite"} } => true;
-      Tuple{ first:TGround{tag:c"MustNotFresh"} } => true;
+      Tuple{ first:TGround{tag:interned-tag-vararg} } => true;
+      Tuple{ first:TGround{tag:interned-tag-must-not-retain} } => true;
+      Tuple{ first:TGround{tag:interned-tag-must-use} } => true;
+      Tuple{ first:TGround{tag:interned-tag-must-not-move} } => true;
+      Tuple{ first:TGround{tag:interned-tag-must-release-after-call} } => true;
+      Tuple{ first:TGround{tag:interned-tag-must-not-rewrite} } => true;
+      Tuple{ first:TGround{tag:interned-tag-must-not-fresh} } => true;
       Tuple{ first:TVar{}, second:TGround{tag:interned-tag-cons} } => false;
       Tuple{ first:TVar{name:c"lazy"}, second:TAny{} } => true; # this is for macros only
       Tuple{ first:TAny{}, second:TVar{name:c"lazy"} } => true; # this is for macros only
@@ -35,20 +35,20 @@ let can-unify(fpt: Type, pt: Type): Bool = (
          let phi-state-in = ta;
          for lc in lconjugate {
             if result then (match lc {
-               TGround{tag:c"Any"} => ();
-               TGround{tag:c"MustNotRetain"} => ();
-               TGround{tag:c"MustUse"} => ();
-               TGround{tag:c"MustNotMove"} => ();
-               TGround{tag:c"MustReleaseAfterCall"} => ();
-               TGround{tag:c"MustNotRewrite"} => ();
-               TGround{tag:c"MustNotFresh"} => ();
-               TGround{tag:c"Phi::Transition", parameters:[phi-to..phi-from..]} => (
+               TGround{tag:interned-tag-vararg} => ();
+               TGround{tag:interned-tag-must-not-retain} => ();
+               TGround{tag:interned-tag-must-use} => ();
+               TGround{tag:interned-tag-must-not-move} => ();
+               TGround{tag:interned-tag-must-release-after-call} => ();
+               TGround{tag:interned-tag-must-not-rewrite} => ();
+               TGround{tag:interned-tag-must-not-fresh} => ();
+               TGround{tag:interned-tag-phi-transition, parameters:[phi-to..phi-from..]} => (
                   let skip-state-check = false;
                   for st in rconjugate { match st {
-                     TGround{tag:c"Phi::State",parameters:[new-phi-state..]} => (
+                     TGround{tag:interned-tag-phi-state,parameters:[new-phi-state..]} => (
                         phi-state-in = phi-state-in.extend(new-phi-state);
                      );
-                     TGround{tag:c"Phi::Transition",parameters:[new-phi-to..new-phi-from..]} => (
+                     TGround{tag:interned-tag-phi-transition,parameters:[new-phi-to..new-phi-from..]} => (
                         result = result and can-unify(phi-to, new-phi-to) and can-unify(phi-from, new-phi-from);
                         skip-state-check = true;
                      );
@@ -107,12 +107,12 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       );
 
       # Ignore C Access Modifiers For Now
-      Tuple{ first:TGround{tag:c"C", parameters:[TGround{tag:c"const"}..]} } => true;
+      Tuple{ first:TGround{tag:interned-tag-c, parameters:[TGround{tag:interned-tag-const}..]} } => true;
 
       # Varargs
       Tuple{
           first:TGround{tag:interned-tag-cons, parameters:[
-             TGround{tag:c"...", parameters:[lp1..]}..
+             TGround{tag:interned-tag-vararg, parameters:[lp1..]}..
              lpr..
           ]},
           second:TGround{tag:interned-tag-cons, parameters:[rp1..rpr..]}
@@ -121,7 +121,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       );
       Tuple{
           first:TGround{tag:interned-tag-cons, parameters:[
-             TGround{tag:c"...", parameters:[lp1..]}..
+             TGround{tag:interned-tag-vararg, parameters:[lp1..]}..
              lpr..
           ]},
           second:rp1
@@ -129,17 +129,17 @@ let can-unify(fpt: Type, pt: Type): Bool = (
          if can-unify(lp1,rp1) then can-unify(lpr,type-nil) else can-unify(lpr,rp1)
       );
       Tuple{
-          first:TGround{tag:c"...", parameters:[lp1..]},
+          first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
           second:TGround{tag:interned-tag-cons, parameters:[rp1..rpr..]}
       } => (
          can-unify(lp1,rp1) and can-unify(fpt,rpr)
       );
       Tuple{
-          first:TGround{tag:c"...", parameters:[lp1..]},
-          second:TGround{tag:c"Nil", parameters:[]}
+          first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
+          second:TGround{tag:interned-tag-vararg, parameters:[]}
       } => true;
       Tuple{
-          first:TGround{tag:c"...", parameters:[lp1..]},
+          first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
           second:rp1
       } => can-unify(lp1,rp1);
 

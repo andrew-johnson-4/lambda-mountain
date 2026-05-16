@@ -13,13 +13,13 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
    let no = (None : Maybe<TypeContext>)();
    match (Tuple(fpt, pt)) {
       Tuple{ first:TAny{} } => ctx = yes;
-      Tuple{ first:TGround{tag:c"Any"} } => ctx = yes;
-      Tuple{ first:TGround{tag:c"MustNotRetain"} } => ctx = yes;
-      Tuple{ first:TGround{tag:c"MustUse"} } => ctx = yes;
-      Tuple{ first:TGround{tag:c"MustNotMove"} } => ctx = yes;
-      Tuple{ first:TGround{tag:c"MustReleaseAfterCall"} } => ctx = yes;
-      Tuple{ first:TGround{tag:c"MustNotRewrite"} } => ctx = yes;
-      Tuple{ first:TGround{tag:c"MustNotFresh"} } => ctx = yes;
+      Tuple{ first:TGround{tag:interned-tag-vararg} } => ctx = yes;
+      Tuple{ first:TGround{tag:interned-tag-must-not-retain} } => ctx = yes;
+      Tuple{ first:TGround{tag:interned-tag-must-use} } => ctx = yes;
+      Tuple{ first:TGround{tag:interned-tag-must-not-move} } => ctx = yes;
+      Tuple{ first:TGround{tag:interned-tag-must-release-after-call} } => ctx = yes;
+      Tuple{ first:TGround{tag:interned-tag-must-not-rewrite} } => ctx = yes;
+      Tuple{ first:TGround{tag:interned-tag-must-not-fresh} } => ctx = yes;
       Tuple{ first:TVar{}, second:TGround{tag:interned-tag-cons} } => ctx = no;
       Tuple{ first:TVar{name=name}, second:TGround{tag=tag} } => (
          ctx = ctx.bind(name, ta, pt, Lit(tag, mk-token(tag)));
@@ -35,19 +35,19 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
          let phi-state-out = ta;
          for lc in lconjugate {
             if result.is-some then (match lc {
-               TGround{tag:c"Any"} => ();
-               TGround{tag:c"MustNotRetain"} => ();
-               TGround{tag:c"MustUse"} => ();
-               TGround{tag:c"MustNotMove"} => ();
-               TGround{tag:c"MustReleaseAfterCall"} => ();
-               TGround{tag:c"MustNotRewrite"} => ();
-               TGround{tag:c"MustNotFresh"} => ();
-               TGround{tag:c"Phi::Transition", parameters:[phi-to..phi-from..]} => (
+               TGround{tag:interned-tag-vararg} => ();
+               TGround{tag:interned-tag-must-not-retain} => ();
+               TGround{tag:interned-tag-must-use} => ();
+               TGround{tag:interned-tag-must-not-move} => ();
+               TGround{tag:interned-tag-must-release-after-call} => ();
+               TGround{tag:interned-tag-must-not-rewrite} => ();
+               TGround{tag:interned-tag-must-not-fresh} => ();
+               TGround{tag:interned-tag-phi-transition, parameters:[phi-to..phi-from..]} => (
                   for st in rconjugate { match st {
-                     TGround{tag:c"Phi::Id",parameters:[TId{new-phi-id=id}..]} => (
+                     TGround{tag:interned-tag-phi-id,parameters:[TId{new-phi-id=id}..]} => (
                         phi-id = new-phi-id;
                      );
-                     TGround{tag:c"Phi::State",parameters:[new-phi-state..]} => (
+                     TGround{tag:interned-tag-phi-state,parameters:[new-phi-state..]} => (
                         phi-state-in = phi-state-in.extend( new-phi-state );
                      );
                      _ => ();
@@ -102,12 +102,12 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       );
 
       # Ignore C Access Modifiers For Now
-      Tuple{ first:TGround{tag:c"C", parameters:[TGround{tag:c"const"}..]} } => yes;
+      Tuple{ first:TGround{tag:interned-tag-c, parameters:[TGround{tag:interned-tag-const}..]} } => yes;
 
       # Varargs
       Tuple{
           first:TGround{tag:interned-tag-cons, parameters:[
-             TGround{tag:c"...", parameters:[lp1..]}..
+             TGround{tag:interned-tag-vararg, parameters:[lp1..]}..
              lpr..
           ]},
           second:TGround{tag:interned-tag-cons, parameters:[rp1..rpr..]}
@@ -116,7 +116,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       );
       Tuple{
           first:TGround{tag:interned-tag-cons, parameters:[
-             TGround{tag:c"...", parameters:[lp1..]}..
+             TGround{tag:interned-tag-vararg, parameters:[lp1..]}..
              lpr..
           ]},
           second:rp1
@@ -126,17 +126,17 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
          else { ctx = unify-inner(lpr,rp1,blame); }
       );
       Tuple{
-          first:TGround{tag:c"...", parameters:[lp1..]},
+          first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
           second:TGround{tag:interned-tag-cons, parameters:[rp1..rpr..]}
       } => (
          if can-unify(lp1,rp1) { ctx = unify-inner(fpt,rpr,blame) && unify-inner(lp1,rp1,blame); };
       );
       Tuple{
-          first:TGround{tag:c"...", parameters:[lp1..]},
-          second:TGround{tag:c"Nil", parameters:[]}
+          first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
+          second:TGround{tag:interned-tag-vararg, parameters:[]}
       } => ctx = yes;
       Tuple{
-          first:TGround{tag:c"...", parameters:[lp1..]},
+          first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
           second:rp1
       } => ctx = unify-inner(lp1,rp1,blame);
 

@@ -22,9 +22,9 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
          let previous-seen-tt = apply-type-variables.lookup(tr.key-or-zero, ta).datatype;
          let current-seen-tt = tr.direct-type.datatype;
          if previous-seen-tt != current-seen-tt {
-            if previous-seen-tt.is-t(c"Sized",1) and tr.direct-type.datatype <: previous-seen-tt.slot(c"Sized",1).l1 {
+            if previous-seen-tt.is-t(interned-tag-sized,1) and tr.direct-type.datatype <: previous-seen-tt.slot(interned-tag-sized,1).l1 {
                # no change necessary, type in context is already the erased type
-            } else if current-seen-tt.is-t(c"Sized",1) and apply-type-variables.lookup(tr.key-or-zero, ta) <: current-seen-tt.slot(c"Sized",1).l1 {
+            } else if current-seen-tt.is-t(interned-tag-sized,1) and apply-type-variables.lookup(tr.key-or-zero, ta) <: current-seen-tt.slot(interned-tag-sized,1).l1 {
                # type in context must be updated to the erased type
                apply-type-variables = apply-type-variables.bind(tr.key-or-zero, current-seen-tt);
             } else {
