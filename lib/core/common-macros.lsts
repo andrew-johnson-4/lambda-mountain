@@ -168,7 +168,7 @@ typed macro macro::lhs-fields-with-term(term: lazy, case: macro::literal<MACRO::
 );
 
 typed macro macro::lhs-fields-with-term(term: lazy, v: macro::variable): Bool = (
-   let v = term; true
+   term == v
 );
 
 typed macro macro::lhs-fields-with-term(term: lazy, x rest: macro::lhs-head): Bool = (
