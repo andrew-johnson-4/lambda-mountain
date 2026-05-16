@@ -34,3 +34,9 @@ let intern-type-tag-single(tag: CString): U64 = (
       index
    }
 );
+
+let hash(t: TypeTagIntern): U64 = (
+   if t.second != 0
+   then hash(t.second)
+   else hash(t.first)
+);

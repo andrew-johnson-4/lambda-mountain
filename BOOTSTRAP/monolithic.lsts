@@ -6134,18 +6134,18 @@ let ta = TAny;
 
 # new allocations = 0
 #    0 from 0 length vector
-let t0(tag: CString): Type = TGround(tag, mk-vector(type(Type)));
+let t0(tag: CString): Type = TGround(intern-type-tag(tag), mk-vector(type(Type)));
 
 # new allocations = 0
 let ti(id: U64): Type = TId(id);
 
 # new allocations = 1
 #    1 from 1 length vector
-let t1(tag: CString, p1: Type): Type = TGround(tag, mk-vector(type(Type)).push(p1));
+let t1(tag: CString, p1: Type): Type = TGround(intern-type-tag(tag), mk-vector(type(Type)).push(p1));
 
 # new allocations = 1
 #    1 from 2 length vector
-let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, mk-vector(type(Type)).push(p2).push(p1));
+let t2(tag: CString, p1: Type, p2: Type): Type = TGround(intern-type-tag(tag), mk-vector(type(Type)).push(p2).push(p1));
 
 # new allocations = 0
 let tv(name: CString): Type = TVar(name, mk-vector(type(Type)));
@@ -6303,7 +6303,7 @@ let .extend(lt: Type, rt: Type): Type = (
 );
 
 # new allocations = 0
-let ts(tag: CString, ps: Vector<Type>): Type = TGround( tag, ps );
+let ts(tag: CString, ps: Vector<Type>): Type = TGround( intern-type-tag(tag), ps );
 
 # new allocations = 0
 let tand(t: Vector<Type>): Type = TAnd(t.sort);
@@ -6323,7 +6323,7 @@ let $"||"(lt: Type, rt: Type): Type = if non-zero(lt) then lt else rt;
 # TODO: replace TGround List implementation with Vector which is much more efficient
 # for this reason allocation counts only have an upper bound rather than exact bound
 type Type zero TAny implies MustRetain, MustRelease
-        = TGround { tag:CString, parameters:Vector<Type> }
+        = TGround { tag:TypeTagIntern, parameters:Vector<Type> }
         | TId { id:U64 } # for fast TGround in fixed positions like Phi::Id<231>
         | TAny
         | TVar { name:CString, parameters:Vector<Type> }
@@ -6412,6 +6412,48 @@ let hash(tt: Type): U64 = (
       TGround{tag=tag,parameters=parameters} => hash(tag) + hash(parameters);
       TId{id=id} => id;
    }
+);
+
+let type-tag-intern-index = {} : Hashtable<CString,U64>;
+
+type TypeTagIntern = { first: U64, second: U64 };
+
+let $"=="(tti1: TypeTagIntern, tti2: TypeTagIntern): Bool = (
+   tti1.first == tti2.first and (
+      tti1.second == tti2.second or
+      tti1.second == 0 or
+      tti2.second == 0
+   )
+);
+
+let intern-type-tag(tag: CString): TypeTagIntern = (
+   if tag.contains(c"::") {
+      let tag-split = tag.split(c"::");
+      if tag-split.length == 1
+      then TypeTagIntern(intern-type-tag-single(tag), 0_u64)
+      else {
+         let prefix = tag.split(c"::")[0] + c"::";
+         TypeTagIntern(intern-type-tag-single(prefix), intern-type-tag-single(tag))
+      }
+   } else {
+      TypeTagIntern(intern-type-tag-single(tag), 0_u64)
+   }
+);
+
+let intern-type-tag-single(tag: CString): U64 = (
+   if type-tag-intern-index.has-key(tag)
+   then type-tag-intern-index.lookup(tag, 0_u64);
+   else {
+      let index = (type-tag-intern-index.length + 1) as U64;
+      type-tag-intern-index = type-tag-intern-index.bind(tag, index);
+      index
+   }
+);
+
+let hash(t: TypeTagIntern): U64 = (
+   if t.second != 0
+   then hash(t.second)
+   else hash(t.first)
 );
 
 let .into(tt: Type, tgt: Type<String>): String = (
@@ -9396,6 +9438,7 @@ import SRC/type-is-linear.lsts;
 import SRC/type-simple-id.lsts;
 import SRC/type-with-only-tag.lsts;
 import SRC/type-has-t.lsts;
+import SRC/type-intern-type-tag.lsts;
 
 import SRC/unit-ascript-core.lsts;
 

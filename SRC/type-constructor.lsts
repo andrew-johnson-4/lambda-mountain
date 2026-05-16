@@ -4,18 +4,18 @@ let ta = TAny;
 
 # new allocations = 0
 #    0 from 0 length vector
-let t0(tag: CString): Type = TGround(tag, mk-vector(type(Type)));
+let t0(tag: CString): Type = TGround(intern-type-tag(tag), mk-vector(type(Type)));
 
 # new allocations = 0
 let ti(id: U64): Type = TId(id);
 
 # new allocations = 1
 #    1 from 1 length vector
-let t1(tag: CString, p1: Type): Type = TGround(tag, mk-vector(type(Type)).push(p1));
+let t1(tag: CString, p1: Type): Type = TGround(intern-type-tag(tag), mk-vector(type(Type)).push(p1));
 
 # new allocations = 1
 #    1 from 2 length vector
-let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, mk-vector(type(Type)).push(p2).push(p1));
+let t2(tag: CString, p1: Type, p2: Type): Type = TGround(intern-type-tag(tag), mk-vector(type(Type)).push(p2).push(p1));
 
 # new allocations = 0
 let tv(name: CString): Type = TVar(name, mk-vector(type(Type)));
@@ -173,7 +173,7 @@ let .extend(lt: Type, rt: Type): Type = (
 );
 
 # new allocations = 0
-let ts(tag: CString, ps: Vector<Type>): Type = TGround( tag, ps );
+let ts(tag: CString, ps: Vector<Type>): Type = TGround( intern-type-tag(tag), ps );
 
 # new allocations = 0
 let tand(t: Vector<Type>): Type = TAnd(t.sort);
