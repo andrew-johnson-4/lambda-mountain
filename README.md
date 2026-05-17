@@ -26,6 +26,8 @@ LSTS philosophy, LSTS seems to be aiming for:
 * but with more inference
 * and programmable compiler semantics
 
+That’s potentially a direct challenge to Rust’s ergonomics model.
+
 λ☶ (pronounced Lambda Mountain) is a typed macro assembler that provides a relatively clean implementation of **System F<: with Specialization**.
 
 * [TUTORIAL](https://github.com/andrew-johnson-4/LSTS/wiki)
