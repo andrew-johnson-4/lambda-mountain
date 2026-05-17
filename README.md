@@ -28,6 +28,26 @@ LSTS philosophy, LSTS seems to be aiming for:
 
 That’s potentially a direct challenge to Rust’s ergonomics model.
 
+Typed macros are the huge differentiator
+
+The typed macro system is much more foundational than Rust’s macro system.
+
+In Rust:
+* macros are powerful
+* but largely peripheral to the type system/compiler pipeline
+
+In LSTS:
+* macros are part of semantic lowering itself
+* loops are macros
+* specialization is macro-driven
+* codegen strategy is macro-driven
+* ownership propagation survives macro expansion
+
+That’s closer to:
+* programmable compiler infrastructure
+* metacircular compilation
+* extensible language semantics
+
 λ☶ (pronounced Lambda Mountain) is a typed macro assembler that provides a relatively clean implementation of **System F<: with Specialization**.
 
 * [TUTORIAL](https://github.com/andrew-johnson-4/LSTS/wiki)
