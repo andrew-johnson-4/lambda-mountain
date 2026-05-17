@@ -58,7 +58,7 @@ let infer-type-definition(term: AST): Nil = (
       add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
       interface-implementors = cons( (lhs-type, rhs-type, term), interface-implementors );
    };
-   if misc-type.is-t(interned-tag-vararg,0) {
+   if misc-type.is-t(interned-tag-phi,0) {
       let common-tags-length = 0_u64;
       let common-parameters = mk-vector(type(Type));
       for Tuple{ case-tag1=first, case-fields=second } in cases {
@@ -198,7 +198,7 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
    };
 
    body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")));
-   body = mk-cons(body, mk-lit(interned-tag-vararg).ascript(t0(c"L") && t0(c"Literal")));
+   body = mk-cons(body, mk-lit(c";})").ascript(t0(c"L") && t0(c"Literal")));
 
    let constructor = mk-glb( mk-token(case-tag).with-location(blame.location), mk-abs(args, body.ascript(base-type.expand-implied-phi), t0(c"Blob") ) );
 

@@ -18,7 +18,7 @@ let can-unify(fpt: Vector<Type>, pt: Vector<Type>): Bool = (
 let can-unify(fpt: Type, pt: Type): Bool = (
    let return = match Tuple(fpt, pt) {
       Tuple{ first:TAny{} } => true;
-      Tuple{ first:TGround{tag:interned-tag-vararg} } => true;
+      Tuple{ first:TGround{tag:interned-tag-any} } => true;
       Tuple{ first:TGround{tag:interned-tag-must-not-retain} } => true;
       Tuple{ first:TGround{tag:interned-tag-must-use} } => true;
       Tuple{ first:TGround{tag:interned-tag-must-not-move} } => true;
@@ -35,7 +35,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
          let phi-state-in = ta;
          for lc in lconjugate {
             if result then (match lc {
-               TGround{tag:interned-tag-vararg} => ();
+               TGround{tag:interned-tag-any} => ();
                TGround{tag:interned-tag-must-not-retain} => ();
                TGround{tag:interned-tag-must-use} => ();
                TGround{tag:interned-tag-must-not-move} => ();
@@ -136,7 +136,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       );
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
-          second:TGround{tag:interned-tag-vararg, parameters:[]}
+          second:TGround{tag:interned-tag-any, parameters:[]}
       } => true;
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},

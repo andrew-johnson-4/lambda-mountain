@@ -122,7 +122,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
                                  mk-atype(t1(c"Type",t0(c"String")))
                               )
                            ),
-                           mk-lit(interned-tag-vararg).ascript(t0(c"String"))
+                           mk-lit(c"\\n").ascript(t0(c"String"))
                         )
                      )
                   )

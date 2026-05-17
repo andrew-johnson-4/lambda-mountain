@@ -13,7 +13,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
    let no = (None : Maybe<TypeContext>)();
    match (Tuple(fpt, pt)) {
       Tuple{ first:TAny{} } => ctx = yes;
-      Tuple{ first:TGround{tag:interned-tag-vararg} } => ctx = yes;
+      Tuple{ first:TGround{tag:interned-tag-any} } => ctx = yes;
       Tuple{ first:TGround{tag:interned-tag-must-not-retain} } => ctx = yes;
       Tuple{ first:TGround{tag:interned-tag-must-use} } => ctx = yes;
       Tuple{ first:TGround{tag:interned-tag-must-not-move} } => ctx = yes;
@@ -35,7 +35,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
          let phi-state-out = ta;
          for lc in lconjugate {
             if result.is-some then (match lc {
-               TGround{tag:interned-tag-vararg} => ();
+               TGround{tag:interned-tag-any} => ();
                TGround{tag:interned-tag-must-not-retain} => ();
                TGround{tag:interned-tag-must-use} => ();
                TGround{tag:interned-tag-must-not-move} => ();
@@ -133,7 +133,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       );
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
-          second:TGround{tag:interned-tag-vararg, parameters:[]}
+          second:TGround{tag:interned-tag-nil, parameters:[]}
       } => ctx = yes;
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},

@@ -2,6 +2,7 @@
 let interned-tag-arrow = intern-type-tag(c"Arrow");
 let interned-tag-array = intern-type-tag(c"Array");
 let interned-tag-cons = intern-type-tag(c"Cons");
+let interned-tag-prop = intern-type-tag(c"Prop");
 let interned-tag-phi-moved = intern-type-tag(c"Phi::Moved");
 let interned-tag-phi-live = intern-type-tag(c"Phi::Live");
 let interned-tag-linear = intern-type-tag(c"Linear");
@@ -22,7 +23,13 @@ let interned-tag-const = intern-type-tag(c"const");
 let interned-tag-c = intern-type-tag(c"C");
 let interned-tag-sized = intern-type-tag(c"Sized");
 let interned-tag-extern = intern-type-tag(c"extern");
+let interned-tag-blob = intern-type-tag(c"Blob");
+let interned-tag-ffi = intern-type-tag(c"FFI");
+let interned-tag-cffi = intern-type-tag(c"C-FFI");
 let interned-tag-field = intern-type-tag(c"extern");
+let interned-tag-unsafe = intern-type-tag(c"Unsafe");
+let interned-tag-never = intern-type-tag(c"Never");
+let interned-tag-u64 = intern-type-tag(c"U64");
 let interned-tag-unknown = TypeTagIntern(0_u64, 0_u64);
 
 # new allocations = 0
@@ -59,10 +66,10 @@ let tv1(name: CString, p1: Type): Type = TVar(name, mk-vector(type(Type)).push(p
 let tv1(name: CString, p2: Type): Type = TVar(name, mk-vector(type(Type)).push(p1).push(p2));
 
 # new allocations = 0 (constant)
-let type-nil = t0(interned-tag-vararg);
+let type-nil = t0(c"Nil");
 
 # new allocations = 0 (constant)
-let type-any = t0(interned-tag-vararg);
+let type-any = t0(c"Any");
 
 # new allocations = 0 (constant)
 let type-tail-position = t0(interned-tag-tail-position);
@@ -92,7 +99,7 @@ let type-c-void = t1(interned-tag-c,t0(c"void"));
 let type-c-label = t1(interned-tag-c,t0(c":Label"));
 
 # new allocations = 0 (constant)
-let type-c-vararg = t1(interned-tag-c,t0(interned-tag-vararg));
+let type-c-vararg = t1(interned-tag-c,t0(c"..."));
 
 # new allocations = 0 (constant)
 let type-c-tany = t1(interned-tag-c,ta);

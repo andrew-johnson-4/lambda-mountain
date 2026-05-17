@@ -217,9 +217,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                (let tctx-cond, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
                (tctx-t, let new-t) = std-infer-expr(tctx-cond, t, false, Tail(), ta);
                (tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
-               if typeof-term(new-t).is-t(interned-tag-vararg,0) and typeof-term(new-f).is-linear
+               if typeof-term(new-t).is-t(interned-tag-nil,0) and typeof-term(new-f).is-linear
                then (tctx-f, new-f) = wrap-call(tctx-f, c".release", new-f);
-               if typeof-term(new-f).is-t(interned-tag-vararg,0) and typeof-term(new-t).is-linear
+               if typeof-term(new-f).is-t(interned-tag-nil,0) and typeof-term(new-t).is-linear
                then (tctx-t, new-t) = wrap-call(tctx-t, c".release", new-t);
                if not(is(cond,new-cond)) or not(is(t,new-t)) or not(is(f,new-f))
                then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
@@ -229,21 +229,21 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                (tctx-t, let new-t) = std-infer-expr(tctx, t, false, Tail(), ta);
                (tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
                (tctx-f, new-f) = release-locals(tctx, tctx-f, new-f, hint, false);
-               if typeof-term(new-t).is-t(interned-tag-vararg,0) and typeof-term(new-f).is-linear
+               if typeof-term(new-t).is-t(interned-tag-nil,0) and typeof-term(new-f).is-linear
                then (tctx-f, new-f) = wrap-call(tctx-f, c".release", new-f);
-               if typeof-term(new-f).is-t(interned-tag-vararg,0) and typeof-term(new-t).is-linear
+               if typeof-term(new-f).is-t(interned-tag-nil,0) and typeof-term(new-t).is-linear
                then (tctx-t, new-t) = wrap-call(tctx-t, c".release", new-t);
                tctx = tctx-t;
                if not(is(cond,new-cond)) or not(is(t,new-t)) or not(is(f,new-f))
                then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
                tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
             };
-            if not(typeof-term(cond).is-t(c"Bool",0) or typeof-term(cond).is-t(interned-tag-vararg,0)) {
+            if not(typeof-term(cond).is-t(c"Bool",0) or typeof-term(cond).is-t(interned-tag-u64,0)) {
                tctx.apply-callable(c"into-branch-conditional", typeof-term(cond), cond);
             };
             let lub = if typeof-term(f).is-t(c"Never",0) then typeof-term(t)
-            else if typeof-term(t).is-t(c"Never",0) then typeof-term(f)
-            else if typeof-term(f).is-t(interned-tag-vararg,0) or typeof-term(t).is-t(interned-tag-vararg,0) then type-nil
+            else if typeof-term(t).is-t(interned-tag-never,0) then typeof-term(f)
+            else if typeof-term(f).is-t(interned-tag-nil,0) or typeof-term(t).is-t(interned-tag-nil,0) then type-nil
             else { (tctx, let lub) = tctx.least-upper-bound(typeof-term(t), typeof-term(f), term); lub };
             tctx = tctx.ascript(term, lub);
             let term-phi-id = typeof-term(term).slot(interned-tag-phi-id,1).l1.simple-id;
@@ -284,7 +284,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             (let inner-tctx, let new-val) = std-infer-expr(tctx, val, is-scoped, Used(), ta);
             match new-val {
                Abs{lhs=lhs, old-wrapped-rhs=rhs:App{ akey=left:Lit{key:c":"}, right:App{ rhs=left, right:AType{rhs-tt=tt} } }, tlt=tt} => (
-                  if not(tlt.is-t(c"Blob",0) or tlt.is-t(c"C-FFI",0) or tlt.is-t(interned-tag-vararg,0) or tlt.is-t(c"Phi::Source",0) ) {
+                  if not(tlt.is-t(interned-tag-blob,0) or tlt.is-t(interned-tag-cffi,0) or tlt.is-t(interned-tag-ffi,0) or tlt.is-t(c"Phi::Source",0) ) {
                      validate-pctx-release(inner-tctx);
                   };
                );
@@ -391,7 +391,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             if typeof-term(new-l).is-arrow then r-used = Call(var-name-if-var-or-lit(new-l)); # if l was a macro then it could be macro::concat
             (tctx, let new-r) = std-infer-expr(tctx, r, false, if used.is-tail then used else if used.is-unused then used else Used, rhint);
             if not(is(l,new-l)) or not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-cons(new-l, new-r) };
-            tctx = tctx.ascript(term, if used.is-tail or typeof-term(l).is-t(interned-tag-vararg,0) then typeof-term(r) else t2(interned-tag-cons, typeof-term(l), typeof-term(r)));
+            tctx = tctx.ascript(term, if used.is-tail or typeof-term(l).is-t(interned-tag-nil,0) then typeof-term(r) else t2(interned-tag-cons, typeof-term(l), typeof-term(r)));
          } else {
             let rt = ta;
             if index-macro-table.has-key(var-name-if-var(l)) {
@@ -439,8 +439,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                } else {
                   (tctx, ta, t2(interned-tag-cons, typeof-term(l), typeof-term(r)))
                };
-               if not(used.is-call) or rt.slot(interned-tag-cons,2).l1.is-t(interned-tag-vararg,0) { rt = rt.cons-tail-or-self; };
-               if var-name-if-var-or-lit(l)==interned-tag-vararg and typeof-term(r).is-t(interned-tag-cons,2) {
+               if not(used.is-call) or rt.slot(interned-tag-cons,2).l1.is-t(interned-tag-nil,0) { rt = rt.cons-tail-or-self; };
+               if var-name-if-var-or-lit(l)==c"mov" and typeof-term(r).is-t(interned-tag-cons,2) {
                   let from-tt = typeof-term(r).slot(interned-tag-cons,2).l1;
                   let to-tt = typeof-term(r).slot(interned-tag-cons,2).l2;
                   tctx = tctx.phi-override(to-tt, from-tt, term);
@@ -507,7 +507,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.phi-move(typeof-term(term),term);
       }
    }};
-   (_, let dom-tt) = typeof-var-raw(term, tctx, interned-tag-vararg, hint.is-t(interned-tag-must-not-fresh,0) or hint.is-t(interned-tag-tail-position,0));
+   (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(interned-tag-must-not-fresh,0) or hint.is-t(interned-tag-tail-position,0));
    (tctx, term);
 );
 

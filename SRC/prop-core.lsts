@@ -108,7 +108,7 @@ add-weaken-quick-prop( t1(c"Constructor",ta), t1(c"Constructor",ta), t1(c"Constr
 add-weaken-quick-prop( t1(c"CaseNumber",ta), t1(c"CaseNumber",ta), t1(c"CaseNumber",ta) );
 add-weaken-quick-prop( t0(c"Constructor"), ta, t0(c"Constructor") );
 add-weaken-quick-prop( t0(c"C-FFI"), ta, t0(c"C-FFI") );
-add-weaken-quick-prop( t0(interned-tag-vararg), ta, t0(interned-tag-vararg) );
+add-weaken-quick-prop( t0(c"Raw"), ta, t0(c"Raw") );
 add-weaken-quick-prop( t0(c"LMStruct"), ta, t0(c"LMStruct") );
 add-weaken-quick-prop( t0(c"Constant"), ta, t0(c"Constant") );
 add-weaken-quick-prop( t0(c"Literal"), ta, t0(c"Literal") );
@@ -220,7 +220,7 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             );
          };
          if tag==interned-tag-array and parameters.length==2 {
-            for row in quick-prop.lookup( (interned-tag-array,2_u64), mk-vector(type((Type,Type))) ) {
+            for row in quick-prop.lookup( (interned-tag-array.primary,2_u64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (
@@ -228,11 +228,11 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
                );
             }
          };
-         if tag.contains(c"::") {
-            let tag-base = if tag.has-prefix(c"Tag::") then c"Tag::"
-                      else if tag.has-prefix(c"Field::") then c"Field::"
-                      else c"";
-            for row in quick-prop.lookup( (tag-base, parameters.length as U64), mk-vector(type((Type,Type))) ) {
+         if tag.has-secondary {
+            let tag-base = if tag==interned-tag-tag then interned-tag-tag
+                      else if tag==interned-tag-field then interned-tag-field
+                      else interned-tag-unknown;
+            for row in quick-prop.lookup( (tag-base.primary, parameters.length as U64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (

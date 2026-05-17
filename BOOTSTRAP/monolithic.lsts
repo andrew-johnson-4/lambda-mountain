@@ -4006,7 +4006,7 @@ let .lookup(ctx: FContext, k: CString, kt: Type, sloc: AST, hard: Bool): Fragmen
    while non-zero(ctx) { match ctx {
       FCtxBind { remainder=remainder, ctx-k=k, ctx-kt=kt, ctx-kv=kv } => (
          if k==ctx-k {
-            if ctx-kt.is-arrow and not(kt.is-t(interned-tag-vararg,0)) {
+            if ctx-kt.is-arrow and not(kt.is-t(interned-tag-any,0)) {
                if kt==ta or can-unify( ctx-kt.domain, kt ) or can-unify(ctx-kt.domain, kt.domain) {
                   if non-zero(found) {
                      if can-unify(found, ctx-kt.domain) {
@@ -4349,7 +4349,7 @@ add-weaken-quick-prop( t1(c"Constructor",ta), t1(c"Constructor",ta), t1(c"Constr
 add-weaken-quick-prop( t1(c"CaseNumber",ta), t1(c"CaseNumber",ta), t1(c"CaseNumber",ta) );
 add-weaken-quick-prop( t0(c"Constructor"), ta, t0(c"Constructor") );
 add-weaken-quick-prop( t0(c"C-FFI"), ta, t0(c"C-FFI") );
-add-weaken-quick-prop( t0(interned-tag-vararg), ta, t0(interned-tag-vararg) );
+add-weaken-quick-prop( t0(c"Raw"), ta, t0(c"Raw") );
 add-weaken-quick-prop( t0(c"LMStruct"), ta, t0(c"LMStruct") );
 add-weaken-quick-prop( t0(c"Constant"), ta, t0(c"Constant") );
 add-weaken-quick-prop( t0(c"Literal"), ta, t0(c"Literal") );
@@ -4461,7 +4461,7 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             );
          };
          if tag==interned-tag-array and parameters.length==2 {
-            for row in quick-prop.lookup( (interned-tag-array,2_u64), mk-vector(type((Type,Type))) ) {
+            for row in quick-prop.lookup( (interned-tag-array.primary,2_u64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (
@@ -4469,11 +4469,11 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
                );
             }
          };
-         if tag.contains(c"::") {
-            let tag-base = if tag.has-prefix(c"Tag::") then c"Tag::"
-                      else if tag.has-prefix(c"Field::") then c"Field::"
-                      else c"";
-            for row in quick-prop.lookup( (tag-base, parameters.length as U64), mk-vector(type((Type,Type))) ) {
+         if tag.has-secondary {
+            let tag-base = if tag==interned-tag-tag then interned-tag-tag
+                      else if tag==interned-tag-field then interned-tag-field
+                      else interned-tag-unknown;
+            for row in quick-prop.lookup( (tag-base.primary, parameters.length as U64), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (
@@ -4762,7 +4762,7 @@ let .apply(tctx: TypeContext?, fname: CString, ft: Type, at: Type, blame: AST, r
 
    # Propagate cons root type for Prop functions
    # like, t0.prop0(t1,t2) : T0 && Prop0
-   if ft.is-t(c"Prop",0) then return-type = return-type.extend( at.cons-root );  
+   if ft.is-t(interned-tag-prop,0) then return-type = return-type.extend( at.cons-root );  
 
    (tctx, apply-tctx, closed-type, return-type)
 );
@@ -4840,7 +4840,7 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
    }};
 
    # Fail if function needs to be in an unsafe block
-   if failable and non-zero(result) and result.get-or-panic.dt-or-zero.is-t(c"Unsafe",0) and not(tctx.get-or(mk-tctx()).is-unsafe)
+   if failable and non-zero(result) and result.get-or-panic.dt-or-zero.is-t(interned-tag-unsafe,0) and not(tctx.get-or(mk-tctx()).is-unsafe)
    then exit-error("Call to unsafe function outside of unsafe block", blame);
 
    # Fail if function call is ambiguous
@@ -4970,7 +4970,7 @@ let .normalize(tctx: TypeContext?): TypeContext? = (
 
 let .phi-merge(tctx: TypeContext?, left-phi-state: Type, right-phi-state: Type, blame: AST): Type = (
    if can-unify(left-phi-state,right-phi-state) and can-unify(right-phi-state,left-phi-state) then left-phi-state
-   else tctx.apply-callable(interned-tag-vararg, t2(interned-tag-cons,left-phi-state,right-phi-state), blame).second;
+   else tctx.apply-callable(c"phi", t2(interned-tag-cons,left-phi-state,right-phi-state), blame).second;
 );
 
 let substitute-normalized(tctx: Maybe<TypeContext>, tt: Vector<Type>): Vector<Type> = (
@@ -5624,7 +5624,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
    let no = (None : Maybe<TypeContext>)();
    match (Tuple(fpt, pt)) {
       Tuple{ first:TAny{} } => ctx = yes;
-      Tuple{ first:TGround{tag:interned-tag-vararg} } => ctx = yes;
+      Tuple{ first:TGround{tag:interned-tag-any} } => ctx = yes;
       Tuple{ first:TGround{tag:interned-tag-must-not-retain} } => ctx = yes;
       Tuple{ first:TGround{tag:interned-tag-must-use} } => ctx = yes;
       Tuple{ first:TGround{tag:interned-tag-must-not-move} } => ctx = yes;
@@ -5646,7 +5646,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
          let phi-state-out = ta;
          for lc in lconjugate {
             if result.is-some then (match lc {
-               TGround{tag:interned-tag-vararg} => ();
+               TGround{tag:interned-tag-any} => ();
                TGround{tag:interned-tag-must-not-retain} => ();
                TGround{tag:interned-tag-must-use} => ();
                TGround{tag:interned-tag-must-not-move} => ();
@@ -5744,7 +5744,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       );
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
-          second:TGround{tag:interned-tag-vararg, parameters:[]}
+          second:TGround{tag:interned-tag-nil, parameters:[]}
       } => ctx = yes;
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
@@ -5924,7 +5924,7 @@ let can-unify(fpt: Vector<Type>, pt: Vector<Type>): Bool = (
 let can-unify(fpt: Type, pt: Type): Bool = (
    let return = match Tuple(fpt, pt) {
       Tuple{ first:TAny{} } => true;
-      Tuple{ first:TGround{tag:interned-tag-vararg} } => true;
+      Tuple{ first:TGround{tag:interned-tag-any} } => true;
       Tuple{ first:TGround{tag:interned-tag-must-not-retain} } => true;
       Tuple{ first:TGround{tag:interned-tag-must-use} } => true;
       Tuple{ first:TGround{tag:interned-tag-must-not-move} } => true;
@@ -5941,7 +5941,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
          let phi-state-in = ta;
          for lc in lconjugate {
             if result then (match lc {
-               TGround{tag:interned-tag-vararg} => ();
+               TGround{tag:interned-tag-any} => ();
                TGround{tag:interned-tag-must-not-retain} => ();
                TGround{tag:interned-tag-must-use} => ();
                TGround{tag:interned-tag-must-not-move} => ();
@@ -6042,7 +6042,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       );
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
-          second:TGround{tag:interned-tag-vararg, parameters:[]}
+          second:TGround{tag:interned-tag-any, parameters:[]}
       } => true;
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
@@ -6132,6 +6132,7 @@ let .cons-tail-or-self(tt: Type): Type = (
 let interned-tag-arrow = intern-type-tag(c"Arrow");
 let interned-tag-array = intern-type-tag(c"Array");
 let interned-tag-cons = intern-type-tag(c"Cons");
+let interned-tag-prop = intern-type-tag(c"Prop");
 let interned-tag-phi-moved = intern-type-tag(c"Phi::Moved");
 let interned-tag-phi-live = intern-type-tag(c"Phi::Live");
 let interned-tag-linear = intern-type-tag(c"Linear");
@@ -6153,6 +6154,9 @@ let interned-tag-c = intern-type-tag(c"C");
 let interned-tag-sized = intern-type-tag(c"Sized");
 let interned-tag-extern = intern-type-tag(c"extern");
 let interned-tag-field = intern-type-tag(c"extern");
+let interned-tag-unsafe = intern-type-tag(c"Unsafe");
+let interned-tag-never = intern-type-tag(c"Never");
+let interned-tag-u64 = intern-type-tag(c"U64");
 let interned-tag-unknown = TypeTagIntern(0_u64, 0_u64);
 
 # new allocations = 0
@@ -6189,10 +6193,10 @@ let tv1(name: CString, p1: Type): Type = TVar(name, mk-vector(type(Type)).push(p
 let tv1(name: CString, p2: Type): Type = TVar(name, mk-vector(type(Type)).push(p1).push(p2));
 
 # new allocations = 0 (constant)
-let type-nil = t0(interned-tag-vararg);
+let type-nil = t0(c"Nil");
 
 # new allocations = 0 (constant)
-let type-any = t0(interned-tag-vararg);
+let type-any = t0(c"Any");
 
 # new allocations = 0 (constant)
 let type-tail-position = t0(interned-tag-tail-position);
@@ -6222,7 +6226,7 @@ let type-c-void = t1(interned-tag-c,t0(c"void"));
 let type-c-label = t1(interned-tag-c,t0(c":Label"));
 
 # new allocations = 0 (constant)
-let type-c-vararg = t1(interned-tag-c,t0(interned-tag-vararg));
+let type-c-vararg = t1(interned-tag-c,t0(c"..."));
 
 # new allocations = 0 (constant)
 let type-c-tany = t1(interned-tag-c,ta);
@@ -6451,6 +6455,7 @@ let type-tag-intern-inverse-index = {} : Hashtable<U64,CString>;
 type TypeTagIntern = { first: U64, second: U64 };
 
 let .primary(t: TypeTagIntern): U64 = if t.second==0 then t.first else t.second;
+let .has-secondary(t: TypeTagIntern): Bool = t.second != 0;
 
 let $"=="(tti1: TypeTagIntern, tti2: TypeTagIntern): Bool = (
    tti1.first == tti2.first and (
@@ -7516,9 +7521,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                (let tctx-cond, let new-cond) = std-infer-expr(tctx, cond, false, Tail(), ta);
                (tctx-t, let new-t) = std-infer-expr(tctx-cond, t, false, Tail(), ta);
                (tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
-               if typeof-term(new-t).is-t(interned-tag-vararg,0) and typeof-term(new-f).is-linear
+               if typeof-term(new-t).is-t(interned-tag-nil,0) and typeof-term(new-f).is-linear
                then (tctx-f, new-f) = wrap-call(tctx-f, c".release", new-f);
-               if typeof-term(new-f).is-t(interned-tag-vararg,0) and typeof-term(new-t).is-linear
+               if typeof-term(new-f).is-t(interned-tag-nil,0) and typeof-term(new-t).is-linear
                then (tctx-t, new-t) = wrap-call(tctx-t, c".release", new-t);
                if not(is(cond,new-cond)) or not(is(t,new-t)) or not(is(f,new-f))
                then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
@@ -7528,21 +7533,21 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                (tctx-t, let new-t) = std-infer-expr(tctx, t, false, Tail(), ta);
                (tctx-f, let new-f) = std-infer-expr(tctx, f, false, Tail(), ta);
                (tctx-f, new-f) = release-locals(tctx, tctx-f, new-f, hint, false);
-               if typeof-term(new-t).is-t(interned-tag-vararg,0) and typeof-term(new-f).is-linear
+               if typeof-term(new-t).is-t(interned-tag-nil,0) and typeof-term(new-f).is-linear
                then (tctx-f, new-f) = wrap-call(tctx-f, c".release", new-f);
-               if typeof-term(new-f).is-t(interned-tag-vararg,0) and typeof-term(new-t).is-linear
+               if typeof-term(new-f).is-t(interned-tag-nil,0) and typeof-term(new-t).is-linear
                then (tctx-t, new-t) = wrap-call(tctx-t, c".release", new-t);
                tctx = tctx-t;
                if not(is(cond,new-cond)) or not(is(t,new-t)) or not(is(f,new-f))
                then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
                tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
             };
-            if not(typeof-term(cond).is-t(c"Bool",0) or typeof-term(cond).is-t(interned-tag-vararg,0)) {
+            if not(typeof-term(cond).is-t(c"Bool",0) or typeof-term(cond).is-t(interned-tag-u64,0)) {
                tctx.apply-callable(c"into-branch-conditional", typeof-term(cond), cond);
             };
             let lub = if typeof-term(f).is-t(c"Never",0) then typeof-term(t)
-            else if typeof-term(t).is-t(c"Never",0) then typeof-term(f)
-            else if typeof-term(f).is-t(interned-tag-vararg,0) or typeof-term(t).is-t(interned-tag-vararg,0) then type-nil
+            else if typeof-term(t).is-t(interned-tag-never,0) then typeof-term(f)
+            else if typeof-term(f).is-t(interned-tag-nil,0) or typeof-term(t).is-t(interned-tag-nil,0) then type-nil
             else { (tctx, let lub) = tctx.least-upper-bound(typeof-term(t), typeof-term(f), term); lub };
             tctx = tctx.ascript(term, lub);
             let term-phi-id = typeof-term(term).slot(interned-tag-phi-id,1).l1.simple-id;
