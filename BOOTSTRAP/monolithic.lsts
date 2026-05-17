@@ -11701,6 +11701,7 @@ let std-c-type-of-integer(i: String): Type = (
 );
 
 let c-frontend(fp: CString): Nil = (
+   print("Parse \{fp}\n");
    # mktemp modifies this buffer, so it can't be a string constant
    # string concatenation is used to create a dynamic string
    let tmpfile = c"/tmp/lm.tmp.XXXXXX" + c"";
@@ -13333,6 +13334,7 @@ import PLUGINS/FRONTEND/LSTS/lsts-parse.lsts;
 import PLUGINS/FRONTEND/LSTS/mk-lsts-token.lsts;
 
 let lsts-frontend(fp: CString): Nil = (
+   print("Parse \{fp}\n");
    lsts-parse(lsts-tokenize(fp));
 );
 register-frontend(c".lsts", lsts-frontend);
