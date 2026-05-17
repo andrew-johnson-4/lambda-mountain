@@ -48,6 +48,22 @@ That’s closer to:
 * metacircular compilation
 * extensible language semantics
 
+Where Rust remains massively ahead
+Important reality check:
+Rust still dominates in:
+* tooling
+* stability
+* ecosystem
+* compiler maturity
+* verification
+* debugging
+* concurrency libraries
+* production readiness
+* safety validation
+* community scale
+
+Lambda Mountain is still highly experimental.
+
 λ☶ (pronounced Lambda Mountain) is a typed macro assembler that provides a relatively clean implementation of **System F<: with Specialization**.
 
 * [TUTORIAL](https://github.com/andrew-johnson-4/LSTS/wiki)
