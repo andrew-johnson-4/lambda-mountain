@@ -643,7 +643,7 @@ let lsts-parse-ascript(tokens: List<Token>): Tuple<AST,List<Token>> = (
    while lsts-parse-head(tokens)==c":" and non-zero(tokens) and lsts-parse-head(tail(tokens)) != c":" {
       tokens = tail(tokens);
       (let tt, tokens) = lsts-parse-type(tokens);
-      if tt.is-t(c"L",0) then tt = tt && t0(c"Literal");
+      if tt.is-t(interned-tag-l,0) then tt = tt && t0(c"Literal");
       tt = phi-as-state(tt);
       match term {
          App{ constructor=left:Lit{}, right:ASTNil{} } => (
@@ -940,18 +940,16 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
       if lsts-parse-head(tokens)==c"implies" {
          lsts-parse-expect(c"implies", tokens); tokens = tail(tokens);
          (let i, tokens) = lsts-parse-type(tokens);
-         if i.is-t(c"CompatMustRelease",0) then infers = infers.push(t0(c"MustRelease"));
          else infers = infers.push(i);
          while lsts-parse-head(tokens)==c"," {
             lsts-parse-expect(c",", tokens); tokens = tail(tokens);
             (i, tokens) = lsts-parse-type(tokens);
-            if i.is-t(c"CompatMustRelease",0) then infers = infers.push(t0(c"MustRelease"));
             else infers = infers.push(i);
          }
       };
    };
    for i in infers {
-      if i.is-t(c"MustRelease",0) and not(implied-phi.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1))
+      if i.is-t(interned-tag-must-release,0) and not(implied-phi.slot(interned-tag-must-release-to-release,1).l1.is-t(interned-tag-linear,1))
       then {
          let mt = t1(c"MustRelease::ToRelease",type-linear-live);
          implied-phi = implied-phi && mt;
@@ -993,7 +991,7 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
             .with-size(size).with-alias(alias).with-opaque-alias(opaque-alias)
             .with-cases(cases).with-misc(misc-type).with-implied-phi(implied-phi);
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-   if misc-type.is-t(c"Phi",0) then infer-type-definition(td);
+   if misc-type.is-t(interned-tag-phi,0) then infer-type-definition(td);
    (td, tokens);
 );
 

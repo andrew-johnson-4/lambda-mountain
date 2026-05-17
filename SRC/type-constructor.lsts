@@ -15,6 +15,7 @@ let interned-tag-hashtable = intern-type-tag(c"Hashtable");
 let interned-tag-phi = intern-type-tag(c"Phi");
 let interned-tag-vector = intern-type-tag(c"Vector");
 let interned-tag-owned-data = intern-type-tag(c"OwnedData");
+let interned-tag-one-owned-data = intern-type-tag(c"OneOwnedData");
 let interned-tag-tag = intern-type-tag(c"Tag::");
 let interned-tag-phi-id = intern-type-tag(c"Phi::Id");
 let interned-tag-phi-transition = intern-type-tag(c"Phi::Transition");
