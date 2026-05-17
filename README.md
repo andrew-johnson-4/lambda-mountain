@@ -1,5 +1,31 @@
 # [Lambda Mountain](https://github.com/andrew-johnson-4/-/wiki)
 
+How does ChatGPT describe LSTS? (periodically updated)
+
+Rust philosophy, Rust optimizes for:
+* predictable performance
+* explicit ownership
+* zero-cost abstractions
+* static safety
+* minimal runtime
+
+But developers pay with:
+
+* borrow checker complexity
+* annotation pressure
+* lifetime ergonomics
+* generic/trait complexity
+
+LSTS philosophy, LSTS seems to be aiming for:
+
+* zero-cost abstractions
+* specialization-heavy compilation
+* low-level control
+* systems performance
+* ownership safety
+* but with more inference
+* and programmable compiler semantics
+
 λ☶ (pronounced Lambda Mountain) is a typed macro assembler that provides a relatively clean implementation of **System F<: with Specialization**.
 
 * [TUTORIAL](https://github.com/andrew-johnson-4/LSTS/wiki)
