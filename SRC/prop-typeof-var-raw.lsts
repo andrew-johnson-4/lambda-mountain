@@ -3,7 +3,7 @@ let typeof-var-raw(sloc: AST, tctx: TypeContext?, vname: CString, must-not-fresh
    let tr = tctx.lookups-first(vname);
    if non-zero(tr) then {
       let dt = tr.denormalized;
-      if dt.is-t(c"MustRetain",0) and not(must-not-fresh) {
+      if dt.is-t(interned-tag-must-retain,0) and not(must-not-fresh) {
          (tctx, tr) = tctx.phi-fresh(tr);
          dt = tr.denormalized;
       };

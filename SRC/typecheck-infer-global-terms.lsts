@@ -118,7 +118,7 @@ let infer-global-macro(term: AST): Nil = (
          for s in seq { infer-global-macro(s) };
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
-         if misc-tt.is-t(c"TypedMacro",0) then bind-new-macro(k.key, frhs)
+         if misc-tt.is-t(interned-tag-typed-macro,0) then bind-new-macro(k.key, frhs)
       );
       _ => ();
    };
@@ -131,7 +131,7 @@ let infer-global-context(term: AST): Nil = (
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
          if k.key.has-prefix(c"primitive::") then ()
-         else if misc-tt.is-t(c"TypedMacro",0) then ()
+         else if misc-tt.is-t(interned-tag-typed-macro,0) then ()
          else {
             let ft = t2(interned-tag-arrow, typeof-lhs(lhs), return-type.rewrite-type-alias.expand-implied-phi.without-modifiers).without-phi-keep-state && misc-tt;
             if not(global-is-seen(k.key, ft)) {
