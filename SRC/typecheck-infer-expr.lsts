@@ -162,7 +162,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                # TODO: remove the special exception for "Arrows" here, which is a workaround for raw constructors
                # frontend is producing ((None : TContext?)()) instead of (None() : TContext?)
                # the return hint stuff is working, so all the hard work is done. I think only the frontend needs to change
-               tt = tt.without-slot(c"ReturnHint",0).rewrite-type-alias;
+               tt = tt.without-slot(interned-tag-return-hint,0).rewrite-type-alias;
                if not(can-unify(tt, typeof-term(term)))
                then exit-error("Ascripted value does not match declared type:\nExpected \{tt}\nFound \{typeof-term(t)}\n", term);
             };
@@ -194,8 +194,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             App{ left:Var{key:c"<:"}, right:App{short-left=left, short-right=right} } => (
                (tctx, short-left) = std-infer-expr(tctx, short-left, false, Used, ta);
                (tctx, short-right) = std-infer-expr(tctx, short-right, false, Used, ta);
-               let lt = denormalize-strong(typeof-term(short-left).slot(c"Type",1).l1);
-               let rt = denormalize-strong(typeof-term(short-right).slot(c"Type",1).l1);
+               let lt = denormalize-strong(typeof-term(short-left).slot(interned-tag-type,1).l1);
+               let rt = denormalize-strong(typeof-term(short-right).slot(interned-tag-type,1).l1);
                if non-zero(lt) and non-zero(rt) {
                   if can-unify(rt, lt) {
                      (tctx, short-circuit) = std-infer-expr(tctx, t, false, Tail, ta);
@@ -261,7 +261,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       ASTNil{} => tctx = tctx.ascript(term, type-nil);
       Meta{} => tctx = tctx.ascript(term, type-nil);
       Typedef{} => ();
-      AType{tt:TGround{tag:c"Type",parameters:[p1..]}} => tctx = tctx.ascript(term, t1(c"Type",p1.sanitize-phi));
+      AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => tctx = tctx.ascript(term, t1(c"Type",p1.sanitize-phi));
       AType{tt=tt} => tctx = tctx.ascript(term, tt.sanitize-phi);
       Seq{seq=seq} => (
          let def-i = 0_sz;

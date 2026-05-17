@@ -6133,10 +6133,13 @@ let interned-tag-arrow = intern-type-tag(c"Arrow");
 let interned-tag-array = intern-type-tag(c"Array");
 let interned-tag-cons = intern-type-tag(c"Cons");
 let interned-tag-prop = intern-type-tag(c"Prop");
+let interned-tag-return-hint = intern-type-tag(c"ReturnHint");
 let interned-tag-phi-moved = intern-type-tag(c"Phi::Moved");
 let interned-tag-phi-live = intern-type-tag(c"Phi::Live");
 let interned-tag-linear = intern-type-tag(c"Linear");
 let interned-tag-string = intern-type-tag(c"String");
+let interned-tag-bool = intern-type-tag(c"Bool");
+let interned-tag-l = intern-type-tag(c"L");
 let interned-tag-hashtable = intern-type-tag(c"Hashtable");
 let interned-tag-vector = intern-type-tag(c"Vector");
 let interned-tag-tag = intern-type-tag(c"Tag::");
@@ -6168,6 +6171,7 @@ let interned-tag-field = intern-type-tag(c"extern");
 let interned-tag-unsafe = intern-type-tag(c"Unsafe");
 let interned-tag-never = intern-type-tag(c"Never");
 let interned-tag-u64 = intern-type-tag(c"U64");
+let interned-tag-must-release-to-release = intern-type-tag(c"MustRelease::ToRelease");
 let interned-tag-unknown = TypeTagIntern(0_u64, 0_u64);
 
 # new allocations = 0
@@ -7477,7 +7481,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                # TODO: remove the special exception for "Arrows" here, which is a workaround for raw constructors
                # frontend is producing ((None : TContext?)()) instead of (None() : TContext?)
                # the return hint stuff is working, so all the hard work is done. I think only the frontend needs to change
-               tt = tt.without-slot(c"ReturnHint",0).rewrite-type-alias;
+               tt = tt.without-slot(interned-tag-return-hint,0).rewrite-type-alias;
                if not(can-unify(tt, typeof-term(term)))
                then exit-error("Ascripted value does not match declared type:\nExpected \{tt}\nFound \{typeof-term(t)}\n", term);
             };
@@ -7509,8 +7513,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             App{ left:Var{key:c"<:"}, right:App{short-left=left, short-right=right} } => (
                (tctx, short-left) = std-infer-expr(tctx, short-left, false, Used, ta);
                (tctx, short-right) = std-infer-expr(tctx, short-right, false, Used, ta);
-               let lt = denormalize-strong(typeof-term(short-left).slot(c"Type",1).l1);
-               let rt = denormalize-strong(typeof-term(short-right).slot(c"Type",1).l1);
+               let lt = denormalize-strong(typeof-term(short-left).slot(interned-tag-type,1).l1);
+               let rt = denormalize-strong(typeof-term(short-right).slot(interned-tag-type,1).l1);
                if non-zero(lt) and non-zero(rt) {
                   if can-unify(rt, lt) {
                      (tctx, short-circuit) = std-infer-expr(tctx, t, false, Tail, ta);
@@ -7576,7 +7580,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       ASTNil{} => tctx = tctx.ascript(term, type-nil);
       Meta{} => tctx = tctx.ascript(term, type-nil);
       Typedef{} => ();
-      AType{tt:TGround{tag:c"Type",parameters:[p1..]}} => tctx = tctx.ascript(term, t1(c"Type",p1.sanitize-phi));
+      AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => tctx = tctx.ascript(term, t1(c"Type",p1.sanitize-phi));
       AType{tt=tt} => tctx = tctx.ascript(term, tt.sanitize-phi);
       Seq{seq=seq} => (
          let def-i = 0_sz;
@@ -8459,7 +8463,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    while non-zero(tctx-after-tctx) and not(is(tctx-before-tctx, tctx-after-tctx)) {
       let tr = head(tctx-after-tctx);
       let dt = tctx-after.with-phi(tr.denormalized, term);
-      if dt.slot(interned-tag-phi-state,1).l1.slot(c"MustRelease::ToRelease",1).is-linear-live {
+      if dt.slot(interned-tag-phi-state,1).l1.slot(interned-type-must-release-to-release,1).is-linear-live {
          if dt.is-t(interned-tag-must-not-retain,0)
          then needs-mark-release = cons(tr, needs-mark-release)
          else needs-release = cons(tr, needs-release);

@@ -41,7 +41,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    while non-zero(tctx-after-tctx) and not(is(tctx-before-tctx, tctx-after-tctx)) {
       let tr = head(tctx-after-tctx);
       let dt = tctx-after.with-phi(tr.denormalized, term);
-      if dt.slot(interned-tag-phi-state,1).l1.slot(c"MustRelease::ToRelease",1).is-linear-live {
+      if dt.slot(interned-tag-phi-state,1).l1.slot(interned-type-must-release-to-release,1).is-linear-live {
          if dt.is-t(interned-tag-must-not-retain,0)
          then needs-mark-release = cons(tr, needs-mark-release)
          else needs-release = cons(tr, needs-release);
