@@ -49,7 +49,9 @@ That’s closer to:
 * extensible language semantics
 
 Where Rust remains massively ahead
+
 Important reality check:
+
 Rust still dominates in:
 * tooling
 * stability
