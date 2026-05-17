@@ -91,7 +91,7 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
             let closed-field-type = tctx.substitute(field-type);
 
             match closed-field-type {
-               TGround{tag:c"Array", parameters:[cp2..cp1..]} => (
+               TGround{tag:interned-tag-array, parameters:[cp2..cp1..]} => (
                   let field-td = index-typedef.lookup(cp1.ground-tag-and-arity,mk-eof());
                   let field-lhs-type = match field-td { Typedef{field-lhs-type=lhs-type} => field-lhs-type; _ => ta; };
                   if non-zero(field-lhs-type) {
@@ -120,7 +120,7 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
    };
 );
 
-let is-incomplete-typedef(tt: Type): Bool = is-incomplete-typedef(tt, tt.is-t(c"FlexibleArrayMember",0));
+let is-incomplete-typedef(tt: Type): Bool = is-incomplete-typedef(tt, tt.is-t(interned-tag-flexible-array-member,0));
 let is-incomplete-typedef(tt: Type, is-flexible-array-member: Bool): Bool = (
    match tt {
       TAnd{conjugate=conjugate} => (
@@ -130,8 +130,8 @@ let is-incomplete-typedef(tt: Type, is-flexible-array-member: Bool): Bool = (
       );
       TAny{} => false;
       TVar{} => false;
-      TGround{tag:c"Sized",parameters:[st..]} => is-incomplete-typedef(st);
-      TGround{tag:c"Array",parameters:[_..base-type..]} => if is-flexible-array-member then is-incomplete-typedef(base-type) else false;
+      TGround{tag:interned-tag-sized,parameters:[st..]} => is-incomplete-typedef(st);
+      TGround{tag:interned-tag-array,parameters:[_..base-type..]} => if is-flexible-array-member then is-incomplete-typedef(base-type) else false;
       TGround{} => complex-type-index.has(tt.ground-tag-and-arity)
                 and not(is-cstruct-hard-compiled-index.lookup(tt, false));
    }

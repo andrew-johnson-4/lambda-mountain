@@ -70,7 +70,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       Var{ key=key } => (
          if typeof-term(t) <: type-c-void {
             mk-fragment().set(c"expression",SAtom(c"({})"));
-         } else if typeof-term(t).is-t(c"C-FFI",0) {
+         } else if typeof-term(t).is-t(interned-tag-cffi,0) {
             mk-fragment().set(c"expression",SAtom(key.replace(c"-",c"_").rewrite-if-reserved));
          } else {
             let def = var-to-def(t);
@@ -81,7 +81,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          }
       );
       AType{ tt=tt } => (
-         if tt.is-t(c"Type",1) {
+         if tt.is-t(interned-tag-type,1) {
             mk-fragment().set(c"expression",SAtom(c"0"));
          } else {
             mk-fragment().set(c"expression",std-c-mangle-type(tt, t));
@@ -89,12 +89,12 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       App{ left:Abs{lhs=lhs:Var{name=key}, rhs:ASTNil{}}, rhs=right } => (
          let lt = typeof-term(lhs).without-modifiers;
-         let vid = if lt.is-t(c"Nil",0) or lt <: type-c-void then SAtom(c"({})") else if std-c-is-ctype(lt) then SAtom(name.replace(c"-",c"_").rewrite-if-reserved) else SAtom(uuid());
+         let vid = if lt.is-t(interned-tag-nil,0) or lt <: type-c-void then SAtom(c"({})") else if std-c-is-ctype(lt) then SAtom(name.replace(c"-",c"_").rewrite-if-reserved) else SAtom(uuid());
          let v = mk-fragment().set(c"expression",vid);
          let f = mk-fragment();
          std-c-fragment-context = std-c-fragment-context.bind( lhs, v );
          ctx = ctx.bind( name, lt, v );
-         if lt.is-t(c"Nil",0) or lt.is-t(c"Never",0) or lt <: type-c-void {
+         if lt.is-t(interned-tag-nil,0) or lt.is-t(interned-tag-never,0) or lt <: type-c-void {
          } else if lt <: type-c-label {
             f = f.set(c"expression", v.get(c"expression") + SAtom(c":"));
          } else {
@@ -110,7 +110,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             _ => (
                let rf = std-c-compile-expr(ctx, rhs, false);
                f = f.set(c"frame", f.get(c"frame") + rf.get(c"frame"));
-               if lt.is-t(c"Nil",0) or lt.is-t(c"Never",0) or lt <: type-c-void {
+               if lt.is-t(interned-tag-nil,0) or lt.is-t(interned-tag-never,0) or lt <: type-c-void {
                   f = f.set(c"expression", SAtom(c"({") + rf.get(c"expression") + SAtom(c";({});})"));
                } else {
                   f = f.set(c"expression", SAtom(c"({")
@@ -129,13 +129,13 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          );
       );
       App{ left:App{left:App{left:Var{key:c"if"}, cond=right}, tr=right}, fa=right } => (
-         let ec = if typeof-term(cond).is-t(c"Bool",0)
+         let ec = if typeof-term(cond).is-t(interned-tag-bool,0)
          then std-c-compile-expr(ctx, cond, false )
          else std-c-compile-call(ctx, c"into-branch-conditional", cond);
          let et = std-c-compile-expr( open(ec.context), tr, false );
-         if typeof-term(tr).is-t(c"Never",0) then et = never-as-expr(et, typeof-term(t), t);
+         if typeof-term(tr).is-t(interned-tag-never,0) then et = never-as-expr(et, typeof-term(t), t);
          let ef = std-c-compile-expr( open(ec.context), fa, false );
-         if typeof-term(fa).is-t(c"Never",0) then ef = never-as-expr(ef, typeof-term(t), t);
+         if typeof-term(fa).is-t(interned-tag-never,0) then ef = never-as-expr(ef, typeof-term(t), t);
 
          let ictx = mk-fragment();
          ctx = ctx.bind(c"c", t0(c"Bool"), ec);
@@ -148,10 +148,10 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       App{ o-t=left:Var{key:c"open"}, inner-term=right } => (
          let tt = typeof-term(inner-term);
-         if tt.is-t(c"Array",2) { match tt.slot(c"Array",2) {
-            TGround{ tag:c"Array", parameters:[_..TAny{}..] } => std-c-compile-expr(ctx, inner-term, false);
-            TGround{ tag:c"Array", parameters:[TAny{}..inner-tt..] } => std-c-compile-call(ctx, c"open", inner-term);
-            TGround{ tag:c"Array", parameters:[array-length..inner-tt..] } => std-c-compile-expr(ctx, inner-term, false);
+         if tt.is-t(interned-tag-array,2) { match tt.slot(interned-tag-array,2) {
+            TGround{ tag:interned-tag-array, parameters:[_..TAny{}..] } => std-c-compile-expr(ctx, inner-term, false);
+            TGround{ tag:interned-tag-array, parameters:[TAny{}..inner-tt..] } => std-c-compile-call(ctx, c"open", inner-term);
+            TGround{ tag:interned-tag-array, parameters:[array-length..inner-tt..] } => std-c-compile-expr(ctx, inner-term, false);
          }} else std-c-compile-call(ctx, c"open", inner-term)
       );
       App{ o-t=left:Var{key:c"sizeof"}, right:AType{tt=tt} } => (
@@ -160,19 +160,9 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       Lit{val=key} => (
          let tt = typeof-term(t);
-         if tt.is-t(c"C",1) and tt.r1.is-t(c"uint8_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) and tt.r1.is-t(c"uint06_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) and tt.r1.is-t(c"uint22_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) and tt.r1.is-t(c"uint64_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) and tt.r1.is-t(c"int8_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) and tt.r1.is-t(c"int06_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) and tt.r1.is-t(c"int22_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) and tt.r1.is-t(c"int64_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) and tt.r1.is-t(c":Label",0) then mk-expression(val)
-         else if tt.is-t(c"L",0) then mk-expression(val)
-         else if tt.is-t(c"CString",0) then mk-expression(val.escape-as-cstring)
-         else if tt.slot(c"Array",2).l1.slot(c"C",1).l1.is-t(c"char",0) then mk-expression(val.escape-as-cstring)
-         else if tt.is-t(c"Regex",0) {
+         if tt.is-t(interned-tag-l,0) then mk-expression(val)
+         else if tt.is-t(interned-tag-cstring,0) then mk-expression(val.escape-as-cstring)
+         else if tt.is-t(interned-tag-regex,0) {
             let rgx-id = uuid();
             assemble-header-section = assemble-header-section +
             SAtom(c"regex_t ") + SAtom(rgx-id) + SAtom(c";\n");            
@@ -180,10 +170,6 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             SAtom(c"{int return_code = regcomp(&") + SAtom(rgx-id) + SAtom(c", ") +
             val.escape-as-cstring + SAtom(c", REG_EXTENDED); if(return_code){ fprintf(stderr,\"Could not compile regex.\"); exit(1);}};\n");
             mk-expression(rgx-id);
-         } else if tt.is-datatype and tt.is-t(c"List",1) and val==c"LEOF" {
-            std-c-compile-call(ctx, val, typeof-term(t), mk-nil());
-         } else if tt.is-datatype and tt.is-t(c"HashtableEq",2) and val==c"HashtableEqEOF" {
-            std-c-compile-call(ctx, val, typeof-term(t), mk-nil());
          } else { match val {
             c"True" => mk-expression(c"(1)");
             c"False" => mk-expression(c"(0)");
@@ -236,9 +222,9 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                       App{ lt=left, rt=right } => (
                          let lt-tt = typeof-term(lt);
                          let rt-tt = typeof-term(rt);
-                         if lt-tt.is-t(c"Type",1) and rt-tt <: t1(c"Type",t0(c"CString")).rewrite-type-alias
+                         if lt-tt.is-t(interned-tag-type,1) and rt-tt <: t1(c"Type",t0(c"CString")).rewrite-type-alias
                          then (
-                            let lt-val = lt-tt.slot(c"Type",1).l1.into(type(String)).into(type(CString));
+                            let lt-val = lt-tt.slot(interned-tag-type,1).l1.into(type(String)).into(type(CString));
                             mk-expression(lt-val.escape-as-cstring)
                          ) else std-c-compile-call(ctx, fname2, right);
                       );

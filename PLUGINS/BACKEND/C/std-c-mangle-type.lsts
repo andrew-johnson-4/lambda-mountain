@@ -8,7 +8,7 @@ let std-c-mangle-type(tt: Type, blame: AST): S = (
 
 let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
    let r = std-c-mangle-type-internal-internal(tt, blame);
-   if not(non-zero(r)) then r = std-c-mangle-type-internal-internal(tt.slot(c"Sized",1).l1, blame);
+   if not(non-zero(r)) then r = std-c-mangle-type-internal-internal(tt.slot(interned-tag-sized,1).l1, blame);
    r
 );
 
@@ -32,38 +32,13 @@ let std-c-mangle-type-internal-internal(tt: Type, blame: AST): S = (
          modifiers + result;
       );
       TAny{} => SNil();
-      TGround{tag:c"Nil", parameters:[]} => SAtom(c"void");
-      TGround{tag:c"Never", parameters:[]} => SAtom(c"void");
-      TGround{tag:c"U8", parameters:[]} => SAtom(c"char");
-      TGround{tag:c"U16", parameters:[]} => SAtom(c"unsigned short");
-      TGround{tag:c"U32", parameters:[]} => SAtom(c"unsigned int");
-      TGround{tag:c"U64", parameters:[]} => SAtom(c"unsigned long");
-      TGround{tag:c"I8", parameters:[]} => SAtom(c"signed char");
-      TGround{tag:c"I16", parameters:[]} => SAtom(c"signed short");
-      TGround{tag:c"I32", parameters:[]} => SAtom(c"signed int");
-      TGround{tag:c"I64", parameters:[]} => SAtom(c"signed long");
-      TGround{tag:c"F64", parameters:[]} => SAtom(c"double");
-      TGround{tag:c"CString", parameters:[]} => SAtom(c"char*");
-      TGround{tag:c"File", parameters:[]} => SAtom(c"FILE");
-      TGround{tag:c"IO::File", parameters:[]} => SAtom(c"FILE*");
-      TGround{tag:c"PID", parameters:[]} => SAtom(c"pid_t");
-      TGround{tag:c"Regex", parameters:[]} => SAtom(c"regex_t");
-      TGround{tag:c"C_regex__t_*_", parameters:[]} => SAtom(c"regex_t*");
-      TGround{tag:c"C_char", parameters:[]} => SAtom(c"char");
-      TGround{tag:c"C_int", parameters:[]} => SAtom(c"int");
-      TGround{tag:c"C_char_*", parameters:[]} => SAtom(c"char*");
-      TGround{tag:c"C_size__t_", parameters:[]} => SAtom(c"size_t");
-      TGround{tag:c"C_regmatch__t_*", parameters:[]} => SAtom(c"regmatch_t*");
-      TGround{tag:c"C_regmatch__t_", parameters:[]} => SAtom(c"regmatch_t");
-      TGround{tag:c"DefaultPrintable", parameters:[]} => SNil;
-      TGround{tag:c"Type", parameters:[inner-tt..]} => SAtom(c"int");
-      TGround{tag:c"Array", parameters:[_.. TAny{}..]} => SAtom(c"void*");
-      TGround{tag:c"Array", parameters:[_.. array-base..]} => (
+      TGround{tag:interned-tag-array, parameters:[_.. TAny{}..]} => SAtom(c"void*");
+      TGround{tag:interned-tag-array, parameters:[_.. array-base..]} => (
          if array-base.is-arrow
          then std-c-mangle-type-internal-internal(array-base, blame)
          else ( std-c-mangle-type-internal-internal(array-base, blame) + SAtom(c"*") );
       );
-      TGround{tag:c"Arrow"} => (
+      TGround{tag:interned-tag-arrow} => (
          (let pre, let post) = std-c-mangle-declaration-internal(tt, blame);
          let td-id = uuid();
          assemble-header-typedef-section = assemble-header-typedef-section
@@ -76,12 +51,12 @@ let std-c-mangle-type-internal-internal(tt: Type, blame: AST): S = (
                                  + SAtom(c";\n");
          SAtom(td-id)
       );
-      TGround{tag:c"C", parameters:[TGround{tag1=tag}..]} => (
-         SAtom(tag1)
+      TGround{tag:interned-tag-c, parameters:[TGround{tag1=tag}..]} => (
+         SAtom(untern(tag1))
       );
-      TGround{tag:c"Sized", parameters:[_..]} => SNil;
+      TGround{tag:interned-tag-sized, parameters:[_..]} => SNil;
       TGround{tag=tag, parameters=parameters} => (
-         let r = mangle-identifier(tag);
+         let r = mangle-identifier(untern(tag));
          if parameters.length > 0 {
             r = r + mangle-identifier(c"<");
             let pi = 0;
@@ -113,10 +88,10 @@ let std-c-mangle-type-simple(tt: Type, blame: AST): S = (
          };
          result;
       );
-      TGround{tag:c"Nil", parameters:[]} => SAtom(c"void");
-      TGround{tag:c"Never", parameters:[]} => SAtom(c"void");
+      TGround{tag:interned-tag-nil, parameters:[]} => SAtom(c"void");
+      TGround{tag:interned-tag-never, parameters:[]} => SAtom(c"void");
       TGround{tag=tag, parameters=parameters} => (
-         let r = mangle-identifier(tag);
+         let r = mangle-identifier(untern(tag));
          if parameters.length > 0 {
             r = r + mangle-identifier(c"<");
             let pi = 0;

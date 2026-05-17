@@ -40,12 +40,12 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    else if k==c"bsearch" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"qsort" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"__compar_fn_t" then std-c-force-import-clib(c"stdlib.h")
-   else if kt.is-open or kt.is-t(c"Blob",0) or kt.is-t(c"FFI",0) or kt.is-t(c"Prop",0) then ()
+   else if kt.is-open or kt.is-t(interned-tag-blob,0) or kt.is-t(interned-tag-ffi,0) or kt.is-t(interned-tag-prop,0) then ()
    else if k==c"main" and not(non-zero(compile-global-c-main-term)) then {
       compile-global-c-main-term = term;
    } else match term {
       App{left:Lit{key:c":"}, right:App{left:ASTNil{}, right:AType{tt=tt}}} => (
-         if not(tt.is-t(c"C-FFI",0)) and not(tt.is-t(c"C-Fragment",0)) {
+         if not(tt.is-t(interned-tag-cffi,0)) and not(tt.is-t(interned-tag-cfragment,0)) {
             let clean-tt = kt.weaken.without-phi;
             k = mangle-identifier(k, clean-tt);
          };
@@ -56,7 +56,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom(k);
          text = text + post-decl;
          text = text + SAtom(c";\n");
-         if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void then ()
+         if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void then ()
          else if can-unify(type-c-typedef, tt) or can-unify(type-array-c-typedef, tt) {
             assemble-header-typedef-section = assemble-header-typedef-section + text;
          } else {
@@ -64,22 +64,22 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          }
       );
       App{left:Lit{key:c":"}, right:App{t=left, right:AType{tt=tt}}} => (
-         if not(tt.is-t(c"C-FFI",0)) and not(tt.is-t(c"C-Fragment",0)) {
+         if not(tt.is-t(interned-tag-cffi,0)) and not(tt.is-t(interned-tag-cfragment,0)) {
             let clean-tt = kt.weaken.without-phi;
             k = mangle-identifier(k, clean-tt);
          };
          let gend = false;
-         if tt.is-t(c"C-Fragment",0) {
+         if tt.is-t(interned-tag-cfragment,0) {
             match t {
                Lit{key=key} => (
-                  if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void then ()
+                  if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void then ()
                   else assemble-gdecl-section = assemble-gdecl-section + SAtom(key);
                   gend = true;
                );
                _ => ();
             }
          };
-         if not(gend) and (kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void) {
+         if not(gend) and (kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void) {
             let inner-expr = std-c-compile-expr( ctx, t, false );
             let text = inner-expr.get(c"expression") + SAtom(c";\n");
             assemble-global-initializer-section = assemble-global-initializer-section + text;
@@ -93,7 +93,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             text = text + SAtom(c";\n");
 
             let inner-expr = std-c-compile-expr( ctx, t, false );
-            if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void then {
+            if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void then {
                text = SNil;
                text = SAtom(k) + SAtom(c" = ") + inner-expr.get(c"expression") + SAtom(c";\n");
             } else if can-unify(type-c-typedef, tt) or can-unify(type-array-c-typedef, tt) {
@@ -106,13 +106,13 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          }
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => (
-         if k!=c"main" and not(kt.is-t(c"C-FFI_s",0)) {
+         if k!=c"main" and not(kt.is-t(interned-tag-cffi,0)) {
             k = mangle-identifier-function(k, kt.without-phi);
          };
          ctx = std-c-compile-destructure-args( ctx, lhs, false );
          let loc = term.location;
          let initialized = match rhs {
-            App{ left:Lit{key:c":"}, right:App{ left:ASTNil{}, right:AType{asc-tt=tt} } } => asc-tt.is-t(c"Nil",0);
+            App{ left:Lit{key:c":"}, right:App{ left:ASTNil{}, right:AType{asc-tt=tt} } } => asc-tt.is-t(interned-tag-nil,0);
             _ => true;
          };
          if initialized or can-unify(type-c-typedef, tt) {
@@ -166,7 +166,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
       );
       t => (
          let tt = kt;
-         if not(kt.is-t(c"C-FFI",0)) and not(tt.is-t(c"C-Fragment",0)) {
+         if not(kt.is-t(interned-tag-cffi,0)) and not(tt.is-t(interned-tag-cfragment,0)) {
             k = mangle-identifier(k, tt.without-phi);
          };
 
@@ -177,11 +177,11 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom(k);
          text = text + post-decl;
          text = text + SAtom(c";\n");
-         if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void then ()
+         if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void then ()
          else assemble-gdecl-section = assemble-gdecl-section + text;
 
          let inner-expr = std-c-compile-expr( ctx, t, false );
-         if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void {
+         if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void {
             text = inner-expr.get(c"expression") + SAtom(c";\n");
             assemble-global-initializer-section = assemble-global-initializer-section + text;
          } else {

@@ -6133,6 +6133,7 @@ let interned-tag-arrow = intern-type-tag(c"Arrow");
 let interned-tag-array = intern-type-tag(c"Array");
 let interned-tag-cons = intern-type-tag(c"Cons");
 let interned-tag-prop = intern-type-tag(c"Prop");
+let interned-tag-cfragment = intern-type-tag(c"C-Fragment");
 let interned-tag-return-hint = intern-type-tag(c"ReturnHint");
 let interned-tag-phi-moved = intern-type-tag(c"Phi::Moved");
 let interned-tag-phi-live = intern-type-tag(c"Phi::Live");
@@ -6143,7 +6144,11 @@ let interned-tag-literal = intern-type-tag(c"Literal");
 let interned-tag-l = intern-type-tag(c"L");
 let interned-tag-hashtable = intern-type-tag(c"Hashtable");
 let interned-tag-phi = intern-type-tag(c"Phi");
+let interned-tag-CONST = intern-type-tag(c"CONST");
+let interned-tag-flexible-array-member = intern-type-tag(c"FlexibleArrayMember");
 let interned-tag-vector = intern-type-tag(c"Vector");
+let interned-tag-owned-data = intern-type-tag(c"OwnedData");
+let interned-tag-one-owned-data = intern-type-tag(c"OneOwnedData");
 let interned-tag-tag = intern-type-tag(c"Tag::");
 let interned-tag-phi-id = intern-type-tag(c"Phi::Id");
 let interned-tag-phi-transition = intern-type-tag(c"Phi::Transition");
@@ -6176,6 +6181,19 @@ let interned-tag-field = intern-type-tag(c"extern");
 let interned-tag-unsafe = intern-type-tag(c"Unsafe");
 let interned-tag-never = intern-type-tag(c"Never");
 let interned-tag-u64 = intern-type-tag(c"U64");
+let interned-tag-u32 = intern-type-tag(c"U32");
+let interned-tag-u16 = intern-type-tag(c"U16");
+let interned-tag-u8 = intern-type-tag(c"U8");
+let interned-tag-i64 = intern-type-tag(c"I64");
+let interned-tag-i32 = intern-type-tag(c"I32");
+let interned-tag-i16 = intern-type-tag(c"I16");
+let interned-tag-i8 = intern-type-tag(c"I8");
+let interned-tag-f64 = intern-type-tag(c"F64");
+let interned-tag-cstring = intern-type-tag(c"CString");
+let interned-tag-file = intern-type-tag(c"File");
+let interned-tag-io-file = intern-type-tag(c"IO::File");
+let interned-tag-pid = intern-type-tag(c"PID");
+let interned-tag-regex = intern-type-tag(c"Regex");
 let interned-tag-must-release-to-release = intern-type-tag(c"MustRelease::ToRelease");
 let interned-tag-unknown = TypeTagIntern(0_u64, 0_u64);
 
@@ -9726,7 +9744,7 @@ let plugins-backend-c-compile(): Nil = (
          let fragment = mk-fragment();
          let kt = typeof-term(rhs);
          if not(kt.is-open) {
-            if kt.is-t(c"Blob",0) {
+            if kt.is-t(interned-tag-blob,0) {
                fragment.term = rhs;
                global-ctx = global-ctx.bind(key.key, kt, fragment);
                std-c-fragment-context = std-c-fragment-context.bind(def-to-sym(program-term), fragment);
@@ -9955,7 +9973,7 @@ let mangle-identifier(kt: Type): S = (
       TAny{} => mangle-identifier(c"?");
       TVar{name=name} => mangle-identifier(name);
       TGround{tag=tag, parameters=parameters} => (
-         let r = mangle-identifier(tag);
+         let r = mangle-identifier(untern(tag));
          if parameters.length > 0 then r = r + mangle-identifier(c"<");
          let c-has-prev = false;
          for c in parameters {
@@ -10014,11 +10032,11 @@ let std-c-chain(f1: Fragment, f2: Fragment, is-stmt: Bool): Fragment = (
 let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs: AST, f: Fragment): Tuple<Fragment,FContext,FContext> = (
    match lhs {
       App{lhs-rst=left, right:App{ left:Lit{key:c":"}, right:App{left-lhs=left:Var{k1=key}, right:AType{kt=tt}} }} => (
-         if typeof-term(rhs).is-t(c"Cons",2) {
+         if typeof-term(rhs).is-t(interned-tag-cons,2) {
             match rhs {
                App{le=left, re=right} => (
-                  if kt.is-t(c"...",0) {
-                     kt = kt.slot(c"...",0).r1;
+                  if kt.is-t(interned-tag-vararg,0) {
+                     kt = kt.slot(interned-tag-vararg,0).r1;
                      if can-unify(kt, typeof-term(re)) {
                         if kt.is-open { callee-ctx = union(callee-ctx, unify(kt, typeof-term(re), rhs)); };
                         let c1 = std-c-compile-expr(caller-ctx, re, false);
@@ -10041,8 +10059,8 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
                );
             }
          } else {
-            if kt.is-t(c"...",0) {
-               kt = kt.slot(c"...",0).r1;
+            if kt.is-t(interned-tag-vararg,0) {
+               kt = kt.slot(interned-tag-vararg,0).r1;
                if can-unify(kt, typeof-term(rhs)) {
                   if kt.is-open { callee-ctx = union(callee-ctx, unify(kt, typeof-term(rhs), rhs)); };
                   let c1 = std-c-compile-expr(caller-ctx, rhs, false);
@@ -10064,11 +10082,11 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
          (f, callee-ctx, caller-ctx)
       );
       App{ left:Lit{key:c":"}, right:App{left-lhs=left:Var{k2=key}, right:AType{kt=tt}} } => (
-         if typeof-term(rhs).is-t(c"Cons",2) {
+         if typeof-term(rhs).is-t(interned-tag-cons,2) {
             match rhs {
                App{le=left, re=right} => (
-                  if kt.is-t(c"...",0) {
-                     kt = kt.slot(c"...",0).r1;
+                  if kt.is-t(interned-tag-vararg,0) {
+                     kt = kt.slot(interned-tag-vararg,0).r1;
                      if kt.is-open { callee-ctx = union(callee-ctx, unify(kt, typeof-term(re), rhs)); };
                      let c1 = std-c-compile-expr(caller-ctx, re, false);
                      caller-ctx = open(c1.context);
@@ -10081,8 +10099,8 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
                );
             }
          } else {
-            if kt.is-t(c"...",0) {
-               kt = kt.slot(c"...",0).r1;
+            if kt.is-t(interned-tag-vararg,0) {
+               kt = kt.slot(interned-tag-vararg,0).r1;
                if can-unify(kt, typeof-term(rhs)) {
                   if kt.is-open { callee-ctx = union(callee-ctx, unify(kt, typeof-term(rhs), rhs)); };
                   let c1 = std-c-compile-expr(caller-ctx, rhs, false);
@@ -10116,7 +10134,7 @@ let std-c-compile-call(ctx: FContext, fname: CString, args: AST): Fragment = std
 let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor: Type, args: AST): Fragment = (
    let fterm = Some(mk-tctx()).maybe-find-callable(fname, typeof-term(args), args, return-hint-if-constructor)
                               .expect("std-c-compile-call Function \{fname} was null\nArguments: \{typeof-term(args)}, Return Hint \{return-hint-if-constructor}\nAt \{args.location}\n").blame-or-zero;
-   if typeof-term(fterm).is-t(c"Blob",0) {
+   if typeof-term(fterm).is-t(interned-tag-blob,0) {
       if typeof-term(fterm).is-open and fname!=c"open" and fname!=c"mov" then {
          for tr in Some(mk-tctx()).lookups(fname) {
             print("STD C compile call candidate \{fname} : \{tr.dt-or-zero}\n");
@@ -10132,7 +10150,7 @@ let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor
          );
          _ => fail("Unexpected fterm in std-c-compile-call: \{fname}\n\{fterm}\n");
       }; r
-   } else if typeof-term(fterm).is-t(c"Prop",0) { std-c-compile-expr(ctx, args, false)
+   } else if typeof-term(fterm).is-t(interned-tag-prop,0) { std-c-compile-expr(ctx, args, false)
    } else {
       if typeof-term(fterm).is-open then {
          for tr in Some(mk-tctx()).lookups(fname) {
@@ -10141,7 +10159,7 @@ let std-c-compile-call(ctx: FContext, fname: CString, return-hint-if-constructor
          exit-error("STD C compile call is open \{fname} (\{typeof-term(args)})\n\{typeof-term(fterm)}\nArgs \{args}\n", args);
       };
       let push-args = std-c-compile-push-args(ctx, args);
-      let function-id = if typeof-term(fterm).is-t(c"FFI",0) or typeof-term(fterm).is-t(c"C-FFI",0)
+      let function-id = if typeof-term(fterm).is-t(interned-tag-ffi,0) or typeof-term(fterm).is-t(interned-tag-cffi,0)
                         then fname else mangle-identifier-function(fname, typeof-term(fterm));
       let ictx = mk-fragment().set(c"function-id", SAtom(function-id));
       let inner-ctx = mk-fctx().bind(c"ictx", t0(c"ImplicitContext"), ictx)
@@ -10256,7 +10274,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       Var{ key=key } => (
          if typeof-term(t) <: type-c-void {
             mk-fragment().set(c"expression",SAtom(c"({})"));
-         } else if typeof-term(t).is-t(c"C-FFI",0) {
+         } else if typeof-term(t).is-t(interned-tag-cffi,0) {
             mk-fragment().set(c"expression",SAtom(key.replace(c"-",c"_").rewrite-if-reserved));
          } else {
             let def = var-to-def(t);
@@ -10267,7 +10285,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          }
       );
       AType{ tt=tt } => (
-         if tt.is-t(c"Type",1) {
+         if tt.is-t(interned-tag-type,1) {
             mk-fragment().set(c"expression",SAtom(c"0"));
          } else {
             mk-fragment().set(c"expression",std-c-mangle-type(tt, t));
@@ -10275,12 +10293,12 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       App{ left:Abs{lhs=lhs:Var{name=key}, rhs:ASTNil{}}, rhs=right } => (
          let lt = typeof-term(lhs).without-modifiers;
-         let vid = if lt.is-t(c"Nil",0) or lt <: type-c-void then SAtom(c"({})") else if std-c-is-ctype(lt) then SAtom(name.replace(c"-",c"_").rewrite-if-reserved) else SAtom(uuid());
+         let vid = if lt.is-t(interned-tag-nil,0) or lt <: type-c-void then SAtom(c"({})") else if std-c-is-ctype(lt) then SAtom(name.replace(c"-",c"_").rewrite-if-reserved) else SAtom(uuid());
          let v = mk-fragment().set(c"expression",vid);
          let f = mk-fragment();
          std-c-fragment-context = std-c-fragment-context.bind( lhs, v );
          ctx = ctx.bind( name, lt, v );
-         if lt.is-t(c"Nil",0) or lt.is-t(c"Never",0) or lt <: type-c-void {
+         if lt.is-t(interned-tag-nil,0) or lt.is-t(interned-tag-never,0) or lt <: type-c-void {
          } else if lt <: type-c-label {
             f = f.set(c"expression", v.get(c"expression") + SAtom(c":"));
          } else {
@@ -10296,7 +10314,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             _ => (
                let rf = std-c-compile-expr(ctx, rhs, false);
                f = f.set(c"frame", f.get(c"frame") + rf.get(c"frame"));
-               if lt.is-t(c"Nil",0) or lt.is-t(c"Never",0) or lt <: type-c-void {
+               if lt.is-t(interned-tag-nil,0) or lt.is-t(interned-tag-never,0) or lt <: type-c-void {
                   f = f.set(c"expression", SAtom(c"({") + rf.get(c"expression") + SAtom(c";({});})"));
                } else {
                   f = f.set(c"expression", SAtom(c"({")
@@ -10315,13 +10333,13 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          );
       );
       App{ left:App{left:App{left:Var{key:c"if"}, cond=right}, tr=right}, fa=right } => (
-         let ec = if typeof-term(cond).is-t(c"Bool",0)
+         let ec = if typeof-term(cond).is-t(interned-tag-bool,0)
          then std-c-compile-expr(ctx, cond, false )
          else std-c-compile-call(ctx, c"into-branch-conditional", cond);
          let et = std-c-compile-expr( open(ec.context), tr, false );
-         if typeof-term(tr).is-t(c"Never",0) then et = never-as-expr(et, typeof-term(t), t);
+         if typeof-term(tr).is-t(interned-tag-never,0) then et = never-as-expr(et, typeof-term(t), t);
          let ef = std-c-compile-expr( open(ec.context), fa, false );
-         if typeof-term(fa).is-t(c"Never",0) then ef = never-as-expr(ef, typeof-term(t), t);
+         if typeof-term(fa).is-t(interned-tag-never,0) then ef = never-as-expr(ef, typeof-term(t), t);
 
          let ictx = mk-fragment();
          ctx = ctx.bind(c"c", t0(c"Bool"), ec);
@@ -10334,10 +10352,10 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       App{ o-t=left:Var{key:c"open"}, inner-term=right } => (
          let tt = typeof-term(inner-term);
-         if tt.is-t(c"Array",2) { match tt.slot(c"Array",2) {
-            TGround{ tag:c"Array", parameters:[_..TAny{}..] } => std-c-compile-expr(ctx, inner-term, false);
-            TGround{ tag:c"Array", parameters:[TAny{}..inner-tt..] } => std-c-compile-call(ctx, c"open", inner-term);
-            TGround{ tag:c"Array", parameters:[array-length..inner-tt..] } => std-c-compile-expr(ctx, inner-term, false);
+         if tt.is-t(interned-tag-array,2) { match tt.slot(interned-tag-array,2) {
+            TGround{ tag:interned-tag-array, parameters:[_..TAny{}..] } => std-c-compile-expr(ctx, inner-term, false);
+            TGround{ tag:interned-tag-array, parameters:[TAny{}..inner-tt..] } => std-c-compile-call(ctx, c"open", inner-term);
+            TGround{ tag:interned-tag-array, parameters:[array-length..inner-tt..] } => std-c-compile-expr(ctx, inner-term, false);
          }} else std-c-compile-call(ctx, c"open", inner-term)
       );
       App{ o-t=left:Var{key:c"sizeof"}, right:AType{tt=tt} } => (
@@ -10346,19 +10364,9 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
       );
       Lit{val=key} => (
          let tt = typeof-term(t);
-         if tt.is-t(c"C",1) and tt.r1.is-t(c"uint8_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) and tt.r1.is-t(c"uint06_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) and tt.r1.is-t(c"uint22_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) and tt.r1.is-t(c"uint64_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) and tt.r1.is-t(c"int8_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) and tt.r1.is-t(c"int06_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) and tt.r1.is-t(c"int22_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) and tt.r1.is-t(c"int64_t",0) then mk-expression(val)
-         else if tt.is-t(c"C",1) and tt.r1.is-t(c":Label",0) then mk-expression(val)
-         else if tt.is-t(c"L",0) then mk-expression(val)
-         else if tt.is-t(c"CString",0) then mk-expression(val.escape-as-cstring)
-         else if tt.slot(c"Array",2).l1.slot(c"C",1).l1.is-t(c"char",0) then mk-expression(val.escape-as-cstring)
-         else if tt.is-t(c"Regex",0) {
+         if tt.is-t(interned-tag-l,0) then mk-expression(val)
+         else if tt.is-t(interned-tag-cstring,0) then mk-expression(val.escape-as-cstring)
+         else if tt.is-t(interned-tag-regex,0) {
             let rgx-id = uuid();
             assemble-header-section = assemble-header-section +
             SAtom(c"regex_t ") + SAtom(rgx-id) + SAtom(c";\n");            
@@ -10366,10 +10374,6 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
             SAtom(c"{int return_code = regcomp(&") + SAtom(rgx-id) + SAtom(c", ") +
             val.escape-as-cstring + SAtom(c", REG_EXTENDED); if(return_code){ fprintf(stderr,\"Could not compile regex.\"); exit(1);}};\n");
             mk-expression(rgx-id);
-         } else if tt.is-datatype and tt.is-t(c"List",1) and val==c"LEOF" {
-            std-c-compile-call(ctx, val, typeof-term(t), mk-nil());
-         } else if tt.is-datatype and tt.is-t(c"HashtableEq",2) and val==c"HashtableEqEOF" {
-            std-c-compile-call(ctx, val, typeof-term(t), mk-nil());
          } else { match val {
             c"True" => mk-expression(c"(1)");
             c"False" => mk-expression(c"(0)");
@@ -10422,9 +10426,9 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
                       App{ lt=left, rt=right } => (
                          let lt-tt = typeof-term(lt);
                          let rt-tt = typeof-term(rt);
-                         if lt-tt.is-t(c"Type",1) and rt-tt <: t1(c"Type",t0(c"CString")).rewrite-type-alias
+                         if lt-tt.is-t(interned-tag-type,1) and rt-tt <: t1(c"Type",t0(c"CString")).rewrite-type-alias
                          then (
-                            let lt-val = lt-tt.slot(c"Type",1).l1.into(type(String)).into(type(CString));
+                            let lt-val = lt-tt.slot(interned-tag-type,1).l1.into(type(String)).into(type(CString));
                             mk-expression(lt-val.escape-as-cstring)
                          ) else std-c-compile-call(ctx, fname2, right);
                       );
@@ -10561,12 +10565,12 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
    else if k==c"bsearch" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"qsort" then std-c-force-import-clib(c"stdlib.h")
    else if k==c"__compar_fn_t" then std-c-force-import-clib(c"stdlib.h")
-   else if kt.is-open or kt.is-t(c"Blob",0) or kt.is-t(c"FFI",0) or kt.is-t(c"Prop",0) then ()
+   else if kt.is-open or kt.is-t(interned-tag-blob,0) or kt.is-t(interned-tag-ffi,0) or kt.is-t(interned-tag-prop,0) then ()
    else if k==c"main" and not(non-zero(compile-global-c-main-term)) then {
       compile-global-c-main-term = term;
    } else match term {
       App{left:Lit{key:c":"}, right:App{left:ASTNil{}, right:AType{tt=tt}}} => (
-         if not(tt.is-t(c"C-FFI",0)) and not(tt.is-t(c"C-Fragment",0)) {
+         if not(tt.is-t(interned-tag-cffi,0)) and not(tt.is-t(interned-tag-cfragment,0)) {
             let clean-tt = kt.weaken.without-phi;
             k = mangle-identifier(k, clean-tt);
          };
@@ -10577,7 +10581,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom(k);
          text = text + post-decl;
          text = text + SAtom(c";\n");
-         if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void then ()
+         if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void then ()
          else if can-unify(type-c-typedef, tt) or can-unify(type-array-c-typedef, tt) {
             assemble-header-typedef-section = assemble-header-typedef-section + text;
          } else {
@@ -10585,22 +10589,22 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          }
       );
       App{left:Lit{key:c":"}, right:App{t=left, right:AType{tt=tt}}} => (
-         if not(tt.is-t(c"C-FFI",0)) and not(tt.is-t(c"C-Fragment",0)) {
+         if not(tt.is-t(interned-tag-cffi,0)) and not(tt.is-t(interned-tag-cfragment,0)) {
             let clean-tt = kt.weaken.without-phi;
             k = mangle-identifier(k, clean-tt);
          };
          let gend = false;
-         if tt.is-t(c"C-Fragment",0) {
+         if tt.is-t(interned-tag-cfragment,0) {
             match t {
                Lit{key=key} => (
-                  if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void then ()
+                  if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void then ()
                   else assemble-gdecl-section = assemble-gdecl-section + SAtom(key);
                   gend = true;
                );
                _ => ();
             }
          };
-         if not(gend) and (kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void) {
+         if not(gend) and (kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void) {
             let inner-expr = std-c-compile-expr( ctx, t, false );
             let text = inner-expr.get(c"expression") + SAtom(c";\n");
             assemble-global-initializer-section = assemble-global-initializer-section + text;
@@ -10614,7 +10618,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             text = text + SAtom(c";\n");
 
             let inner-expr = std-c-compile-expr( ctx, t, false );
-            if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void then {
+            if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void then {
                text = SNil;
                text = SAtom(k) + SAtom(c" = ") + inner-expr.get(c"expression") + SAtom(c";\n");
             } else if can-unify(type-c-typedef, tt) or can-unify(type-array-c-typedef, tt) {
@@ -10627,13 +10631,13 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          }
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => (
-         if k!=c"main" and not(kt.is-t(c"C-FFI_s",0)) {
+         if k!=c"main" and not(kt.is-t(interned-tag-cffi,0)) {
             k = mangle-identifier-function(k, kt.without-phi);
          };
          ctx = std-c-compile-destructure-args( ctx, lhs, false );
          let loc = term.location;
          let initialized = match rhs {
-            App{ left:Lit{key:c":"}, right:App{ left:ASTNil{}, right:AType{asc-tt=tt} } } => asc-tt.is-t(c"Nil",0);
+            App{ left:Lit{key:c":"}, right:App{ left:ASTNil{}, right:AType{asc-tt=tt} } } => asc-tt.is-t(interned-tag-nil,0);
             _ => true;
          };
          if initialized or can-unify(type-c-typedef, tt) {
@@ -10687,7 +10691,7 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
       );
       t => (
          let tt = kt;
-         if not(kt.is-t(c"C-FFI",0)) and not(tt.is-t(c"C-Fragment",0)) {
+         if not(kt.is-t(interned-tag-cffi,0)) and not(tt.is-t(interned-tag-cfragment,0)) {
             k = mangle-identifier(k, tt.without-phi);
          };
 
@@ -10698,11 +10702,11 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom(k);
          text = text + post-decl;
          text = text + SAtom(c";\n");
-         if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void then ()
+         if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void then ()
          else assemble-gdecl-section = assemble-gdecl-section + text;
 
          let inner-expr = std-c-compile-expr( ctx, t, false );
-         if kt.is-t(c"Nil",0) or kt.is-t(c"Never",0) or kt <: type-c-void {
+         if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void {
             text = inner-expr.get(c"expression") + SAtom(c";\n");
             assemble-global-initializer-section = assemble-global-initializer-section + text;
          } else {
@@ -10717,8 +10721,8 @@ let std-c-compile-push-args(ctx: FContext, args: AST): Fragment = (
    match args {
       ASTNil{} => mk-expression(c"");
       _ => (
-         match typeof-term(args).slot(c"Cons",2) {
-            TGround{tag:c"Cons", parameters:[p2..p1..]} => (
+         match typeof-term(args).slot(interned-tag-cons,2) {
+            TGround{tag:interned-tag-cons, parameters:[p2..p1..]} => (
                match args {
                   App{le=left, re=right} => (
                      let e1 = std-c-compile-push-args(ctx, le);
@@ -10827,7 +10831,7 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
             let closed-field-type = tctx.substitute(field-type);
 
             match closed-field-type {
-               TGround{tag:c"Array", parameters:[cp2..cp1..]} => (
+               TGround{tag:interned-tag-array, parameters:[cp2..cp1..]} => (
                   let field-td = index-typedef.lookup(cp1.ground-tag-and-arity,mk-eof());
                   let field-lhs-type = match field-td { Typedef{field-lhs-type=lhs-type} => field-lhs-type; _ => ta; };
                   if non-zero(field-lhs-type) {
@@ -10856,7 +10860,7 @@ let std-c-compile-type-typedef-concrete(tctx: Maybe<TypeContext>, concrete-type:
    };
 );
 
-let is-incomplete-typedef(tt: Type): Bool = is-incomplete-typedef(tt, tt.is-t(c"FlexibleArrayMember",0));
+let is-incomplete-typedef(tt: Type): Bool = is-incomplete-typedef(tt, tt.is-t(interned-tag-flexible-array-member,0));
 let is-incomplete-typedef(tt: Type, is-flexible-array-member: Bool): Bool = (
    match tt {
       TAnd{conjugate=conjugate} => (
@@ -10866,8 +10870,8 @@ let is-incomplete-typedef(tt: Type, is-flexible-array-member: Bool): Bool = (
       );
       TAny{} => false;
       TVar{} => false;
-      TGround{tag:c"Sized",parameters:[st..]} => is-incomplete-typedef(st);
-      TGround{tag:c"Array",parameters:[_..base-type..]} => if is-flexible-array-member then is-incomplete-typedef(base-type) else false;
+      TGround{tag:interned-tag-sized,parameters:[st..]} => is-incomplete-typedef(st);
+      TGround{tag:interned-tag-array,parameters:[_..base-type..]} => if is-flexible-array-member then is-incomplete-typedef(base-type) else false;
       TGround{} => complex-type-index.has(tt.ground-tag-and-arity)
                 and not(is-cstruct-hard-compiled-index.lookup(tt, false));
    }
@@ -10902,8 +10906,8 @@ let std-c-fragment-context = mk-hashtable-is(type(AST), type(Fragment));
 
 let std-c-is-ctype(tt: Type): Bool = (
    match tt {
-      TGround{tag:c"C"} => true;
-      TGround{tag:c"Array", parameters:[_.. base-type..]} => std-c-is-ctype(base-type);
+      TGround{tag:interned-tag-c} => true;
+      TGround{tag:interned-tag-array, parameters:[_.. base-type..]} => std-c-is-ctype(base-type);
       TAnd{ conjugate=conjugate } => (
          let result = false;
          for c in conjugate { result = result or std-c-is-ctype(c) };
@@ -10914,7 +10918,7 @@ let std-c-is-ctype(tt: Type): Bool = (
 );
 
 let std-c-mangle-declaration(tt: Type, blame: AST): Tuple<S,S> = (
-   let is-flexible-array-member = tt.is-t(c"FlexibleArrayMember",0);
+   let is-flexible-array-member = tt.is-t(interned-tag-flexible-array-member,0);
    let o-tt-1 = tt;
    let o-tt-2 = o-tt-1.normalize;
    let o-tt-3 = o-tt-2.rewrite-opaque-type-alias;
@@ -10929,19 +10933,19 @@ let std-c-mangle-declaration-internal(tt: Type, blame: AST): Tuple<S,S> = std-c-
 
 let std-c-mangle-declaration-internal(tt: Type, is-flexible-array-member: Bool, blame: AST): Tuple<S,S> = (
    match tt {
-      TGround{tag:c"Array", parameters:[ TGround{tag:c"CONST"}.. array-base.. ]} => (
+      TGround{tag:interned-tag-array, parameters:[ TGround{tag:interned-tag-CONST}.. array-base.. ]} => (
          let rest = std-c-mangle-declaration-internal(array-base, false, blame);
          ( rest.first, rest.second + SAtom(c"[]") )
       );
-      TGround{tag:c"Array", parameters:[ TGround{tag:c"C",parameters:[TGround{width1=tag}..]}.. array-base.. ]} => (
+      TGround{tag:interned-tag-array, parameters:[ TGround{tag:interned-tag-c,parameters:[TGround{width1=tag}..]}.. array-base.. ]} => (
          let rest = std-c-mangle-declaration-internal(array-base, false, blame);
-         ( rest.first, rest.second + SAtom(c"[") + SAtom(width1) + SAtom(c"]") )
+         ( rest.first, rest.second + SAtom(c"[") + SAtom(untern(width1)) + SAtom(c"]") )
       );
-      TGround{tag:c"Array", parameters:[ TGround{width2=tag}.. array-base.. ]} => (
+      TGround{tag:interned-tag-array, parameters:[ TGround{width2=tag}.. array-base.. ]} => (
          let rest = std-c-mangle-declaration-internal(array-base, false, blame);
-         ( rest.first, rest.second + SAtom(c"[") + SAtom(width2) + SAtom(c"]") )
+         ( rest.first, rest.second + SAtom(c"[") + SAtom(untern(width2)) + SAtom(c"]") )
       );
-      TGround{tag:c"Array", parameters:[ TAny{}.. array-base.. ]} => (
+      TGround{tag:interned-tag-array, parameters:[ TAny{}.. array-base.. ]} => (
          if is-flexible-array-member {
             let rest = std-c-mangle-declaration-internal(array-base, false, blame);
             ( rest.first, rest.second + SAtom(c"[]") )
@@ -10949,7 +10953,7 @@ let std-c-mangle-declaration-internal(tt: Type, is-flexible-array-member: Bool, 
             (std-c-mangle-type-internal(tt, blame), SNil());
          }
       );
-      TGround{tag:c"Arrow", parameters:[ rng.. dom.. ]} => (
+      TGround{tag:interned-tag-arrow, parameters:[ rng.. dom.. ]} => (
          let returns = std-c-mangle-type-internal(rng, blame);
          let accepts = std-c-mangle-type-internal(dom, blame);
          ( returns + SAtom(c"(*"),
@@ -10968,7 +10972,7 @@ let std-c-mangle-type(tt: Type, blame: AST): S = (
 
 let std-c-mangle-type-internal(tt: Type, blame: AST): S = (
    let r = std-c-mangle-type-internal-internal(tt, blame);
-   if not(non-zero(r)) then r = std-c-mangle-type-internal-internal(tt.slot(c"Sized",1).l1, blame);
+   if not(non-zero(r)) then r = std-c-mangle-type-internal-internal(tt.slot(interned-tag-sized,1).l1, blame);
    r
 );
 
@@ -10992,38 +10996,13 @@ let std-c-mangle-type-internal-internal(tt: Type, blame: AST): S = (
          modifiers + result;
       );
       TAny{} => SNil();
-      TGround{tag:c"Nil", parameters:[]} => SAtom(c"void");
-      TGround{tag:c"Never", parameters:[]} => SAtom(c"void");
-      TGround{tag:c"U8", parameters:[]} => SAtom(c"char");
-      TGround{tag:c"U16", parameters:[]} => SAtom(c"unsigned short");
-      TGround{tag:c"U32", parameters:[]} => SAtom(c"unsigned int");
-      TGround{tag:c"U64", parameters:[]} => SAtom(c"unsigned long");
-      TGround{tag:c"I8", parameters:[]} => SAtom(c"signed char");
-      TGround{tag:c"I16", parameters:[]} => SAtom(c"signed short");
-      TGround{tag:c"I32", parameters:[]} => SAtom(c"signed int");
-      TGround{tag:c"I64", parameters:[]} => SAtom(c"signed long");
-      TGround{tag:c"F64", parameters:[]} => SAtom(c"double");
-      TGround{tag:c"CString", parameters:[]} => SAtom(c"char*");
-      TGround{tag:c"File", parameters:[]} => SAtom(c"FILE");
-      TGround{tag:c"IO::File", parameters:[]} => SAtom(c"FILE*");
-      TGround{tag:c"PID", parameters:[]} => SAtom(c"pid_t");
-      TGround{tag:c"Regex", parameters:[]} => SAtom(c"regex_t");
-      TGround{tag:c"C_regex__t_*_", parameters:[]} => SAtom(c"regex_t*");
-      TGround{tag:c"C_char", parameters:[]} => SAtom(c"char");
-      TGround{tag:c"C_int", parameters:[]} => SAtom(c"int");
-      TGround{tag:c"C_char_*", parameters:[]} => SAtom(c"char*");
-      TGround{tag:c"C_size__t_", parameters:[]} => SAtom(c"size_t");
-      TGround{tag:c"C_regmatch__t_*", parameters:[]} => SAtom(c"regmatch_t*");
-      TGround{tag:c"C_regmatch__t_", parameters:[]} => SAtom(c"regmatch_t");
-      TGround{tag:c"DefaultPrintable", parameters:[]} => SNil;
-      TGround{tag:c"Type", parameters:[inner-tt..]} => SAtom(c"int");
-      TGround{tag:c"Array", parameters:[_.. TAny{}..]} => SAtom(c"void*");
-      TGround{tag:c"Array", parameters:[_.. array-base..]} => (
+      TGround{tag:interned-tag-array, parameters:[_.. TAny{}..]} => SAtom(c"void*");
+      TGround{tag:interned-tag-array, parameters:[_.. array-base..]} => (
          if array-base.is-arrow
          then std-c-mangle-type-internal-internal(array-base, blame)
          else ( std-c-mangle-type-internal-internal(array-base, blame) + SAtom(c"*") );
       );
-      TGround{tag:c"Arrow"} => (
+      TGround{tag:interned-tag-arrow} => (
          (let pre, let post) = std-c-mangle-declaration-internal(tt, blame);
          let td-id = uuid();
          assemble-header-typedef-section = assemble-header-typedef-section
@@ -11036,12 +11015,12 @@ let std-c-mangle-type-internal-internal(tt: Type, blame: AST): S = (
                                  + SAtom(c";\n");
          SAtom(td-id)
       );
-      TGround{tag:c"C", parameters:[TGround{tag1=tag}..]} => (
-         SAtom(tag1)
+      TGround{tag:interned-tag-c, parameters:[TGround{tag1=tag}..]} => (
+         SAtom(untern(tag1))
       );
-      TGround{tag:c"Sized", parameters:[_..]} => SNil;
+      TGround{tag:interned-tag-sized, parameters:[_..]} => SNil;
       TGround{tag=tag, parameters=parameters} => (
-         let r = mangle-identifier(tag);
+         let r = mangle-identifier(untern(tag));
          if parameters.length > 0 {
             r = r + mangle-identifier(c"<");
             let pi = 0;
@@ -11073,10 +11052,10 @@ let std-c-mangle-type-simple(tt: Type, blame: AST): S = (
          };
          result;
       );
-      TGround{tag:c"Nil", parameters:[]} => SAtom(c"void");
-      TGround{tag:c"Never", parameters:[]} => SAtom(c"void");
+      TGround{tag:interned-tag-nil, parameters:[]} => SAtom(c"void");
+      TGround{tag:interned-tag-never, parameters:[]} => SAtom(c"void");
       TGround{tag=tag, parameters=parameters} => (
-         let r = mangle-identifier(tag);
+         let r = mangle-identifier(untern(tag));
          if parameters.length > 0 {
             r = r + mangle-identifier(c"<");
             let pi = 0;
@@ -14002,7 +13981,7 @@ let lsts-parse-ascript(tokens: List<Token>): Tuple<AST,List<Token>> = (
    while lsts-parse-head(tokens)==c":" and non-zero(tokens) and lsts-parse-head(tail(tokens)) != c":" {
       tokens = tail(tokens);
       (let tt, tokens) = lsts-parse-type(tokens);
-      if tt.is-t(c"L",0) then tt = tt && t0(c"Literal");
+      if tt.is-t(interned-tag-l,0) then tt = tt && t0(c"Literal");
       tt = phi-as-state(tt);
       match term {
          App{ constructor=left:Lit{}, right:ASTNil{} } => (
@@ -14299,18 +14278,16 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
       if lsts-parse-head(tokens)==c"implies" {
          lsts-parse-expect(c"implies", tokens); tokens = tail(tokens);
          (let i, tokens) = lsts-parse-type(tokens);
-         if i.is-t(c"CompatMustRelease",0) then infers = infers.push(t0(c"MustRelease"));
-         else infers = infers.push(i);
+         infers = infers.push(i);
          while lsts-parse-head(tokens)==c"," {
             lsts-parse-expect(c",", tokens); tokens = tail(tokens);
             (i, tokens) = lsts-parse-type(tokens);
-            if i.is-t(c"CompatMustRelease",0) then infers = infers.push(t0(c"MustRelease"));
-            else infers = infers.push(i);
+            infers = infers.push(i);
          }
       };
    };
    for i in infers {
-      if i.is-t(c"MustRelease",0) and not(implied-phi.slot(c"MustRelease::ToRelease",1).l1.is-t(c"Linear",1))
+      if i.is-t(interned-tag-must-release,0) and not(implied-phi.slot(interned-tag-must-release-to-release,1).l1.is-t(interned-tag-linear,1))
       then {
          let mt = t1(c"MustRelease::ToRelease",type-linear-live);
          implied-phi = implied-phi && mt;
@@ -14352,7 +14329,7 @@ let lsts-parse-typedef(tokens: List<Token>): (AST, List<Token>) = (
             .with-size(size).with-alias(alias).with-opaque-alias(opaque-alias)
             .with-cases(cases).with-misc(misc-type).with-implied-phi(implied-phi);
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
-   if misc-type.is-t(c"Phi",0) then infer-type-definition(td);
+   if misc-type.is-t(interned-tag-phi,0) then infer-type-definition(td);
    (td, tokens);
 );
 
