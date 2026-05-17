@@ -136,7 +136,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       );
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
-          second:TGround{tag:interned-tag-any, parameters:[]}
+          second:TGround{tag:interned-tag-nil, parameters:[]}
       } => true;
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},

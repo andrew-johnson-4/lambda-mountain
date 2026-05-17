@@ -4562,7 +4562,7 @@ let .expand-implied-phi(tt: Type): Type = (
 let global-symbol-registry = mk-set(type((CString,Type)));
 
 let mark-global-as-seen(name: CString, tt: Type, tlt: Type): Nil = (
-   if global-is-seen(name,tt) and not(tlt.is-t(interned-tag-vararg,0)) then fail("Duplicate Global Symbol \{name} : \{tt}");
+   if global-is-seen(name,tt) and not(tlt.is-t(interned-tag-ffi,0)) then fail("Duplicate Global Symbol \{name} : \{tt}");
    global-symbol-registry = global-symbol-registry.bind((name,tt));
 );
 
@@ -4590,7 +4590,7 @@ let is-macro-head(s: CString, arity: U64): Bool = (
    found
 );
 
-let phi-type-index = mk-set(type((CString,U64)));
+let phi-type-index = mk-set(type((U64,U64)));
 
 let .is-phi-type(tt: Type): Bool = (
    phi-type-index.has(tt.ground-tag-and-arity)
@@ -6042,7 +6042,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       );
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
-          second:TGround{tag:interned-tag-any, parameters:[]}
+          second:TGround{tag:interned-tag-nil, parameters:[]}
       } => true;
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
@@ -6148,11 +6148,15 @@ let interned-tag-must-release-after-call = intern-type-tag(c"MustReleaseAfterCal
 let interned-tag-must-not-rewrite = intern-type-tag(c"MustNotRewrite");
 let interned-tag-vararg = intern-type-tag(c"...");
 let interned-tag-any = intern-type-tag(c"Any");
+let interned-tag-nil = intern-type-tag(c"Nil");
 let interned-tag-tail-position = intern-type-tag(c"TailPosition");
 let interned-tag-const = intern-type-tag(c"const");
 let interned-tag-c = intern-type-tag(c"C");
 let interned-tag-sized = intern-type-tag(c"Sized");
 let interned-tag-extern = intern-type-tag(c"extern");
+let interned-tag-blob = intern-type-tag(c"Blob");
+let interned-tag-ffi = intern-type-tag(c"FFI");
+let interned-tag-cffi = intern-type-tag(c"C-FFI");
 let interned-tag-field = intern-type-tag(c"extern");
 let interned-tag-unsafe = intern-type-tag(c"Unsafe");
 let interned-tag-never = intern-type-tag(c"Never");
@@ -7588,7 +7592,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             (let inner-tctx, let new-val) = std-infer-expr(tctx, val, is-scoped, Used(), ta);
             match new-val {
                Abs{lhs=lhs, old-wrapped-rhs=rhs:App{ akey=left:Lit{key:c":"}, right:App{ rhs=left, right:AType{rhs-tt=tt} } }, tlt=tt} => (
-                  if not(tlt.is-t(c"Blob",0) or tlt.is-t(c"C-FFI",0) or tlt.is-t(interned-tag-vararg,0) or tlt.is-t(c"Phi::Source",0) ) {
+                  if not(tlt.is-t(interned-tag-blob,0) or tlt.is-t(interned-tag-cffi,0) or tlt.is-t(interned-tag-ffi,0) or tlt.is-t(c"Phi::Source",0) ) {
                      validate-pctx-release(inner-tctx);
                   };
                );
@@ -7695,7 +7699,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             if typeof-term(new-l).is-arrow then r-used = Call(var-name-if-var-or-lit(new-l)); # if l was a macro then it could be macro::concat
             (tctx, let new-r) = std-infer-expr(tctx, r, false, if used.is-tail then used else if used.is-unused then used else Used, rhint);
             if not(is(l,new-l)) or not(is(r,new-r)) then { l = new-l; r = new-r; term = mk-cons(new-l, new-r) };
-            tctx = tctx.ascript(term, if used.is-tail or typeof-term(l).is-t(interned-tag-vararg,0) then typeof-term(r) else t2(interned-tag-cons, typeof-term(l), typeof-term(r)));
+            tctx = tctx.ascript(term, if used.is-tail or typeof-term(l).is-t(interned-tag-nil,0) then typeof-term(r) else t2(interned-tag-cons, typeof-term(l), typeof-term(r)));
          } else {
             let rt = ta;
             if index-macro-table.has-key(var-name-if-var(l)) {
@@ -7743,8 +7747,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                } else {
                   (tctx, ta, t2(interned-tag-cons, typeof-term(l), typeof-term(r)))
                };
-               if not(used.is-call) or rt.slot(interned-tag-cons,2).l1.is-t(interned-tag-vararg,0) { rt = rt.cons-tail-or-self; };
-               if var-name-if-var-or-lit(l)==interned-tag-vararg and typeof-term(r).is-t(interned-tag-cons,2) {
+               if not(used.is-call) or rt.slot(interned-tag-cons,2).l1.is-t(interned-tag-nil,0) { rt = rt.cons-tail-or-self; };
+               if var-name-if-var-or-lit(l)==c"mov" and typeof-term(r).is-t(interned-tag-cons,2) {
                   let from-tt = typeof-term(r).slot(interned-tag-cons,2).l1;
                   let to-tt = typeof-term(r).slot(interned-tag-cons,2).l2;
                   tctx = tctx.phi-override(to-tt, from-tt, term);
@@ -7811,7 +7815,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.phi-move(typeof-term(term),term);
       }
    }};
-   (_, let dom-tt) = typeof-var-raw(term, tctx, interned-tag-vararg, hint.is-t(interned-tag-must-not-fresh,0) or hint.is-t(interned-tag-tail-position,0));
+   (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(interned-tag-must-not-fresh,0) or hint.is-t(interned-tag-tail-position,0));
    (tctx, term);
 );
 
@@ -7893,7 +7897,7 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
          if not(global-is-seen(k.key, ktd)) {
             mark-global-as-seen(k.key, ktd, ta);
             tctx = tctx.ascript(term, ktd);
-            (tctx, _) = tctx.maybe-apply-callable(interned-tag-vararg, t2(interned-tag-cons,ktd.without-phi,ktd.without-phi), term);
+            (tctx, _) = tctx.maybe-apply-callable(c"mov", t2(interned-tag-cons,ktd.without-phi,ktd.without-phi), term);
          };
       );
       _ => (
@@ -8072,7 +8076,7 @@ let infer-type-definition(term: AST): Nil = (
       add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
       interface-implementors = cons( (lhs-type, rhs-type, term), interface-implementors );
    };
-   if misc-type.is-t(interned-tag-vararg,0) {
+   if misc-type.is-t(interned-tag-phi,0) {
       let common-tags-length = 0_u64;
       let common-parameters = mk-vector(type(Type));
       for Tuple{ case-tag1=first, case-fields=second } in cases {
@@ -8212,7 +8216,7 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
    };
 
    body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")));
-   body = mk-cons(body, mk-lit(interned-tag-vararg).ascript(t0(c"L") && t0(c"Literal")));
+   body = mk-cons(body, mk-lit(c";})").ascript(t0(c"L") && t0(c"Literal")));
 
    let constructor = mk-glb( mk-token(case-tag).with-location(blame.location), mk-abs(args, body.ascript(base-type.expand-implied-phi), t0(c"Blob") ) );
 
@@ -8281,7 +8285,7 @@ let param-types-of-macro(mterm: AST): Type = (
 let macro-type-peep-holes(mtype: Type): Type = (
    match mtype {
       TGround{tag:interned-tag-cons, parameters:[p2.. p1..]} => t2(interned-tag-cons,macro-type-peep-holes(p1),macro-type-peep-holes(p2));
-      TGround{} => t0(interned-tag-vararg);
+      TGround{} => t0(c"Yes");
       TAnd{conjugate=conjugate} => (
          let peep = ta;
          for c in conjugate {
@@ -8466,7 +8470,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
       let return-type = typeof-term(term);
       let rhs = term;
       let def = mk-var(return-id);
-      if not(return-type.is-t(interned-tag-vararg,0)) and not(return-type.is-t(c"Never",0)) {
+      if not(return-type.is-t(interned-tag-nil,0)) and not(return-type.is-t(interned-tag-never,0)) {
          term = mk-app( mk-abs(def, mk-nil(), ta), term ); tctx-after = tctx-after.ascript(term, type-nil);
          (tctx-after, let binding-type) = std-bind-term(tctx-after, return-id, rhs, def, term, hint);
          tctx-after = tctx-after.ascript(def, binding-type);
@@ -8480,7 +8484,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
          (tctx-after, do-release) = std-infer-expr(tctx-after, do-release, false, Used, ta);
          term = mk-cons(term, do-release); tctx-after = tctx-after.ascript(term, type-nil);
       };
-      let return-term = if not(return-type.is-t(interned-tag-vararg,0)) and not(return-type.is-t(c"Never",0))
+      let return-term = if not(return-type.is-t(interned-tag-nil,0)) and not(return-type.is-t(interned-tag-never,0))
       then mk-var(return-id)
       else mk-nil();
       (tctx-after, return-term) = std-infer-expr(tctx-after, return-term, false, Used, t0(interned-tag-must-not-retain));
@@ -8499,7 +8503,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
 );
 
 let specialize(key: CString, unify-ctx: TypeContext?, result-type: Type, term: AST): Nil = (
-   if (key!=c"open" or result-type.domain.slot(interned-tag-array,2).l1.is-t(c"OwnedData",1) or result-type.domain.slot(interned-tag-array,2).l1.is-t(c"OneOwnedData",1)) and key!=interned-tag-vararg and not(is-special(key, result-type)) {
+   if (key!=c"open" or result-type.domain.slot(interned-tag-array,2).l1.is-t(c"OwnedData",1) or result-type.domain.slot(interned-tag-array,2).l1.is-t(c"OneOwnedData",1)) and key!=c"mov" and not(is-special(key, result-type)) {
       mark-as-special(key, result-type);
       let special-term = substitute(unify-ctx, term);
       match special-term {
@@ -8665,7 +8669,7 @@ let std-apply-macro-tag(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (
       Lit{key=key} => (
          if index-of-tag(key)==unknown-index-of-tag then (tctx, mk-eof()) else {
             let tag-name    = mk-lit(index-of-tag(key).into(type(CString)));
-            let tag-ordinal = tag-name.ascript(t0(c"Constant") && t0(c"Literal") && t0(interned-tag-vararg));
+            let tag-ordinal = tag-name.ascript(t0(c"Constant") && t0(c"Literal") && t0(c"U64"));
             let tag-type    = mk-atype(t0(c"Tag::" + key));
             (tctx, mk-cons(mk-cons(tag-name, tag-ordinal), tag-type))
          }
@@ -9038,7 +9042,7 @@ let try-destructure-macro(loc: SourceLocation, lhs: AST, term: AST): AContext? =
          if index-of-tag(el9)!=unknown-index-of-tag {
             r = yes;
             let tag-i = index-of-tag(el9).into(type(CString));
-            r = r.bind(pv9, mk-app( mk-lit(c":",with-key(eltk9,c":")), mk-app( mk-lit(tag-i,with-key(eltk9,tag-i)), mk-atype(t0(c"Constant") && t0(c"Literal") && t0(interned-tag-vararg)) ) ));
+            r = r.bind(pv9, mk-app( mk-lit(c":",with-key(eltk9,c":")), mk-app( mk-lit(tag-i,with-key(eltk9,tag-i)), mk-atype(t0(c"Constant") && t0(c"Literal") && t0(c"U64")) ) ));
             let tag-tt = c"Tag::" + el9;
             r = r.bind(pt9, mk-lit(tag-tt,with-key(eltk9,tag-tt)));
          }
@@ -9350,7 +9354,7 @@ let main(argc: C_int, argv: CString[]): Nil = (
                                  mk-atype(t1(c"Type",t0(c"String")))
                               )
                            ),
-                           mk-lit(interned-tag-vararg).ascript(t0(c"String"))
+                           mk-lit(c"\\n").ascript(t0(c"String"))
                         )
                      )
                   )
