@@ -34,9 +34,7 @@ let intern-type-tag(tag: CString): TypeTagIntern = (
 );
 
 let untern(tag: TypeTagIntern): CString = (
-   if tag.second != 0
-   then type-tag-intern-inverse-index.lookup(tag.second, c"")
-   else type-tag-intern-inverse-index.lookup(tag.first, c"")
+   type-tag-intern-inverse-index.lookup(tag.primary, c"")
 );
 
 let intern-type-tag-single(tag: CString): U64 = (

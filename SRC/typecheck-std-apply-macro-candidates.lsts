@@ -49,10 +49,10 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
             match mcandidate {
                App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt:TVar{name:c"macro::literal",parameters:[TGround{literal-tag=tag,parameters=parameters}.. etc-parameters]}}}} => (
                   match margs {
-                     App{left:Lit{key:c":"}, right:App{left:Lit{key1=key}, right:AType{tt=tt}}} => (tctx, if key1==literal-tag and parameters.length==0 then yes else no);
-                     Lit{key2=key} => (tctx, if key2==literal-tag and parameters.length==0 then yes else no);
-                     App{ left:App{left:Lit{key:c":"}, right:App{left:Lit{key3=key}, right:AType{tt=tt}}}, margs-right=right } => (tctx, if key3==literal-tag then std-macro-unpack-args(yes,parameters,margs-right) else no);
-                     App{ left:Lit{key4=key}, margs-right=right } => (tctx, if key4==literal-tag then std-macro-unpack-args(yes,parameters,margs-right) else no);
+                     App{left:Lit{key:c":"}, right:App{left:Lit{key1=key}, right:AType{tt=tt}}} => (tctx, if key1==untern(literal-tag) and parameters.length==0 then yes else no);
+                     Lit{key2=key} => (tctx, if key2==untern(literal-tag) and parameters.length==0 then yes else no);
+                     App{ left:App{left:Lit{key:c":"}, right:App{left:Lit{key3=key}, right:AType{tt=tt}}}, margs-right=right } => (tctx, if key3==untern(literal-tag) then std-macro-unpack-args(yes,parameters,margs-right) else no);
+                     App{ left:Lit{key4=key}, margs-right=right } => (tctx, if key4==untern(literal-tag) then std-macro-unpack-args(yes,parameters,margs-right) else no);
                      _ => (tctx, no);
                   };
                );

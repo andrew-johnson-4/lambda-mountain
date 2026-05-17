@@ -6139,8 +6139,10 @@ let interned-tag-phi-live = intern-type-tag(c"Phi::Live");
 let interned-tag-linear = intern-type-tag(c"Linear");
 let interned-tag-string = intern-type-tag(c"String");
 let interned-tag-bool = intern-type-tag(c"Bool");
+let interned-tag-literal = intern-type-tag(c"Literal");
 let interned-tag-l = intern-type-tag(c"L");
 let interned-tag-hashtable = intern-type-tag(c"Hashtable");
+let interned-tag-phi = intern-type-tag(c"Phi");
 let interned-tag-vector = intern-type-tag(c"Vector");
 let interned-tag-tag = intern-type-tag(c"Tag::");
 let interned-tag-phi-id = intern-type-tag(c"Phi::Id");
@@ -6151,7 +6153,9 @@ let interned-tag-must-not-move = intern-type-tag(c"MustNotMove");
 let interned-tag-must-not-fresh = intern-type-tag(c"MustNotFresh");
 let interned-tag-must-not-retain = intern-type-tag(c"MustNotRetain");
 let interned-tag-must-retain = intern-type-tag(c"MustRetain");
+let interned-tag-must-release = intern-type-tag(c"MustRelease");
 let interned-tag-must-release-after-call = intern-type-tag(c"MustReleaseAfterCall");
+let interned-tag-must-retain-on-call = intern-type-tag(c"MustRetainOnCall");
 let interned-tag-must-not-rewrite = intern-type-tag(c"MustNotRewrite");
 let interned-tag-vararg = intern-type-tag(c"...");
 let interned-tag-any = intern-type-tag(c"Any");
@@ -6166,6 +6170,7 @@ let interned-tag-extern = intern-type-tag(c"extern");
 let interned-tag-blob = intern-type-tag(c"Blob");
 let interned-tag-ffi = intern-type-tag(c"FFI");
 let interned-tag-type = intern-type-tag(c"Type");
+let interned-tag-typed-macro = intern-type-tag(c"TypedMacro");
 let interned-tag-cffi = intern-type-tag(c"C-FFI");
 let interned-tag-field = intern-type-tag(c"extern");
 let interned-tag-unsafe = intern-type-tag(c"Unsafe");
@@ -6499,9 +6504,7 @@ let intern-type-tag(tag: CString): TypeTagIntern = (
 );
 
 let untern(tag: TypeTagIntern): CString = (
-   if tag.second != 0
-   then type-tag-intern-inverse-index.lookup(tag.second, c"")
-   else type-tag-intern-inverse-index.lookup(tag.first, c"")
+   type-tag-intern-inverse-index.lookup(tag.primary, c"")
 );
 
 let intern-type-tag-single(tag: CString): U64 = (
@@ -7110,20 +7113,20 @@ let assert-no-infinite-types(): Nil = (
    for td in ast-parsed-program.unroll-seq { match td {
       Typedef{} => (
          let lhs-type = (td as Tag::Typedef).lhs-type;
-         assert-no-infinite-type(fields-of-type, [lhs-type.ground-tag-and-arity], lhs-type, lhs-type, td);
+         assert-no-infinite-type(fields-of-type, mk-set(type((U64,U64))).bind(lhs-type.ground-tag-and-arity), lhs-type, lhs-type, td);
       );
       _ => ();
    }};
 );
 
-let assert-no-infinite-type(fields-of-type: Hashtable<(CString,U64),Vector<(Type,Type)>>,
-                            seen: List<(CString,U64)>, visiting: Type, root-type: Type, blame: AST): Nil = (
+let assert-no-infinite-type(fields-of-type: Hashtable<(U64,U64),Vector<(Type,Type)>>,
+                            seen: Set<(U64,U64)>, visiting: Type, root-type: Type, blame: AST): Nil = (
    for Tuple{base-type=first,field-type=second} in fields-of-type.lookup(visiting.ground-tag-and-arity, mk-vector(type((Type,Type)))) {
       let tctx = unify(base-type, visiting, blame).normalize;
       base-type = tctx.substitute(base-type);
       field-type = tctx.substitute(field-type);
-      if seen.contains(field-type.ground-tag-and-arity) then fail("Type definition has infinite size: \{root-type} at \{blame.location}\n");
-      assert-no-infinite-type(fields-of-type, cons( visiting.ground-tag-and-arity, seen ), field-type, root-type, blame);
+      if seen.has(field-type.ground-tag-and-arity) then fail("Type definition has infinite size: \{root-type} at \{blame.location}\n");
+      assert-no-infinite-type(fields-of-type, seen.bind(visiting.ground-tag-and-arity), field-type, root-type, blame);
    };
 );
 
@@ -8023,7 +8026,7 @@ let infer-tctx(tctx: TypeContext?, tt: Type): TypeContext? = (
 );
 
 let type-ast-inserts = mk-vector(type(AST));
-let complex-type-index = mk-set(type((CString,U64)));
+let complex-type-index = mk-set(type((U64,U64)));
 
 let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U64, case-number: U64): Nil = (
    let mangled-field-name = case-number.into(type(CString)) + c"_" + field-name;
@@ -8058,7 +8061,7 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
 
 let phi-parameters-index = {} : Hashtable<(U64,U64),Type>;
 
-let phi-parameters(tag: CString, ps: U64): Type = phi-parameters-index.lookup((tag,ps),ta);
+let phi-parameters(tag: U64, ps: U64): Type = phi-parameters-index.lookup((tag,ps),ta);
 
 let infer-type-definition(term: AST): Nil = (
    match term { Typedef{} => (); };
@@ -8095,9 +8098,10 @@ let infer-type-definition(term: AST): Nil = (
             for Tuple{field-name2=first, field-type=second} in case-fields {
                case-parameters = case-parameters.push(field-type);
             };
-            let case-name = lhs-type.simple-tag+c"::"+case-tag1;
-            phi-type-index = phi-type-index.bind((case-name, common-tags-length + case-fields.length));
-            phi-parameters-index = phi-parameters-index.bind((case-name, common-tags-length + case-fields.length), ts(case-name,case-parameters));
+            let case-name = lhs-type.simple-tag + c"::" + case-tag1;
+            let case-index = intern-type-tag-single(case-name);
+            phi-type-index = phi-type-index.bind((case-index, common-tags-length + case-fields.length));
+            phi-parameters-index = phi-parameters-index.bind((case-index, common-tags-length + case-fields.length), ts(case-name,case-parameters));
          }
       }
    } else {
@@ -8463,7 +8467,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    while non-zero(tctx-after-tctx) and not(is(tctx-before-tctx, tctx-after-tctx)) {
       let tr = head(tctx-after-tctx);
       let dt = tctx-after.with-phi(tr.denormalized, term);
-      if dt.slot(interned-tag-phi-state,1).l1.slot(interned-type-must-release-to-release,1).is-linear-live {
+      if dt.slot(interned-tag-phi-state,1).l1.slot(interned-tag-must-release-to-release,1).is-linear-live {
          if dt.is-t(interned-tag-must-not-retain,0)
          then needs-mark-release = cons(tr, needs-mark-release)
          else needs-release = cons(tr, needs-release);
@@ -8574,10 +8578,10 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
             match mcandidate {
                App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt:TVar{name:c"macro::literal",parameters:[TGround{literal-tag=tag,parameters=parameters}.. etc-parameters]}}}} => (
                   match margs {
-                     App{left:Lit{key:c":"}, right:App{left:Lit{key1=key}, right:AType{tt=tt}}} => (tctx, if key1==literal-tag and parameters.length==0 then yes else no);
-                     Lit{key2=key} => (tctx, if key2==literal-tag and parameters.length==0 then yes else no);
-                     App{ left:App{left:Lit{key:c":"}, right:App{left:Lit{key3=key}, right:AType{tt=tt}}}, margs-right=right } => (tctx, if key3==literal-tag then std-macro-unpack-args(yes,parameters,margs-right) else no);
-                     App{ left:Lit{key4=key}, margs-right=right } => (tctx, if key4==literal-tag then std-macro-unpack-args(yes,parameters,margs-right) else no);
+                     App{left:Lit{key:c":"}, right:App{left:Lit{key1=key}, right:AType{tt=tt}}} => (tctx, if key1==untern(literal-tag) and parameters.length==0 then yes else no);
+                     Lit{key2=key} => (tctx, if key2==untern(literal-tag) and parameters.length==0 then yes else no);
+                     App{ left:App{left:Lit{key:c":"}, right:App{left:Lit{key3=key}, right:AType{tt=tt}}}, margs-right=right } => (tctx, if key3==untern(literal-tag) then std-macro-unpack-args(yes,parameters,margs-right) else no);
+                     App{ left:Lit{key4=key}, margs-right=right } => (tctx, if key4==untern(literal-tag) then std-macro-unpack-args(yes,parameters,margs-right) else no);
                      _ => (tctx, no);
                   };
                );

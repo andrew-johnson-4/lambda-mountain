@@ -1,6 +1,6 @@
 
 let type-ast-inserts = mk-vector(type(AST));
-let complex-type-index = mk-set(type((CString,U64)));
+let complex-type-index = mk-set(type((U64,U64)));
 
 let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U64, case-number: U64): Nil = (
    let mangled-field-name = case-number.into(type(CString)) + c"_" + field-name;
@@ -35,7 +35,7 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
 
 let phi-parameters-index = {} : Hashtable<(U64,U64),Type>;
 
-let phi-parameters(tag: CString, ps: U64): Type = phi-parameters-index.lookup((tag,ps),ta);
+let phi-parameters(tag: U64, ps: U64): Type = phi-parameters-index.lookup((tag,ps),ta);
 
 let infer-type-definition(term: AST): Nil = (
    match term { Typedef{} => (); };
@@ -72,9 +72,10 @@ let infer-type-definition(term: AST): Nil = (
             for Tuple{field-name2=first, field-type=second} in case-fields {
                case-parameters = case-parameters.push(field-type);
             };
-            let case-name = lhs-type.simple-tag+c"::"+case-tag1;
-            phi-type-index = phi-type-index.bind((case-name, common-tags-length + case-fields.length));
-            phi-parameters-index = phi-parameters-index.bind((case-name, common-tags-length + case-fields.length), ts(case-name,case-parameters));
+            let case-name = lhs-type.simple-tag + c"::" + case-tag1;
+            let case-index = intern-type-tag-single(case-name);
+            phi-type-index = phi-type-index.bind((case-index, common-tags-length + case-fields.length));
+            phi-parameters-index = phi-parameters-index.bind((case-index, common-tags-length + case-fields.length), ts(case-name,case-parameters));
          }
       }
    } else {
