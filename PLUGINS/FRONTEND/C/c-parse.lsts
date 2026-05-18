@@ -172,7 +172,14 @@ let std-c-can-take(tokens: List<Token>, cls: String): Bool = (
 
 let std-c-take-expect(tokens: List<Token>, cls: String): List<Token> = (
    if non-zero(tokens) and std-c-has-class(head(tokens).skey, cls) then tail(tokens)
-   else (print("Expected token [\{cls}] at \{tokens.formatted-location}\n"); exit(1); tokens);
+   else (
+      print("Fail Take Expect\n");
+      for t in tokens {
+         print("Token \{t.key}\n");
+      };
+      print("Expected token [\{cls}] at \{tokens.formatted-location}\n");
+      exit(1); tokens
+   );
 );
 
 let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
@@ -245,9 +252,11 @@ let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>
       tokens = declaration-specifiers.second;
       let init-declarator-list = std-c-parse-init-declarator-list(tokens); tokens = init-declarator-list.second;
       let attr = std-c-parse-attribute(tokens); tokens = attr.second;
+      print("Parse Declaration specifiers\n");
       tokens = std-c-take-expect(tokens, ";");
       Tuple( Some(CBinaryOp("Declaration", close(declaration-specifiers.first.get-or-panic), close(CMaybe(close(init-declarator-list.first))) )), tokens )
    } else {
+      print("Parse Declaration not specifiers\n");
       let ad = std-c-parse-static-assert-declaration(tokens); tokens = ad.second;
       tokens = std-c-take-maybe(tokens, ";");
       Tuple( ad.first, tokens )
@@ -712,8 +721,12 @@ std-c-typedef-name-index = std-c-typedef-name-index.bind("__builtin_va_list", tr
 let std-c-parse-typedef-name(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = (None : Maybe<CTerm>)();
    if non-zero(tokens) and std-c-typedef-name-index.has-key(head(tokens).skey) {
+      print("Found type name \{head(tokens).skey}\n");
       Tuple( Some(CType1(head(tokens).skey)), tail(tokens) )
-   } else Tuple( no, tokens )
+   } else {
+      print("Cannot find type name \{head(tokens).skey}\n");
+      Tuple( no, tokens )
+   };
 );
 
 let std-c-parse-type-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
