@@ -11701,7 +11701,7 @@ let std-c-type-of-integer(i: String): Type = (
 );
 
 let c-frontend(fp: CString): Nil = (
-   print("Parse \{fp}\n");
+   print("Parse C \{fp}\n");
    # mktemp modifies this buffer, so it can't be a string constant
    # string concatenation is used to create a dynamic string
    let tmpfile = c"/tmp/lm.tmp.XXXXXX" + c"";
@@ -11816,6 +11816,10 @@ let std-c-parse(tokens: List<Token>): Nil = (
       let original-tokens = tokens;
       tokens = std-c-parse-external-declaration(tokens);
       if is(tokens, original-tokens) {
+         print("Remaining Tokens:\n");
+         for t in tokens {
+            print("Token \{t.key}\n");
+         };
          fail("Expected token '\{head(tokens).key}' at \{tokens.formatted-location}\n");
       };
    };
@@ -11962,6 +11966,7 @@ let std-c-parse-function-definition(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 );
 
 let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   print("Parse Declaration\n");
    let declaration-specifiers = std-c-parse-declaration-specifiers(tokens);
    if declaration-specifiers.first.is-some {
       tokens = declaration-specifiers.second;
@@ -12072,6 +12077,7 @@ let std-c-parse-init-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<To
 );
 
 let std-c-parse-static-assert-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   print("Parse Static Assert Declaration\n");
    let no = (None : Maybe<CTerm>)();
    if std-c-can-take(tokens, "_Static_assert") {
       let op = head(tokens).skey;
@@ -12327,6 +12333,7 @@ let std-c-parse-struct-declaration-list(tokens: List<Token>): Tuple<Maybe<CTerm>
 );
 
 let std-c-parse-struct-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   print("Parse Struct Declaration\n");
    let sql = std-c-parse-specifier-qualifier-list(tokens);
    if sql.first.is-some {
       tokens = sql.second;
@@ -13057,6 +13064,7 @@ let std-c-parse-designation(tokens: List<Token>): Tuple<Maybe<List<CTerm>>,List<
 );
 
 let std-c-parse-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   print("Parse Statement\n");
    let attr = std-c-parse-attribute(tokens); tokens = attr.second;
    let e = std-c-parse-jump-statement(tokens);
    if e.first.is-none { e = std-c-parse-compound-statement(tokens); };
@@ -13072,6 +13080,7 @@ let std-c-parse-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> 
 );
 
 let std-c-parse-expression-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   print("Parse Expression Statement\n");
    let e = std-c-parse-expression(tokens);
    if e.first.is-some { e.second = std-c-take-expect(e.second, ";"); };
    e;
@@ -13135,6 +13144,7 @@ let std-c-parse-selection-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 );
 
 let std-c-parse-iteration-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   print("Parse Iteration Statement\n");
    let no = (None : Maybe<CTerm>)();
    if std-c-can-take(tokens, "while") {
       let op = "c::while"; tokens = tail(tokens);
@@ -13178,6 +13188,7 @@ let std-c-parse-iteration-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 );
 
 let std-c-parse-jump-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
+   print("Parse Jump Statement\n");
    let no = (None : Maybe<CTerm>)();
    if std-c-can-take(tokens, "goto") {
       let op = intern(c"c::goto"); tokens = tail(tokens);
@@ -13309,6 +13320,7 @@ let std-c-tokenize-string(file-path: String, text: String): List<Token> = (
 
    let internal-tokens = [] : List<Token>;
    for t in tokens {
+      print("Token \{t}\n");
       internal-tokens = cons( mk-token(t), internal-tokens );
    };
 
@@ -13334,7 +13346,7 @@ import PLUGINS/FRONTEND/LSTS/lsts-parse.lsts;
 import PLUGINS/FRONTEND/LSTS/mk-lsts-token.lsts;
 
 let lsts-frontend(fp: CString): Nil = (
-   print("Parse \{fp}\n");
+   print("Parse LSTS \{fp}\n");
    lsts-parse(lsts-tokenize(fp));
 );
 register-frontend(c".lsts", lsts-frontend);
