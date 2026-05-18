@@ -9486,6 +9486,7 @@ import SRC/tctx-prune-moved.lsts;
 import SRC/unit-util.lsts;
 
 import SRC/type-definition.lsts;
+import SRC/type-intern-type-tag.lsts; # must precede type-constructor for initialization dependency of globals
 import SRC/type-constructor.lsts;
 import SRC/type-destructor.lsts;
 import SRC/type-compare.lsts;
@@ -9528,7 +9529,6 @@ import SRC/type-is-linear.lsts;
 import SRC/type-simple-id.lsts;
 import SRC/type-with-only-tag.lsts;
 import SRC/type-has-t.lsts;
-import SRC/type-intern-type-tag.lsts;
 
 import SRC/unit-ascript-core.lsts;
 
@@ -11434,6 +11434,9 @@ let std-c-name-of-declarator(declarator: CTerm): Tuple<String,Type> = (
       CUnaryPrefix{op:"Declarator(", arg:CIdentifier{name=value}} => (name, ta);
       CBinaryOp{op:"Declarator(", arg1:CIdentifier{name=value}} => (name, ta);
       CList{value:[CIdentifier{name=value}..]} => (name, ta);
+      CList{value:[_..CIdentifier{name=value}..]} => (name, ta);
+      CList{value:[_.._..CIdentifier{name=value}..]} => (name, ta);
+      CList{value:[_.._.._..CIdentifier{name=value}..]} => (name, ta);
       _ => fail("Unsupported C Declarator:\n\{declarator}\n");
    };
 );

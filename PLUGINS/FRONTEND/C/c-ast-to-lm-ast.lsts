@@ -355,6 +355,9 @@ let std-c-name-of-declarator(declarator: CTerm): Tuple<String,Type> = (
       CUnaryPrefix{op:"Declarator(", arg:CIdentifier{name=value}} => (name, ta);
       CBinaryOp{op:"Declarator(", arg1:CIdentifier{name=value}} => (name, ta);
       CList{value:[CIdentifier{name=value}..]} => (name, ta);
+      CList{value:[CBinaryOp{op:"Declarator*", arg2:CIdentifier{name=value}}..]} => (name, ta);
+      CList{value:[CBinaryOp{op:"Declarator*", arg2:CBinaryOp{op:"Declarator(", arg1:CIdentifier{name=value}}}..]} => (name, ta);
+      CList{value:[CBinaryOp{op:"Declarator(", arg1:CIdentifier{name=value}}..]} => (name, ta);
       _ => fail("Unsupported C Declarator:\n\{declarator}\n");
    };
 );
