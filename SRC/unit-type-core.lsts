@@ -2,6 +2,7 @@
 import SRC/unit-util.lsts;
 
 import SRC/type-definition.lsts;
+import SRC/type-intern-type-tag.lsts; # must precede type-constructor for initialization dependency of globals
 import SRC/type-constructor.lsts;
 import SRC/type-destructor.lsts;
 import SRC/type-compare.lsts;
@@ -44,4 +45,3 @@ import SRC/type-is-linear.lsts;
 import SRC/type-simple-id.lsts;
 import SRC/type-with-only-tag.lsts;
 import SRC/type-has-t.lsts;
-import SRC/type-intern-type-tag.lsts;

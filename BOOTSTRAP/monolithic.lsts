@@ -6165,6 +6165,7 @@ let interned-tag-must-not-rewrite = intern-type-tag(c"MustNotRewrite");
 let interned-tag-vararg = intern-type-tag(c"...");
 let interned-tag-any = intern-type-tag(c"Any");
 let interned-tag-nil = intern-type-tag(c"Nil");
+let interned-tag-typedef = intern-type-tag(c"typedef");
 let interned-tag-tail-position = intern-type-tag(c"TailPosition");
 let interned-tag-const = intern-type-tag(c"const");
 let interned-tag-c = intern-type-tag(c"C");
@@ -11980,12 +11981,13 @@ let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>
       tokens = declaration-specifiers.second;
       let init-declarator-list = std-c-parse-init-declarator-list(tokens); tokens = init-declarator-list.second;
       let attr = std-c-parse-attribute(tokens); tokens = attr.second;
-      # TODO declare new type if typedef
-      print("Parse Declaration specifiers \{declaration-specifiers.first.get-or-panic}\n");
-      print("Parse Declaration init declarator list \{init-declarator-list.first}\n");
-      let tt = std-c-type-of-specifiers(declaration-specifiers.first.get-or-panic);
-      let nt = std-c-name-of-declarator( init-declarator-list.first.get-or( CList(close([] : List<CTerm>)) ) );
-      print("name \{nt} type \{tt}\n");
+      let tt = std-c-type-of-specifiers(declaration-specifiers.first.get-or-panic).first;
+      let name = std-c-name-of-declarator( init-declarator-list.first.get-or( CList(close([] : List<CTerm>)) ) ).first;
+      print("Maybe Bind \{name.into(type(String))} : \{tt}\n");
+      if tt <: type-c-typedef and non-zero(name) {
+         print("Bind \{name.into(type(String))}\n");
+         std-c-typedef-name-index = std-c-typedef-name-index.bind(name.into(type(String)), true);
+      };
       tokens = std-c-take-expect(tokens, ";");
       Tuple( Some(CBinaryOp("Declaration", close(declaration-specifiers.first.get-or-panic), close(CMaybe(close(init-declarator-list.first))) )), tokens )
    } else {

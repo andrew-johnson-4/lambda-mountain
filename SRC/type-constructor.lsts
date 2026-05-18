@@ -35,6 +35,7 @@ let interned-tag-must-not-rewrite = intern-type-tag(c"MustNotRewrite");
 let interned-tag-vararg = intern-type-tag(c"...");
 let interned-tag-any = intern-type-tag(c"Any");
 let interned-tag-nil = intern-type-tag(c"Nil");
+let interned-tag-typedef = intern-type-tag(c"typedef");
 let interned-tag-tail-position = intern-type-tag(c"TailPosition");
 let interned-tag-const = intern-type-tag(c"const");
 let interned-tag-c = intern-type-tag(c"C");
