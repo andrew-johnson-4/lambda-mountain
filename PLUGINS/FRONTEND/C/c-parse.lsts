@@ -252,7 +252,12 @@ let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>
       tokens = declaration-specifiers.second;
       let init-declarator-list = std-c-parse-init-declarator-list(tokens); tokens = init-declarator-list.second;
       let attr = std-c-parse-attribute(tokens); tokens = attr.second;
-      print("Parse Declaration specifiers\n");
+      # TODO declare new type if typedef
+      print("Parse Declaration specifiers \{declaration-specifiers.first.get-or-panic}\n");
+      print("Parse Declaration init declarator list \{init-declarator-list.first}\n");
+      let tt = std-c-type-of-specifiers(declaration-specifiers.first.get-or-panic);
+      let nt = std-c-name-of-declarator( init-declarator-list.first.get-or( CList(close([] : List<CTerm>)) ) );
+      print("name \{nt} type \{tt}\n");
       tokens = std-c-take-expect(tokens, ";");
       Tuple( Some(CBinaryOp("Declaration", close(declaration-specifiers.first.get-or-panic), close(CMaybe(close(init-declarator-list.first))) )), tokens )
    } else {
