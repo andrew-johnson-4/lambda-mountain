@@ -4792,6 +4792,7 @@ let .maybe-find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, bl
 );
 
 let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type, failable: Bool): TypeContextRow? = (
+   print("Find Callable \{fname}\n");
    # Coerce argument types into Type::Format::Denormal
    # TODO: replace with Into<Type::Format::Denormal>
    arg-types = denormalize-strong(arg-types);
@@ -4811,6 +4812,8 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
          # can-receive is an additional refinement on top of argument satisfaction
          # it is necessary for nullary or partial constructors that need a full type
          # like, None : TypeContext?
+         print("Can Apply \{tr.dt-or-zero}, \{arg-types} = \{can-apply(tr.dt-or-zero, arg-types)}\n");
+         print("Can Receive \{tr.dt-or-zero}, \{return-type-hint} = \{can-receive(tr.dt-or-zero, return-type-hint)}\n");
          if can-apply(tr.dt-or-zero, arg-types) and (not(non-zero(return-type-hint)) or can-receive(tr.dt-or-zero, return-type-hint)) {
             match-set = match-set.push(tr);
          };
@@ -4822,6 +4825,8 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
          # can-receive is an additional refinement on top of argument satisfaction
          # it is necessary for nullary or partial constructors that need a full type
          # like, None : TypeContext?
+         print("Can Apply \{tr.dt-or-zero}, \{arg-types} = \{can-apply(tr.dt-or-zero, arg-types)}\n");
+         print("Can Receive \{tr.dt-or-zero}, \{return-type-hint} = \{can-receive(tr.dt-or-zero, return-type-hint)}\n");
          if can-apply(tr.dt-or-zero, arg-types) and (not(non-zero(return-type-hint)) or can-receive(tr.dt-or-zero, return-type-hint)) {
             match-set = match-set.push(tr);
          }
@@ -5963,27 +5968,36 @@ let can-unify(fpt: Type, pt: Type): Bool = (
                   if not(skip-state-check) then result = result and can-unify(phi-from, phi-state-in);
                );
                TGround{ltag=tag} => (
+                  print("ground lt \{lc}\n");
+                  print("ground rt \{rconjugate}\n");
                   let this-result-ok = false;
                   let rc = rconjugate[ri];
                   let rtag = rc.simple-interned-tag;
+                  let scan-ri = ri;
                   if not(non-zero(rtag)) then () else (
-                     while ri<rconjugate.length and rtag < ltag {
+                     print("rtag \{rtag} < \{ltag} = \{rtag < ltag}\n");
+                     while ri<rconjugate.length and rtag.primary < ltag.primary {
                         ri = ri + 1;
                         if ri < rconjugate.length {
                            rc = rconjugate[ri];
                            rtag = rc.simple-interned-tag;
-                        }
+                        };
+                        print("rtag \{rtag} < \{ltag} = \{rtag < ltag}\n");
                      };
-                     let scan-ri = ri;
-                     while scan-ri<rconjugate.length and rtag==ltag {
+                     scan-ri = ri;
+                     print("rtag \{rtag} == \{ltag} = \{rtag == ltag}\n");
+                     while scan-ri<rconjugate.length and rtag.primary==ltag.primary {
                         this-result-ok = this-result-ok or can-unify(lc,rc);
+                        print("Can unify \{lc} x \{rc} = \{can-unify(lc,rc)}\n");
                         scan-ri = scan-ri + 1;
                         if scan-ri < rconjugate.length {
                            rc = rconjugate[scan-ri];
                            rtag = rc.simple-interned-tag;
-                        }
+                        };
+                        print("rtag \{rtag} == \{ltag} = \{rtag == ltag}\n");
                      };
                   );
+                  if not this-result-ok then print("Reject \{lc} x \{rconjugate} scan \{scan-ri}\n");
                   result = result and this-result-ok;
                );
                _ => result = result and can-unify(lc,pt);
@@ -6068,6 +6082,7 @@ let can-unify(fpt: Type, pt: Type): Bool = (
 
       _ => false;
    };
+   print("Can Unify\n\t\{fpt}\n\t\{pt}\n = \{return}\n");
    return
 );
 
@@ -6493,6 +6508,8 @@ let type-tag-intern-inverse-index = {} : Hashtable<U64,CString>;
 
 type TypeTagIntern = { first: U64, second: U64 };
 
+let .into(tti: TypeTagIntern, tt: Type<String>): String = "TypeTagIntern(\{tti.first},\{tti.second} = \{untern(tti)})";
+
 let .primary(t: TypeTagIntern): U64 = if t.second==0 then t.first else t.second;
 let .has-secondary(t: TypeTagIntern): Bool = t.second != 0;
 
@@ -6504,8 +6521,10 @@ let $"=="(tti1: TypeTagIntern, tti2: TypeTagIntern): Bool = (
    )
 );
 
+let cmp(left: TypeTagIntern, right: TypeTagIntern): Ord = cmp(left.primary, right.primary);
+
 let $"<"(tti1: TypeTagIntern, tti2: TypeTagIntern): Bool = (
-   max(tti1.first, tti1.second) < max(tti2.first, tti2.second)
+   tti1.primary < tti2.primary
 );
 
 let intern-type-tag(tag: CString): TypeTagIntern = (
@@ -7132,20 +7151,24 @@ let assert-no-infinite-types(): Nil = (
    for td in ast-parsed-program.unroll-seq { match td {
       Typedef{} => (
          let lhs-type = (td as Tag::Typedef).lhs-type;
-         assert-no-infinite-type(fields-of-type, mk-set(type((U64,U64))).bind(lhs-type.ground-tag-and-arity), lhs-type, lhs-type, td);
+         assert-no-infinite-type(fields-of-type, [lhs-type.ground-tag-and-arity], lhs-type, lhs-type, td);
       );
       _ => ();
    }};
 );
 
 let assert-no-infinite-type(fields-of-type: Hashtable<(U64,U64),Vector<(Type,Type)>>,
-                            seen: Set<(U64,U64)>, visiting: Type, root-type: Type, blame: AST): Nil = (
-   for Tuple{base-type=first,field-type=second} in fields-of-type.lookup(visiting.ground-tag-and-arity, mk-vector(type((Type,Type)))) {
+                            seen: List<(U64,U64)>, visiting: Type, root-type: Type, blame: AST): Nil = (
+   let field-types = fields-of-type.lookup(visiting.ground-tag-and-arity, mk-vector(type((Type,Type))));
+   for Tuple{base-type=first,field-type=second} in field-types {
       let tctx = unify(base-type, visiting, blame).normalize;
       base-type = tctx.substitute(base-type);
       field-type = tctx.substitute(field-type);
-      if seen.has(field-type.ground-tag-and-arity) then fail("Type definition has infinite size: \{root-type} at \{blame.location}\n");
-      assert-no-infinite-type(fields-of-type, seen.bind(visiting.ground-tag-and-arity), field-type, root-type, blame);
+      
+      if seen.contains(field-type.ground-tag-and-arity) {
+         fail("Type definition has infinite size: \{root-type} -> \{field-type} at \{blame.location}\n");
+      };
+      assert-no-infinite-type(fields-of-type, cons( visiting.ground-tag-and-arity, seen ), field-type, root-type, blame);
    };
 );
 
@@ -11434,9 +11457,10 @@ let std-c-name-of-declarator(declarator: CTerm): Tuple<String,Type> = (
       CUnaryPrefix{op:"Declarator(", arg:CIdentifier{name=value}} => (name, ta);
       CBinaryOp{op:"Declarator(", arg1:CIdentifier{name=value}} => (name, ta);
       CList{value:[CIdentifier{name=value}..]} => (name, ta);
-      CList{value:[_..CIdentifier{name=value}..]} => (name, ta);
-      CList{value:[_.._..CIdentifier{name=value}..]} => (name, ta);
-      CList{value:[_.._.._..CIdentifier{name=value}..]} => (name, ta);
+      CList{value:[CBinaryOp{op:"Declarator*", arg2:CIdentifier{name=value}}..]} => (name, ta);
+      CList{value:[CBinaryOp{op:"Declarator*", arg2:CBinaryOp{op:"Declarator(", arg1:CIdentifier{name=value}}}..]} => (name, ta);
+      CList{value:[CBinaryOp{op:"Declarator(", arg1:CIdentifier{name=value}}..]} => (name, ta);
+      CList{value:[CBinaryOp{op:"Declarator(", arg1:CBinaryOp{op:"Declarator*", arg2:CIdentifier{name=value}}}..]} => (name, ta);
       _ => fail("Unsupported C Declarator:\n\{declarator}\n");
    };
 );

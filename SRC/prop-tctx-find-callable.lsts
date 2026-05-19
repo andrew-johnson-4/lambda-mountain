@@ -17,7 +17,6 @@ let .maybe-find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, bl
 );
 
 let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type, failable: Bool): TypeContextRow? = (
-   print("Find Callable \{fname}\n");
    # Coerce argument types into Type::Format::Denormal
    # TODO: replace with Into<Type::Format::Denormal>
    arg-types = denormalize-strong(arg-types);
@@ -37,8 +36,6 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
          # can-receive is an additional refinement on top of argument satisfaction
          # it is necessary for nullary or partial constructors that need a full type
          # like, None : TypeContext?
-         print("Can Apply \{tr.dt-or-zero}, \{arg-types} = \{can-apply(tr.dt-or-zero, arg-types)}\n");
-         print("Can Receive \{tr.dt-or-zero}, \{return-type-hint} = \{can-receive(tr.dt-or-zero, return-type-hint)}\n");
          if can-apply(tr.dt-or-zero, arg-types) and (not(non-zero(return-type-hint)) or can-receive(tr.dt-or-zero, return-type-hint)) {
             match-set = match-set.push(tr);
          };
@@ -50,8 +47,6 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
          # can-receive is an additional refinement on top of argument satisfaction
          # it is necessary for nullary or partial constructors that need a full type
          # like, None : TypeContext?
-         print("Can Apply \{tr.dt-or-zero}, \{arg-types} = \{can-apply(tr.dt-or-zero, arg-types)}\n");
-         print("Can Receive \{tr.dt-or-zero}, \{return-type-hint} = \{can-receive(tr.dt-or-zero, return-type-hint)}\n");
          if can-apply(tr.dt-or-zero, arg-types) and (not(non-zero(return-type-hint)) or can-receive(tr.dt-or-zero, return-type-hint)) {
             match-set = match-set.push(tr);
          }
