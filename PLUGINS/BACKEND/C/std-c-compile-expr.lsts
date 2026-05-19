@@ -162,6 +162,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          let tt = typeof-term(t);
          if tt.is-t(interned-tag-l,0) then mk-expression(val)
          else if tt.is-t(interned-tag-cstring,0) then mk-expression(val.escape-as-cstring)
+         else if tt.slot(interned-tag-array,2).l1.slot(interned-tag-c,1).l1.is-t(interned-tag-char,0) then mk-expression(val.escape-as-cstring)
          else if tt.is-t(interned-tag-regex,0) {
             let rgx-id = uuid();
             assemble-header-section = assemble-header-section +
