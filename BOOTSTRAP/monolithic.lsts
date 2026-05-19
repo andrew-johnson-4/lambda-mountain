@@ -9307,7 +9307,7 @@ let ast-parsed-count = 0_sz;
 let ast-typed-count = 0_sz;
 let config-print-ast = false;
 
-let main(argc: C_int, argv: CString[]): Nil = (
+let main(argc: C<"int">, argv: CString[]): Nil = (
    let argi = 1_sz;
    let input = [] : List<CString>;
    let highlight = false;
@@ -11033,8 +11033,8 @@ let std-c-mangle-type-internal-internal(tt: Type, blame: AST): S = (
       );
       TGround{tag:interned-tag-sized, parameters:[_..]} => SNil;
       TGround{tag:interned-tag-type, parameters:[_..]} => SAtom(c"int");
-      TGround{tag:interned-tag-int, parameters:[_..]} => SAtom(c"int");
-      TGround{tag:interned-tag-regex, parameters:[_..]} => SAtom(c"regex_t");
+      TGround{tag:interned-tag-int, parameters:[]} => SAtom(c"int");
+      TGround{tag:interned-tag-regex, parameters:[]} => SAtom(c"regex_t");
       TGround{tag=tag, parameters=parameters} => (
          let r = mangle-identifier(untern(tag));
          if parameters.length > 0 {
