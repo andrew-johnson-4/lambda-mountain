@@ -17,20 +17,23 @@ let assert-no-infinite-types(): Nil = (
    for td in ast-parsed-program.unroll-seq { match td {
       Typedef{} => (
          let lhs-type = (td as Tag::Typedef).lhs-type;
-         assert-no-infinite-type(fields-of-type, mk-set(type((U64,U64))).bind(lhs-type.ground-tag-and-arity), lhs-type, lhs-type, td);
+         assert-no-infinite-type(fields-of-type, [lhs-type.ground-tag-and-arity], lhs-type, lhs-type, td);
       );
       _ => ();
    }};
 );
 
 let assert-no-infinite-type(fields-of-type: Hashtable<(U64,U64),Vector<(Type,Type)>>,
-                            seen: Set<(U64,U64)>, visiting: Type, root-type: Type, blame: AST): Nil = (
+                            seen: List<(U64,U64)>, visiting: Type, root-type: Type, blame: AST): Nil = (
    let field-types = fields-of-type.lookup(visiting.ground-tag-and-arity, mk-vector(type((Type,Type))));
    for Tuple{base-type=first,field-type=second} in field-types {
       let tctx = unify(base-type, visiting, blame).normalize;
       base-type = tctx.substitute(base-type);
       field-type = tctx.substitute(field-type);
-      if seen.has(field-type.ground-tag-and-arity) then fail("Type definition has infinite size: \{root-type} -> \{field-type} at \{blame.location}\n\{field-types}\n");
-      assert-no-infinite-type(fields-of-type, seen.bind(visiting.ground-tag-and-arity), field-type, root-type, blame);
+      
+      if seen.contains(field-type.ground-tag-and-arity) {
+         fail("Type definition has infinite size: \{root-type} -> \{field-type} at \{blame.location}\n");
+      };
+      assert-no-infinite-type(fields-of-type, cons( visiting.ground-tag-and-arity, seen ), field-type, root-type, blame);
    };
 );
