@@ -36,7 +36,7 @@ let ast-parsed-count = 0_sz;
 let ast-typed-count = 0_sz;
 let config-print-ast = false;
 
-let main(argc: C_int, argv: CString[]): Nil = (
+let main(argc: C<"int">, argv: CString[]): Nil = (
    let argi = 1_sz;
    let input = [] : List<CString>;
    let highlight = false;
