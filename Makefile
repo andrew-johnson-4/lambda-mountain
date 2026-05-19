@@ -13,7 +13,7 @@ dev: install-production
 	./a.out
 
 build: compile-production
-	time env $(LSTSFLAGS) ./production -o deploy1.c SRC/index.lsts > out.txt
+	time env $(LSTSFLAGS) ./production -o deploy1.c SRC/index.lsts
 	$(CC) $(CFLAGS) deploy1.c -o deploy1
 	time env $(LSTSFLAGS) ./deploy1 -o deploy2.c SRC/index.lsts
 	diff deploy1.c deploy2.c

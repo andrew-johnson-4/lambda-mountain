@@ -4792,7 +4792,6 @@ let .maybe-find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, bl
 );
 
 let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type, failable: Bool): TypeContextRow? = (
-   print("Find Callable \{fname}\n");
    # Coerce argument types into Type::Format::Denormal
    # TODO: replace with Into<Type::Format::Denormal>
    arg-types = denormalize-strong(arg-types);
@@ -4812,8 +4811,6 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
          # can-receive is an additional refinement on top of argument satisfaction
          # it is necessary for nullary or partial constructors that need a full type
          # like, None : TypeContext?
-         print("Can Apply \{tr.dt-or-zero}, \{arg-types} = \{can-apply(tr.dt-or-zero, arg-types)}\n");
-         print("Can Receive \{tr.dt-or-zero}, \{return-type-hint} = \{can-receive(tr.dt-or-zero, return-type-hint)}\n");
          if can-apply(tr.dt-or-zero, arg-types) and (not(non-zero(return-type-hint)) or can-receive(tr.dt-or-zero, return-type-hint)) {
             match-set = match-set.push(tr);
          };
@@ -4825,8 +4822,6 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
          # can-receive is an additional refinement on top of argument satisfaction
          # it is necessary for nullary or partial constructors that need a full type
          # like, None : TypeContext?
-         print("Can Apply \{tr.dt-or-zero}, \{arg-types} = \{can-apply(tr.dt-or-zero, arg-types)}\n");
-         print("Can Receive \{tr.dt-or-zero}, \{return-type-hint} = \{can-receive(tr.dt-or-zero, return-type-hint)}\n");
          if can-apply(tr.dt-or-zero, arg-types) and (not(non-zero(return-type-hint)) or can-receive(tr.dt-or-zero, return-type-hint)) {
             match-set = match-set.push(tr);
          }
@@ -5968,36 +5963,28 @@ let can-unify(fpt: Type, pt: Type): Bool = (
                   if not(skip-state-check) then result = result and can-unify(phi-from, phi-state-in);
                );
                TGround{ltag=tag} => (
-                  print("ground lt \{lc}\n");
-                  print("ground rt \{rconjugate}\n");
                   let this-result-ok = false;
                   let rc = rconjugate[ri];
                   let rtag = rc.simple-interned-tag;
                   let scan-ri = ri;
                   if not(non-zero(rtag)) then () else (
-                     print("rtag \{rtag} < \{ltag} = \{rtag < ltag}\n");
                      while ri<rconjugate.length and rtag.primary < ltag.primary {
                         ri = ri + 1;
                         if ri < rconjugate.length {
                            rc = rconjugate[ri];
                            rtag = rc.simple-interned-tag;
                         };
-                        print("rtag \{rtag} < \{ltag} = \{rtag < ltag}\n");
                      };
                      scan-ri = ri;
-                     print("rtag \{rtag} == \{ltag} = \{rtag == ltag}\n");
                      while scan-ri<rconjugate.length and rtag.primary==ltag.primary {
                         this-result-ok = this-result-ok or can-unify(lc,rc);
-                        print("Can unify \{lc} x \{rc} = \{can-unify(lc,rc)}\n");
                         scan-ri = scan-ri + 1;
                         if scan-ri < rconjugate.length {
                            rc = rconjugate[scan-ri];
                            rtag = rc.simple-interned-tag;
                         };
-                        print("rtag \{rtag} == \{ltag} = \{rtag == ltag}\n");
                      };
                   );
-                  if not this-result-ok then print("Reject \{lc} x \{rconjugate} scan \{scan-ri}\n");
                   result = result and this-result-ok;
                );
                _ => result = result and can-unify(lc,pt);
@@ -6082,7 +6069,6 @@ let can-unify(fpt: Type, pt: Type): Bool = (
 
       _ => false;
    };
-   print("Can Unify\n\t\{fpt}\n\t\{pt}\n = \{return}\n");
    return
 );
 
@@ -6193,7 +6179,7 @@ let interned-tag-ffi = intern-type-tag(c"FFI");
 let interned-tag-type = intern-type-tag(c"Type");
 let interned-tag-typed-macro = intern-type-tag(c"TypedMacro");
 let interned-tag-cffi = intern-type-tag(c"C-FFI");
-let interned-tag-field = intern-type-tag(c"extern");
+let interned-tag-field = intern-type-tag(c"Field::");
 let interned-tag-unsafe = intern-type-tag(c"Unsafe");
 let interned-tag-never = intern-type-tag(c"Never");
 let interned-tag-u64 = intern-type-tag(c"U64");
@@ -11730,7 +11716,6 @@ let std-c-type-of-integer(i: String): Type = (
 );
 
 let c-frontend(fp: CString): Nil = (
-   print("Parse C \{fp}\n");
    # mktemp modifies this buffer, so it can't be a string constant
    # string concatenation is used to create a dynamic string
    let tmpfile = c"/tmp/lm.tmp.XXXXXX" + c"";
@@ -11845,10 +11830,6 @@ let std-c-parse(tokens: List<Token>): Nil = (
       let original-tokens = tokens;
       tokens = std-c-parse-external-declaration(tokens);
       if is(tokens, original-tokens) {
-         print("Remaining Tokens:\n");
-         for t in tokens {
-            print("Token \{t.key}\n");
-         };
          fail("Expected token '\{head(tokens).key}' at \{tokens.formatted-location}\n");
       };
    };
@@ -11929,10 +11910,6 @@ let std-c-can-take(tokens: List<Token>, cls: String): Bool = (
 let std-c-take-expect(tokens: List<Token>, cls: String): List<Token> = (
    if non-zero(tokens) and std-c-has-class(head(tokens).skey, cls) then tail(tokens)
    else (
-      print("Fail Take Expect\n");
-      for t in tokens {
-         print("Token \{t.key}\n");
-      };
       print("Expected token [\{cls}] at \{tokens.formatted-location}\n");
       exit(1); tokens
    );
@@ -12002,7 +11979,6 @@ let std-c-parse-function-definition(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 );
 
 let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   print("Parse Declaration\n");
    let declaration-specifiers = std-c-parse-declaration-specifiers(tokens);
    if declaration-specifiers.first.is-some {
       tokens = declaration-specifiers.second;
@@ -12010,15 +11986,12 @@ let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>
       let attr = std-c-parse-attribute(tokens); tokens = attr.second;
       let tt = std-c-type-of-specifiers(declaration-specifiers.first.get-or-panic).first;
       let name = std-c-name-of-declarator( init-declarator-list.first.get-or( CList(close([] : List<CTerm>)) ) ).first;
-      print("Maybe Bind \{name.into(type(String))} : \{tt}\n");
       if tt <: type-c-typedef and non-zero(name) {
-         print("Bind \{name.into(type(String))}\n");
          std-c-typedef-name-index = std-c-typedef-name-index.bind(name.into(type(String)), true);
       };
       tokens = std-c-take-expect(tokens, ";");
       Tuple( Some(CBinaryOp("Declaration", close(declaration-specifiers.first.get-or-panic), close(CMaybe(close(init-declarator-list.first))) )), tokens )
    } else {
-      print("Parse Declaration not specifiers\n");
       let ad = std-c-parse-static-assert-declaration(tokens); tokens = ad.second;
       tokens = std-c-take-maybe(tokens, ";");
       Tuple( ad.first, tokens )
@@ -12121,7 +12094,6 @@ let std-c-parse-init-declarator(tokens: List<Token>): Tuple<Maybe<CTerm>,List<To
 );
 
 let std-c-parse-static-assert-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   print("Parse Static Assert Declaration\n");
    let no = (None : Maybe<CTerm>)();
    if std-c-can-take(tokens, "_Static_assert") {
       let op = head(tokens).skey;
@@ -12377,7 +12349,6 @@ let std-c-parse-struct-declaration-list(tokens: List<Token>): Tuple<Maybe<CTerm>
 );
 
 let std-c-parse-struct-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   print("Parse Struct Declaration\n");
    let sql = std-c-parse-specifier-qualifier-list(tokens);
    if sql.first.is-some {
       tokens = sql.second;
@@ -12483,10 +12454,8 @@ std-c-typedef-name-index = std-c-typedef-name-index.bind("__builtin_va_list", tr
 let std-c-parse-typedef-name(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = (None : Maybe<CTerm>)();
    if non-zero(tokens) and std-c-typedef-name-index.has-key(head(tokens).skey) {
-      print("Found type name \{head(tokens).skey}\n");
       Tuple( Some(CType1(head(tokens).skey)), tail(tokens) )
    } else {
-      print("Cannot find type name \{head(tokens).skey}\n");
       Tuple( no, tokens )
    };
 );
@@ -13112,7 +13081,6 @@ let std-c-parse-designation(tokens: List<Token>): Tuple<Maybe<List<CTerm>>,List<
 );
 
 let std-c-parse-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   print("Parse Statement\n");
    let attr = std-c-parse-attribute(tokens); tokens = attr.second;
    let e = std-c-parse-jump-statement(tokens);
    if e.first.is-none { e = std-c-parse-compound-statement(tokens); };
@@ -13128,7 +13096,6 @@ let std-c-parse-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> 
 );
 
 let std-c-parse-expression-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   print("Parse Expression Statement\n");
    let e = std-c-parse-expression(tokens);
    if e.first.is-some { e.second = std-c-take-expect(e.second, ";"); };
    e;
@@ -13192,7 +13159,6 @@ let std-c-parse-selection-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 );
 
 let std-c-parse-iteration-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   print("Parse Iteration Statement\n");
    let no = (None : Maybe<CTerm>)();
    if std-c-can-take(tokens, "while") {
       let op = "c::while"; tokens = tail(tokens);
@@ -13236,7 +13202,6 @@ let std-c-parse-iteration-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,Lis
 );
 
 let std-c-parse-jump-statement(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
-   print("Parse Jump Statement\n");
    let no = (None : Maybe<CTerm>)();
    if std-c-can-take(tokens, "goto") {
       let op = intern(c"c::goto"); tokens = tail(tokens);
@@ -13368,7 +13333,6 @@ let std-c-tokenize-string(file-path: String, text: String): List<Token> = (
 
    let internal-tokens = [] : List<Token>;
    for t in tokens {
-      print("Token \{t}\n");
       internal-tokens = cons( mk-token(t), internal-tokens );
    };
 
@@ -13394,7 +13358,6 @@ import PLUGINS/FRONTEND/LSTS/lsts-parse.lsts;
 import PLUGINS/FRONTEND/LSTS/mk-lsts-token.lsts;
 
 let lsts-frontend(fp: CString): Nil = (
-   print("Parse LSTS \{fp}\n");
    lsts-parse(lsts-tokenize(fp));
 );
 register-frontend(c".lsts", lsts-frontend);
