@@ -105,7 +105,6 @@ let std-c-tokenize-string(file-path: String, text: String): List<Token> = (
 
    let internal-tokens = [] : List<Token>;
    for t in tokens {
-      print("Token \{t}\n");
       internal-tokens = cons( mk-token(t), internal-tokens );
    };
 
