@@ -16,7 +16,7 @@ let $"=="(tti1: TypeTagIntern, tti2: TypeTagIntern): Bool = (
 );
 
 let $"<"(tti1: TypeTagIntern, tti2: TypeTagIntern): Bool = (
-   max(tti1.first, tti1.second) < max(tti2.first, tti2.second)
+   tti1.primary < tti.primary
 );
 
 let intern-type-tag(tag: CString): TypeTagIntern = (

@@ -78,7 +78,6 @@ let can-unify(fpt: Type, pt: Type): Bool = (
                         }
                      };
                   );
-                  if not this-result-ok then print("Fail ground unification \{lc} x \{rconjugate}\n");
                   result = result and this-result-ok;
                );
                _ => result = result and can-unify(lc,pt);
@@ -163,6 +162,5 @@ let can-unify(fpt: Type, pt: Type): Bool = (
 
       _ => false;
    };
-   print("Can Unify:\t\{fpt}\t\{pt}\n\t\{return}\n");
    return
 );
