@@ -6182,6 +6182,7 @@ let interned-tag-cffi = intern-type-tag(c"C-FFI");
 let interned-tag-field = intern-type-tag(c"Field::");
 let interned-tag-unsafe = intern-type-tag(c"Unsafe");
 let interned-tag-never = intern-type-tag(c"Never");
+let interned-tag-char = intern-type-tag(c"char");
 let interned-tag-u64 = intern-type-tag(c"U64");
 let interned-tag-u32 = intern-type-tag(c"U32");
 let interned-tag-u16 = intern-type-tag(c"U16");
@@ -6191,6 +6192,7 @@ let interned-tag-i32 = intern-type-tag(c"I32");
 let interned-tag-i16 = intern-type-tag(c"I16");
 let interned-tag-i8 = intern-type-tag(c"I8");
 let interned-tag-f64 = intern-type-tag(c"F64");
+let interned-tag-int = intern-type-tag(c"int");
 let interned-tag-cstring = intern-type-tag(c"CString");
 let interned-tag-file = intern-type-tag(c"File");
 let interned-tag-io-file = intern-type-tag(c"IO::File");
@@ -10376,6 +10378,7 @@ let std-c-compile-expr(ctx: FContext, t: AST, is-stmt: Bool): Fragment = (
          let tt = typeof-term(t);
          if tt.is-t(interned-tag-l,0) then mk-expression(val)
          else if tt.is-t(interned-tag-cstring,0) then mk-expression(val.escape-as-cstring)
+         else if tt.slot(interned-tag-array,2).l1.slot(interned-tag-c,1).l1.is-t(interned-tag-char,0) then mk-expression(val.escape-as-cstring)
          else if tt.is-t(interned-tag-regex,0) {
             let rgx-id = uuid();
             assemble-header-section = assemble-header-section +
@@ -11030,6 +11033,8 @@ let std-c-mangle-type-internal-internal(tt: Type, blame: AST): S = (
       );
       TGround{tag:interned-tag-sized, parameters:[_..]} => SNil;
       TGround{tag:interned-tag-type, parameters:[_..]} => SAtom(c"int");
+      TGround{tag:interned-tag-int, parameters:[_..]} => SAtom(c"int");
+      TGround{tag:interned-tag-regex, parameters:[_..]} => SAtom(c"regex_t");
       TGround{tag=tag, parameters=parameters} => (
          let r = mangle-identifier(untern(tag));
          if parameters.length > 0 {
