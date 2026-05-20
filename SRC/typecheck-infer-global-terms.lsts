@@ -36,7 +36,7 @@ let infer-global-terms(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
          if not(global-is-seen(k.key, ktd)) {
             mark-global-as-seen(k.key, ktd, ta);
             tctx = tctx.ascript(term, ktd);
-            (tctx, _) = tctx.maybe-apply-callable(c"mov", t2(c"Cons",ktd.without-phi,ktd.without-phi), term);
+            (tctx, _) = tctx.maybe-apply-callable(c"mov", t2(interned-tag-cons,ktd.without-phi,ktd.without-phi), term);
          };
       );
       _ => (
@@ -71,7 +71,7 @@ let infer-global-context-prim(term: AST): AST = (
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
          if k.key.has-prefix(c"primitive::") then {
-            let ft = t2(c"Arrow", typeof-lhs(lhs), return-type.without-modifiers).without-phi-keep-state && misc-tt;
+            let ft = t2(interned-tag-arrow, typeof-lhs(lhs), return-type.without-modifiers).without-phi-keep-state && misc-tt;
             if not(global-is-seen(k.key, ft)) {
                mark-global-as-seen(k.key, ft, misc-tt);
                Some(mk-tctx()).ascript(term, ft);
@@ -118,7 +118,7 @@ let infer-global-macro(term: AST): Nil = (
          for s in seq { infer-global-macro(s) };
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
-         if misc-tt.is-t(c"TypedMacro",0) then bind-new-macro(k.key, frhs)
+         if misc-tt.is-t(interned-tag-typed-macro,0) then bind-new-macro(k.key, frhs)
       );
       _ => ();
    };
@@ -131,9 +131,9 @@ let infer-global-context(term: AST): Nil = (
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
          if k.key.has-prefix(c"primitive::") then ()
-         else if misc-tt.is-t(c"TypedMacro",0) then ()
+         else if misc-tt.is-t(interned-tag-typed-macro,0) then ()
          else {
-            let ft = t2(c"Arrow", typeof-lhs(lhs), return-type.rewrite-type-alias.expand-implied-phi.without-modifiers).without-phi-keep-state && misc-tt;
+            let ft = t2(interned-tag-arrow, typeof-lhs(lhs), return-type.rewrite-type-alias.expand-implied-phi.without-modifiers).without-phi-keep-state && misc-tt;
             if not(global-is-seen(k.key, ft)) {
                mark-global-as-seen(k.key, ft, misc-tt);
                Some(mk-tctx()).ascript(term, ft);

@@ -20,8 +20,8 @@ let smart-token-path-index = {} : Hashtable<U64,String>;
 
 let .location(t: String): SourceLocation = (
    let file-path = smart-token-path-index.lookup( t.data as U64, "[Unknown File]" );
-   let line = 1_u64;
-   let column = 1_u64;
+   let line = 1_u32;
+   let column = 1_u32;
    let i = 0_sz;
    while i < t.start-offset {
       if t.data[i] == 10_u8 then {

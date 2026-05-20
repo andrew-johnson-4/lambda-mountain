@@ -1,8 +1,8 @@
 
 let std-c-is-ctype(tt: Type): Bool = (
    match tt {
-      TGround{tag:c"C"} => true;
-      TGround{tag:c"Array", parameters:[_.. base-type..]} => std-c-is-ctype(base-type);
+      TGround{tag:interned-tag-c} => true;
+      TGround{tag:interned-tag-array, parameters:[_.. base-type..]} => std-c-is-ctype(base-type);
       TAnd{ conjugate=conjugate } => (
          let result = false;
          for c in conjugate { result = result or std-c-is-ctype(c) };

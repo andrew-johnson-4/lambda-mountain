@@ -354,6 +354,11 @@ let std-c-name-of-declarator(declarator: CTerm): Tuple<String,Type> = (
    match declarator {
       CUnaryPrefix{op:"Declarator(", arg:CIdentifier{name=value}} => (name, ta);
       CBinaryOp{op:"Declarator(", arg1:CIdentifier{name=value}} => (name, ta);
+      CList{value:[CIdentifier{name=value}..]} => (name, ta);
+      CList{value:[CBinaryOp{op:"Declarator*", arg2:CIdentifier{name=value}}..]} => (name, ta);
+      CList{value:[CBinaryOp{op:"Declarator*", arg2:CBinaryOp{op:"Declarator(", arg1:CIdentifier{name=value}}}..]} => (name, ta);
+      CList{value:[CBinaryOp{op:"Declarator(", arg1:CIdentifier{name=value}}..]} => (name, ta);
+      CList{value:[CBinaryOp{op:"Declarator(", arg1:CBinaryOp{op:"Declarator*", arg2:CIdentifier{name=value}}}..]} => (name, ta);
       _ => fail("Unsupported C Declarator:\n\{declarator}\n");
    };
 );
@@ -609,15 +614,15 @@ let std-c-decorate-pointer(tt: Type, ptr: CTerm): Type = (
 let std-c-type-of-integer(i: String): Type = (
    if i.has-prefix("-") {
       let n = to-u64(tail(i).into(type(CString)));
-      if n <= 128 then type-c-uint8 else
-      if n <= 32768 then type-c-uint16 else
-      if n <= 2147483648 then type-c-uint32 else
+      if n <= 128_u64 then type-c-uint8 else
+      if n <= 32768_u64 then type-c-uint16 else
+      if n <= 2147483648_u64 then type-c-uint32 else
       type-c-uint64
    } else {
       let n = to-u64(i.into(type(CString)));
-      if n <= 255 then type-c-int8 else
-      if n <= 65535 then type-c-int16 else
-      if n <= 4294967295 then type-c-int32 else
+      if n <= 255_u64 then type-c-int8 else
+      if n <= 65535_u64 then type-c-int16 else
+      if n <= 4294967295_u64 then type-c-int32 else
       type-c-int64
    };
 );

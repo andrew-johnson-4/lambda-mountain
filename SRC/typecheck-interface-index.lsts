@@ -1,9 +1,9 @@
 
-let interface-index = mk-set(type((CString,U64)));
+let interface-index = mk-set(type((U32,U32)));
 
-let interface-shape-index = {} : Hashtable<(CString,U64),List<(CString,Type,Type)>>;
+let interface-shape-index = {} : Hashtable<(U32,U32),List<(CString,Type,Type)>>;
 
-let interface-self-index = {} : Hashtable<(CString,U64),(Type,Type)>;
+let interface-self-index = {} : Hashtable<(U32,U32),(Type,Type)>;
 
 let interface-implementors = [] : List<(Type,Type,AST)>;
 

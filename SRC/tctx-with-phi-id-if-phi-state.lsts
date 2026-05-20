@@ -1,9 +1,9 @@
 
 let .with-phi-id-if-phi-state(tctx: TypeContext?, tt: Type, blame: AST): (TypeContext?, Type) = (
-   if tt.is-t(c"Phi::State",1) {
+   if tt.is-t(interned-tag-phi-state,1) {
       let phi-id = iuid();
-      tctx = tctx.bind-phi(phi-id, tt.slot(c"Phi::State",1).l1, blame);
-      tt = tt && t1(c"Phi::Id",ti(phi-id));
+      tctx = tctx.bind-phi(phi-id, tt.slot(interned-tag-phi-state,1).l1, blame);
+      tt = tt && t1(interned-tag-phi-id,ti(phi-id));
    };
    (tctx, tt)
 );

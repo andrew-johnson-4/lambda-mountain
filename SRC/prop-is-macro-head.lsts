@@ -1,5 +1,5 @@
 
-let is-macro-head(s: CString, arity: U64): Bool = (
+let is-macro-head(s: CString, arity: U32): Bool = (
    let macros = preprocess-macros;
    let found = false;
    while non-zero(macros) { match macros {

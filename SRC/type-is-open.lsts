@@ -8,8 +8,8 @@ let .is-open(tt: Type): Bool = (
          for c in conjugate { result = result or c.is-open };
          result
       );
-      TGround { tag:c"Array", parameters:[_.. TAny{}..] } => false;
-      TGround { tag:c"Array", parameters:[_.. base-type..] } => base-type.is-open;
+      TGround { tag:interned-tag-array, parameters:[_.. TAny{}..] } => false;
+      TGround { tag:interned-tag-array, parameters:[_.. base-type..] } => base-type.is-open;
       TGround { parameters=parameters } => (
          let is-open = false;
          for p in parameters { is-open = is-open or p.is-open; };

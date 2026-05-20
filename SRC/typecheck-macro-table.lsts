@@ -29,7 +29,7 @@ let bind-new-macro(mname: CString, mterm: AST): Nil = (
 let param-types-of-macro(mterm: AST): Type = (
    match mterm {
       Abs{lhs=lhs} => param-types-of-macro(lhs);
-      App{ rst=left, right:App{left:Lit{key:c":"}, right:App{right:AType{tt=tt}}}  } => t2(c"Cons",param-types-of-macro(rst),tt);
+      App{ rst=left, right:App{left:Lit{key:c":"}, right:App{right:AType{tt=tt}}}  } => t2(interned-tag-cons,param-types-of-macro(rst),tt);
       App{left:Lit{key:c":"}, right:App{right:AType{tt=tt}}} => tt;
       # NOTE: there is no case for a Nil value here
       # normally a nullary function application will have no arguments
@@ -50,7 +50,7 @@ let param-types-of-macro(mterm: AST): Type = (
 # T+... => yes
 let macro-type-peep-holes(mtype: Type): Type = (
    match mtype {
-      TGround{tag:c"Cons", parameters:[p2.. p1..]} => t2(c"Cons",macro-type-peep-holes(p1),macro-type-peep-holes(p2));
+      TGround{tag:interned-tag-cons, parameters:[p2.. p1..]} => t2(interned-tag-cons,macro-type-peep-holes(p1),macro-type-peep-holes(p2));
       TGround{} => t0(c"Yes");
       TAnd{conjugate=conjugate} => (
          let peep = ta;

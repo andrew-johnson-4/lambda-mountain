@@ -11,7 +11,7 @@ let .as-return-hint(tt: Type): Type = (
          else if result.length==1 then result[0]
          else tand(result)
       );
-      TGround { tag:c"TailPosition", parameters:[] } => ta;
+      TGround { tag:interned-tag-tail-position, parameters:[] } => ta;
       TVar {} => ta;
       _ => tt;
    }

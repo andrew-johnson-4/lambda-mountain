@@ -1,8 +1,8 @@
 
 let type-ast-inserts = mk-vector(type(AST));
-let complex-type-index = mk-set(type((CString,U64)));
+let complex-type-index = mk-set(type((U32,U32)));
 
-let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U64, case-number: U64): Nil = (
+let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U32, case-number: U32): Nil = (
    let mangled-field-name = case-number.into(type(CString)) + c"_" + field-name;
    let ctx = (None : Maybe<TypeContext>)();
    ctx = ctx.bind( c"base-type", base-type, denormalize(base-type), mk-eof() );
@@ -14,9 +14,9 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ctx = ctx.bind( c"primitive::field-set-indirect", ta, ta, mk-var(c"set."+field-name) );
    let global-tctx = Some(mk-tctx());
    let field-get = substitute(ctx, global-tctx.find-callable(c"primitive::field-get", base-type, blame).blame-or-zero);
-   let field-set = substitute(ctx, global-tctx.find-callable(c"primitive::field-set", t2(c"Cons", base-type, field-type), blame).blame-or-zero);
-   let field-get-indirect = substitute(ctx, global-tctx.find-callable(c"primitive::field-get-indirect", t2(c"Array",base-type,ta), blame).blame-or-zero);
-   let field-set-indirect = substitute(ctx, global-tctx.find-callable(c"primitive::field-set-indirect", t2(c"Cons", t2(c"Array",base-type,ta), field-type), blame).blame-or-zero);
+   let field-set = substitute(ctx, global-tctx.find-callable(c"primitive::field-set", t2(interned-tag-cons, base-type, field-type), blame).blame-or-zero);
+   let field-get-indirect = substitute(ctx, global-tctx.find-callable(c"primitive::field-get-indirect", t2(interned-tag-array,base-type,ta), blame).blame-or-zero);
+   let field-set-indirect = substitute(ctx, global-tctx.find-callable(c"primitive::field-set-indirect", t2(interned-tag-cons, t2(interned-tag-array,base-type,ta), field-type), blame).blame-or-zero);
 
    ctx = (None : Maybe<TypeContext>)();
    ctx = ctx.bind( c"base-type", base-type, denormalize(base-type), mk-eof() );
@@ -33,9 +33,9 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ()
 );
 
-let phi-parameters-index = {} : Hashtable<(CString,U64),Type>;
+let phi-parameters-index = {} : Hashtable<(U32,U32),Type>;
 
-let phi-parameters(tag: CString, ps: U64): Type = phi-parameters-index.lookup((tag,ps),ta);
+let phi-parameters(tag: U32, ps: U32): Type = phi-parameters-index.lookup((tag,ps),ta);
 
 let infer-type-definition(term: AST): Nil = (
    match term { Typedef{} => (); };
@@ -58,8 +58,8 @@ let infer-type-definition(term: AST): Nil = (
       add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
       interface-implementors = cons( (lhs-type, rhs-type, term), interface-implementors );
    };
-   if misc-type.is-t(c"Phi",0) {
-      let common-tags-length = 0_u64;
+   if misc-type.is-t(interned-tag-phi,0) {
+      let common-tags-length = 0_u32;
       let common-parameters = mk-vector(type(Type));
       for Tuple{ case-tag1=first, case-fields=second } in cases {
          if case-tag1==c"" {
@@ -72,20 +72,21 @@ let infer-type-definition(term: AST): Nil = (
             for Tuple{field-name2=first, field-type=second} in case-fields {
                case-parameters = case-parameters.push(field-type);
             };
-            let case-name = lhs-type.simple-tag+c"::"+case-tag1;
-            phi-type-index = phi-type-index.bind((case-name, common-tags-length + case-fields.length));
-            phi-parameters-index = phi-parameters-index.bind((case-name, common-tags-length + case-fields.length), ts(case-name,case-parameters));
+            let case-name = lhs-type.simple-tag + c"::" + case-tag1;
+            let case-index = intern-type-tag-single(case-name);
+            phi-type-index = phi-type-index.bind((case-index, common-tags-length + case-fields.length));
+            phi-parameters-index = phi-parameters-index.bind((case-index, common-tags-length + case-fields.length), ts(case-name,case-parameters));
          }
       }
    } else {
-      add-quick-prop(lhs-type, lhs-type, t1(c"Sized",lhs-type));
-      add-weaken-quick-prop(lhs-type, t1(c"Sized",ta), t1(c"Sized",lhs-type));
+      add-quick-prop(lhs-type, lhs-type, t1(interned-tag-sized,lhs-type));
+      add-weaken-quick-prop(lhs-type, t1(interned-tag-sized,ta), t1(interned-tag-sized,lhs-type));
 
-      let case-number = 0_u64;
+      let case-number = 0_u32;
       for Tuple{ case-tag2=first, case-fields=second } in cases {
          complex-type-index = complex-type-index.bind( lhs-type.ground-tag-and-arity );
          datatype-index = datatype-index.bind( lhs-type.ground-tag-and-arity );
-         let field-ordinal = 0_u64;
+         let field-ordinal = 0_u32;
          for Tuple{ field-name3=first, field-type=second } in case-fields {
             let guard = lhs-type && (if non-zero(case-tag2) then t0(c"Tag::"+case-tag2) else ta);
             let field-wrapped-type = t1(c"Field::"+field-name3, field-type);
@@ -117,7 +118,7 @@ let infer-type-definition(term: AST): Nil = (
          add-quick-prop(lhs-type, lhs-type, tag-case-number);
          add-weaken-quick-prop(lhs-type, lhs-type, tag-case-number);
       };
-      let case-index = 0_u64;
+      let case-index = 0_u32;
       for Tuple{ case-tag4=first, case-fields=second } in cases {
          if case-tag4!=c"" {
             let o-case-fields = [] : List<(CString,Type)>;
@@ -135,9 +136,9 @@ let infer-type-definition(term: AST): Nil = (
    };
 );
 
-let type-constructor-tag-ordinal-index = {} : Hashtable<(CString,U64,CString),U64>;
+let type-constructor-tag-ordinal-index = {} : Hashtable<(U32,U32,CString),U32>;
 
-let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, common-fields: List<(CString,Type)>, case-fields: List<(CString,Type)>, blame: AST, has-tag-case: Bool): Nil = (
+let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number: U32, common-fields: List<(CString,Type)>, case-fields: List<(CString,Type)>, blame: AST, has-tag-case: Bool): Nil = (
    (let base-tag, let base-arity) = base-type.ground-tag-and-arity;
    type-constructor-tag-ordinal-index = type-constructor-tag-ordinal-index.bind( (base-tag,base-arity,case-tag), case-number );
 

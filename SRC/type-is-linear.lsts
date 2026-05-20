@@ -1,2 +1,2 @@
 
-let .is-linear(tt: Type): Bool = non-zero(tt.slot(c"Phi::Id",1));
+let .is-linear(tt: Type): Bool = non-zero(tt.slot(interned-tag-phi-id,1));

@@ -2,6 +2,7 @@
 let .into(b: Bool, tt: Type<String>): String = if b then "true" else "false";
 let .into(i: U8, tt: Type<String>): String = (i as U64).into(type(String));
 let .into(i: USize, tt: Type<String>): String = (i as U64).into(type(String));
+let .into(i: U32, tt: Type<String>): String = (i as U64).into(type(String));
 
 let .into(i: I64, tt: Type<String>): String = (
    let od = mk-owned-data(type(U8), 20_sz);
@@ -55,6 +56,8 @@ let .into(i: U64, tt: Type<String>): String = (
    };
    String(0 as USize, cs-length, od)
 );
+
+let .to-hex(i: U32): String = (i as U64).to-hex;
 
 let .to-hex(i: U64): String = (
    let buff = mk-vector(type(U8), 17);

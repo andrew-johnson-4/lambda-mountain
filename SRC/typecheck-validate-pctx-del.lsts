@@ -1,5 +1,5 @@
 
-let validate-pctx-release(original-tree: PBTree<U64,PhiContextRow>, tree: PBTree<U64,PhiContextRow>, ps-seen: Set<U64>): Set<U64> = (
+let validate-pctx-release(original-tree: PBTree<U32,PhiContextRow>, tree: PBTree<U32,PhiContextRow>, ps-seen: Set<U32>): Set<U32> = (
    match tree {
       PBLeaf {} => ps-seen;
       PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
@@ -33,5 +33,5 @@ let validate-pctx-release(original-tree: PBTree<U64,PhiContextRow>, tree: PBTree
 
 
 let validate-pctx-release(tctx: TypeContext?): Nil = (
-   validate-pctx-release(tctx.get-or(mk-tctx()).pctx, tctx.get-or(mk-tctx()).pctx, mk-set(type(U64))); ()
+   validate-pctx-release(tctx.get-or(mk-tctx()).pctx, tctx.get-or(mk-tctx()).pctx, mk-set(type(U32))); ()
 );

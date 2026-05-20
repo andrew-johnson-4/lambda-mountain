@@ -1,5 +1,5 @@
 
-let .into(tree: PBTree<U64,PhiContextRow>, tt: Type<String>): String = (
+let .into(tree: PBTree<U32,PhiContextRow>, tt: Type<String>): String = (
    match tree {
       PBLeaf {} => "";
       PBNode1 { k11=k1, v11=v1, left=left, right=right } => (

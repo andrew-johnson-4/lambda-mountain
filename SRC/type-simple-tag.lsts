@@ -1,7 +1,14 @@
 
 let .simple-tag(tt: Type): CString = (
    match tt {
-      TGround { tag=tag } => tag;
+      TGround { tag=tag } => untern(tag);
       _ => c"";
+   }
+);
+
+let .simple-interned-tag(tt: Type): TypeTagIntern = (
+   match tt {
+      TGround { tag=tag } => tag;
+      _ => TypeTagIntern(0_u32,0_u32);
    }
 );

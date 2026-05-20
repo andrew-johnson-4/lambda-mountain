@@ -17,10 +17,10 @@ let .without-phi-keep-id(tt: Type): Type = (
          else if result.length==1 then result[0]
          else tand(result)
       );
-      TGround { tag:c"Arrow", parameters:[rng..dom..] } => t2(c"Arrow",dom.without-phi-keep-state,rng.without-phi-keep-state);
-      TGround { tag:c"Phi::Id", parameters:[_..] } => tt;
-      TGround { tag:c"Phi::Transition", parameters:[_.._..] } => tt;
-      TGround { tag:c"Phi::State", parameters:[_..] } => ta;
+      TGround { tag:interned-tag-arrow, parameters:[rng..dom..] } => t2(interned-tag-arrow,dom.without-phi-keep-state,rng.without-phi-keep-state);
+      TGround { tag:interned-tag-phi-id, parameters:[_..] } => tt;
+      TGround { tag:interned-tag-phi-transition, parameters:[_.._..] } => tt;
+      TGround { tag:interned-tag-phi-state, parameters:[_..] } => ta;
       TGround { tag=tag, parameters=parameters } => ts(tag, parameters.without-phi);
       _ => tt;
    }

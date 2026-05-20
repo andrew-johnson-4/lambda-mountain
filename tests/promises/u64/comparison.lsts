@@ -6,6 +6,6 @@ assert( cmp(1_u64, 2_u64) == LessThan );
 assert( cmp(2_u64, 1_u64) == GreaterThan );
 assert( safe-alloc-block-count == 0 );
 
-assert( 1.to-hex == "1000000000000000" );
-assert( 10.to-hex == "a000000000000000" );
+assert( 1_u64.to-hex == "1000000000000000" );
+assert( 10_u64.to-hex == "a000000000000000" );
 assert( safe-alloc-block-count == 0 );

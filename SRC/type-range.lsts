@@ -6,8 +6,8 @@ let .range(tt: Type): Type = (
          for c in conjugate { result = result || c.range };
          result
       );
-      TGround { tag:c"Arrow", parameters:[rng.. dom..] } => rng;
-      TGround { tag:c"Array", parameters:[_.. array-base..] } => array-base.range;
+      TGround { tag:interned-tag-arrow, parameters:[rng.. dom..] } => rng;
+      TGround { tag:interned-tag-array, parameters:[_.. array-base..] } => array-base.range;
       _ => ta;
    }
 );

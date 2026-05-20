@@ -1,14 +1,14 @@
 
-let type-alias-index = {} : Hashtable<Tuple<CString,U64>,Tuple<Type,Type>>;
+let type-alias-index = {} : Hashtable<Tuple<U32,U32>,Tuple<Type,Type>>;
 
 let add-type-alias(lt: Type, rt: Type): Nil = (
    type-alias-index = type-alias-index.bind( lt.ground-tag-and-arity, ( lt, rt ) );
 );
 let .rewrite-type-alias(lt: Type): Type = (
    match lt {
-      TGround{tag:c"Phi::State",parameters:[_..]} => lt;
-      TGround{tag:c"Phi::Id",parameters:[_..]} => lt;
-      TGround{tag:c"Phi::Transition",parameters:[_.._..]} => lt;
+      TGround{tag:interned-tag-phi-state,parameters:[_..]} => lt;
+      TGround{tag:interned-tag-phi-id,parameters:[_..]} => lt;
+      TGround{tag:interned-tag-phi-transition,parameters:[_.._..]} => lt;
       TGround{ tag=tag, parameters=parameters } => (
          let lt-rt = type-alias-index.lookup( lt.ground-tag-and-arity, ( ta, ta ) );
          if non-zero(lt-rt.first) {
@@ -49,7 +49,7 @@ let .rewrite-type-alias(lt: Vector<Type>): Vector<Type> = (
    next
 );
 
-let opaque-type-alias-index = {} : Hashtable<Tuple<CString,U64>,Tuple<Type,Type>>;
+let opaque-type-alias-index = {} : Hashtable<Tuple<U32,U32>,Tuple<Type,Type>>;
 
 let add-opaque-type-alias(lt: Type, rt: Type): Nil = (
    opaque-type-alias-index = opaque-type-alias-index.bind( lt.ground-tag-and-arity, Tuple( lt, rt ) );

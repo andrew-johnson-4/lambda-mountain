@@ -1,5 +1,5 @@
 
-let .simple-id(tt: Type): U64 = (
+let .simple-id(tt: Type): U32 = (
    match tt {
       TId { id=id } => id;
       _ => 0;

@@ -1,6 +1,6 @@
 
 let std-c-mangle-declaration(tt: Type, blame: AST): Tuple<S,S> = (
-   let is-flexible-array-member = tt.is-t(c"FlexibleArrayMember",0);
+   let is-flexible-array-member = tt.is-t(interned-tag-flexible-array-member,0);
    let o-tt-1 = tt;
    let o-tt-2 = o-tt-1.normalize;
    let o-tt-3 = o-tt-2.rewrite-opaque-type-alias;
@@ -15,19 +15,19 @@ let std-c-mangle-declaration-internal(tt: Type, blame: AST): Tuple<S,S> = std-c-
 
 let std-c-mangle-declaration-internal(tt: Type, is-flexible-array-member: Bool, blame: AST): Tuple<S,S> = (
    match tt {
-      TGround{tag:c"Array", parameters:[ TGround{tag:c"CONST"}.. array-base.. ]} => (
+      TGround{tag:interned-tag-array, parameters:[ TGround{tag:interned-tag-CONST}.. array-base.. ]} => (
          let rest = std-c-mangle-declaration-internal(array-base, false, blame);
          ( rest.first, rest.second + SAtom(c"[]") )
       );
-      TGround{tag:c"Array", parameters:[ TGround{tag:c"C",parameters:[TGround{width1=tag}..]}.. array-base.. ]} => (
+      TGround{tag:interned-tag-array, parameters:[ TGround{tag:interned-tag-c,parameters:[TGround{width1=tag}..]}.. array-base.. ]} => (
          let rest = std-c-mangle-declaration-internal(array-base, false, blame);
-         ( rest.first, rest.second + SAtom(c"[") + SAtom(width1) + SAtom(c"]") )
+         ( rest.first, rest.second + SAtom(c"[") + SAtom(untern(width1)) + SAtom(c"]") )
       );
-      TGround{tag:c"Array", parameters:[ TGround{width2=tag}.. array-base.. ]} => (
+      TGround{tag:interned-tag-array, parameters:[ TGround{width2=tag}.. array-base.. ]} => (
          let rest = std-c-mangle-declaration-internal(array-base, false, blame);
-         ( rest.first, rest.second + SAtom(c"[") + SAtom(width2) + SAtom(c"]") )
+         ( rest.first, rest.second + SAtom(c"[") + SAtom(untern(width2)) + SAtom(c"]") )
       );
-      TGround{tag:c"Array", parameters:[ TAny{}.. array-base.. ]} => (
+      TGround{tag:interned-tag-array, parameters:[ TAny{}.. array-base.. ]} => (
          if is-flexible-array-member {
             let rest = std-c-mangle-declaration-internal(array-base, false, blame);
             ( rest.first, rest.second + SAtom(c"[]") )
@@ -35,7 +35,7 @@ let std-c-mangle-declaration-internal(tt: Type, is-flexible-array-member: Bool, 
             (std-c-mangle-type-internal(tt, blame), SNil());
          }
       );
-      TGround{tag:c"Arrow", parameters:[ rng.. dom.. ]} => (
+      TGround{tag:interned-tag-arrow, parameters:[ rng.. dom.. ]} => (
          let returns = std-c-mangle-type-internal(rng, blame);
          let accepts = std-c-mangle-type-internal(dom, blame);
          ( returns + SAtom(c"(*"),

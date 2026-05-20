@@ -1,0 +1,15 @@
+
+import SRC/unit-type-core.lsts;
+
+type-tag-intern-index = {} : Hashtable<CString,U32>;
+type-tag-intern-inverse-index = {} : Hashtable<U32,CString>;
+
+assert( intern-type-tag(c"A") == TypeTagIntern(1_u32,0_u32) );
+assert( intern-type-tag(c"A") == TypeTagIntern(1_u32,0_u32) );
+assert( intern-type-tag(c"B") == TypeTagIntern(2_u32,0_u32) );
+assert( intern-type-tag(c"C::D") == TypeTagIntern(3_u32,4_u32) );
+assert( intern-type-tag(c"C::E") == TypeTagIntern(3_u32,5_u32) );
+assert( intern-type-tag(c"C::") == TypeTagIntern(3_u32,0_u32) );
+assert( intern-type-tag(c"C::D") == intern-type-tag(c"C::") );
+assert( intern-type-tag(c"C::") == intern-type-tag(c"C::D") );
+assert( not intern-type-tag(c"C::D") == intern-type-tag(c"C::E") );

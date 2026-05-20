@@ -37,7 +37,7 @@ let mangle-identifier(kt: Type): S = (
       TAny{} => mangle-identifier(c"?");
       TVar{name=name} => mangle-identifier(name);
       TGround{tag=tag, parameters=parameters} => (
-         let r = mangle-identifier(tag);
+         let r = mangle-identifier(untern(tag));
          if parameters.length > 0 then r = r + mangle-identifier(c"<");
          let c-has-prev = false;
          for c in parameters {

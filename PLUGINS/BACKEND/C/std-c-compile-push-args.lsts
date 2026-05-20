@@ -3,8 +3,8 @@ let std-c-compile-push-args(ctx: FContext, args: AST): Fragment = (
    match args {
       ASTNil{} => mk-expression(c"");
       _ => (
-         match typeof-term(args).slot(c"Cons",2) {
-            TGround{tag:c"Cons", parameters:[p2..p1..]} => (
+         match typeof-term(args).slot(interned-tag-cons,2) {
+            TGround{tag:interned-tag-cons, parameters:[p2..p1..]} => (
                match args {
                   App{le=left, re=right} => (
                      let e1 = std-c-compile-push-args(ctx, le);

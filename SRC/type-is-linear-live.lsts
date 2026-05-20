@@ -6,8 +6,8 @@ let .is-linear-live(tt: Type): Bool = (
          for c in conjugate { return = return or c.is-linear-live };
          return
       );
-      TGround{tag:c"Linear",parameters:[TGround{tag:c"Phi::Moved",parameters:[]}..]} => false;
-      TGround{tag:c"Linear",parameters:[_..]} => true;
+      TGround{tag:interned-tag-linear,parameters:[TGround{tag:interned-tag-phi-moved,parameters:[]}..]} => false;
+      TGround{tag:interned-tag-linear,parameters:[_..]} => true;
       TGround{parameters=parameters} => (
          let return = false;
          for c in parameters { return = return or c.is-linear-live };

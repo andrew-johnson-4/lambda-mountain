@@ -1,6 +1,6 @@
 
-type SourceLocation = { filename: CString, line: U64, column: U64 };
-type Token = { key: CString, nonce: U64, location: SourceLocation };
+type SourceLocation = { filename: CString, line: U32, column: U32 };
+type Token = { key: CString, nonce: U32, location: SourceLocation };
 
 # This AST row is very fat, so we move it into an indirect data
 # TODO: do this optimization automatically or with a simple annotation

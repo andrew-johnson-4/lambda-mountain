@@ -168,7 +168,10 @@ let std-c-can-take(tokens: List<Token>, cls: String): Bool = (
 
 let std-c-take-expect(tokens: List<Token>, cls: String): List<Token> = (
    if non-zero(tokens) and std-c-has-class(head(tokens).skey, cls) then tail(tokens)
-   else (print("Expected token [\{cls}] at \{tokens.formatted-location}\n"); exit(1); tokens);
+   else (
+      print("Expected token [\{cls}] at \{tokens.formatted-location}\n");
+      exit(1); tokens
+   );
 );
 
 let std-c-take-maybe(tokens: List<Token>, cls: String): List<Token> = (
@@ -240,6 +243,11 @@ let std-c-parse-declaration(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>
       tokens = declaration-specifiers.second;
       let init-declarator-list = std-c-parse-init-declarator-list(tokens); tokens = init-declarator-list.second;
       let attr = std-c-parse-attribute(tokens); tokens = attr.second;
+      let tt = std-c-type-of-specifiers(declaration-specifiers.first.get-or-panic).first;
+      let name = std-c-name-of-declarator( init-declarator-list.first.get-or( CList(close([] : List<CTerm>)) ) ).first;
+      if tt <: type-c-typedef and non-zero(name) {
+         std-c-typedef-name-index = std-c-typedef-name-index.bind(name.into(type(String)), true);
+      };
       tokens = std-c-take-expect(tokens, ";");
       Tuple( Some(CBinaryOp("Declaration", close(declaration-specifiers.first.get-or-panic), close(CMaybe(close(init-declarator-list.first))) )), tokens )
    } else {
@@ -706,7 +714,9 @@ let std-c-parse-typedef-name(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token
    let no = (None : Maybe<CTerm>)();
    if non-zero(tokens) and std-c-typedef-name-index.has-key(head(tokens).skey) {
       Tuple( Some(CType1(head(tokens).skey)), tail(tokens) )
-   } else Tuple( no, tokens )
+   } else {
+      Tuple( no, tokens )
+   };
 );
 
 let std-c-parse-type-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (

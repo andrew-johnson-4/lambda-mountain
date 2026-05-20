@@ -1,7 +1,7 @@
 
 # All datatypes must be registered as such here
 
-let datatype-index = mk-set(type((CString,U64)));
+let datatype-index = mk-set(type((U32,U32)));
 
 let .is-datatype(tt: Type): Bool = (
    match tt {

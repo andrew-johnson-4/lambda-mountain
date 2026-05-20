@@ -1,21 +1,95 @@
 
+let interned-tag-arrow = intern-type-tag(c"Arrow");
+let interned-tag-array = intern-type-tag(c"Array");
+let interned-tag-cons = intern-type-tag(c"Cons");
+let interned-tag-prop = intern-type-tag(c"Prop");
+let interned-tag-cfragment = intern-type-tag(c"C-Fragment");
+let interned-tag-return-hint = intern-type-tag(c"ReturnHint");
+let interned-tag-phi-moved = intern-type-tag(c"Phi::Moved");
+let interned-tag-phi-live = intern-type-tag(c"Phi::Live");
+let interned-tag-linear = intern-type-tag(c"Linear");
+let interned-tag-string = intern-type-tag(c"String");
+let interned-tag-bool = intern-type-tag(c"Bool");
+let interned-tag-literal = intern-type-tag(c"Literal");
+let interned-tag-l = intern-type-tag(c"L");
+let interned-tag-hashtable = intern-type-tag(c"Hashtable");
+let interned-tag-phi = intern-type-tag(c"Phi");
+let interned-tag-CONST = intern-type-tag(c"CONST");
+let interned-tag-flexible-array-member = intern-type-tag(c"FlexibleArrayMember");
+let interned-tag-vector = intern-type-tag(c"Vector");
+let interned-tag-owned-data = intern-type-tag(c"OwnedData");
+let interned-tag-one-owned-data = intern-type-tag(c"OneOwnedData");
+let interned-tag-tag = intern-type-tag(c"Tag::");
+let interned-tag-phi-id = intern-type-tag(c"Phi::Id");
+let interned-tag-phi-transition = intern-type-tag(c"Phi::Transition");
+let interned-tag-phi-state = intern-type-tag(c"Phi::State");
+let interned-tag-must-use = intern-type-tag(c"MustUse");
+let interned-tag-must-not-move = intern-type-tag(c"MustNotMove");
+let interned-tag-must-not-fresh = intern-type-tag(c"MustNotFresh");
+let interned-tag-must-not-retain = intern-type-tag(c"MustNotRetain");
+let interned-tag-must-retain = intern-type-tag(c"MustRetain");
+let interned-tag-must-release = intern-type-tag(c"MustRelease");
+let interned-tag-must-release-after-call = intern-type-tag(c"MustReleaseAfterCall");
+let interned-tag-must-retain-on-call = intern-type-tag(c"MustRetainOnCall");
+let interned-tag-must-not-rewrite = intern-type-tag(c"MustNotRewrite");
+let interned-tag-vararg = intern-type-tag(c"...");
+let interned-tag-any = intern-type-tag(c"Any");
+let interned-tag-nil = intern-type-tag(c"Nil");
+let interned-tag-typedef = intern-type-tag(c"typedef");
+let interned-tag-tail-position = intern-type-tag(c"TailPosition");
+let interned-tag-const = intern-type-tag(c"const");
+let interned-tag-c = intern-type-tag(c"C");
+let interned-tag-global-variable = intern-type-tag(c"GlobalVariable");
+let interned-tag-local-variable = intern-type-tag(c"LocalVariable");
+let interned-tag-sized = intern-type-tag(c"Sized");
+let interned-tag-extern = intern-type-tag(c"extern");
+let interned-tag-blob = intern-type-tag(c"Blob");
+let interned-tag-ffi = intern-type-tag(c"FFI");
+let interned-tag-type = intern-type-tag(c"Type");
+let interned-tag-typed-macro = intern-type-tag(c"TypedMacro");
+let interned-tag-cffi = intern-type-tag(c"C-FFI");
+let interned-tag-field = intern-type-tag(c"Field::");
+let interned-tag-unsafe = intern-type-tag(c"Unsafe");
+let interned-tag-never = intern-type-tag(c"Never");
+let interned-tag-char = intern-type-tag(c"char");
+let interned-tag-u64 = intern-type-tag(c"U64");
+let interned-tag-u32 = intern-type-tag(c"U32");
+let interned-tag-u16 = intern-type-tag(c"U16");
+let interned-tag-u8 = intern-type-tag(c"U8");
+let interned-tag-i64 = intern-type-tag(c"I64");
+let interned-tag-i32 = intern-type-tag(c"I32");
+let interned-tag-i16 = intern-type-tag(c"I16");
+let interned-tag-i8 = intern-type-tag(c"I8");
+let interned-tag-f64 = intern-type-tag(c"F64");
+let interned-tag-int = intern-type-tag(c"int");
+let interned-tag-cstring = intern-type-tag(c"CString");
+let interned-tag-file = intern-type-tag(c"File");
+let interned-tag-io-file = intern-type-tag(c"IO::File");
+let interned-tag-pid = intern-type-tag(c"PID");
+let interned-tag-regex = intern-type-tag(c"Regex");
+let interned-tag-must-release-to-release = intern-type-tag(c"MustRelease::ToRelease");
+let interned-tag-unknown = TypeTagIntern(0_u32, 0_u32);
+
 # new allocations = 0
 let ta = TAny;
 
 # new allocations = 0
 #    0 from 0 length vector
-let t0(tag: CString): Type = TGround(tag, mk-vector(type(Type)));
+let t0(tag: CString): Type = TGround(intern-type-tag(tag), mk-vector(type(Type)));
+let t0(tag: TypeTagIntern): Type = TGround(tag, mk-vector(type(Type)));
 
 # new allocations = 0
-let ti(id: U64): Type = TId(id);
+let ti(id: U32): Type = TId(id);
 
 # new allocations = 1
 #    1 from 1 length vector
-let t1(tag: CString, p1: Type): Type = TGround(tag, mk-vector(type(Type)).push(p1));
+let t1(tag: CString, p1: Type): Type = TGround(intern-type-tag(tag), mk-vector(type(Type)).push(p1));
+let t1(tag: TypeTagIntern, p1: Type): Type = TGround(tag, mk-vector(type(Type)).push(p1));
 
 # new allocations = 1
 #    1 from 2 length vector
-let t2(tag: CString, p1: Type, p2: Type): Type = TGround(tag, mk-vector(type(Type)).push(p2).push(p1));
+let t2(tag: CString, p1: Type, p2: Type): Type = TGround(intern-type-tag(tag), mk-vector(type(Type)).push(p2).push(p1));
+let t2(tag: TypeTagIntern, p1: Type, p2: Type): Type = TGround(tag, mk-vector(type(Type)).push(p2).push(p1));
 
 # new allocations = 0
 let tv(name: CString): Type = TVar(name, mk-vector(type(Type)));
@@ -36,13 +110,13 @@ let type-nil = t0(c"Nil");
 let type-any = t0(c"Any");
 
 # new allocations = 0 (constant)
-let type-tail-position = t0(c"TailPosition");
+let type-tail-position = t0(interned-tag-tail-position);
 
 # new allocations = 0 (constant)
 let type-lazy = tv(c"lazy");
 
 # new allocations = 0 (constant)
-let type-release-phi-moved = t1(c"MustRelease::ToRelease",t1(c"Linear",t0(c"Phi::Moved")));
+let type-release-phi-moved = t1(c"MustRelease::ToRelease",t1(interned-tag-linear,t0(interned-tag-phi-moved)));
 
 # new allocations = 0 (constant)
 let type-type-string = t1(c"Type",t0(c"String"));
@@ -51,55 +125,55 @@ let type-type-string = t1(c"Type",t0(c"String"));
 let type-cstring-literal = t0(c"CString") && t0(c"Literal");
 
 # new allocations = 0 (constant)
-let type-linear-moved = t1(c"Linear",t0(c"Phi::Moved"));
+let type-linear-moved = t1(interned-tag-linear,t0(interned-tag-phi-moved));
 
 # new allocations = 0 (constant)
-let type-linear-live = t1(c"Linear",t0(c"Phi::Live"));
+let type-linear-live = t1(interned-tag-linear,t0(interned-tag-phi-live));
 
 # new allocations = 0 (constant)
-let type-c-void = t1(c"C",t0(c"void"));
+let type-c-void = t1(interned-tag-c,t0(c"void"));
 
 # new allocations = 0 (constant)
-let type-c-label = t1(c"C",t0(c":Label"));
+let type-c-label = t1(interned-tag-c,t0(c":Label"));
 
 # new allocations = 0 (constant)
-let type-c-vararg = t1(c"C",t0(c"..."));
+let type-c-vararg = t1(interned-tag-c,t0(c"..."));
 
 # new allocations = 0 (constant)
-let type-c-tany = t1(c"C",ta);
+let type-c-tany = t1(interned-tag-c,ta);
 
 # new allocations = 0 (constant)
-let type-c-typedef = t1(c"C",t0(c"typedef"));
+let type-c-typedef = t1(interned-tag-c,t0(c"typedef"));
 
 # new allocations = 0 (constant)
-let type-array-c-typedef = t2(c"Array",t1(c"C",t0(c"typedef")),ta);
+let type-array-c-typedef = t2(interned-tag-array,t1(interned-tag-c,t0(c"typedef")),ta);
 
 # new allocations = 0 (constant)
-let type-c-int8 = t1(c"C",t0(c"int8_t"));
+let type-c-int8 = t1(interned-tag-c,t0(c"int8_t"));
 
 # new allocations = 0 (constant)
-let type-c-int16 = t1(c"C",t0(c"int16_t"));
+let type-c-int16 = t1(interned-tag-c,t0(c"int16_t"));
 
 # new allocations = 0 (constant)
-let type-c-int32 = t1(c"C",t0(c"int32_t"));
+let type-c-int32 = t1(interned-tag-c,t0(c"int32_t"));
 
 # new allocations = 0 (constant)
-let type-c-int64 = t1(c"C",t0(c"int64_t"));
+let type-c-int64 = t1(interned-tag-c,t0(c"int64_t"));
 
 # new allocations = 0 (constant)
-let type-c-uint8 = t1(c"C",t0(c"uint8_t"));
+let type-c-uint8 = t1(interned-tag-c,t0(c"uint8_t"));
 
 # new allocations = 0 (constant)
-let type-c-uint16 = t1(c"C",t0(c"uint16_t"));
+let type-c-uint16 = t1(interned-tag-c,t0(c"uint16_t"));
 
 # new allocations = 0 (constant)
-let type-c-uint32 = t1(c"C",t0(c"uint32_t"));
+let type-c-uint32 = t1(interned-tag-c,t0(c"uint32_t"));
 
 # new allocations = 0 (constant)
-let type-c-uint64 = t1(c"C",t0(c"uint64_t"));
+let type-c-uint64 = t1(interned-tag-c,t0(c"uint64_t"));
 
 # new allocations = 0 (constant)
-let type-any-arrow = t2(c"Arrow", type-any, type-any);
+let type-any-arrow = t2(interned-tag-arrow, type-any, type-any);
 
 # new allocations = 0 if either argument is ?
 #                 | 1
@@ -173,7 +247,8 @@ let .extend(lt: Type, rt: Type): Type = (
 );
 
 # new allocations = 0
-let ts(tag: CString, ps: Vector<Type>): Type = TGround( tag, ps );
+let ts(tag: CString, ps: Vector<Type>): Type = TGround( intern-type-tag(tag), ps );
+let ts(tag: TypeTagIntern, ps: Vector<Type>): Type = TGround( tag, ps );
 
 # new allocations = 0
 let tand(t: Vector<Type>): Type = TAnd(t.sort);
@@ -183,3 +258,4 @@ let tand(tt: Type): Type = TAnd(mk-vector(type(Type)).push(tt));
 
 # new allocations = 0
 let $"||"(lt: Type, rt: Type): Type = if non-zero(lt) then lt else rt;
+
