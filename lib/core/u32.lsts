@@ -1,2 +1,40 @@
 
-type alias U32 suffix _u32 = U64;
+type opaque alias U32 suffix _u32 = C<"uint32_t">;
+
+declare-binop( $"!=", raw-type(U32), raw-type(U32), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(U32), raw-type(U32), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(U32), raw-type(U32), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(U32), raw-type(U32), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(U32), raw-type(U32), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(U32), raw-type(U32), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"&", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"&"; y; l")"; ) );
+declare-binop( $"|", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"|"; y; l")"; ) );
+declare-binop( $"^", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"^"; y; l")"; ) );
+declare-binop( $"+", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"/", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"/"; y; l")"; ) );
+declare-binop( $"%", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"%"; y; l")"; ) );
+declare-binop( $"*", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"*"; y; l")"; ) );
+
+declare-binop( $"<<", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"<<"; y; l")"; ) );
+declare-binop( $">>", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l">>"; y; l")"; ) );
+
+declare-unop( $"~", raw-type(U32), raw-type(U32), ( l"((uint32_t)(~"; x; l"))"; ) );
+
+let non-zero(x: U32): Bool = x != 0;
+
+let min(l: U32, r: U32): U32 = (
+   if l < r then l else r
+);
+let max(l: U32, r: U32): U32 = (
+   if l > r then l else r
+);
+
+let cmp(l: U32, r: U32): Ord = (
+   if l < r then LessThan
+   else if l > r then GreaterThan
+   else Equal
+);
+
+let hash(x: U32): U64 = x as U64;

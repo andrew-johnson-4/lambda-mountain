@@ -142,6 +142,7 @@ let :Blob current_allocated_memory(): U64 = (
 let .into(b: Bool, tt: Type<String>): String = if b then "true" else "false";
 let .into(i: U8, tt: Type<String>): String = (i as U64).into(type(String));
 let .into(i: USize, tt: Type<String>): String = (i as U64).into(type(String));
+let .into(i: U32, tt: Type<String>): String = (i as U64).into(type(String));
 
 let .into(i: I64, tt: Type<String>): String = (
    let od = mk-owned-data(type(U8), 20_sz);
@@ -195,6 +196,8 @@ let .into(i: U64, tt: Type<String>): String = (
    };
    String(0 as USize, cs-length, od)
 );
+
+let .to-hex(i: U32): String = (i as U64).to-hex;
 
 let .to-hex(i: U64): String = (
    let buff = mk-vector(type(U8), 17);
@@ -2496,7 +2499,45 @@ let .into(l: Tuple<w,x,y,z>, tt: Type<String>): String = (
 
 type alias U16 suffix _u16 = U64;
 
-type alias U32 suffix _u32 = U64;
+type opaque alias U32 suffix _u32 = C<"uint32_t">;
+
+declare-binop( $"!=", raw-type(U32), raw-type(U32), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(U32), raw-type(U32), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(U32), raw-type(U32), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(U32), raw-type(U32), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(U32), raw-type(U32), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(U32), raw-type(U32), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"&", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"&"; y; l")"; ) );
+declare-binop( $"|", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"|"; y; l")"; ) );
+declare-binop( $"^", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"^"; y; l")"; ) );
+declare-binop( $"+", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"/", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"/"; y; l")"; ) );
+declare-binop( $"%", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"%"; y; l")"; ) );
+declare-binop( $"*", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"*"; y; l")"; ) );
+
+declare-binop( $"<<", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l"<<"; y; l")"; ) );
+declare-binop( $">>", raw-type(U32), raw-type(U32), raw-type(U32), ( l"("; x; l">>"; y; l")"; ) );
+
+declare-unop( $"~", raw-type(U32), raw-type(U32), ( l"((uint32_t)(~"; x; l"))"; ) );
+
+let non-zero(x: U32): Bool = x != 0;
+
+let min(l: U32, r: U32): U32 = (
+   if l < r then l else r
+);
+let max(l: U32, r: U32): U32 = (
+   if l > r then l else r
+);
+
+let cmp(l: U32, r: U32): Ord = (
+   if l < r then LessThan
+   else if l > r then GreaterThan
+   else Equal
+);
+
+let hash(x: U32): U64 = x as U64;
 
 type opaque alias U64 suffix _u64 = C<"uint64_t">;
 
@@ -2561,7 +2602,7 @@ let to-u64(s: CString): U64 = (
 );
 
 type opaque alias U8 suffix _u8
-     implies C<"int">, USize, U64, I64, C<"size_t">
+     implies C<"int">, USize, U32, U64, I64, C<"size_t">
      = C<"uint8_t">;
 
 declare-binop( $"!=", raw-type(U8), raw-type(U8), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
@@ -2603,7 +2644,7 @@ let hash(x: U8): U64 = x as U64;
 let non-zero(x: U8): Bool = x != 0;
 
 type opaque alias USize suffix _sz
-     implies U64, C<"size_t">
+     implies U32, U64, C<"size_t">
      = C<"size_t">;
 
 declare-binop( $"!=", raw-type(USize), raw-type(USize), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
@@ -6446,7 +6487,7 @@ let .ground-tag-and-arity(tt: Type): (U32,U32) = (
       TGround { tag:interned-tag-array, parameters:[_.. TAny{}..] } => (interned-tag-array.primary, 2_u32);
       TGround { tag:interned-tag-array, parameters:[_.. array-base..] } => (
          let ga = array-base.ground-tag-and-arity;
-         ( ga.first, ga.second + 1000 )
+         ( ga.first, ga.second + 1000_u32 )
       );
       TGround { tag:interned-tag-sized, parameters:[_..] } => (0_u32, 9999999_u32);
       TGround { tag=tag, parameters=parameters } => (tag.primary, parameters.length as U32);
@@ -6487,7 +6528,7 @@ let hash(tt: Type): U64 = (
          result
       );
       TGround{tag=tag,parameters=parameters} => hash(tag) + hash(parameters);
-      TId{id=id} => id;
+      TId{id=id} => id as U64;
    }
 );
 
@@ -6544,7 +6585,7 @@ let intern-type-tag-single(tag: CString): U32 = (
    }
 );
 
-let hash(t: TypeTagIntern): U32 = (
+let hash(t: TypeTagIntern): U64 = (
    if t.second != 0
    then hash(t.second)
    else hash(t.first)
@@ -6903,7 +6944,7 @@ let .simple-tag(tt: Type): CString = (
 let .simple-interned-tag(tt: Type): TypeTagIntern = (
    match tt {
       TGround { tag=tag } => tag;
-      _ => TypeTagIntern(0,0);
+      _ => TypeTagIntern(0_u32,0_u32);
    }
 );
 
@@ -11708,15 +11749,15 @@ let std-c-decorate-pointer(tt: Type, ptr: CTerm): Type = (
 let std-c-type-of-integer(i: String): Type = (
    if i.has-prefix("-") {
       let n = to-u64(tail(i).into(type(CString)));
-      if n <= 128 then type-c-uint8 else
-      if n <= 32768 then type-c-uint16 else
-      if n <= 2147483648 then type-c-uint32 else
+      if n <= 128_u64 then type-c-uint8 else
+      if n <= 32768_u64 then type-c-uint16 else
+      if n <= 2147483648_u64 then type-c-uint32 else
       type-c-uint64
    } else {
       let n = to-u64(i.into(type(CString)));
-      if n <= 255 then type-c-int8 else
-      if n <= 65535 then type-c-int16 else
-      if n <= 4294967295 then type-c-int32 else
+      if n <= 255_u64 then type-c-int8 else
+      if n <= 65535_u64 then type-c-int16 else
+      if n <= 4294967295_u64 then type-c-int32 else
       type-c-int64
    };
 );
@@ -15477,9 +15518,9 @@ let mk-lsts-token(s: String): Token = (
             ds = tail(ds);
          };
          let magnitude = to-u64(ds);
-         if (is-negative and magnitude <= 128) or magnitude <= 255 then order = 8
-         else if (is-negative and magnitude <= 32768) or magnitude <= 65535 then order = 16
-         else if (is-negative and magnitude <= 2147483648) or magnitude <= 4294967295 then order = 32;
+         if (is-negative and magnitude <= 128_u64) or magnitude <= 255 then order = 8
+         else if (is-negative and magnitude <= 32768_u64) or magnitude <= 65535_u64 then order = 16
+         else if (is-negative and magnitude <= 2147483648_u64) or magnitude <= 4294967295_u64 then order = 32;
       };
       match (is-negative as U64, order) {
          Tuple{ first:0_u64, second:8_u64 } => us = us + c"_u8";

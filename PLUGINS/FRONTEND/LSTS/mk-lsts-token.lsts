@@ -12,9 +12,9 @@ let mk-lsts-token(s: String): Token = (
             ds = tail(ds);
          };
          let magnitude = to-u64(ds);
-         if (is-negative and magnitude <= 128) or magnitude <= 255 then order = 8
-         else if (is-negative and magnitude <= 32768) or magnitude <= 65535 then order = 16
-         else if (is-negative and magnitude <= 2147483648) or magnitude <= 4294967295 then order = 32;
+         if (is-negative and magnitude <= 128_u64) or magnitude <= 255 then order = 8
+         else if (is-negative and magnitude <= 32768_u64) or magnitude <= 65535_u64 then order = 16
+         else if (is-negative and magnitude <= 2147483648_u64) or magnitude <= 4294967295_u64 then order = 32;
       };
       match (is-negative as U64, order) {
          Tuple{ first:0_u64, second:8_u64 } => us = us + c"_u8";
