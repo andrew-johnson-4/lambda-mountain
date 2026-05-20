@@ -1123,7 +1123,7 @@ let cmp(l: I64, r: I64): Ord = (
 
 let abs(i: I64): I64 = if i<0 then 0_i64 - i else i;
 
-let hash(x: I64): U64 = x as U64;
+let hash(x: I64): U64 = (x as U64)*(x as U64);
 
 let to-i64(s: CString): I64 = (
    let negative = false;
@@ -2537,7 +2537,7 @@ let cmp(l: U32, r: U32): Ord = (
    else Equal
 );
 
-let hash(x: U32): U64 = x as U64;
+let hash(x: U32): U64 = (x as U64)*(x as U64);
 
 type opaque alias U64 suffix _u64 = C<"uint64_t">;
 
@@ -2639,7 +2639,7 @@ let cmp(l: U8, r: U8): Ord = (
    else Equal
 );
 
-let hash(x: U8): U64 = x as U64;
+let hash(x: U8): U64 = (x as U64)*(x as U64);
 
 let non-zero(x: U8): Bool = x != 0;
 
@@ -2681,7 +2681,7 @@ let cmp(l: USize, r: USize): Ord = (
    else Equal
 );
 
-let hash(x: USize): U64 = x as U64;
+let hash(x: USize): U64 = (x as U64)*(x as U64);
 
 type Vector<t> implies MustRetain, MustRelease
    = { data: OwnedData<t>[] };

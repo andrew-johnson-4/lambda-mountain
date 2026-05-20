@@ -37,7 +37,7 @@ let cmp(l: I64, r: I64): Ord = (
 
 let abs(i: I64): I64 = if i<0 then 0_i64 - i else i;
 
-let hash(x: I64): U64 = x as U64;
+let hash(x: I64): U64 = (x as U64)*(x as U64);
 
 let to-i64(s: CString): I64 = (
    let negative = false;

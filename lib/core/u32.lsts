@@ -37,4 +37,4 @@ let cmp(l: U32, r: U32): Ord = (
    else Equal
 );
 
-let hash(x: U32): U64 = x as U64;
+let hash(x: U32): U64 = (x as U64)*(x as U64);
