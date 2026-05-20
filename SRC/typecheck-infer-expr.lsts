@@ -11,8 +11,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type, rewritten-constant: Bool): (TypeContext?, AST) = (
-   profile-visit-ast-unique(term);
-   profile-visit-ast-equal(term);
+   #profile-visit-ast-unique(term);
+   #profile-visit-ast-equal(term);
    if not(term.is-free-and-seen) { match term {
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
          (tctx, let check-tt) = typeof-var-raw(term, tctx, lname, true);

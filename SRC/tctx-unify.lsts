@@ -30,7 +30,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       Tuple{ first:TAnd{ lconjugate=conjugate }, second:TAnd{ rconjugate=conjugate } } => (
          let result = yes;
          let ri = 0_sz;
-         let phi-id = 0_u64;
+         let phi-id = 0_u32;
          let phi-state-in = ta;
          let phi-state-out = ta;
          for lc in lconjugate {

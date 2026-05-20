@@ -1,12 +1,12 @@
 
-let type-tag-intern-index = {} : Hashtable<CString,U64>;
-let type-tag-intern-inverse-index = {} : Hashtable<U64,CString>;
+let type-tag-intern-index = {} : Hashtable<CString,U32>;
+let type-tag-intern-inverse-index = {} : Hashtable<U32,CString>;
 
-type TypeTagIntern = { first: U64, second: U64 };
+type TypeTagIntern = { first: U32, second: U32 };
 
 let .into(tti: TypeTagIntern, tt: Type<String>): String = "TypeTagIntern(\{tti.first},\{tti.second} = \{untern(tti)})";
 
-let .primary(t: TypeTagIntern): U64 = if t.second==0 then t.first else t.second;
+let .primary(t: TypeTagIntern): U32 = if t.second==0 then t.first else t.second;
 let .has-secondary(t: TypeTagIntern): Bool = t.second != 0;
 
 let $"=="(tti1: TypeTagIntern, tti2: TypeTagIntern): Bool = (
@@ -27,13 +27,13 @@ let intern-type-tag(tag: CString): TypeTagIntern = (
    if tag.contains(c"::") {
       let tag-split = tag.split(c"::");
       if tag-split.length == 1
-      then TypeTagIntern(intern-type-tag-single(tag), 0_u64)
+      then TypeTagIntern(intern-type-tag-single(tag), 0_u32)
       else {
          let prefix = tag.split(c"::")[0] + c"::";
          TypeTagIntern(intern-type-tag-single(prefix), intern-type-tag-single(tag))
       }
    } else {
-      TypeTagIntern(intern-type-tag-single(tag), 0_u64)
+      TypeTagIntern(intern-type-tag-single(tag), 0_u32)
    }
 );
 
@@ -41,18 +41,18 @@ let untern(tag: TypeTagIntern): CString = (
    type-tag-intern-inverse-index.lookup(tag.primary, c"")
 );
 
-let intern-type-tag-single(tag: CString): U64 = (
+let intern-type-tag-single(tag: CString): U32 = (
    if type-tag-intern-index.has-key(tag)
-   then type-tag-intern-index.lookup(tag, 0_u64);
+   then type-tag-intern-index.lookup(tag, 0_u32);
    else {
-      let index = (type-tag-intern-index.length + 1) as U64;
+      let index = (type-tag-intern-index.length + 1) as U32;
       type-tag-intern-index = type-tag-intern-index.bind(tag, index);
       type-tag-intern-inverse-index = type-tag-intern-inverse-index.bind(index, tag);
       index
    }
 );
 
-let hash(t: TypeTagIntern): U64 = (
+let hash(t: TypeTagIntern): U32 = (
    if t.second != 0
    then hash(t.second)
    else hash(t.first)

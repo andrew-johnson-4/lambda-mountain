@@ -1,5 +1,5 @@
 
-let type-alias-index = {} : Hashtable<Tuple<U64,U64>,Tuple<Type,Type>>;
+let type-alias-index = {} : Hashtable<Tuple<U32,U32>,Tuple<Type,Type>>;
 
 let add-type-alias(lt: Type, rt: Type): Nil = (
    type-alias-index = type-alias-index.bind( lt.ground-tag-and-arity, ( lt, rt ) );
@@ -49,7 +49,7 @@ let .rewrite-type-alias(lt: Vector<Type>): Vector<Type> = (
    next
 );
 
-let opaque-type-alias-index = {} : Hashtable<Tuple<U64,U64>,Tuple<Type,Type>>;
+let opaque-type-alias-index = {} : Hashtable<Tuple<U32,U32>,Tuple<Type,Type>>;
 
 let add-opaque-type-alias(lt: Type, rt: Type): Nil = (
    opaque-type-alias-index = opaque-type-alias-index.bind( lt.ground-tag-and-arity, Tuple( lt, rt ) );

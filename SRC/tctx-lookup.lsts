@@ -66,9 +66,9 @@ let .lookups-first(trs: List<TypeContextRow>, key: CString): TypeContextRow = (
    default
 );
 
-let .lookup-phi(tctx: TypeContext?, key: U64): PhiContextRow = tctx.get-or(mk-tctx()).pctx.lookup(key, NullPhiContextRow);
+let .lookup-phi(tctx: TypeContext?, key: U32): PhiContextRow = tctx.get-or(mk-tctx()).pctx.lookup(key, NullPhiContextRow);
 
-let .lookup(tree: PBTree<U64,PhiContextRow>, key: U64, default: PhiContextRow): PhiContextRow = (
+let .lookup(tree: PBTree<U32,PhiContextRow>, key: U32, default: PhiContextRow): PhiContextRow = (
    match tree {
       PBLeaf {} => default;
       PBNode1 { k11=k1, v11=v1, left=left, right=right } => (

@@ -1,7 +1,7 @@
 
 let substitute-lhs(tctx: TypeContext?, t: AST): AST = substitute-lhs(tctx, t, 0);
 
-let substitute-lhs(tctx: TypeContext?, t: AST, idx: U64): AST = (
+let substitute-lhs(tctx: TypeContext?, t: AST, idx: U32): AST = (
    match t {
       App{ ps=left, right:App{ left:Lit{key:c":",ctk=token}, right:App{ left:Var{v1=key,vtk1=token}, right:AType{vt1=tt} } } } => (
          vt1 = substitute-macro(tctx, vt1.accept-interface(idx)).expand-implied-phi.without-phi-keep-state;

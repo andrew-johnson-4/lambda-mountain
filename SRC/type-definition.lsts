@@ -9,7 +9,7 @@
 # for this reason allocation counts only have an upper bound rather than exact bound
 type Type zero TAny implies MustRetain, MustRelease
         = TGround { tag:TypeTagIntern, parameters:Vector<Type> }
-        | TId { id:U64 } # for fast TGround in fixed positions like Phi::Id<231>
+        | TId { id:U32 } # for fast TGround in fixed positions like Phi::Id<231>
         | TAny
         | TVar { name:CString, parameters:Vector<Type> }
         | TAnd { conjugate:Vector<Type> };

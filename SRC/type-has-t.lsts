@@ -1,5 +1,5 @@
 
-let .has-t(tt: Type, tt-tag: TypeTagIntern, tt-length: U64): Bool = (
+let .has-t(tt: Type, tt-tag: TypeTagIntern, tt-length: U32): Bool = (
    match tt {
       TAnd { conjugate=conjugate } => (
          let result = false;

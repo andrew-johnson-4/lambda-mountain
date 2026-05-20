@@ -1,5 +1,5 @@
 
-let release-locals(tctx-before: PBTree<k,v>, tctx-after: PBTree<k,v>, tctx-after-iter: PBTree<k,v>, pid-seen: Set<U64>): (Set<U64>, PBTree<k,v>) = (
+let release-locals(tctx-before: PBTree<k,v>, tctx-after: PBTree<k,v>, tctx-after-iter: PBTree<k,v>, pid-seen: Set<U32>): (Set<U32>, PBTree<k,v>) = (
    if is(tctx-before,tctx-after) then (pid-seen, tctx-after)
    else match tctx-after-iter {
       PBLeaf{} => (pid-seen, tctx-after);
@@ -37,7 +37,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    let tctx-after-pctx = tctx-after.get-or(mk-tctx()).pctx;
    let needs-release = [] : List<TypeContextRow>;
    let needs-mark-release = [] : List<TypeContextRow>;
-   let pid-seen = mk-set(type(U64));
+   let pid-seen = mk-set(type(U32));
    while non-zero(tctx-after-tctx) and not(is(tctx-before-tctx, tctx-after-tctx)) {
       let tr = head(tctx-after-tctx);
       let dt = tctx-after.with-phi(tr.denormalized, term);

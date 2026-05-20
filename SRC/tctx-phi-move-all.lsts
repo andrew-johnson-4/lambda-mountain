@@ -5,7 +5,7 @@ let .phi-move-all(tctx: TypeContext?): TypeContext? = (
    Some(inner)
 );
 
-let .phi-move-all(tctx: PBTree<U64,PhiContextRow>): PBTree<U64,PhiContextRow> = (
+let .phi-move-all(tctx: PBTree<U32,PhiContextRow>): PBTree<U32,PhiContextRow> = (
    match tctx {
       PBLeaf{} => tctx;
       PBNode1{ k11=k1, v11=v1, left=left, right=right } => (

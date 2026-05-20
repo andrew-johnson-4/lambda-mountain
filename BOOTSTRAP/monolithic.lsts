@@ -3029,7 +3029,7 @@ let ascript-force(t: AST, tt: Type): Nil = (
 # A concrete type is an instance of a type that has been realized on a term
 # It is not an "in processing" or "theoretical" type anymore, but now an actual observed term
 
-let concrete-type-instances-index = {} : Hashtable<(U64,U64),Vector<Type>>;
+let concrete-type-instances-index = {} : Hashtable<(U32,U32),Vector<Type>>;
 
 let add-concrete-type-instance(tt: Type, blame: AST): Nil = (
    match tt {
@@ -3059,7 +3059,7 @@ let does-concrete-type-instance-exist(tt: Type): Bool = (
    match tt {
       TGround{tag=tag, ts=parameters} => (
          let exists = false;
-         let k = (tag.primary, ts.length as U64);
+         let k = (tag.primary, ts.length as U32);
          for vt in concrete-type-instances-index.lookup(k, empty-type-vector) {
             if vt==tt then exists = true;
          };
@@ -3071,7 +3071,7 @@ let does-concrete-type-instance-exist(tt: Type): Bool = (
 
 # All datatypes must be registered as such here
 
-let datatype-index = mk-set(type((U64,U64)));
+let datatype-index = mk-set(type((U32,U32)));
 
 let .is-datatype(tt: Type): Bool = (
    match tt {
@@ -3562,8 +3562,8 @@ let .is-nil(t: AST): Bool = (
    }
 );
 
-type SourceLocation = { filename: CString, line: U64, column: U64 };
-type Token = { key: CString, nonce: U64, location: SourceLocation };
+type SourceLocation = { filename: CString, line: U32, column: U32 };
+type Token = { key: CString, nonce: U32, location: SourceLocation };
 
 # This AST row is very fat, so we move it into an indirect data
 # TODO: do this optimization automatically or with a simple annotation
@@ -3708,8 +3708,8 @@ let smart-token-path-index = {} : Hashtable<U64,String>;
 
 let .location(t: String): SourceLocation = (
    let file-path = smart-token-path-index.lookup( t.data as U64, "[Unknown File]" );
-   let line = 1_u64;
-   let column = 1_u64;
+   let line = 1_u32;
+   let column = 1_u32;
    let i = 0_sz;
    while i < t.start-offset {
       if t.data[i] == 10_u8 then {
@@ -4106,14 +4106,14 @@ let .into(loc: SourceLocation, tt: Type<String>): String = (
 
 let config-profile-ast = false;
 
-let profile-count-ast-unique-index = mk-hashtable-is(type(AST), type(U64));
-let profile-count-ast-equal-index = mk-hashtable(type(AST), type(U64));
+let profile-count-ast-unique-index = mk-hashtable-is(type(AST), type(U32));
+let profile-count-ast-equal-index = mk-hashtable(type(AST), type(U32));
 
 let profile-visit-ast-unique(t: AST): Nil = (
    if config-profile-ast then {
       profile-count-ast-unique-index = profile-count-ast-unique-index.bind(
          t,
-         profile-count-ast-unique-index.lookup(t, 0_u64) + 1
+         profile-count-ast-unique-index.lookup(t, 0_u32) + 1
       );
    }
 );
@@ -4122,7 +4122,7 @@ let profile-visit-ast-equal(t: AST): Nil = (
    if config-profile-ast then {
       profile-count-ast-equal-index = profile-count-ast-equal-index.bind(
          t,
-         profile-count-ast-equal-index.lookup(t, 0_u64) + 1
+         profile-count-ast-equal-index.lookup(t, 0_u32) + 1
       );
    }
 );
@@ -4149,7 +4149,7 @@ let profile-print-ast(): Nil = (
    };
 );
 
-let type-alias-index = {} : Hashtable<Tuple<U64,U64>,Tuple<Type,Type>>;
+let type-alias-index = {} : Hashtable<Tuple<U32,U32>,Tuple<Type,Type>>;
 
 let add-type-alias(lt: Type, rt: Type): Nil = (
    type-alias-index = type-alias-index.bind( lt.ground-tag-and-arity, ( lt, rt ) );
@@ -4199,7 +4199,7 @@ let .rewrite-type-alias(lt: Vector<Type>): Vector<Type> = (
    next
 );
 
-let opaque-type-alias-index = {} : Hashtable<Tuple<U64,U64>,Tuple<Type,Type>>;
+let opaque-type-alias-index = {} : Hashtable<Tuple<U32,U32>,Tuple<Type,Type>>;
 
 let add-opaque-type-alias(lt: Type, rt: Type): Nil = (
    opaque-type-alias-index = opaque-type-alias-index.bind( lt.ground-tag-and-arity, Tuple( lt, rt ) );
@@ -4240,7 +4240,7 @@ let .rewrite-opaque-type-alias(lt: Vector<Type>): Vector<Type> = (
    next
 );
 
-let quick-prop = {} : Hashtable<(U64,U64),Vector<(Type,Type)>>;
+let quick-prop = {} : Hashtable<(U32,U32),Vector<(Type,Type)>>;
 
 let add-quick-prop(pre: Type, pat: Type, post: Type): Nil = (
    let key = pre.ground-tag-and-arity;
@@ -4309,7 +4309,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
             );
          };
          if tag==interned-tag-array and parameters.length==2 {
-            for row in quick-prop.lookup( (interned-tag-array.primary,2_u64), mk-vector(type((Type,Type))) ) {
+            for row in quick-prop.lookup( (interned-tag-array.primary,2_u32), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if base <: lt then (
@@ -4342,7 +4342,7 @@ let enrich-quick-prop(base: Type, pre: Type): Type = (
    pre
 );
 
-let weaken-quick-prop-index = {} : Hashtable<(U64,U64),Vector<(Type,Type)>>;
+let weaken-quick-prop-index = {} : Hashtable<(U32,U32),Vector<(Type,Type)>>;
 
 # core implicit weakening rules
 add-weaken-quick-prop( t1(c"Constructor",ta), t1(c"Constructor",ta), t1(c"Constructor",ta) );
@@ -4386,7 +4386,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             );
          };
          if tag==interned-tag-array and parameters.length==2 {
-            for row in weaken-quick-prop-index.lookup( (interned-tag-array.primary,2_u64), mk-vector(type((Type,Type))) ) {
+            for row in weaken-quick-prop-index.lookup( (interned-tag-array.primary,2_u32), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (
@@ -4399,7 +4399,7 @@ let weaken-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             let tag-base = if tag==interned-tag-tag then interned-tag-tag
                       else if tag==interned-tag-field then interned-tag-field
                       else interned-tag-unknown;
-            for row in weaken-quick-prop-index.lookup( (tag-base.primary, parameters.length as U64), mk-vector(type((Type,Type))) ) {
+            for row in weaken-quick-prop-index.lookup( (tag-base.primary, parameters.length as U32), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (
@@ -4461,7 +4461,7 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             );
          };
          if tag==interned-tag-array and parameters.length==2 {
-            for row in quick-prop.lookup( (interned-tag-array.primary,2_u64), mk-vector(type((Type,Type))) ) {
+            for row in quick-prop.lookup( (interned-tag-array.primary,2_u32), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (
@@ -4473,7 +4473,7 @@ let unenrich-quick-prop(original-base: Type, base: Type, pre: Type): Type = (
             let tag-base = if tag==interned-tag-tag then interned-tag-tag
                       else if tag==interned-tag-field then interned-tag-field
                       else interned-tag-unknown;
-            for row in quick-prop.lookup( (tag-base.primary, parameters.length as U64), mk-vector(type((Type,Type))) ) {
+            for row in quick-prop.lookup( (tag-base.primary, parameters.length as U32), mk-vector(type((Type,Type))) ) {
                let lt = row.first;
                let rt = row.second;
                if can-unify(lt, original-base) then (
@@ -4527,7 +4527,7 @@ let denormalize-strong(tt: Type): Type = (
    tt.rewrite-type-alias.enrich-strong;
 );
 
-let implied-phi-index = {} : Hashtable<(U64,U64),Type>;
+let implied-phi-index = {} : Hashtable<(U32,U32),Type>;
 
 let .expand-implied-phi(tt: Type): Type = (
    let original-tt = tt;
@@ -4573,7 +4573,7 @@ let lone-index = mk-set(type(CString));
 let index-lone-tag(tag: CString): Nil = lone-index = lone-index.bind(tag);
 let is-lone-tag(tag: CString): Bool = lone-index.has(tag);
 
-let is-macro-head(s: CString, arity: U64): Bool = (
+let is-macro-head(s: CString, arity: U32): Bool = (
    let macros = preprocess-macros;
    let found = false;
    while non-zero(macros) { match macros {
@@ -4590,7 +4590,7 @@ let is-macro-head(s: CString, arity: U64): Bool = (
    found
 );
 
-let phi-type-index = mk-set(type((U64,U64)));
+let phi-type-index = mk-set(type((U32,U32)));
 
 let .is-phi-type(tt: Type): Bool = (
    phi-type-index.has(tt.ground-tag-and-arity)
@@ -4862,8 +4862,8 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
    };
 
    # Check for half-specialization
-   # open(U8) can unify with open(U64) if it exists
-   # but open(U8) should still go for specializing open(x) rather than stopping at open(U64)
+   # open(U8) can unify with open(U32) if it exists
+   # but open(U8) should still go for specializing open(x) rather than stopping at open(U32)
    
 
    result
@@ -5095,7 +5095,7 @@ let .bind-global(tctx: TypeContext?, k: CString, nt: Type, dt: Type, blame: AST)
    tctx
 );
 
-let .bind-phi(tctx: TypeContext?, k: U64, kt: Type, blame: AST): TypeContext? = (
+let .bind-phi(tctx: TypeContext?, k: U32, kt: Type, blame: AST): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
       tctx.get-or(mk-tctx()).pctx.bind(k, PhiContextRow(k,kt,blame,false,tctx-currently-processing-globals)),
@@ -5105,7 +5105,7 @@ let .bind-phi(tctx: TypeContext?, k: U64, kt: Type, blame: AST): TypeContext? = 
    ));
 );
 
-let .bind-phi(tctx: TypeContext?, k: U64, kt: Type, blame: AST, is-global: Bool): TypeContext? = (
+let .bind-phi(tctx: TypeContext?, k: U32, kt: Type, blame: AST, is-global: Bool): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
       tctx.get-or(mk-tctx()).pctx.bind(k, PhiContextRow(k,kt,blame,false,is-global)),
@@ -5140,11 +5140,11 @@ let global-tctx = {} : Hashtable<CString,Vector<TypeContextRow>>;
 let tctx-currently-processing-globals = true;
 
 type TypeContextRow zero NullTypeContextRow implies MustRetain, MustRelease = NullTypeContextRow | TypeContextRow { key: CString, nt: Type, dt: Type, blame: AST };
-type PhiContextRow zero NullPhiContextRow implies MustRetain, MustRelease = NullPhiContextRow | PhiContextRow { phi-id: U64, phi-tt: Type, blame: AST, dead-on-arrival: Bool, is-global: Bool };
-type TypeContext implies MustRetain, MustRelease = { tctx:List<TypeContextRow>, pctx: PBTree<U64,PhiContextRow>, is-unsafe: Bool, is-blob: Bool, function-name:CString };
+type PhiContextRow zero NullPhiContextRow implies MustRetain, MustRelease = NullPhiContextRow | PhiContextRow { phi-id: U32, phi-tt: Type, blame: AST, dead-on-arrival: Bool, is-global: Bool };
+type TypeContext implies MustRetain, MustRelease = { tctx:List<TypeContextRow>, pctx: PBTree<U32,PhiContextRow>, is-unsafe: Bool, is-blob: Bool, function-name:CString };
 let .into(pr: PhiContextRow, tt: Type<String>): String = "#\{pr.phi-id-or-zero} : \{pr.phi-tt-or-zero}";
 
-let mk-tctx(): TypeContext = TypeContext( [] : List<TypeContextRow>, mk-pbtree(type(U64), type(PhiContextRow)), false, false, c"" );
+let mk-tctx(): TypeContext = TypeContext( [] : List<TypeContextRow>, mk-pbtree(type(U32), type(PhiContextRow)), false, false, c"" );
 
 let .key-or-zero(tr: TypeContextRow): CString = (
    match tr {
@@ -5177,7 +5177,7 @@ let .blame-or-zero(tr: TypeContextRow): AST = (
    }
 );
 
-let .phi-id-or-zero(tr: PhiContextRow): U64 = (
+let .phi-id-or-zero(tr: PhiContextRow): U32 = (
    match tr {
       PhiContextRow{ phi-id=phi-id } => phi-id;
       _ => 0;
@@ -5215,7 +5215,7 @@ let .with-phi-tt(tr: PhiContextRow, phi-tt: Type): PhiContextRow = (
    }
 );
 
-let .into(tree: PBTree<U64,PhiContextRow>, tt: Type<String>): String = (
+let .into(tree: PBTree<U32,PhiContextRow>, tt: Type<String>): String = (
    match tree {
       PBLeaf {} => "";
       PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
@@ -5309,9 +5309,9 @@ let .lookups-first(trs: List<TypeContextRow>, key: CString): TypeContextRow = (
    default
 );
 
-let .lookup-phi(tctx: TypeContext?, key: U64): PhiContextRow = tctx.get-or(mk-tctx()).pctx.lookup(key, NullPhiContextRow);
+let .lookup-phi(tctx: TypeContext?, key: U32): PhiContextRow = tctx.get-or(mk-tctx()).pctx.lookup(key, NullPhiContextRow);
 
-let .lookup(tree: PBTree<U64,PhiContextRow>, key: U64, default: PhiContextRow): PhiContextRow = (
+let .lookup(tree: PBTree<U32,PhiContextRow>, key: U32, default: PhiContextRow): PhiContextRow = (
    match tree {
       PBLeaf {} => default;
       PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
@@ -5364,7 +5364,7 @@ let .phi-append-dead-on-arrival(tctx-primary: TypeContext?, tctx-secondary: Type
    tctx-primary.with-pctx( tctx-primary.get-or(mk-tctx()).pctx.phi-append(tctx-secondary.get-or(mk-tctx()).pctx,true) ) 
 );
 
-let .phi-append(tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, dead-on-arrival: Bool): PBTree<U64,PhiContextRow> = (
+let .phi-append(tctx-primary: PBTree<U32,PhiContextRow>, tctx-secondary: PBTree<U32,PhiContextRow>, dead-on-arrival: Bool): PBTree<U32,PhiContextRow> = (
    if is(tctx-primary, tctx-secondary) then tctx-primary
    else if not(non-zero(tctx-primary)) then tctx-secondary
    else if not(non-zero(tctx-secondary)) then tctx-primary
@@ -5462,7 +5462,7 @@ let .phi-move-all(tctx: TypeContext?): TypeContext? = (
    Some(inner)
 );
 
-let .phi-move-all(tctx: PBTree<U64,PhiContextRow>): PBTree<U64,PhiContextRow> = (
+let .phi-move-all(tctx: PBTree<U32,PhiContextRow>): PBTree<U32,PhiContextRow> = (
    match tctx {
       PBLeaf{} => tctx;
       PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
@@ -5509,17 +5509,17 @@ let .phi-move(tctx: TypeContext?, tt: Type, blame: AST): TypeContext? = (
 
 let .prune-moved(tctx: TypeContext?): TypeContext? = (
    let inner-tctx = tctx.get-or(mk-tctx());
-   (let moved, let live) = inner-tctx.pctx.find-moved(mk-set(type(U64)), mk-set(type(U64)));
-   inner-tctx.pctx = inner-tctx.pctx.prune-moved(mk-pbtree(type(U64),type(PhiContextRow)), moved);
+   (let moved, let live) = inner-tctx.pctx.find-moved(mk-set(type(U32)), mk-set(type(U32)));
+   inner-tctx.pctx = inner-tctx.pctx.prune-moved(mk-pbtree(type(U32),type(PhiContextRow)), moved);
    Some(inner-tctx)
 );
 
-let .prune-moved(pctx: PBTree<U64,PhiContextRow>): PBTree<U64,PhiContextRow> = (
-   (let moved, let live) = pctx.find-moved(mk-set(type(U64)), mk-set(type(U64)));
-   pctx.prune-moved(mk-pbtree(type(U64),type(PhiContextRow)), moved);
+let .prune-moved(pctx: PBTree<U32,PhiContextRow>): PBTree<U32,PhiContextRow> = (
+   (let moved, let live) = pctx.find-moved(mk-set(type(U32)), mk-set(type(U32)));
+   pctx.prune-moved(mk-pbtree(type(U32),type(PhiContextRow)), moved);
 );
 
-let .prune-moved(from: PBTree<U64,PhiContextRow>, to: PBTree<U64,PhiContextRow>, moved: Set<U64>): PBTree<U64,PhiContextRow> = (
+let .prune-moved(from: PBTree<U32,PhiContextRow>, to: PBTree<U32,PhiContextRow>, moved: Set<U32>): PBTree<U32,PhiContextRow> = (
    match from {
       PBLeaf{} => to;
       PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
@@ -5542,7 +5542,7 @@ let .prune-moved(from: PBTree<U64,PhiContextRow>, to: PBTree<U64,PhiContextRow>,
    }
 );
 
-let .find-moved(tctx: PBTree<U64,PhiContextRow>, moved: Set<U64>, live: Set<U64>): (Set<U64>, Set<U64>) = (
+let .find-moved(tctx: PBTree<U32,PhiContextRow>, moved: Set<U32>, live: Set<U32>): (Set<U32>, Set<U32>) = (
    match tctx {
       PBLeaf{} => (moved, live);
       PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
@@ -5641,7 +5641,7 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       Tuple{ first:TAnd{ lconjugate=conjugate }, second:TAnd{ rconjugate=conjugate } } => (
          let result = yes;
          let ri = 0_sz;
-         let phi-id = 0_u64;
+         let phi-id = 0_u32;
          let phi-state-in = ta;
          let phi-state-out = ta;
          for lc in lconjugate {
@@ -5813,7 +5813,7 @@ let union(lctx: Maybe<TypeContext>, rctx: Maybe<TypeContext>): Maybe<TypeContext
                      lctx.get-or(mk-tctx()).pctx, false, false, c"" ))
 );
 
-let .with-pctx(tctx: TypeContext?, pctx: PBTree<U64,PhiContextRow>): TypeContext? = (
+let .with-pctx(tctx: TypeContext?, pctx: PBTree<U32,PhiContextRow>): TypeContext? = (
    Some(TypeContext(
       tctx.get-or(mk-tctx()).tctx,
       pctx,
@@ -6199,7 +6199,7 @@ let interned-tag-io-file = intern-type-tag(c"IO::File");
 let interned-tag-pid = intern-type-tag(c"PID");
 let interned-tag-regex = intern-type-tag(c"Regex");
 let interned-tag-must-release-to-release = intern-type-tag(c"MustRelease::ToRelease");
-let interned-tag-unknown = TypeTagIntern(0_u64, 0_u64);
+let interned-tag-unknown = TypeTagIntern(0_u32, 0_u32);
 
 # new allocations = 0
 let ta = TAny;
@@ -6210,7 +6210,7 @@ let t0(tag: CString): Type = TGround(intern-type-tag(tag), mk-vector(type(Type))
 let t0(tag: TypeTagIntern): Type = TGround(tag, mk-vector(type(Type)));
 
 # new allocations = 0
-let ti(id: U64): Type = TId(id);
+let ti(id: U32): Type = TId(id);
 
 # new allocations = 1
 #    1 from 1 length vector
@@ -6401,7 +6401,7 @@ let $"||"(lt: Type, rt: Type): Type = if non-zero(lt) then lt else rt;
 # for this reason allocation counts only have an upper bound rather than exact bound
 type Type zero TAny implies MustRetain, MustRelease
         = TGround { tag:TypeTagIntern, parameters:Vector<Type> }
-        | TId { id:U64 } # for fast TGround in fixed positions like Phi::Id<231>
+        | TId { id:U32 } # for fast TGround in fixed positions like Phi::Id<231>
         | TAny
         | TVar { name:CString, parameters:Vector<Type> }
         | TAnd { conjugate:Vector<Type> };
@@ -6441,19 +6441,19 @@ let .domain(tt: Type): Type = (
    }
 );
 
-let .ground-tag-and-arity(tt: Type): (U64,U64) = (
+let .ground-tag-and-arity(tt: Type): (U32,U32) = (
    match tt {
-      TGround { tag:interned-tag-array, parameters:[_.. TAny{}..] } => (interned-tag-array.primary, 2_u64);
+      TGround { tag:interned-tag-array, parameters:[_.. TAny{}..] } => (interned-tag-array.primary, 2_u32);
       TGround { tag:interned-tag-array, parameters:[_.. array-base..] } => (
          let ga = array-base.ground-tag-and-arity;
          ( ga.first, ga.second + 1000 )
       );
-      TGround { tag:interned-tag-sized, parameters:[_..] } => (0_u64, 9999999_u64);
-      TGround { tag=tag, parameters=parameters } => (tag.primary, parameters.length as U64);
-      TAny {} => (0_u64, 0_u64);
-      TVar {} => (0_u64, 9999999_u64);
+      TGround { tag:interned-tag-sized, parameters:[_..] } => (0_u32, 9999999_u32);
+      TGround { tag=tag, parameters=parameters } => (tag.primary, parameters.length as U32);
+      TAny {} => (0_u32, 0_u32);
+      TVar {} => (0_u32, 9999999_u32);
       TAnd { conjugate=conjugate } => (
-         let result = (0_u64, 9999999_u64);
+         let result = (0_u32, 9999999_u32);
          for c in conjugate { if result.second==9999999 then result = c.ground-tag-and-arity };
          result
       );
@@ -6461,7 +6461,7 @@ let .ground-tag-and-arity(tt: Type): (U64,U64) = (
 );
 
 
-let .has-t(tt: Type, tt-tag: TypeTagIntern, tt-length: U64): Bool = (
+let .has-t(tt: Type, tt-tag: TypeTagIntern, tt-length: U32): Bool = (
    match tt {
       TAnd { conjugate=conjugate } => (
          let result = false;
@@ -6491,14 +6491,14 @@ let hash(tt: Type): U64 = (
    }
 );
 
-let type-tag-intern-index = {} : Hashtable<CString,U64>;
-let type-tag-intern-inverse-index = {} : Hashtable<U64,CString>;
+let type-tag-intern-index = {} : Hashtable<CString,U32>;
+let type-tag-intern-inverse-index = {} : Hashtable<U32,CString>;
 
-type TypeTagIntern = { first: U64, second: U64 };
+type TypeTagIntern = { first: U32, second: U32 };
 
 let .into(tti: TypeTagIntern, tt: Type<String>): String = "TypeTagIntern(\{tti.first},\{tti.second} = \{untern(tti)})";
 
-let .primary(t: TypeTagIntern): U64 = if t.second==0 then t.first else t.second;
+let .primary(t: TypeTagIntern): U32 = if t.second==0 then t.first else t.second;
 let .has-secondary(t: TypeTagIntern): Bool = t.second != 0;
 
 let $"=="(tti1: TypeTagIntern, tti2: TypeTagIntern): Bool = (
@@ -6519,13 +6519,13 @@ let intern-type-tag(tag: CString): TypeTagIntern = (
    if tag.contains(c"::") {
       let tag-split = tag.split(c"::");
       if tag-split.length == 1
-      then TypeTagIntern(intern-type-tag-single(tag), 0_u64)
+      then TypeTagIntern(intern-type-tag-single(tag), 0_u32)
       else {
          let prefix = tag.split(c"::")[0] + c"::";
          TypeTagIntern(intern-type-tag-single(prefix), intern-type-tag-single(tag))
       }
    } else {
-      TypeTagIntern(intern-type-tag-single(tag), 0_u64)
+      TypeTagIntern(intern-type-tag-single(tag), 0_u32)
    }
 );
 
@@ -6533,18 +6533,18 @@ let untern(tag: TypeTagIntern): CString = (
    type-tag-intern-inverse-index.lookup(tag.primary, c"")
 );
 
-let intern-type-tag-single(tag: CString): U64 = (
+let intern-type-tag-single(tag: CString): U32 = (
    if type-tag-intern-index.has-key(tag)
-   then type-tag-intern-index.lookup(tag, 0_u64);
+   then type-tag-intern-index.lookup(tag, 0_u32);
    else {
-      let index = (type-tag-intern-index.length + 1) as U64;
+      let index = (type-tag-intern-index.length + 1) as U32;
       type-tag-intern-index = type-tag-intern-index.bind(tag, index);
       type-tag-intern-inverse-index = type-tag-intern-inverse-index.bind(index, tag);
       index
    }
 );
 
-let hash(t: TypeTagIntern): U64 = (
+let hash(t: TypeTagIntern): U32 = (
    if t.second != 0
    then hash(t.second)
    else hash(t.first)
@@ -6563,7 +6563,7 @@ let .into(tt: Type, tgt: Type<String>): String = (
          let tag = untern(ttag);
          let r = if tag[0] >= 97 and tag[0] <= 122 then intern("\"\{tag}\"") else intern(tag);
          if parameters.length > 0 {
-            let pc = 0_u64;
+            let pc = 0_u32;
             r = r + "<";
             let pi = parameters.length;
             while pi > 0 {
@@ -6578,7 +6578,7 @@ let .into(tt: Type, tgt: Type<String>): String = (
       );
       TAnd{conjugate=conjugate} => (
          let result = "";
-         let ci = 0_u64;
+         let ci = 0_u32;
          for c in conjugate {
             result = result + c.into(type(String));
             ci = ci + 1;
@@ -6610,7 +6610,7 @@ let .is-and(tt: Type): Bool = (
    }
 );
 
-let .is-any-arg-t(tt: Type, t-expect: TypeTagIntern, p-expect: U64): Bool = (
+let .is-any-arg-t(tt: Type, t-expect: TypeTagIntern, p-expect: U32): Bool = (
    match tt {
       TAnd { conjugate=conjugate } => (
          let result = false;
@@ -6714,7 +6714,7 @@ let .is-open(tt: Type): Bool = (
    }
 );
 
-let .is-t(tt: Type, tt-tag: TypeTagIntern, tt-length: U64): Bool = (
+let .is-t(tt: Type, tt-tag: TypeTagIntern, tt-length: U32): Bool = (
    match tt {
       TAnd { conjugate=conjugate } => (
          let result = false;
@@ -6736,7 +6736,7 @@ let .is-t(tt: Type, tt-tag: TypeTagIntern, tt-length: U64): Bool = (
 #    rather than as simply "f of x"
 # This check also includes return-type specialization
 # None : Nil -> x?
-# None : Nil -> U64?  (most special)
+# None : Nil -> U32?  (most special)
 
 let most-special(t0: Type, t1: Type): Type = (
    if t0.is-arrow and t1.is-arrow {
@@ -6879,14 +6879,14 @@ let .sanitize-phi(tt: Type): Type = (
    }
 );
 
-let .simple-arity(tt: Type): U64 = (
+let .simple-arity(tt: Type): U32 = (
    match tt {
       TGround { parameters=parameters } => parameters.length;
       _ => 0;
    }
 );
 
-let .simple-id(tt: Type): U64 = (
+let .simple-id(tt: Type): U32 = (
    match tt {
       TId { id=id } => id;
       _ => 0;
@@ -6907,7 +6907,7 @@ let .simple-interned-tag(tt: Type): TypeTagIntern = (
    }
 );
 
-let .slot(tt: Type, sl: TypeTagIntern, si: U64): Type = (
+let .slot(tt: Type, sl: TypeTagIntern, si: U32): Type = (
    match tt {
       TGround{ tag=tag, parameters=parameters } => (
          if tag==sl and parameters.length==si then tt else ta
@@ -7086,7 +7086,7 @@ let .without-phi(tt: Vector<Type>): Vector<Type> = (
    next
 );
 
-let .without-slot(tt: Type, t-tag: TypeTagIntern, t-arity: U64): Type = (
+let .without-slot(tt: Type, t-tag: TypeTagIntern, t-arity: U32): Type = (
    match tt {
       TAnd { conjugate=conjugate } => (
          let result = mk-vector(type(Type), 0);
@@ -7103,7 +7103,7 @@ let .without-slot(tt: Type, t-tag: TypeTagIntern, t-arity: U64): Type = (
    }
 );
 
-let .accept-interface(tt: Type, pos: U64): Type = (
+let .accept-interface(tt: Type, pos: U32): Type = (
    if tt.should-accept-interface
    then tt && tv( c"accept_interface_" + pos.into(type(CString)) )
    else tt
@@ -7122,7 +7122,7 @@ let .should-accept-interface(tt: Type): Bool = (
 );
 
 let assert-no-infinite-types(): Nil = (
-   let fields-of-type = {} : Hashtable<(U64,U64),Vector<(Type,Type)>>;
+   let fields-of-type = {} : Hashtable<(U32,U32),Vector<(Type,Type)>>;
    for td in ast-parsed-program.unroll-seq { match td {
       Typedef{} => (
          let lhs-type = (td as Tag::Typedef).lhs-type;
@@ -7145,8 +7145,8 @@ let assert-no-infinite-types(): Nil = (
    }};
 );
 
-let assert-no-infinite-type(fields-of-type: Hashtable<(U64,U64),Vector<(Type,Type)>>,
-                            seen: List<(U64,U64)>, visiting: Type, root-type: Type, blame: AST): Nil = (
+let assert-no-infinite-type(fields-of-type: Hashtable<(U32,U32),Vector<(Type,Type)>>,
+                            seen: List<(U32,U32)>, visiting: Type, root-type: Type, blame: AST): Nil = (
    let field-types = fields-of-type.lookup(visiting.ground-tag-and-arity, mk-vector(type((Type,Type))));
    for Tuple{base-type=first,field-type=second} in field-types {
       let tctx = unify(base-type, visiting, blame).normalize;
@@ -7246,12 +7246,12 @@ let mark-free-and-seen(t: AST): Nil = (
    tctx-free-and-seen-index = tctx-free-and-seen-index.bind(t, true);
 );
 
-let tag-to-index-index = {} : Hashtable<CString,U64>;
+let tag-to-index-index = {} : Hashtable<CString,U32>;
 
-let unknown-index-of-tag = 99999_u64;
+let unknown-index-of-tag = 99999_u32;
 
-let index-of-tag(tag: CString): U64 = tag-to-index-index.lookup(tag,unknown-index-of-tag);
-let index-index-of-tag(tag: CString, index: U64): Nil = tag-to-index-index = tag-to-index-index.bind(tag,index);
+let index-of-tag(tag: CString): U32 = tag-to-index-index.lookup(tag,unknown-index-of-tag);
+let index-index-of-tag(tag: CString, index: U32): Nil = tag-to-index-index = tag-to-index-index.bind(tag,index);
 
 let plugin-current-backend = &plugin-null-backend;
 
@@ -7275,10 +7275,10 @@ let frontend(fp: CString): Nil = (
    }; ()
 );
 
-let index-typedef-fields = {} : Hashtable<(U64,U64),Vector<(Type,Type)>>;
-let index-typedef = {} : Hashtable<(U64,U64),AST>;
-let index-fields-of = {} : Hashtable<(U64,U64,CString),Vector<(CString,Type)>>;
-let index-cases-of = {} : Hashtable<(U64,U64),Vector<CString>>;
+let index-typedef-fields = {} : Hashtable<(U32,U32),Vector<(Type,Type)>>;
+let index-typedef = {} : Hashtable<(U32,U32),AST>;
+let index-fields-of = {} : Hashtable<(U32,U32,CString),Vector<(CString,Type)>>;
+let index-cases-of = {} : Hashtable<(U32,U32),Vector<CString>>;
 
 let index-typedefs(program: AST): Nil = (
    for def in program.unroll-seq { match def {
@@ -7363,8 +7363,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type, rewritten-constant: Bool): (TypeContext?, AST) = (
-   profile-visit-ast-unique(term);
-   profile-visit-ast-equal(term);
+   #profile-visit-ast-unique(term);
+   #profile-visit-ast-equal(term);
    if not(term.is-free-and-seen) { match term {
       App{ left:Abs{def=lhs:Var{lname=key}, rhs:ASTNil{}, misc-tt=tt}, rhs=right } => (
          (tctx, let check-tt) = typeof-var-raw(term, tctx, lname, true);
@@ -8056,9 +8056,9 @@ let infer-tctx(tctx: TypeContext?, tt: Type): TypeContext? = (
 );
 
 let type-ast-inserts = mk-vector(type(AST));
-let complex-type-index = mk-set(type((U64,U64)));
+let complex-type-index = mk-set(type((U32,U32)));
 
-let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U64, case-number: U64): Nil = (
+let visit-field-template(field-name: CString, base-type: Type, field-type: Type, blame: AST, field-ordinal: U32, case-number: U32): Nil = (
    let mangled-field-name = case-number.into(type(CString)) + c"_" + field-name;
    let ctx = (None : Maybe<TypeContext>)();
    ctx = ctx.bind( c"base-type", base-type, denormalize(base-type), mk-eof() );
@@ -8089,9 +8089,9 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ()
 );
 
-let phi-parameters-index = {} : Hashtable<(U64,U64),Type>;
+let phi-parameters-index = {} : Hashtable<(U32,U32),Type>;
 
-let phi-parameters(tag: U64, ps: U64): Type = phi-parameters-index.lookup((tag,ps),ta);
+let phi-parameters(tag: U32, ps: U32): Type = phi-parameters-index.lookup((tag,ps),ta);
 
 let infer-type-definition(term: AST): Nil = (
    match term { Typedef{} => (); };
@@ -8115,7 +8115,7 @@ let infer-type-definition(term: AST): Nil = (
       interface-implementors = cons( (lhs-type, rhs-type, term), interface-implementors );
    };
    if misc-type.is-t(interned-tag-phi,0) {
-      let common-tags-length = 0_u64;
+      let common-tags-length = 0_u32;
       let common-parameters = mk-vector(type(Type));
       for Tuple{ case-tag1=first, case-fields=second } in cases {
          if case-tag1==c"" {
@@ -8138,11 +8138,11 @@ let infer-type-definition(term: AST): Nil = (
       add-quick-prop(lhs-type, lhs-type, t1(interned-tag-sized,lhs-type));
       add-weaken-quick-prop(lhs-type, t1(interned-tag-sized,ta), t1(interned-tag-sized,lhs-type));
 
-      let case-number = 0_u64;
+      let case-number = 0_u32;
       for Tuple{ case-tag2=first, case-fields=second } in cases {
          complex-type-index = complex-type-index.bind( lhs-type.ground-tag-and-arity );
          datatype-index = datatype-index.bind( lhs-type.ground-tag-and-arity );
-         let field-ordinal = 0_u64;
+         let field-ordinal = 0_u32;
          for Tuple{ field-name3=first, field-type=second } in case-fields {
             let guard = lhs-type && (if non-zero(case-tag2) then t0(c"Tag::"+case-tag2) else ta);
             let field-wrapped-type = t1(c"Field::"+field-name3, field-type);
@@ -8174,7 +8174,7 @@ let infer-type-definition(term: AST): Nil = (
          add-quick-prop(lhs-type, lhs-type, tag-case-number);
          add-weaken-quick-prop(lhs-type, lhs-type, tag-case-number);
       };
-      let case-index = 0_u64;
+      let case-index = 0_u32;
       for Tuple{ case-tag4=first, case-fields=second } in cases {
          if case-tag4!=c"" {
             let o-case-fields = [] : List<(CString,Type)>;
@@ -8192,9 +8192,9 @@ let infer-type-definition(term: AST): Nil = (
    };
 );
 
-let type-constructor-tag-ordinal-index = {} : Hashtable<(U64,U64,CString),U64>;
+let type-constructor-tag-ordinal-index = {} : Hashtable<(U32,U32,CString),U32>;
 
-let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number: U64, common-fields: List<(CString,Type)>, case-fields: List<(CString,Type)>, blame: AST, has-tag-case: Bool): Nil = (
+let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number: U32, common-fields: List<(CString,Type)>, case-fields: List<(CString,Type)>, blame: AST, has-tag-case: Bool): Nil = (
    (let base-tag, let base-arity) = base-type.ground-tag-and-arity;
    type-constructor-tag-ordinal-index = type-constructor-tag-ordinal-index.bind( (base-tag,base-arity,case-tag), case-number );
 
@@ -8263,11 +8263,11 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
 );
 
 
-let interface-index = mk-set(type((U64,U64)));
+let interface-index = mk-set(type((U32,U32)));
 
-let interface-shape-index = {} : Hashtable<(U64,U64),List<(CString,Type,Type)>>;
+let interface-shape-index = {} : Hashtable<(U32,U32),List<(CString,Type,Type)>>;
 
-let interface-self-index = {} : Hashtable<(U64,U64),(Type,Type)>;
+let interface-self-index = {} : Hashtable<(U32,U32),(Type,Type)>;
 
 let interface-implementors = [] : List<(Type,Type,AST)>;
 
@@ -8344,11 +8344,11 @@ let maybe-retain(tctx: TypeContext?, term: AST): (TypeContext?, AST) = (
 
 let worst-phi-length = 0_sz;
 
-let phi-merge(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, blame: AST): PBTree<U64,PhiContextRow> = (
-   phi-merge-inner(tctx-globals, tctx-primary, tctx-secondary, blame, mk-set(type(U64))).second
+let phi-merge(tctx-globals: TypeContext?, tctx-primary: PBTree<U32,PhiContextRow>, tctx-secondary: PBTree<U32,PhiContextRow>, blame: AST): PBTree<U32,PhiContextRow> = (
+   phi-merge-inner(tctx-globals, tctx-primary, tctx-secondary, blame, mk-set(type(U32))).second
 );
 
-let phi-merge-inner(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, blame: AST, seen: Set<U64>): (Set<U64>, PBTree<U64,PhiContextRow>) = (
+let phi-merge-inner(tctx-globals: TypeContext?, tctx-primary: PBTree<U32,PhiContextRow>, tctx-secondary: PBTree<U32,PhiContextRow>, blame: AST, seen: Set<U32>): (Set<U32>, PBTree<U32,PhiContextRow>) = (
    match tctx-secondary {
       PBLeaf{} => (seen, tctx-primary);
       PBNode1{ k1=k1, tr=v1, left=left, right=right } => (
@@ -8455,7 +8455,7 @@ let preprocess(): Nil = (
    index-typedefs(ast-parsed-program);
 );
 
-let release-locals(tctx-before: PBTree<k,v>, tctx-after: PBTree<k,v>, tctx-after-iter: PBTree<k,v>, pid-seen: Set<U64>): (Set<U64>, PBTree<k,v>) = (
+let release-locals(tctx-before: PBTree<k,v>, tctx-after: PBTree<k,v>, tctx-after-iter: PBTree<k,v>, pid-seen: Set<U32>): (Set<U32>, PBTree<k,v>) = (
    if is(tctx-before,tctx-after) then (pid-seen, tctx-after)
    else match tctx-after-iter {
       PBLeaf{} => (pid-seen, tctx-after);
@@ -8493,7 +8493,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
    let tctx-after-pctx = tctx-after.get-or(mk-tctx()).pctx;
    let needs-release = [] : List<TypeContextRow>;
    let needs-mark-release = [] : List<TypeContextRow>;
-   let pid-seen = mk-set(type(U64));
+   let pid-seen = mk-set(type(U32));
    while non-zero(tctx-after-tctx) and not(is(tctx-before-tctx, tctx-after-tctx)) {
       let tr = head(tctx-after-tctx);
       let dt = tctx-after.with-phi(tr.denormalized, term);
@@ -8708,7 +8708,7 @@ let std-apply-macro-tag(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (
       Lit{key=key} => (
          if index-of-tag(key)==unknown-index-of-tag then (tctx, mk-eof()) else {
             let tag-name    = mk-lit(index-of-tag(key).into(type(CString)));
-            let tag-ordinal = tag-name.ascript(t0(c"Constant") && t0(c"Literal") && t0(c"U64"));
+            let tag-ordinal = tag-name.ascript(t0(c"Constant") && t0(c"Literal") && t0(c"U32"));
             let tag-type    = mk-atype(t0(c"Tag::" + key));
             (tctx, mk-cons(mk-cons(tag-name, tag-ordinal), tag-type))
          }
@@ -8951,7 +8951,7 @@ let std-release-after-call(tctx: TypeContext?, function-type: Type, param-types:
 
 let substitute-lhs(tctx: TypeContext?, t: AST): AST = substitute-lhs(tctx, t, 0);
 
-let substitute-lhs(tctx: TypeContext?, t: AST, idx: U64): AST = (
+let substitute-lhs(tctx: TypeContext?, t: AST, idx: U32): AST = (
    match t {
       App{ ps=left, right:App{ left:Lit{key:c":",ctk=token}, right:App{ left:Var{v1=key,vtk1=token}, right:AType{vt1=tt} } } } => (
          vt1 = substitute-macro(tctx, vt1.accept-interface(idx)).expand-implied-phi.without-phi-keep-state;
@@ -9081,7 +9081,7 @@ let try-destructure-macro(loc: SourceLocation, lhs: AST, term: AST): AContext? =
          if index-of-tag(el9)!=unknown-index-of-tag {
             r = yes;
             let tag-i = index-of-tag(el9).into(type(CString));
-            r = r.bind(pv9, mk-app( mk-lit(c":",with-key(eltk9,c":")), mk-app( mk-lit(tag-i,with-key(eltk9,tag-i)), mk-atype(t0(c"Constant") && t0(c"Literal") && t0(c"U64")) ) ));
+            r = r.bind(pv9, mk-app( mk-lit(c":",with-key(eltk9,c":")), mk-app( mk-lit(tag-i,with-key(eltk9,tag-i)), mk-atype(t0(c"Constant") && t0(c"Literal") && t0(c"U32")) ) ));
             let tag-tt = c"Tag::" + el9;
             r = r.bind(pt9, mk-lit(tag-tt,with-key(eltk9,tag-tt)));
          }
@@ -9114,7 +9114,7 @@ let typecheck(): Nil = (
 
 let typeof-lhs(lhs: AST): Type = typeof-lhs(lhs,0);
 
-let typeof-lhs(lhs: AST, idx: U64): Type = match lhs {
+let typeof-lhs(lhs: AST, idx: U32): Type = match lhs {
    App{ left:Lit{key:c":"}, right:App{ right:AType{tt=tt} } } => tt.rewrite-type-alias.accept-interface(idx);
    App{ ps=left, right:App{ left:Lit{key:c":"}, right:App{ right:AType{tt=tt} } } } =>
      t2(interned-tag-cons, typeof-lhs(ps,idx+1), tt.rewrite-type-alias.accept-interface(idx));
@@ -9152,7 +9152,7 @@ let validate-interfaces(): Nil = (
    };
 );
 
-let validate-pctx-release(original-tree: PBTree<U64,PhiContextRow>, tree: PBTree<U64,PhiContextRow>, ps-seen: Set<U64>): Set<U64> = (
+let validate-pctx-release(original-tree: PBTree<U32,PhiContextRow>, tree: PBTree<U32,PhiContextRow>, ps-seen: Set<U32>): Set<U32> = (
    match tree {
       PBLeaf {} => ps-seen;
       PBNode1 { k11=k1, v11=v1, left=left, right=right } => (
@@ -9186,7 +9186,7 @@ let validate-pctx-release(original-tree: PBTree<U64,PhiContextRow>, tree: PBTree
 
 
 let validate-pctx-release(tctx: TypeContext?): Nil = (
-   validate-pctx-release(tctx.get-or(mk-tctx()).pctx, tctx.get-or(mk-tctx()).pctx, mk-set(type(U64))); ()
+   validate-pctx-release(tctx.get-or(mk-tctx()).pctx, tctx.get-or(mk-tctx()).pctx, mk-set(type(U32))); ()
 );
 
 let config-hot-path = false;
@@ -9589,9 +9589,9 @@ let safe-alloc-block-count = 0;
 
 import SRC/util-uuid.lsts;
 
-let uuid-counter = 0_u64;
+let uuid-counter = 0_u32;
 
-let iuid(): U64 = (
+let iuid(): U32 = (
    uuid-counter = uuid-counter + 1;
    uuid-counter;
 );

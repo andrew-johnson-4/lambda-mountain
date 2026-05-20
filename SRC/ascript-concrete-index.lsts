@@ -2,7 +2,7 @@
 # A concrete type is an instance of a type that has been realized on a term
 # It is not an "in processing" or "theoretical" type anymore, but now an actual observed term
 
-let concrete-type-instances-index = {} : Hashtable<(U64,U64),Vector<Type>>;
+let concrete-type-instances-index = {} : Hashtable<(U32,U32),Vector<Type>>;
 
 let add-concrete-type-instance(tt: Type, blame: AST): Nil = (
    match tt {
@@ -32,7 +32,7 @@ let does-concrete-type-instance-exist(tt: Type): Bool = (
    match tt {
       TGround{tag=tag, ts=parameters} => (
          let exists = false;
-         let k = (tag.primary, ts.length as U64);
+         let k = (tag.primary, ts.length as U32);
          for vt in concrete-type-instances-index.lookup(k, empty-type-vector) {
             if vt==tt then exists = true;
          };

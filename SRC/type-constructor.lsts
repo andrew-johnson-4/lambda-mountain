@@ -68,7 +68,7 @@ let interned-tag-io-file = intern-type-tag(c"IO::File");
 let interned-tag-pid = intern-type-tag(c"PID");
 let interned-tag-regex = intern-type-tag(c"Regex");
 let interned-tag-must-release-to-release = intern-type-tag(c"MustRelease::ToRelease");
-let interned-tag-unknown = TypeTagIntern(0_u64, 0_u64);
+let interned-tag-unknown = TypeTagIntern(0_u32, 0_u32);
 
 # new allocations = 0
 let ta = TAny;
@@ -79,7 +79,7 @@ let t0(tag: CString): Type = TGround(intern-type-tag(tag), mk-vector(type(Type))
 let t0(tag: TypeTagIntern): Type = TGround(tag, mk-vector(type(Type)));
 
 # new allocations = 0
-let ti(id: U64): Type = TId(id);
+let ti(id: U32): Type = TId(id);
 
 # new allocations = 1
 #    1 from 1 length vector

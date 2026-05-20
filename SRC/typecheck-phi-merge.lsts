@@ -1,11 +1,11 @@
 
 let worst-phi-length = 0_sz;
 
-let phi-merge(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, blame: AST): PBTree<U64,PhiContextRow> = (
-   phi-merge-inner(tctx-globals, tctx-primary, tctx-secondary, blame, mk-set(type(U64))).second
+let phi-merge(tctx-globals: TypeContext?, tctx-primary: PBTree<U32,PhiContextRow>, tctx-secondary: PBTree<U32,PhiContextRow>, blame: AST): PBTree<U32,PhiContextRow> = (
+   phi-merge-inner(tctx-globals, tctx-primary, tctx-secondary, blame, mk-set(type(U32))).second
 );
 
-let phi-merge-inner(tctx-globals: TypeContext?, tctx-primary: PBTree<U64,PhiContextRow>, tctx-secondary: PBTree<U64,PhiContextRow>, blame: AST, seen: Set<U64>): (Set<U64>, PBTree<U64,PhiContextRow>) = (
+let phi-merge-inner(tctx-globals: TypeContext?, tctx-primary: PBTree<U32,PhiContextRow>, tctx-secondary: PBTree<U32,PhiContextRow>, blame: AST, seen: Set<U32>): (Set<U32>, PBTree<U32,PhiContextRow>) = (
    match tctx-secondary {
       PBLeaf{} => (seen, tctx-primary);
       PBNode1{ k1=k1, tr=v1, left=left, right=right } => (

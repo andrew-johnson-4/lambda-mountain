@@ -1,5 +1,5 @@
 
-let implied-phi-index = {} : Hashtable<(U64,U64),Type>;
+let implied-phi-index = {} : Hashtable<(U32,U32),Type>;
 
 let .expand-implied-phi(tt: Type): Type = (
    let original-tt = tt;

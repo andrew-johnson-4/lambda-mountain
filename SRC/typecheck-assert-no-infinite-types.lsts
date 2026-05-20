@@ -1,6 +1,6 @@
 
 let assert-no-infinite-types(): Nil = (
-   let fields-of-type = {} : Hashtable<(U64,U64),Vector<(Type,Type)>>;
+   let fields-of-type = {} : Hashtable<(U32,U32),Vector<(Type,Type)>>;
    for td in ast-parsed-program.unroll-seq { match td {
       Typedef{} => (
          let lhs-type = (td as Tag::Typedef).lhs-type;
@@ -23,8 +23,8 @@ let assert-no-infinite-types(): Nil = (
    }};
 );
 
-let assert-no-infinite-type(fields-of-type: Hashtable<(U64,U64),Vector<(Type,Type)>>,
-                            seen: List<(U64,U64)>, visiting: Type, root-type: Type, blame: AST): Nil = (
+let assert-no-infinite-type(fields-of-type: Hashtable<(U32,U32),Vector<(Type,Type)>>,
+                            seen: List<(U32,U32)>, visiting: Type, root-type: Type, blame: AST): Nil = (
    let field-types = fields-of-type.lookup(visiting.ground-tag-and-arity, mk-vector(type((Type,Type))));
    for Tuple{base-type=first,field-type=second} in field-types {
       let tctx = unify(base-type, visiting, blame).normalize;

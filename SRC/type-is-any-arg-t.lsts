@@ -1,5 +1,5 @@
 
-let .is-any-arg-t(tt: Type, t-expect: TypeTagIntern, p-expect: U64): Bool = (
+let .is-any-arg-t(tt: Type, t-expect: TypeTagIntern, p-expect: U32): Bool = (
    match tt {
       TAnd { conjugate=conjugate } => (
          let result = false;

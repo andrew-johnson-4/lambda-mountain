@@ -10,7 +10,7 @@ let .into(tt: Type, tgt: Type<String>): String = (
          let tag = untern(ttag);
          let r = if tag[0] >= 97 and tag[0] <= 122 then intern("\"\{tag}\"") else intern(tag);
          if parameters.length > 0 {
-            let pc = 0_u64;
+            let pc = 0_u32;
             r = r + "<";
             let pi = parameters.length;
             while pi > 0 {
@@ -25,7 +25,7 @@ let .into(tt: Type, tgt: Type<String>): String = (
       );
       TAnd{conjugate=conjugate} => (
          let result = "";
-         let ci = 0_u64;
+         let ci = 0_u32;
          for c in conjugate {
             result = result + c.into(type(String));
             ci = ci + 1;

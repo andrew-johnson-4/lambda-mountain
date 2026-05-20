@@ -45,7 +45,7 @@ let std-apply-macro-tag(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (
       Lit{key=key} => (
          if index-of-tag(key)==unknown-index-of-tag then (tctx, mk-eof()) else {
             let tag-name    = mk-lit(index-of-tag(key).into(type(CString)));
-            let tag-ordinal = tag-name.ascript(t0(c"Constant") && t0(c"Literal") && t0(c"U64"));
+            let tag-ordinal = tag-name.ascript(t0(c"Constant") && t0(c"Literal") && t0(c"U32"));
             let tag-type    = mk-atype(t0(c"Tag::" + key));
             (tctx, mk-cons(mk-cons(tag-name, tag-ordinal), tag-type))
          }

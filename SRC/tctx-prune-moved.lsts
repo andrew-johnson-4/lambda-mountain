@@ -1,17 +1,17 @@
 
 let .prune-moved(tctx: TypeContext?): TypeContext? = (
    let inner-tctx = tctx.get-or(mk-tctx());
-   (let moved, let live) = inner-tctx.pctx.find-moved(mk-set(type(U64)), mk-set(type(U64)));
-   inner-tctx.pctx = inner-tctx.pctx.prune-moved(mk-pbtree(type(U64),type(PhiContextRow)), moved);
+   (let moved, let live) = inner-tctx.pctx.find-moved(mk-set(type(U32)), mk-set(type(U32)));
+   inner-tctx.pctx = inner-tctx.pctx.prune-moved(mk-pbtree(type(U32),type(PhiContextRow)), moved);
    Some(inner-tctx)
 );
 
-let .prune-moved(pctx: PBTree<U64,PhiContextRow>): PBTree<U64,PhiContextRow> = (
-   (let moved, let live) = pctx.find-moved(mk-set(type(U64)), mk-set(type(U64)));
-   pctx.prune-moved(mk-pbtree(type(U64),type(PhiContextRow)), moved);
+let .prune-moved(pctx: PBTree<U32,PhiContextRow>): PBTree<U32,PhiContextRow> = (
+   (let moved, let live) = pctx.find-moved(mk-set(type(U32)), mk-set(type(U32)));
+   pctx.prune-moved(mk-pbtree(type(U32),type(PhiContextRow)), moved);
 );
 
-let .prune-moved(from: PBTree<U64,PhiContextRow>, to: PBTree<U64,PhiContextRow>, moved: Set<U64>): PBTree<U64,PhiContextRow> = (
+let .prune-moved(from: PBTree<U32,PhiContextRow>, to: PBTree<U32,PhiContextRow>, moved: Set<U32>): PBTree<U32,PhiContextRow> = (
    match from {
       PBLeaf{} => to;
       PBNode1{ k11=k1, v11=v1, left=left, right=right } => (
@@ -34,7 +34,7 @@ let .prune-moved(from: PBTree<U64,PhiContextRow>, to: PBTree<U64,PhiContextRow>,
    }
 );
 
-let .find-moved(tctx: PBTree<U64,PhiContextRow>, moved: Set<U64>, live: Set<U64>): (Set<U64>, Set<U64>) = (
+let .find-moved(tctx: PBTree<U32,PhiContextRow>, moved: Set<U32>, live: Set<U32>): (Set<U32>, Set<U32>) = (
    match tctx {
       PBLeaf{} => (moved, live);
       PBNode1{ k11=k1, v11=v1, left=left, right=right } => (

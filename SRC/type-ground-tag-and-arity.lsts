@@ -1,17 +1,17 @@
 
-let .ground-tag-and-arity(tt: Type): (U64,U64) = (
+let .ground-tag-and-arity(tt: Type): (U32,U32) = (
    match tt {
-      TGround { tag:interned-tag-array, parameters:[_.. TAny{}..] } => (interned-tag-array.primary, 2_u64);
+      TGround { tag:interned-tag-array, parameters:[_.. TAny{}..] } => (interned-tag-array.primary, 2_u32);
       TGround { tag:interned-tag-array, parameters:[_.. array-base..] } => (
          let ga = array-base.ground-tag-and-arity;
          ( ga.first, ga.second + 1000 )
       );
-      TGround { tag:interned-tag-sized, parameters:[_..] } => (0_u64, 9999999_u64);
-      TGround { tag=tag, parameters=parameters } => (tag.primary, parameters.length as U64);
-      TAny {} => (0_u64, 0_u64);
-      TVar {} => (0_u64, 9999999_u64);
+      TGround { tag:interned-tag-sized, parameters:[_..] } => (0_u32, 9999999_u32);
+      TGround { tag=tag, parameters=parameters } => (tag.primary, parameters.length as U32);
+      TAny {} => (0_u32, 0_u32);
+      TVar {} => (0_u32, 9999999_u32);
       TAnd { conjugate=conjugate } => (
-         let result = (0_u64, 9999999_u64);
+         let result = (0_u32, 9999999_u32);
          for c in conjugate { if result.second==9999999 then result = c.ground-tag-and-arity };
          result
       );
