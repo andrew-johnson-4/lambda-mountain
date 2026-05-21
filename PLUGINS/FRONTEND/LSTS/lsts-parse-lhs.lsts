@@ -43,10 +43,12 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
    if non-zero(tokens) then print("Parse LHS \{head(tokens).location}\n");
    let base = match tokens {
       [ Token{key:c"["}.. _ ] => (
+         if non-zero(tokens) then print("Parse LHS [ \{head(tokens).location}\n");
          (let l, tokens) = lsts-parse-lhs-list(tokens);
          l
       );
       [ Token{key:c"("}.. _] => (
+         if non-zero(tokens) then print("Parse LHS ( \{head(tokens).location}\n");
          lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
          (let base, tokens) = lsts-parse-lhs(tokens);
          let bases = mk-vector(type(AST)).push(base);
@@ -68,42 +70,41 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
          };
       );
       [ Token{key:c"let"}.. _] => (
+         if non-zero(tokens) then print("Parse LHS let 1 \{head(tokens).location}\n");
          let loc = head(tokens).location;
          lsts-parse-expect(c"let", tokens); tokens = tail(tokens);
-         (let field-name-2, tokens) = lsts-parse-identifier(tokens);
+         (let field, tokens) = lsts-parse-lhs-identifer(tokens);
          mk-app(
             mk-var(c"macro::let-binding").with-location(loc),
-            mk-var(field-name-2).with-location(loc)
+            field
          ).with-location(loc);
       );
       [ Token{key:c"set"}.. _] => (
+         if non-zero(tokens) then print("Parse LHS set \{head(tokens).location}\n");
          let loc = head(tokens).location;
          lsts-parse-expect(c"set", tokens); tokens = tail(tokens);
-         (let field-name-3, tokens) = lsts-parse-identifier(tokens);
+         (let field, tokens) = lsts-parse-lhs-identifer(tokens);
          mk-app(
             mk-var(c"macro::set-binding").with-location(loc),
-            mk-var(field-name-3).with-location(loc)
+            field
          ).with-location(loc);
       );
       _ => (
-         if lsts-parse-head(tokens)==c"uuid" {
-            let u = head(tokens); tokens = tail(tokens);
-            lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-            (let id, tokens) = lsts-parse-identifier(tokens);
-            lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-            mk-cons( mk-var(c"uuid"), mk-var(u) );
-         } else if lsts-is-ident-head(lsts-parse-head(tokens)) {
-            (let v, tokens) = lsts-make-maybe-var(tokens);
-            v
+         if lsts-parse-head(tokens)==c"uuid" or if lsts-is-ident-head(lsts-parse-head(tokens)) {
+            (let id, tokens) = lsts-parse-lhs-identifier(tokens)
+            id
          } else if lsts-parse-head(tokens)==c"&" {
+            if non-zero(tokens) then print("Parse LHS & \{head(tokens).location}\n");
             let amp = head(tokens); tokens = tail(tokens);
             (let lhs, tokens) = lsts-parse-lhs(tokens);
             mk-cons( mk-var(c"&"), lhs )
          } else if lsts-is-lit(lsts-parse-head(tokens)) {
+            if non-zero(tokens) then print("Parse LHS list \{head(tokens).location}\n");
             (let l, tokens) = lsts-parse-lit(tokens);
             l
          # TODO, make tag optional here
          } else if non-zero(tokens) and lsts-parse-head(tail(tokens))==c"{" {
+            if non-zero(tokens) then print("Parse LHS T{ \{head(tokens).location}\n");
             let loc = head(tokens).location;
             let tag = lsts-parse-head(tokens); tokens = tail(tokens);
             lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
@@ -196,8 +197,10 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
    };
 
    while non-zero(tokens) and (lsts-parse-head(tokens)==c"." or lsts-parse-head(tokens)==c"[") {
+      if non-zero(tokens) then print("Parse LHS while more \{head(tokens).location}\n");
       match tokens {
          [Token{key:c"."}.. Token{key:c"."}.. rest] => (
+            if non-zero(tokens) then print("Parse LHS while more .. \{head(tokens).location}\n");
             let loc = head(tokens).location;
             lsts-parse-expect(c".", tokens); tokens = tail(tokens);
             lsts-parse-expect(c".", tokens); tokens = tail(tokens);
@@ -210,6 +213,7 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
             );
          );
          [Token{key:c"."}.. rest] => (
+            if non-zero(tokens) then print("Parse LHS while more . \{head(tokens).location}\n");
             let loc = head(tokens).location;
             lsts-parse-expect(c".", tokens); tokens = tail(tokens);
             (let field-name, tokens) = lsts-parse-identifier(tokens);
@@ -219,6 +223,7 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
             );
          );
          [Token{key:c"["}.. rest] => (
+            if non-zero(tokens) then print("Parse LHS while more [ \{head(tokens).location}\n");
             let loc = head(tokens).location;
             lsts-parse-expect(c"[", tokens); tokens = tail(tokens);
             let next-rest = lsts-parse-expression(tokens);
@@ -232,7 +237,8 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
          );
       }
    };
-   Tuple ( base, tokens )
+
+   ( base, tokens )
 );
 
 let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
@@ -251,4 +257,21 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
       (base, tokens) = lsts-parse-ascript(tokens);
    };
    ( base, tokens )
+);
+
+let lsts-parse-lhs-identifier(tokens: List<Token>): (AST,List<Token>) = (
+   let loc = if non-zero(tokens) then head(tokens).location else mk-location();
+   if lsts-parse-head(tokens)==c"uuid" {
+      lsts-parse-expect(c"uuid", tokens); tokens = tail(tokens);
+      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+      (let id, tokens) = lsts-parse-identifier(tokens);
+      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+      (mk-app(
+         mk-var(c"uuid").with-location(loc),
+         mk-var(id).with-location(loc)
+      ), tokens)
+   } else {
+      (let id, tokens) = lsts-parse-identifier(tokens);
+      (mk-var(id).with-location(loc), tokens)
+   }
 );
