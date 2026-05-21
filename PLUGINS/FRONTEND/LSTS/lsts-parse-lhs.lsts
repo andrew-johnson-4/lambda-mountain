@@ -1,5 +1,6 @@
 
 let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   if non-zero(tokens) then print("Parse LHS List \{head(tokens).location}\n");
    let base = mk-eof();
    lsts-parse-expect(c"[", tokens);
    let loc = head(tokens).location;
@@ -39,6 +40,7 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
 );
 
 let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   if non-zero(tokens) then print("Parse LHS One \{head(tokens).location}\n");
    let base = if lsts-parse-head(tokens)==c"uuid" {
       let u = head(tokens); tokens = tail(tokens);
       lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
@@ -159,6 +161,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
 );
 
 let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   if non-zero(tokens) then print("Parse LHS \{head(tokens).location}\n");
    let base = match tokens {
       [ Token{key:c"["}.. _ ] => (
          let base-rest = lsts-parse-lhs-list(tokens);
@@ -167,10 +170,24 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
       );
       [ Token{key:c"("}.. _] => (
          lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-         let base-rest = lsts-parse-lhs-big(tokens);
-         tokens = base-rest.second;
+         (let base, tokens) = lsts-parse-lhs(tokens);
+         let bases = mk-vector(type(AST)).push(base);
+         while lsts-parse-head(tokens)==c"," {
+            lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+            (base, tokens) = lsts-parse-lhs(tokens);
+            bases = bases.push(base);
+         };
          lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-         base-rest.first;
+         if bases.length==1 then bases[0]
+         else {
+            let tuple-args = bases[0];
+            let ai = 1_sz;
+            while ai < bases.length {
+               tuple-args = mk-cons(tuple-args, bases[ai]);
+               ai = ai + 1;
+            };
+            mk-app(mk-lit(c"Tuple"),tuple-args)
+         };
       );
       [ Token{key:c"let"}.. _] => (
          let loc = head(tokens).location;
@@ -236,24 +253,9 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
    };
    Tuple ( base, tokens )
 );
-let lsts-parse-lhs-big(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   let base-rest = lsts-parse-lhs-one(tokens);
-   let base = base-rest.first;
-   tokens = base-rest.second;
-   if lsts-parse-head(tokens) == c"=" {
-      let loc = head(tokens).location;
-      lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-      let val-rest = lsts-parse-lhs(tokens);
-      tokens = val-rest.second;
-      base = mk-app(
-         Var( c"macro::lhs-bind", with-location(mk-token("macro::lhs-bind"),loc) ),
-         mk-cons(base, val-rest.first)
-      );
-   };
-   Tuple ( base, tokens )
-);
 
 let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   if non-zero(tokens) then print("Parse Assign \{head(tokens).location}\n");
    let base = mk-eof();
    if lsts-has-assign(tokens) {
       let loc = head(tokens).location;
@@ -265,7 +267,7 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
          mk-cons(lhs, rhs).with-location(loc)
       );
    } else {
-      (let base, tokens) = lsts-parse-ascript(tokens);
+      (base, tokens) = lsts-parse-ascript(tokens);
    };
    ( base, tokens )
 );
