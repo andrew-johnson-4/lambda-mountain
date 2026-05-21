@@ -89,7 +89,7 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
          if lsts-parse-head(tokens)==c"uuid" {
             let u = head(tokens); tokens = tail(tokens);
             lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-            (let id, tokens) = lsts-parse-identifiers(tokens);
+            (let id, tokens) = lsts-parse-identifier(tokens);
             lsts-parse-expect(c")", tokens); tokens = tail(tokens);
             mk-cons( mk-var(c"uuid"), mk-var(u) );
          } else if lsts-is-ident-head(lsts-parse-head(tokens)) {
