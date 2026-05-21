@@ -257,99 +257,15 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let base = mk-eof();
    if lsts-has-assign(tokens) {
       let loc = head(tokens).location;
-
-      if lsts-parse-head(tokens) == c"(" {
-         lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-
-         let lefts = [] : List<ASTOrIdent>;
-
-         let loop = true;
-         while loop {
-            match lsts-parse-head(tokens) {
-               c"_" => (
-                  tokens = tail(tokens);
-                  lefts = cons(ASTOrIdentIgnore(), lefts);
-               );
-
-               c"let" => (
-                  let lhs = lsts-parse-lhs(tokens);
-                  tokens = lhs.second;
-                  lefts = cons(ASTOrIdentId ( lhs.first ), lefts);
-               );
-
-               hd => (
-                  let lhs = lsts-parse-lhs(tokens);
-                  tokens = lhs.second;
-                  lefts = cons(ASTOrIdentAST ( lhs.first ), lefts);
-               );
-            };
-
-            if lsts-parse-head(tokens) == c"," {
-               tokens = tail(tokens);
-            } else {
-               loop = false;
-            };
-         };
-
-         lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-
-         lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-         let rhs-rest = lsts-parse-small-expression(tokens);
-         tokens = rhs-rest.second;
-         let rhs-tmp-name = uuid();
-         let rhs-tmp = Var( rhs-tmp-name, with-location(mk-token(rhs-tmp-name),loc) );
-         base = mk-app(
-            Var( c"macro::let", with-location(mk-token(c"macro::let"),loc) ),
-            mk-cons( rhs-tmp, rhs-rest.first )
-         );
-
-         let i = 0_u64;
-         for lhs in lefts {
-            let fieldstr = c"." + (i+1).into(type(CString));
-            let rexpr = mk-app(
-               Var( fieldstr, with-location(mk-token(fieldstr),loc) ),
-               rhs-tmp
-            );
-
-            match lhs {
-               ASTOrIdentIgnore {} => ();
-
-               ASTOrIdentAST { ast=ast } => (
-                  let x = mk-app(
-                     Var( c"macro::set", with-location(mk-token("macro::set"),loc) ),
-                     mk-cons(ast, rexpr)
-                  );
-                  base = mk-cons(base, x);
-               );
-
-               ASTOrIdentId { id=id } => (
-                  let x = mk-app(
-                     Var( c"macro::let", with-location(mk-token("macro::let"),loc) ),
-                     mk-cons( id, rexpr )
-                  );
-                  base = mk-cons(base, x);
-               );
-            };
-            i = i + 1;
-         };
-      } else {
-         let lhs-rest = lsts-parse-lhs(tokens);
-         tokens = lhs-rest.second;
-         lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-         let rhs-rest = lsts-parse-small-expression(tokens);
-         tokens = rhs-rest.second;
-         base = mk-app(
-            Var( c"macro::set", with-location(mk-token("macro::set"),loc) ),
-            mk-cons(
-               lhs-rest.first,
-               rhs-rest.first
-            )
-         );
-      };
+      (let lhs, tokens) = lsts-parse-lhs(tokens);
+      lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+      (let rhs, tokens) = lsts-parse-small-expression(tokens);
+      base = mk-app(
+         mk-var(c"macro::assign").with-location(loc),
+         mk-cons(lhs, rhs).with-location(loc)
+      );
    } else {
-      let base-rest = lsts-parse-ascript(tokens);
-      base = base-rest.first;
-      tokens = base-rest.second;
+      (let base, tokens) = lsts-parse-ascript(tokens);
    };
-   Tuple ( base, tokens )
+   ( base, tokens )
 );
