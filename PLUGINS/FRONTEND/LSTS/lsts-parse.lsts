@@ -1017,6 +1017,7 @@ type ASTOrIdent = ASTOrIdentAST { ast: AST }
                  ;
 
 let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   if non-zero(tokens) then print("Parse small expression \{head(tokens).location}\n");
    let base = mk-eof();
    match tokens {
       [Token{key:c"if"}.. Token{key:c"let"}.. rest] => (
@@ -1101,9 +1102,8 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
             true-expr;
          } else {
-            let t-rest = lsts-parse-assign(tokens);
-            tokens = t-rest.second;
-            t-rest.first;
+            (let t, tokens) = lsts-parse-assign(tokens);
+            t
          };
          let f = mk-nil();
          if lsts-parse-head(tokens)==c";" and lsts-parse-head(tail(tokens))==c"else" then tokens = tail(tokens);

@@ -90,7 +90,7 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
          ).with-location(loc);
       );
       _ => (
-         if lsts-parse-head(tokens)==c"uuid" or if lsts-is-ident-head(lsts-parse-head(tokens)) {
+         if lsts-parse-head(tokens)==c"uuid" or lsts-is-ident-head(lsts-parse-head(tokens)) {
             (let id, tokens) = lsts-parse-lhs-identifier(tokens)
             id
          } else if lsts-parse-head(tokens)==c"&" {
@@ -260,6 +260,7 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
 );
 
 let lsts-parse-lhs-identifier(tokens: List<Token>): (AST,List<Token>) = (
+   if non-zero(tokens) then print("Parse Identifier \{head(tokens).location}\n");
    let loc = if non-zero(tokens) then head(tokens).location else mk-location();
    if lsts-parse-head(tokens)==c"uuid" {
       lsts-parse-expect(c"uuid", tokens); tokens = tail(tokens);
