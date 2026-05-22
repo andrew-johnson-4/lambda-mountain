@@ -151,7 +151,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
             let amp = head(tokens); tokens = tail(tokens);
             (let lhs, tokens) = lsts-parse-lhs-one(tokens);
             mk-cons( mk-var(c"&"), lhs )
-         } else if lsts-is-lit(lsts-parse-head(tokens)) {
+         } else if lsts-is-lit(lsts-parse-head(tokens)) and lsts-parse-head(tail(tokens))!=c"{" {
             if non-zero(tokens) then print("Parse LHS list \{head(tokens).location}\n");
             (let l, tokens) = lsts-parse-lit(tokens);
             l
