@@ -73,7 +73,7 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
          if non-zero(tokens) then print("Parse LHS let 1 \{head(tokens).location}\n");
          let loc = head(tokens).location;
          lsts-parse-expect(c"let", tokens); tokens = tail(tokens);
-         (let field, tokens) = lsts-parse-lhs-identifer(tokens);
+         (let field, tokens) = lsts-parse-lhs-identifier(tokens);
          mk-app(
             mk-var(c"macro::let-binding").with-location(loc),
             field
@@ -83,7 +83,7 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
          if non-zero(tokens) then print("Parse LHS set \{head(tokens).location}\n");
          let loc = head(tokens).location;
          lsts-parse-expect(c"set", tokens); tokens = tail(tokens);
-         (let field, tokens) = lsts-parse-lhs-identifer(tokens);
+         (let field, tokens) = lsts-parse-lhs-identifier(tokens);
          mk-app(
             mk-var(c"macro::set-binding").with-location(loc),
             field
@@ -91,8 +91,8 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
       );
       _ => (
          if lsts-parse-head(tokens)==c"uuid" or lsts-is-ident-head(lsts-parse-head(tokens)) {
-            (let id, tokens) = lsts-parse-lhs-identifier(tokens)
-            id
+            (let id1, tokens) = lsts-parse-lhs-identifier(tokens);
+            id1
          } else if lsts-parse-head(tokens)==c"&" {
             if non-zero(tokens) then print("Parse LHS & \{head(tokens).location}\n");
             let amp = head(tokens); tokens = tail(tokens);
@@ -265,14 +265,14 @@ let lsts-parse-lhs-identifier(tokens: List<Token>): (AST,List<Token>) = (
    if lsts-parse-head(tokens)==c"uuid" {
       lsts-parse-expect(c"uuid", tokens); tokens = tail(tokens);
       lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-      (let id, tokens) = lsts-parse-identifier(tokens);
+      (let id2, tokens) = lsts-parse-identifier(tokens);
       lsts-parse-expect(c")", tokens); tokens = tail(tokens);
       (mk-app(
          mk-var(c"uuid").with-location(loc),
-         mk-var(id).with-location(loc)
+         mk-var(id2).with-location(loc)
       ), tokens)
    } else {
-      (let id, tokens) = lsts-parse-identifier(tokens);
-      (mk-var(id).with-location(loc), tokens)
+      (let id3, tokens) = lsts-parse-identifier(tokens);
+      (mk-var(id3).with-location(loc), tokens)
    }
 );
