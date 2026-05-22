@@ -112,7 +112,7 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
             lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
             let des-args = mk-nil();
             let early-tokens = tokens;
-            while non-zero(tokens) and (is(tokens,early-tokens) or lsts-parse-head(tokens)==c",") {
+            while non-zero(tokens) and lsts-parse-head(tokens)!=c"}" and (is(tokens,early-tokens) or lsts-parse-head(tokens)==c",") {
                if lsts-parse-head(tokens) == c"," {
                   lsts-parse-expect(c",", tokens); tokens = tail(tokens);
                };
