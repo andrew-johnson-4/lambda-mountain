@@ -1043,7 +1043,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let base = mk-eof();
    match tokens {
       [Token{key:c"if"}.. Token{key:c"let"}.. rest] => (
-         let loc = head(tokens).location;
+         let loc = head(tokens).location; tokens = tail(tokens);
          let lhs-rest = lsts-parse-lhs(tokens); tokens = lhs-rest.second;
          lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
          let expr-rest = lsts-parse-small-expression(tokens); tokens = expr-rest.second;
