@@ -9,7 +9,7 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
       base = Lit ( c"MACRO::LHS-LIST-SENTINEL", with-location(mk-token("MACRO::LHS-LIST-SENTINEL"),loc) );
       base = mk-app(base,base); # TODO FIX MACRO, this is for compatibility with macros 1.0
    } else {
-      let base-rest = lsts-parse-lhs(tokens);
+      let base-rest = lsts-parse-lhs-one(tokens);
       base = base-rest.first;
       tokens = base-rest.second;
       let bases = [base];
@@ -21,7 +21,7 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
             in-base = mk-app(in-base,in-base); # TODO FIX MACRO, this is for compatibility with macros 1.0
             bases = cons( in-base, bases );
          } else {
-            let next-rest = lsts-parse-lhs(tokens);
+            let next-rest = lsts-parse-lhs-one(tokens);
             let next = next-rest.first;
             tokens = next-rest.second;
             bases = cons( next, bases );
@@ -41,6 +41,54 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
 );
 
 let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   (let base, tokens) = lsts-parse-lhs-one(tokens);
+
+   while non-zero(tokens) and (lsts-parse-head(tokens)==c"." or lsts-parse-head(tokens)==c"[") {
+      if non-zero(tokens) then print("Parse LHS while more \{head(tokens).location}\n");
+      match tokens {
+         [Token{key:c"."}.. Token{key:c"."}.. rest] => (
+            if non-zero(tokens) then print("Parse LHS while more .. \{head(tokens).location}\n");
+            let loc = head(tokens).location;
+            lsts-parse-expect(c".", tokens); tokens = tail(tokens);
+            lsts-parse-expect(c".", tokens); tokens = tail(tokens);
+            let next-rest = lsts-parse-lhs-one(tokens);
+            let next = next-rest.first;
+            tokens = next-rest.second;
+            base = mk-app(
+               Var( c"macro::lhs-prefix-or-suffix", with-location(mk-token("macro::lhs-prefix-or-suffix"),loc) ),
+               mk-cons(base, next)
+            );
+         );
+         [Token{key:c"."}.. rest] => (
+            if non-zero(tokens) then print("Parse LHS while more . \{head(tokens).location}\n");
+            let loc = head(tokens).location;
+            lsts-parse-expect(c".", tokens); tokens = tail(tokens);
+            (let field-name, tokens) = lsts-parse-identifier(tokens);
+            base = mk-app(
+               Var( c"macro::lhs-field", with-location(mk-token("macro::lhs-field"),loc) ),
+               mk-cons(base, mk-var(field-name))
+            );
+         );
+         [Token{key:c"["}.. rest] => (
+            if non-zero(tokens) then print("Parse LHS while more [ \{head(tokens).location}\n");
+            let loc = head(tokens).location;
+            lsts-parse-expect(c"[", tokens); tokens = tail(tokens);
+            let next-rest = lsts-parse-expression(tokens);
+            let next = next-rest.first;
+            tokens = next-rest.second;
+            lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
+            base = mk-app(
+               Var( c"macro::lhs-index", with-location(mk-token("macro::lhs-index"),loc) ),
+               mk-cons(base, next)
+            );
+         );
+      }
+   };
+
+   (base, tokens)
+);
+
+let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
    if non-zero(tokens) then print("Parse LHS \{head(tokens).location}\n");
    let base = match tokens {
       [ Token{key:c"["}.. _ ] => (
@@ -98,7 +146,7 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
          } else if lsts-parse-head(tokens)==c"&" {
             if non-zero(tokens) then print("Parse LHS & \{head(tokens).location}\n");
             let amp = head(tokens); tokens = tail(tokens);
-            (let lhs, tokens) = lsts-parse-lhs(tokens);
+            (let lhs, tokens) = lsts-parse-lhs-one(tokens);
             mk-cons( mk-var(c"&"), lhs )
          } else if lsts-is-lit(lsts-parse-head(tokens)) {
             if non-zero(tokens) then print("Parse LHS list \{head(tokens).location}\n");
@@ -137,9 +185,8 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
                };
                let val = if lsts-parse-head(tokens)==c":" {
                   tokens = tail(tokens);
-                  let val-rest = lsts-parse-lhs(tokens);
-                  tokens = val-rest.second;
-                  val-rest.first;
+                  (let val, tokens) = lsts-parse-lhs-one(tokens);
+                  val
                } else { mk-eof() };
                if not(non-zero(val)) and not(non-zero(binding)) and not(non-zero(attr-key)) {
                   lsts-parse-expect(c"[Struct LHS]", tokens); tokens = tail(tokens);
@@ -200,47 +247,6 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
       );
    };
 
-   while non-zero(tokens) and (lsts-parse-head(tokens)==c"." or lsts-parse-head(tokens)==c"[") {
-      if non-zero(tokens) then print("Parse LHS while more \{head(tokens).location}\n");
-      match tokens {
-         [Token{key:c"."}.. Token{key:c"."}.. rest] => (
-            if non-zero(tokens) then print("Parse LHS while more .. \{head(tokens).location}\n");
-            let loc = head(tokens).location;
-            lsts-parse-expect(c".", tokens); tokens = tail(tokens);
-            lsts-parse-expect(c".", tokens); tokens = tail(tokens);
-            let next-rest = lsts-parse-lhs(tokens);
-            let next = next-rest.first;
-            tokens = next-rest.second;
-            base = mk-app(
-               Var( c"macro::lhs-prefix-or-suffix", with-location(mk-token("macro::lhs-prefix-or-suffix"),loc) ),
-               mk-cons(base, next)
-            );
-         );
-         [Token{key:c"."}.. rest] => (
-            if non-zero(tokens) then print("Parse LHS while more . \{head(tokens).location}\n");
-            let loc = head(tokens).location;
-            lsts-parse-expect(c".", tokens); tokens = tail(tokens);
-            (let field-name, tokens) = lsts-parse-identifier(tokens);
-            base = mk-app(
-               Var( c"macro::lhs-field", with-location(mk-token("macro::lhs-field"),loc) ),
-               mk-cons(base, mk-var(field-name))
-            );
-         );
-         [Token{key:c"["}.. rest] => (
-            if non-zero(tokens) then print("Parse LHS while more [ \{head(tokens).location}\n");
-            let loc = head(tokens).location;
-            lsts-parse-expect(c"[", tokens); tokens = tail(tokens);
-            let next-rest = lsts-parse-expression(tokens);
-            let next = next-rest.first;
-            tokens = next-rest.second;
-            lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
-            base = mk-app(
-               Var( c"macro::lhs-index", with-location(mk-token("macro::lhs-index"),loc) ),
-               mk-cons(base, next)
-            );
-         );
-      }
-   };
    if non-zero(tokens) then print("End Parse LHS \{head(tokens).location}\n");
 
    ( base, tokens )
