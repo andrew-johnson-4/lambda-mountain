@@ -36,6 +36,7 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
       }
    };
    lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
+   if non-zero(tokens) then print("End Parse LHS List \{head(tokens).location}\n");
    Tuple ( base, tokens )
 );
 
@@ -58,6 +59,7 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
             bases = bases.push(base);
          };
          lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+         if non-zero(tokens) then print("End Parse LHS ( \{head(tokens).location}\n");
          if bases.length==1 then bases[0]
          else {
             let tuple-args = bases[0];
@@ -109,7 +111,11 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
             let tag = lsts-parse-head(tokens); tokens = tail(tokens);
             lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
             let des-args = mk-nil();
-            while non-zero(tokens) and lsts-parse-head(tokens)!=c"}" {
+            let early-tokens = tokens;
+            while non-zero(tokens) and (is(tokens,early-tokens) or lsts-parse-head(tokens)==c",") {
+               if lsts-parse-head(tokens) == c"," {
+                  lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+               };
                let attr-loc = head(tokens).location;
                let binding = c"";
                let attr-key = c"";
@@ -173,15 +179,13 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
                      val
                   )
                );
-               if lsts-parse-head(tokens) != c"}" {
-                  lsts-parse-expect(c",", tokens); tokens = tail(tokens);
-               };
             };
             if not(non-zero(des-args)) { des-args = mk-nil(); };
             lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
             let lhs-tag = if tag!=c"_"
             then mk-lit(tag).with-location(loc)
             else mk-nil();
+            if non-zero(tokens) then print("End LHS T{ \{head(tokens).location}\n");
             mk-app(
                mk-var(c"macro::lhs-tagged").with-location(loc),
                mk-cons(
@@ -237,6 +241,7 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
          );
       }
    };
+   if non-zero(tokens) then print("End Parse LHS \{head(tokens).location}\n");
 
    ( base, tokens )
 );
