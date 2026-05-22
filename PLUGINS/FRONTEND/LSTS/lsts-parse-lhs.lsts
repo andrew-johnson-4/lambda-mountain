@@ -41,6 +41,7 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
 );
 
 let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   if non-zero(tokens) then print("Parse LHS \{head(tokens).location}\n");
    (let base, tokens) = lsts-parse-lhs-one(tokens);
 
    while non-zero(tokens) and (lsts-parse-head(tokens)==c"." or lsts-parse-head(tokens)==c"[") {
@@ -89,7 +90,7 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
 );
 
 let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   if non-zero(tokens) then print("Parse LHS \{head(tokens).location}\n");
+   if non-zero(tokens) then print("Parse LHS One \{head(tokens).location}\n");
    let base = match tokens {
       [ Token{key:c"["}.. _ ] => (
          if non-zero(tokens) then print("Parse LHS [ \{head(tokens).location}\n");
