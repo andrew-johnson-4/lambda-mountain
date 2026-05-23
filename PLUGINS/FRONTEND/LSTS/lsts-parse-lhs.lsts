@@ -9,7 +9,7 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
       base = Lit ( c"MACRO::LHS-LIST-SENTINEL", with-location(mk-token("MACRO::LHS-LIST-SENTINEL"),loc) );
       base = mk-app(base,base); # TODO FIX MACRO, this is for compatibility with macros 1.0
    } else {
-      let base-rest = lsts-parse-lhs-one(tokens);
+      let base-rest = lsts-parse-lhs-big(tokens);
       base = base-rest.first;
       tokens = base-rest.second;
       let bases = [base];
@@ -21,7 +21,7 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
             in-base = mk-app(in-base,in-base); # TODO FIX MACRO, this is for compatibility with macros 1.0
             bases = cons( in-base, bases );
          } else {
-            let next-rest = lsts-parse-lhs-one(tokens);
+            let next-rest = lsts-parse-lhs-big(tokens);
             let next = next-rest.first;
             tokens = next-rest.second;
             bases = cons( next, bases );
@@ -38,6 +38,20 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
    lsts-parse-expect(c"]", tokens); tokens = tail(tokens);
    if non-zero(tokens) then print("End Parse LHS List \{head(tokens).location}\n");
    Tuple ( base, tokens )
+);
+
+let lsts-parse-lhs-big(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   (let base, tokens) = lsts-parse-lhs-one(tokens);
+   if lsts-parse-head(tokens) == c"=" {
+      let loc = head(tokens).location;
+      lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+      (let val, tokens) = lsts-parse-lhs-one(tokens);
+      base = mk-app(
+         mk-var(c"macro::lhs-bind").with-location(loc),
+         mk-cons(base, val)
+      );
+   };
+   (base, tokens)
 );
 
 let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
