@@ -139,7 +139,10 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
             };
             mk-app(
                mk-var(c"macro::lhs-tagged").with-location(loc),
-               base
+               mk-cons(
+                  mk-lit(c"Tuple").with-location(loc),
+                  base
+               )
             )
          };
       );
