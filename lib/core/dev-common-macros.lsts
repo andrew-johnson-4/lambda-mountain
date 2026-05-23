@@ -7,8 +7,19 @@ typed macro $"assert"(c: lazy): lazy = (
    if not c then fail(c"Assertion Failed At ", macro::location(c));
 );
 
-typed macro macro::let(lhs: lazy, rhs: lazy): lazy = (
+typed macro macro::let-binding(v: macro::variable): lazy = (v);
+typed macro macro::set-binding(v: macro::variable): lazy = (v);
+
+typed macro macro::let(lhs: macro::let-binding, rhs: lazy): lazy = (
    (fn(lhs) = ()) (rhs)
+);
+
+typed macro macro::let(lhs: macro::variable, rhs: lazy): lazy = (
+   (fn(lhs) = ()) (rhs)
+);
+
+typed macro macro::let(lhs: macro::set-binding, rhs: lazy): lazy = (
+   mov(rhs, lhs)
 );
 
 typed macro macro::assign(lhs: macro::variable, rhs: lazy): lazy = (
