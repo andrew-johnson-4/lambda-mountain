@@ -103,6 +103,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
          l
       );
       [ Token{key:c"("}.. _] => (
+         let loc = head(tokens).location;
          lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
          (let base, tokens) = lsts-parse-lhs-big(tokens);
          let bases = mk-vector(type(AST)).push(base);
@@ -114,13 +115,32 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
          lsts-parse-expect(c")", tokens); tokens = tail(tokens);
          if bases.length==1 then bases[0]
          else {
-            let tuple-args = bases[0];
-            let ai = 1_sz;
-            while ai < bases.length {
-               tuple-args = mk-cons(tuple-args, bases[ai]);
-               ai = ai + 1;
+            base = mk-app(
+               mk-var(c"macro::lhs-tagged-field").with-location(loc),
+               mk-cons(
+                  bases[0],
+                  mk-var(c".0").with-location(loc)
+               )
+            );
+            let bi = 1_sz;
+            for b in bases[1_i64:] {
+               let field-base = mk-app(
+                  mk-var(c"macro::lhs-tagged-field").with-location(loc),
+                  mk-cons(
+                     b,
+                     mk-var(c"." + bi.into(type(CString))).with-location(loc)
+                  )
+               );
+               base = mk-app(
+                  mk-var(c"macro::lhs-fields").with-location(loc),
+                  mk-cons(base, b)
+               );
+               bi = bi + 1;
             };
-            mk-app(mk-lit(c"Tuple"),tuple-args)
+            mk-app(
+               mk-var(c"macro::lhs-tagged").with-location(loc),
+               base
+            )
          };
       );
       [ Token{key:c"let"}.. _] => (
