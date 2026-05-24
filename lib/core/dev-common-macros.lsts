@@ -15,7 +15,7 @@ typed macro macro::let(lhs: macro::let-binding, rhs: lazy): lazy = (
 );
 
 typed macro macro::let(lhs: macro::variable, rhs: lazy): lazy = (
-   (fn(lhs) = ()) (rhs)
+   mov(rhs, lhs)
 );
 
 typed macro macro::let(lhs: macro::set-binding, rhs: lazy): lazy = (
