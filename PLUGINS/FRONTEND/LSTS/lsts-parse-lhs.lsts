@@ -116,7 +116,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
          if bases.length==1 then bases[0]
          else {
             base = mk-app(
-               mk-var(c"macro::lhs-tagged-field").with-location(loc),
+               mk-var(c"macro::lhs-bind").with-location(loc),
                mk-cons(
                   bases[0],
                   mk-var(c".0").with-location(loc)
@@ -125,7 +125,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
             let bi = 1_sz;
             for b in bases[1_i64:] {
                let field-base = mk-app(
-                  mk-var(c"macro::lhs-tagged-field").with-location(loc),
+                  mk-var(c"macro::lhs-bind").with-location(loc),
                   mk-cons(
                      b,
                      mk-var(c"." + bi.into(type(CString))).with-location(loc)
