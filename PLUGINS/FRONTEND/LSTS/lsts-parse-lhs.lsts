@@ -115,22 +115,11 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
          lsts-parse-expect(c")", tokens); tokens = tail(tokens);
          if bases.length==1 then bases[0]
          else {
-            base = mk-app(
-               mk-var(c"macro::lhs-fields-field").with-location(loc),
-               mk-cons(
-                  mk-var(c".first").with-location(loc),
-                  mk-app(
-                     mk-var(c"macro::lhs-bind").with-location(loc),
-                     mk-cons(
-                        bases[0],
-                        mk-var(c"_").with-location(loc)
-                     )
-                  )
-               )
-            );
-            let bi = 1_sz;
+            base = mk-nil();
+            let bi = 0_sz;
             while bi < bases.length {
                let f = match bi {
+                  0 => c".first";
                   1 => c".second";
                   2 => c".third";
                   3 => c".fourth";
@@ -142,7 +131,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
                      mk-app(
                         mk-var(c"macro::lhs-bind").with-location(loc),
                         mk-cons(
-                           bases[0],
+                           bases[bi],
                            mk-var(c"_").with-location(loc)
                         )
                      )
@@ -150,7 +139,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
                );
                base = mk-app(
                   mk-var(c"macro::lhs-fields").with-location(loc),
-                  mk-cons(base, bases[bi])
+                  mk-cons(base, field-base)
                );
                bi = bi + 1;
             };

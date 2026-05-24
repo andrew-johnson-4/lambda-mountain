@@ -1,10 +1,10 @@
 
 import lib/core/bedrock.lsts;
 
-(let x, let y) = (1, 2);
-assert(x == 1);
-assert(y == 2);
+(let xx, let yy) = (1, 2);
+assert(xx == 1);
+assert(yy == 2);
 
-(x, y) = (3, 4);
-assert(x == 3);
-assert(y == 4);
+(xx, yy) = (3, 4);
+assert(xx == 3);
+assert(yy == 4);

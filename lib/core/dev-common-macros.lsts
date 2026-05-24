@@ -27,7 +27,8 @@ typed macro macro::lhs-field(base: lazy, field: lazy): lazy = (base; field);
 typed macro macro::lhs-field(base field1: macro::lhs-field, field2: lazy): lazy = (macro::concat($".", field1)(base); field2);
 
 typed macro macro::assign(tag-guard fields-guard: macro::lhs-tagged, rhs: lazy): lazy = (
-   $"if"(macro::lhs-tagged-with-term(rhs, tag-guard, fields-guard))
+   let uuid(term) = rhs;
+   $"if"(macro::lhs-tagged-with-term(uuid(term), tag-guard, fields-guard))
         ()
         (fail(c"Fallible assignment failed ", macro::location(rhs)));
 );
