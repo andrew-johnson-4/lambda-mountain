@@ -14,10 +14,6 @@ typed macro macro::let(lhs: macro::let-binding, rhs: lazy): lazy = (
    (fn(lhs) = ()) (rhs)
 );
 
-typed macro macro::let(lhs: macro::variable, rhs: lazy): lazy = (
-   mov(rhs, lhs)
-);
-
 typed macro macro::let(lhs: macro::set-binding, rhs: lazy): lazy = (
    mov(rhs, lhs)
 );
@@ -152,11 +148,11 @@ typed macro macro::pats-none(ignore: lazy): lazy = (
 );
 
 typed macro macro::match-pats-arm(term: lazy, v: macro::variable): lazy = (
-   macro::let(v, term); branchtrue()
+   let v = term; branchtrue()
 );
 
 typed macro macro::match-pats-arm(term: lazy, v pat: macro::match-lhs-binding): lazy = (
-   macro::let(v, term); match-pats-arm(v, pat)
+   let v = term; match-pats-arm(v, pat)
 );
 
 typed macro macro::match-pats-arm(term: lazy, ignore: macro::underscore): lazy = (
@@ -164,7 +160,7 @@ typed macro macro::match-pats-arm(term: lazy, ignore: macro::underscore): lazy =
 );
 
 typed macro macro::match-pats-arm(term: lazy, x rest: macro::lhs-head): lazy = (
-   macro::let(uuid(v), term);
+   let uuid(v) = term;
    $"if"(uuid(v).has-head)
       ($"if"(macro::match-pats-arm(head(uuid(v)),x))
          ( macro::match-pats-arm(tail(uuid(v)),rest) )
@@ -174,7 +170,7 @@ typed macro macro::match-pats-arm(term: lazy, x rest: macro::lhs-head): lazy = (
 );
 
 typed macro macro::match-pats-arm(term: lazy, c: macro::constant): lazy = (
-   macro::let(uuid(v), term); uuid(v)==c
+   let uuid(v) = term; uuid(v)==c;
 );
 
 typed macro macro::lhs-tagged(tag-guard: lazy, fields-guard: lazy): lazy = (
@@ -216,7 +212,7 @@ typed macro macro::lhs-fields-with-term(term: lazy, v: macro::variable): Bool = 
 );
 
 typed macro macro::lhs-fields-with-term(term: lazy, x rest: macro::lhs-head): Bool = (
-   macro::let(uuid(v), term);
+   let uuid(v) = term;
    $"if"(uuid(v).has-head)
       ($"if"(macro::match-pats-arm(head(uuid(v)),x))
          ( macro::match-pats-arm(tail(uuid(v)),rest) )
@@ -274,7 +270,7 @@ typed macro macro::match-pats-arm-with-term(term: lazy, bind prefix: macro::lhs-
    let uuid(s) = uuid(v).remove-prefix(prefix);
    let uuid(p) = uuid(v).get-prefix(prefix);
    $"if"(uuid(p).is-some and uuid(s).is-some)
-        (macro::let(bind, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,suffix))
+        (let bind = uuid(p).get-or-panic; macro::match-pats-arm(uuid(s).get-or-panic,suffix))
         (branchfalse())
 );
 
@@ -283,21 +279,21 @@ typed macro macro::match-pats-arm-with-term(term: lazy, prefix: lazy, bind suffi
    let uuid(s) = uuid(v).remove-suffix(suffix);
    let uuid(p) = uuid(v).get-suffix(suffix);
    $"if"(uuid(p).is-some and uuid(s).is-some)
-        (macro::let(bind, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,prefix))
+        (let bind = uuid(p).get-or-panic; macro::match-pats-arm(uuid(s).get-or-panic,prefix))
         (branchfalse())
 );
 
 typed macro macro::match-pats-arm-with-term(term: lazy, pat: macro::constant, rest: lazy): Bool = (
-   macro::let(uuid(v), term);
-   macro::let(uuid(p), uuid(v).remove-prefix(pat));
+   let uuid(v) = term;
+   let uuid(p) = uuid(v).remove-prefix(pat);
    $"if"(uuid(p).is-some)
         (macro::match-pats-arm(uuid(p).get-or-panic, rest))
         (branchfalse())
 );
 
 typed macro macro::match-pats-arm-with-term(term: lazy, rest: lazy, pat: macro::constant): Bool = (
-   macro::let(uuid(v), term);
-   macro::let(uuid(p), uuid(v).remove-suffix(pat));
+   let uuid(v) = term;
+   let uuid(p) = uuid(v).remove-suffix(pat);
    $"if"(uuid(p).is-some)
         (macro::match-pats-arm(uuid(p).get-or-panic, rest))
         (branchfalse())
