@@ -156,7 +156,7 @@ typed macro macro::match-pats-arm(term: lazy, v: macro::variable): lazy = (
 );
 
 typed macro macro::match-pats-arm(term: lazy, v pat: macro::match-lhs-binding): lazy = (
-   macro::let(v, term); match-pats-arm(v, pat)
+   let v = term; match-pats-arm(v, pat)
 );
 
 typed macro macro::match-pats-arm(term: lazy, ignore: macro::underscore): lazy = (
@@ -187,12 +187,6 @@ typed macro macro::lhs-fields-field(field-key: macro::variable, pat: lazy): lazy
 
 typed macro macro::lhs-bind(bind-key: macro::variable, pat: lazy): lazy = (
    bind-key; pat;
-);
-typed macro macro::lhs-bind(bind-key: macro::let-binding, pat: lazy): lazy = (
-   macro::let-binding(bind-key); pat;
-);
-typed macro macro::lhs-bind(bind-key: macro::set-binding, pat: lazy): lazy = (
-   macro::let-binding(bind-key); pat;
 );
 
 typed macro macro::lhs-fields(prefix: lazy, fields: lazy): lazy = (
@@ -232,7 +226,7 @@ typed macro macro::lhs-fields-with-term(term: lazy, x rest: macro::lhs-head): Bo
 );
 
 typed macro macro::lhs-fields-with-term(term: lazy, bind pat: macro::lhs-bind): Bool = (
-   macro::let(bind, term);
+   let bind = term;
    macro::lhs-fields-with-term(bind, pat)
 );
 
@@ -280,7 +274,7 @@ typed macro macro::match-pats-arm-with-term(term: lazy, bind prefix: macro::lhs-
    let uuid(s) = uuid(v).remove-prefix(prefix);
    let uuid(p) = uuid(v).get-prefix(prefix);
    $"if"(uuid(p).is-some and uuid(s).is-some)
-        (macro::let(bind, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,suffix))
+        (let bind = uuid(p).get-or-panic; macro::match-pats-arm(uuid(s).get-or-panic,suffix))
         (branchfalse())
 );
 
@@ -289,7 +283,7 @@ typed macro macro::match-pats-arm-with-term(term: lazy, prefix: lazy, bind suffi
    let uuid(s) = uuid(v).remove-suffix(suffix);
    let uuid(p) = uuid(v).get-suffix(suffix);
    $"if"(uuid(p).is-some and uuid(s).is-some)
-        (macro::let(bind, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,prefix))
+        (let bind = uuid(p).get-or-panic; macro::match-pats-arm(uuid(s).get-or-panic,prefix))
         (branchfalse())
 );
 

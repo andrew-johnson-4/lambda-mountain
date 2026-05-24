@@ -1,8 +1,30 @@
 
 
-type Tuple<x,y> implies MustRetain, MustRelease = { first: x, second: y };
-type Tuple<x,y,z> implies MustRetain, MustRelease = { first: x, second: y, third: z };
-type Tuple<w,x,y,z> implies MustRetain, MustRelease = { first: w, second: x, third: y, fourth: z };
+type Tuple<x,y> implies MustRetain, MustRelease = { $"0": x, $"1": y };
+type Tuple<x,y,z> implies MustRetain, MustRelease = { $"0": x, $"1": y, $"2": z };
+type Tuple<w,x,y,z> implies MustRetain, MustRelease = { $"0": w, $"1": x, $"2": y, $"3": z };
+
+typed macro $".first"(t: Tuple<x,y>): x = ($".0"(t));
+typed macro $".first"(t: Tuple<x,y,z>): x = ($".0"(t));
+typed macro $".first"(t: Tuple<w,x,y,z>): w = ($".0"(t));
+typed macro $"set.first"(t: Tuple<x,y>, v: x): Nil = ($"set.0"(t,v));
+typed macro $"set.first"(t: Tuple<x,y,z>, v: x): Nil = ($"set.0"(t,v));
+typed macro $"set.first"(t: Tuple<w,x,y,z>, v: w): Nil = ($"set.0"(t,v));
+
+typed macro $".second"(t: Tuple<x,y>): y = ($".1"(t));
+typed macro $".second"(t: Tuple<x,y,z>): y = ($".1"(t));
+typed macro $".second"(t: Tuple<w,x,y,z>): x = ($".1"(t));
+typed macro $"set.first"(t: Tuple<x,y>, v: y): Nil = ($"set.1"(t,v));
+typed macro $"set.first"(t: Tuple<x,y,z>, v: y): Nil = ($"set.1"(t,v));
+typed macro $"set.first"(t: Tuple<w,x,y,z>, v: x): Nil = ($"set.1"(t,v));
+
+typed macro $".third"(t: Tuple<x,y,z>): z = ($".2"(t));
+typed macro $".third"(t: Tuple<w,x,y,z>): y = ($".2"(t));
+typed macro $"set.first"(t: Tuple<x,y,z>, v: z): Nil = ($"set.2"(t,v));
+typed macro $"set.first"(t: Tuple<w,x,y,z>, v: y): Nil = ($"set.2"(t,v));
+
+typed macro $".fourth"(t: Tuple<w,x,y,z>): z = ($".3"(t));
+typed macro $"set.first"(t: Tuple<w,x,y,z>, v: z): Nil = ($"set.3"(t,v));
 
 let cmp(l: Tuple<x,y>, r: Tuple<x,y>): Ord = (
    cmp(l.first, r.first) && cmp(l.second, r.second)
