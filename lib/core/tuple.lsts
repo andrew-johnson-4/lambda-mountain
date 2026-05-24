@@ -4,27 +4,27 @@ type Tuple<x,y> implies MustRetain, MustRelease = { first: x, second: y };
 type Tuple<x,y,z> implies MustRetain, MustRelease = { first: x, second: y, third: z };
 type Tuple<w,x,y,z> implies MustRetain, MustRelease = { first: w, second: x, third: y, fourth: z };
 
-typed macro $".0"(t: Tuple<x,y>): x = ($".first"(t));
-typed macro $".0"(t: Tuple<x,y,z>): x = ($".first"(t));
-typed macro $".0"(t: Tuple<w,x,y,z>): w = ($".first"(t));
-typed macro $"set.0"(t: Tuple<x,y>, v: x): Nil = ($"set.first"(t,v));
-typed macro $"set.0"(t: Tuple<x,y,z>, v: x): Nil = ($"set.first"(t,v));
-typed macro $"set.0"(t: Tuple<w,x,y,z>, v: w): Nil = ($"set.first"(t,v));
+#typed macro $".0"(t: Tuple<x,y>): x = ($".first"(t));
+#typed macro $".0"(t: Tuple<x,y,z>): x = ($".first"(t));
+#typed macro $".0"(t: Tuple<w,x,y,z>): w = ($".first"(t));
+#typed macro $"set.0"(t: Tuple<x,y>, v: x): Nil = ($"set.first"(t,v));
+#typed macro $"set.0"(t: Tuple<x,y,z>, v: x): Nil = ($"set.first"(t,v));
+#typed macro $"set.0"(t: Tuple<w,x,y,z>, v: w): Nil = ($"set.first"(t,v));
 
-typed macro $".1"(t: Tuple<x,y>): y = ($".second"(t));
-typed macro $".1"(t: Tuple<x,y,z>): y = ($".second"(t));
-typed macro $".1"(t: Tuple<w,x,y,z>): x = ($".second"(t));
-typed macro $"set.1"(t: Tuple<x,y>, v: y): Nil = ($"set.second"(t,v));
-typed macro $"set.1"(t: Tuple<x,y,z>, v: y): Nil = ($"set.second"(t,v));
-typed macro $"set.1"(t: Tuple<w,x,y,z>, v: x): Nil = ($"set.second"(t,v));
+#typed macro $".1"(t: Tuple<x,y>): y = ($".second"(t));
+#typed macro $".1"(t: Tuple<x,y,z>): y = ($".second"(t));
+#typed macro $".1"(t: Tuple<w,x,y,z>): x = ($".second"(t));
+#typed macro $"set.1"(t: Tuple<x,y>, v: y): Nil = ($"set.second"(t,v));
+#typed macro $"set.1"(t: Tuple<x,y,z>, v: y): Nil = ($"set.second"(t,v));
+#typed macro $"set.1"(t: Tuple<w,x,y,z>, v: x): Nil = ($"set.second"(t,v));
 
-typed macro $".2"(t: Tuple<x,y,z>): z = ($".third"(t));
-typed macro $".2"(t: Tuple<w,x,y,z>): y = ($".third"(t));
-typed macro $"set.2"(t: Tuple<x,y,z>, v: z): Nil = ($"set.third"(t,v));
-typed macro $"set.2"(t: Tuple<w,x,y,z>, v: y): Nil = ($"set.third"(t,v));
+#typed macro $".2"(t: Tuple<x,y,z>): z = ($".third"(t));
+#typed macro $".2"(t: Tuple<w,x,y,z>): y = ($".third"(t));
+#typed macro $"set.2"(t: Tuple<x,y,z>, v: z): Nil = ($"set.third"(t,v));
+#typed macro $"set.2"(t: Tuple<w,x,y,z>, v: y): Nil = ($"set.third"(t,v));
 
-typed macro $".3"(t: Tuple<w,x,y,z>): z = ($".fourth"(t));
-typed macro $"set.3"(t: Tuple<w,x,y,z>, v: z): Nil = ($"set.fourth"(t,v));
+#typed macro $".3"(t: Tuple<w,x,y,z>): z = ($".fourth"(t));
+#typed macro $"set.3"(t: Tuple<w,x,y,z>, v: z): Nil = ($"set.fourth"(t,v));
 
 let cmp(l: Tuple<x,y>, r: Tuple<x,y>): Ord = (
    cmp(l.first, r.first) && cmp(l.second, r.second)

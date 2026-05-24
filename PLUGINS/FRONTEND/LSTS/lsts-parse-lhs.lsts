@@ -119,16 +119,21 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
                mk-var(c"macro::lhs-bind").with-location(loc),
                mk-cons(
                   bases[0],
-                  mk-var(c".0").with-location(loc)
+                  mk-var(c".first").with-location(loc)
                )
             );
             let bi = 1_sz;
             while bi < bases.length {
+               let f = match bi {
+                  1 => c".second";
+                  2 => c".third";
+                  3 => c".fourth";
+               };
                let field-base = mk-app(
                   mk-var(c"macro::lhs-bind").with-location(loc),
                   mk-cons(
                      bases[bi],
-                     mk-var(c"." + bi.into(type(CString))).with-location(loc)
+                     mk-var(f).with-location(loc)
                   )
                );
                base = mk-app(
@@ -196,8 +201,12 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
                if lsts-is-ident-head(lsts-parse-head(tokens)) {
                   attr-key = lsts-parse-head(tokens); tokens = tail(tokens);
                };
+               let is-let = true;
                if lsts-parse-head(tokens)==c"=" {
                   binding = attr-key; tokens = tail(tokens);
+                  if lsts-parse-head(tokens) == c"set" {
+                     is-let = false; tokens = tail(tokens);
+                  };
                   if lsts-parse-head(tokens) == c"raw" {
                      raw = true; tokens = tail(tokens);
                   };
@@ -217,10 +226,13 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
                   val = Var( c"_", with-location(mk-token("_"),attr-loc) );
                };
                if non-zero(binding) {
+                  let macro-binding = if is-let
+                  then mk-var(c"macro::let-binding").with-location(attr-loc);
+                  else mk-var(c"macro::set-binding").with-location(attr-loc);
                   val = mk-app(
                      Var( c"macro::lhs-bind", with-location(mk-token("macro::lhs-bind"),attr-loc) ),
                      mk-cons(
-                        Var( binding, with-location(mk-token(binding),attr-loc) ),
+                        mk-app( macro-binding, mk-var(binding).with-location(attr-loc) ),
                         val
                      )
                   );
