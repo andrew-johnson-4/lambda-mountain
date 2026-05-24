@@ -123,17 +123,17 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
                )
             );
             let bi = 1_sz;
-            for b in bases[1_i64:] {
+            while bi < bases.length {
                let field-base = mk-app(
                   mk-var(c"macro::lhs-bind").with-location(loc),
                   mk-cons(
-                     b,
+                     bases[bi],
                      mk-var(c"." + bi.into(type(CString))).with-location(loc)
                   )
                );
                base = mk-app(
                   mk-var(c"macro::lhs-fields").with-location(loc),
-                  mk-cons(base, b)
+                  mk-cons(base, bases[bi])
                );
                bi = bi + 1;
             };
