@@ -208,6 +208,9 @@ typed macro macro::lhs-fields-field(field-key: macro::variable, pat: lazy): lazy
 typed macro macro::lhs-bind(bind-key: macro::variable, pat: lazy): lazy = (
    bind-key; pat;
 );
+typed macro macro::lhs-bind(bind-key: macro::underscore, pat: lazy): lazy = (
+   bind-key; pat;
+);
 typed macro macro::lhs-bind(bind-key: macro::let-binding, pat: lazy): lazy = (
    macro::let-binding(bind-key); pat;
 );
