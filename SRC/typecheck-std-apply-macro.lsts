@@ -21,6 +21,7 @@ let std-apply-macro-concat(tctx: Maybe<TypeContext>, mname: CString, margs: AST)
 
 let std-apply-macro-variable(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
+      Var{key:c"_"} => (tctx, mk-eof());
       Var{} => (tctx, margs);
       _ => (tctx, mk-eof());
    }
