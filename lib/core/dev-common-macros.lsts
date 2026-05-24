@@ -10,16 +10,31 @@ typed macro $"assert"(c: lazy): lazy = (
 typed macro macro::let-binding(v: macro::variable): lazy = (v);
 typed macro macro::set-binding(v: macro::variable): lazy = (v);
 
-typed macro macro::let(lhs: macro::let-binding, rhs: lazy): lazy = (
+typed macro macro::maybe-let(lhs: macro::underscore, rhs: lazy): Nil = (
+   rhs; ();
+);
+typed macro macro::maybe-let(lhs: macro::variable, rhs: lazy): Nil = (
    (fn(lhs) = ()) (rhs)
+);
+typed macro macro::let(lhs: macro::let-binding, rhs: lazy): lazy = (
+   macro::maybe-let(lhs, rhs)
 );
 
 typed macro macro::let(lhs: macro::variable, rhs: lazy): lazy = (
-   mov(rhs, lhs)
+   macro::maybe-set(lhs, rhs)
+);
+typed macro macro::let(lhs: macro::underscore, rhs: lazy): lazy = (
+   macro::maybe-set(lhs, rhs)
 );
 
-typed macro macro::let(lhs: macro::set-binding, rhs: lazy): lazy = (
+typed macro macro::maybe-set(lhs: macro::underscore, rhs: lazy): Nil = (
+   rhs; ();
+);
+typed macro macro::maybe-set(lhs: macro::variable, rhs: lazy): Nil = (
    mov(rhs, lhs)
+);
+typed macro macro::let(lhs: macro::set-binding, rhs: lazy): lazy = (
+   macro::maybe-set(lhs, rhs)
 );
 
 typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (base; index);
