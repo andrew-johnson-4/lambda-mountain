@@ -171,6 +171,10 @@ typed macro macro::pats-none(ignore: lazy): lazy = (
    ()
 );
 
+typed macro macro::match-pats-arm(term: lazy, v: macro::let-binding): lazy = (
+   macro::match-pats-arms(term, v);
+);
+
 typed macro macro::match-pats-arm(term: lazy, v: macro::variable): lazy = (
    let v = term; branchtrue()
 );
