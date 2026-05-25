@@ -7,8 +7,8 @@ typed macro $"assert"(c: lazy): lazy = (
    if not c then fail(c"Assertion Failed At ", macro::location(c));
 );
 
-typed macro macro::let-binding(v: macro::variable): lazy = (v);
-typed macro macro::set-binding(v: macro::variable): lazy = (v);
+typed macro macro::let-binding(v: lazy): lazy = (v);
+typed macro macro::set-binding(v: lazy): lazy = (v);
 
 typed macro macro::maybe-let(lhs: macro::underscore, rhs: lazy): Nil = (
    rhs; ();
@@ -172,7 +172,7 @@ typed macro macro::pats-none(ignore: lazy): lazy = (
 );
 
 typed macro macro::match-pats-arm(term: lazy, v: macro::let-binding): lazy = (
-   macro::match-pats-arms(term, v);
+   macro::match-pats-arm(term, v);
 );
 
 typed macro macro::match-pats-arm(term: lazy, v: macro::variable): lazy = (

@@ -518,6 +518,17 @@ typed macro macro::for(item: lazy, iterable: Vector<?>, loop: lazy): lazy = (
    };
 );
 
+typed macro macro::for(item: lazy, iterable: VectorView<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iterable;
+   let uuid(iter-i) = 0_sz;
+   while uuid(iter-i) < uuid(iter-term).length {
+      match uuid(iter-term)[uuid(iter-i)] {
+         item => loop;
+      };
+      uuid(iter-i) = uuid(iter-i) + 1;
+   };
+);
+
 typed macro macro::match(t: lazy, ps: lazy): lazy = (scope(
    let uuid(term) = open(t);
    macro::match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
@@ -841,6 +852,350 @@ let .is-digit(base: CString): Bool = (
       r
    } else false
 );
+
+typed macro macro::define-zero(base-type: lazy, constructor: lazy, con-tag: lazy): lazy = {
+   let non-zero(t: base-type): Bool = t.discriminator-case-tag != (t as con-tag).discriminator-case-tag;
+};
+
+typed macro $"assert"(c: lazy): lazy = (
+   if not c then fail(c"Assertion Failed At ", macro::location(c));
+);
+
+typed macro macro::let-binding(v: lazy): lazy = (v);
+typed macro macro::set-binding(v: lazy): lazy = (v);
+
+typed macro macro::maybe-let(lhs: macro::underscore, rhs: lazy): Nil = (
+   rhs; ();
+);
+typed macro macro::maybe-let(lhs: macro::variable, rhs: lazy): Nil = (
+   (fn(lhs) = ()) (rhs)
+);
+typed macro macro::let(lhs: macro::let-binding, rhs: lazy): lazy = (
+   macro::maybe-let(lhs, rhs)
+);
+
+typed macro macro::let(lhs: macro::variable, rhs: lazy): lazy = (
+   macro::maybe-set(lhs, rhs)
+);
+typed macro macro::let(lhs: macro::underscore, rhs: lazy): lazy = (
+   macro::maybe-set(lhs, rhs)
+);
+
+typed macro macro::maybe-set(lhs: macro::underscore, rhs: lazy): Nil = (
+   rhs; ();
+);
+typed macro macro::maybe-set(lhs: macro::variable, rhs: lazy): Nil = (
+   mov(rhs, lhs)
+);
+typed macro macro::let(lhs: macro::set-binding, rhs: lazy): lazy = (
+   macro::maybe-set(lhs, rhs)
+);
+
+typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (base; index);
+typed macro macro::lhs-field(base: lazy, field: lazy): lazy = (base; field);
+typed macro macro::lhs-field(base field1: macro::lhs-field, field2: lazy): lazy = (macro::concat($".", field1)(base); field2);
+
+typed macro macro::assign(tag-guard fields-guard: macro::lhs-tagged, rhs: lazy): lazy = (
+   let uuid(term) = rhs;
+   $"if"(macro::lhs-tagged-with-term(uuid(term), tag-guard, fields-guard))
+        ()
+        (fail(c"Fallible assignment failed ", macro::location(rhs)));
+);
+
+typed macro macro::assign(lhs-base lhs-index: macro::lhs-index, rhs: lazy): lazy = (
+   $"set[]"(lhs-base, lhs-index, rhs)
+);
+
+typed macro macro::assign(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): lazy = (
+   macro::concat($"set.", lhs-field-name)(lhs-base, rhs)
+);
+
+typed macro macro::assign(lhs: macro::variable, rhs: lazy): lazy = (
+   mov(rhs, lhs)
+);
+
+typed macro macro::assign(lhs: macro::underscore, rhs: lazy): lazy = (
+   rhs; ();
+);
+
+typed macro macro::set(lhs: lazy, rhs: lazy): lazy = (
+   mov(rhs, lhs)
+);
+
+typed macro macro::set(base index: macro::lhs-index, rhs: lazy): lazy = (
+   $"set[]"( base, index, rhs )
+);
+
+typed macro macro::set(base field: macro::lhs-field, rhs: lazy): lazy = (
+   macro::concat($"set.", field) (base, rhs)
+);
+
+typed macro macro::lhs-as-rhs(v: macro::variable): lazy = (
+   v
+);
+
+typed macro macro::lhs-as-rhs(base: macro::lhs-address-of): lazy = (
+   &v
+);
+
+typed macro macro::lhs-address-of(base: lazy): lazy = (
+   base
+);
+
+typed macro macro::lhs-field(base: lazy, field: lazy): lazy = (
+   base; field
+);
+
+typed macro macro::lhs-as-rhs(base field: macro::lhs-index): lazy = (
+   macro::concat(l".", field)(base)
+);
+
+typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (
+   base; index
+);
+
+typed macro macro::lhs-index(base field: macro::lhs-field, index: lazy): lazy = (
+   macro::concat($".", field)(base); index
+);
+
+typed macro macro::while(cond: Bool, body: lazy): lazy = (
+   primitive::while( cond, body as Nil )
+);
+
+typed macro macro::for(item: lazy, iterable: List<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iterable;
+   while non-zero(uuid(iter-term)) {
+      match head(uuid(iter-term)) {
+         item => loop;
+      };
+      uuid(iter-term) = tail(uuid(iter-term));
+   };
+);
+
+typed macro macro::for(item: lazy, iterable: Vector<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iterable;
+   let uuid(iter-i) = 0_sz;
+   while uuid(iter-i) < uuid(iter-term).length {
+      match uuid(iter-term)[uuid(iter-i)] {
+         item => loop;
+      };
+      uuid(iter-i) = uuid(iter-i) + 1;
+   };
+);
+
+typed macro macro::for(item: lazy, iterable: VectorView<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iterable;
+   let uuid(iter-i) = 0_sz;
+   while uuid(iter-i) < uuid(iter-term).length {
+      match uuid(iter-term)[uuid(iter-i)] {
+         item => loop;
+      };
+      uuid(iter-i) = uuid(iter-i) + 1;
+   };
+);
+
+typed macro macro::match(t: lazy, ps: lazy): lazy = (scope(
+   let uuid(term) = open(t);
+   macro::match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
+));
+
+typed macro macro::match(t: macro::bind-raw, ps: lazy): lazy = (scope(
+   let uuid(term) = t;
+   macro::match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
+));
+
+typed macro macro::match(f t: macro::bind-raw-field, ps: lazy): lazy = (scope(
+   let uuid(term) = f($"raw"(t));
+   macro:: match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
+));
+
+typed macro macro::match-pats(term: lazy, cases: macro::pats-none, remainder: lazy): lazy = (
+   remainder
+);
+
+typed macro macro::match-pats(term: lazy, ps lhs rhs: macro::pats-some, remainder: lazy): lazy = (
+   macro::match-pats(term, ps, scope($"if"(macro::match-pats-arm(term,lhs))(rhs)(remainder)));
+);
+
+typed macro macro::pats-some(ps: lazy, lhs: lazy, rhs: lazy): lazy = (
+   ps; lhs; rhs
+);
+
+typed macro macro::pats-none(ignore: lazy): lazy = (
+   ()
+);
+
+typed macro macro::match-pats-arm(term: lazy, v: macro::let-binding): lazy = (
+   macro::match-pats-arms(term, v);
+);
+
+typed macro macro::match-pats-arm(term: lazy, v: macro::variable): lazy = (
+   let v = term; branchtrue()
+);
+
+typed macro macro::match-pats-arm(term: lazy, v pat: macro::match-lhs-binding): lazy = (
+   macro::let(v, term); match-pats-arm(v, pat)
+);
+
+typed macro macro::match-pats-arm(term: lazy, ignore: macro::underscore): lazy = (
+   branchtrue()
+);
+
+typed macro macro::match-pats-arm(term: lazy, x rest: macro::lhs-head): lazy = (
+   let uuid(v) = term;
+   $"if"(uuid(v).has-head)
+      ($"if"(macro::match-pats-arm(head(uuid(v)),x))
+         ( macro::match-pats-arm(tail(uuid(v)),rest) )
+         (branchfalse())
+      )
+      (branchfalse())
+);
+
+typed macro macro::match-pats-arm(term: lazy, c: macro::constant): lazy = (
+   let uuid(v) = term; uuid(v)==c;
+);
+
+typed macro macro::lhs-tagged(tag-guard: lazy, fields-guard: lazy): lazy = (
+   tag-guard; fields-guard;
+);
+
+typed macro macro::lhs-fields-field(field-key: macro::variable, pat: lazy): lazy = (
+   field-key; pat;
+);
+
+typed macro macro::lhs-bind(bind-key: macro::variable, pat: lazy): lazy = (
+   bind-key; pat;
+);
+typed macro macro::lhs-bind(bind-key: macro::underscore, pat: lazy): lazy = (
+   bind-key; pat;
+);
+typed macro macro::lhs-bind(bind-key: macro::let-binding, pat: lazy): lazy = (
+   macro::let-binding(bind-key); pat;
+);
+typed macro macro::lhs-bind(bind-key: macro::set-binding, pat: lazy): lazy = (
+   macro::let-binding(bind-key); pat;
+);
+
+typed macro macro::lhs-fields(prefix: lazy, fields: lazy): lazy = (
+   prefix; fields;
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, prefix last: macro::lhs-fields): Bool = (
+   $"if"(macro::lhs-fields-with-term(term, prefix))
+        (macro::lhs-fields-with-term(term, last))
+        (branchfalse())
+);
+
+typed macro macro::lhs-head(x: head, xs: tail): lazy = (
+   x; xs;
+);
+
+typed macro macro::match-pats-arm(term: lazy, case: macro::literal<MACRO::LHS-LIST-SENTINEL,_>): lazy = (
+   true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, case: macro::literal<MACRO::LHS-LIST-SENTINEL,_>): lazy = (
+   true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, v: macro::variable): Bool = (
+   term == v
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, x rest: macro::lhs-head): Bool = (
+   let uuid(v) = term;
+   $"if"(uuid(v).has-head)
+      ($"if"(macro::match-pats-arm(head(uuid(v)),x))
+         ( macro::match-pats-arm(tail(uuid(v)),rest) )
+         (branchfalse())
+      )
+      (branchfalse())
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, bind pat: macro::lhs-bind): Bool = (
+   macro::let(bind, term);
+   macro::lhs-fields-with-term(bind, pat)
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, field-key pat: macro::lhs-fields-field): Bool = (
+   let uuid(x) = open(field-key(term));
+   macro::lhs-fields-with-term(uuid(x), pat)
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::nil): Bool = (
+   true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, c: macro::constant): Bool = (
+   term == c
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::underscore): Bool = (
+   true
+);
+
+typed macro macro::lhs-fields-with-term(term: lazy, tag-guard fields-guard: macro::lhs-tagged): Bool = (
+   macro::lhs-tagged-with-term(term, tag-guard, fields-guard)
+);
+
+typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields: lazy): Bool = (
+   $"if"(term.discriminator-case-tag==(term as tag-type).discriminator-case-tag)
+        (macro::lhs-fields-with-term((term as tag-type), fields))
+        (branchfalse())
+);
+
+typed macro macro::lhs-tagged-with-term(term: lazy, tag-guard: macro::nil, prefix pat: macro::lhs-fields): Bool = (
+   macro::lhs-fields-with-term(term, prefix, pat)
+);
+
+typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields-guard: macro::nil): Bool = (
+   term.discriminator-case-tag==(term as tag-type).discriminator-case-tag
+);
+
+typed macro macro::match-pats-arm(term: lazy, tag-guard fields-guard: macro::lhs-tagged): lazy = (
+   macro::lhs-tagged-with-term(term, tag-guard, fields-guard);
+);
+
+typed macro macro::match-pats-arm-with-term(term: lazy, bind prefix: macro::lhs-bind, suffix: lazy): Bool = (
+   let uuid(v) = term;
+   let uuid(s) = uuid(v).remove-prefix(prefix);
+   let uuid(p) = uuid(v).get-prefix(prefix);
+   $"if"(uuid(p).is-some and uuid(s).is-some)
+        (macro::let(bind, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,suffix))
+        (branchfalse())
+);
+
+typed macro macro::match-pats-arm-with-term(term: lazy, prefix: lazy, bind suffix: macro::lhs-bind): Bool = (
+   let uuid(v) = term;
+   let uuid(s) = uuid(v).remove-suffix(suffix);
+   let uuid(p) = uuid(v).get-suffix(suffix);
+   $"if"(uuid(p).is-some and uuid(s).is-some)
+        (macro::let(bind, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,prefix))
+        (branchfalse())
+);
+
+typed macro macro::match-pats-arm-with-term(term: lazy, pat: macro::constant, rest: lazy): Bool = (
+   let uuid(v) = term;
+   let uuid(p) = uuid(v).remove-prefix(pat);
+   $"if"(uuid(p).is-some)
+        (macro::match-pats-arm(uuid(p).get-or-panic, rest))
+        (branchfalse())
+);
+
+typed macro macro::match-pats-arm-with-term(term: lazy, rest: lazy, pat: macro::constant): Bool = (
+   let uuid(v) = term;
+   let uuid(p) = uuid(v).remove-suffix(pat);
+   $"if"(uuid(p).is-some)
+        (macro::match-pats-arm(uuid(p).get-or-panic, rest))
+        (branchfalse())
+);
+
+typed macro macro::lhs-prefix-or-suffix(prefix: lazy, suffix: lazy): Bool = (prefix; suffix);
+
+typed macro macro::match-pats-arm(term: lazy, prefix suffix: macro::lhs-prefix-or-suffix): Bool = (
+   macro::match-pats-arm-with-term(term, prefix, suffix);
+);
+
 
 # This library is to provide alternatives to libc functions that are not SIMD enabled
 # SIMD operators fail on some machines if load overlaps the program break boundary
@@ -2454,6 +2809,28 @@ let head(x: String): U8 = x[0];
 type Tuple<x,y> implies MustRetain, MustRelease = { first: x, second: y };
 type Tuple<x,y,z> implies MustRetain, MustRelease = { first: x, second: y, third: z };
 type Tuple<w,x,y,z> implies MustRetain, MustRelease = { first: w, second: x, third: y, fourth: z };
+
+#typed macro $".0"(t: Tuple<x,y>): x = ($".first"(t));
+#typed macro $".0"(t: Tuple<x,y,z>): x = ($".first"(t));
+#typed macro $".0"(t: Tuple<w,x,y,z>): w = ($".first"(t));
+#typed macro $"set.0"(t: Tuple<x,y>, v: x): Nil = ($"set.first"(t,v));
+#typed macro $"set.0"(t: Tuple<x,y,z>, v: x): Nil = ($"set.first"(t,v));
+#typed macro $"set.0"(t: Tuple<w,x,y,z>, v: w): Nil = ($"set.first"(t,v));
+
+#typed macro $".1"(t: Tuple<x,y>): y = ($".second"(t));
+#typed macro $".1"(t: Tuple<x,y,z>): y = ($".second"(t));
+#typed macro $".1"(t: Tuple<w,x,y,z>): x = ($".second"(t));
+#typed macro $"set.1"(t: Tuple<x,y>, v: y): Nil = ($"set.second"(t,v));
+#typed macro $"set.1"(t: Tuple<x,y,z>, v: y): Nil = ($"set.second"(t,v));
+#typed macro $"set.1"(t: Tuple<w,x,y,z>, v: x): Nil = ($"set.second"(t,v));
+
+#typed macro $".2"(t: Tuple<x,y,z>): z = ($".third"(t));
+#typed macro $".2"(t: Tuple<w,x,y,z>): y = ($".third"(t));
+#typed macro $"set.2"(t: Tuple<x,y,z>, v: z): Nil = ($"set.third"(t,v));
+#typed macro $"set.2"(t: Tuple<w,x,y,z>, v: y): Nil = ($"set.third"(t,v));
+
+#typed macro $".3"(t: Tuple<w,x,y,z>): z = ($".fourth"(t));
+#typed macro $"set.3"(t: Tuple<w,x,y,z>, v: z): Nil = ($"set.fourth"(t,v));
 
 let cmp(l: Tuple<x,y>, r: Tuple<x,y>): Ord = (
    cmp(l.first, r.first) && cmp(l.second, r.second)
@@ -7413,7 +7790,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          (tctx, let check-tt) = typeof-var-raw(term, tctx, lname, true);
          if check-tt.is-t(interned-tag-local-variable,0)
          then exit-error("Variable Name Is Already Bound In Outer Scope \{lname}", term);
-         (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Tail(), ta);
+         (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Tail, ta);
          if not(is(rhs,new-rhs)) then { rhs = new-rhs; term = mk-app(mk-abs(def,mk-nil(),misc-tt),rhs); };
          (tctx, let tt) = std-bind-term(tctx, lname, rhs, def, term, hint);
          tctx = tctx.ascript(def, tt);
@@ -8727,6 +9104,7 @@ let std-apply-macro-concat(tctx: Maybe<TypeContext>, mname: CString, margs: AST)
 
 let std-apply-macro-variable(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
+      Var{key:c"_"} => (tctx, mk-eof());
       Var{} => (tctx, margs);
       _ => (tctx, mk-eof());
    }
@@ -13408,6 +13786,7 @@ import PLUGINS/FRONTEND/LSTS/mk-lsts-token.lsts;
 import PLUGINS/FRONTEND/LSTS/lsts-parse-lhs.lsts;
 
 let lsts-frontend(fp: CString): Nil = (
+   if fp == c"lib/core/common-macros.lsts" then fp = c"lib/core/dev-common-macros.lsts";
    lsts-parse(lsts-tokenize(fp));
 );
 register-frontend(c".lsts", lsts-frontend);
@@ -13421,7 +13800,7 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
       base = Lit ( c"MACRO::LHS-LIST-SENTINEL", with-location(mk-token("MACRO::LHS-LIST-SENTINEL"),loc) );
       base = mk-app(base,base); # TODO FIX MACRO, this is for compatibility with macros 1.0
    } else {
-      let base-rest = lsts-parse-lhs-one(tokens);
+      let base-rest = lsts-parse-lhs-big(tokens);
       base = base-rest.first;
       tokens = base-rest.second;
       let bases = [base];
@@ -13433,7 +13812,7 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
             in-base = mk-app(in-base,in-base); # TODO FIX MACRO, this is for compatibility with macros 1.0
             bases = cons( in-base, bases );
          } else {
-            let next-rest = lsts-parse-lhs-one(tokens);
+            let next-rest = lsts-parse-lhs-big(tokens);
             let next = next-rest.first;
             tokens = next-rest.second;
             bases = cons( next, bases );
@@ -13451,164 +13830,22 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
    Tuple ( base, tokens )
 );
 
-let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   let base = if lsts-parse-head(tokens)==c"uuid" {
-      let u = head(tokens); tokens = tail(tokens);
-      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-      let base-rest = lsts-parse-lhs-one(tokens);
-      tokens = base-rest.second;
-      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-      mk-cons( Var( u.key, u ), base-rest.first );
-   } else if lsts-is-ident-head(lsts-parse-head(tokens)) {
-      let base-rest = lsts-make-maybe-var(tokens);
-      tokens = base-rest.second;
-      base-rest.first;
-   } else if lsts-parse-head(tokens)==c"&" {
-      let amp = head(tokens); tokens = tail(tokens);
-      let base-rest = lsts-parse-lhs-one(tokens);
-      tokens = base-rest.second;
-      mk-cons(
-         Var( amp.key, amp ),
-         base-rest.first
-      );
-   } else if lsts-is-lit(lsts-parse-head(tokens)) {
-      let base-rest = lsts-parse-lit(tokens);
-      tokens = base-rest.second;
-      base-rest.first;
-   } else if non-zero(tokens) and lsts-parse-head(tokens)==c"[" {
-      let base-rest = lsts-parse-lhs-list(tokens);
-      tokens = base-rest.second;
-      base-rest.first;
-   } else if non-zero(tokens) and lsts-parse-head(tail(tokens))==c"{" {
+let lsts-parse-lhs-big(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   (let base, tokens) = lsts-parse-lhs-one(tokens);
+   if lsts-parse-head(tokens) == c"=" {
       let loc = head(tokens).location;
-      let tag = lsts-parse-head(tokens); tokens = tail(tokens);
-      lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
-      let des-args = mk-nil();
-      while non-zero(tokens) and lsts-parse-head(tokens)!=c"}" {
-         let attr-loc = head(tokens).location;
-         let binding = c"";
-         let attr-key = c"";
-         let raw = false;
-         if lsts-parse-head(tokens) == c"raw" {
-            raw = true; tokens = tail(tokens);
-         };
-         if lsts-is-ident-head(lsts-parse-head(tokens)) {
-            attr-key = lsts-parse-head(tokens); tokens = tail(tokens);
-         };
-         if lsts-parse-head(tokens)==c"=" {
-            binding = attr-key; tokens = tail(tokens);
-            if lsts-parse-head(tokens) == c"raw" {
-               raw = true; tokens = tail(tokens);
-            };
-            if lsts-is-ident-head(lsts-parse-head(tokens)) {
-               attr-key = lsts-parse-head(tokens); tokens = tail(tokens);
-            } else { lsts-parse-expect(c"[Identifier]", tokens); };
-         };
-         let val = if lsts-parse-head(tokens)==c":" {
-            tokens = tail(tokens);
-            let val-rest = lsts-parse-lhs-one(tokens);
-            tokens = val-rest.second;
-            val-rest.first;
-         } else { mk-eof() };
-         if not(non-zero(val)) and not(non-zero(binding)) and not(non-zero(attr-key)) {
-            lsts-parse-expect(c"[Struct LHS]", tokens); tokens = tail(tokens);
-         };
-         if not(non-zero(val)) {
-            val = Var( c"_", with-location(mk-token("_"),attr-loc) );
-         };
-         if non-zero(binding) {
-            val = mk-app(
-               Var( c"macro::lhs-bind", with-location(mk-token("macro::lhs-bind"),attr-loc) ),
-               mk-cons(
-                  Var( binding, with-location(mk-token(binding),attr-loc) ),
-                  val
-               )
-            );
-            if raw {
-               val = mk-app(
-                  Var( c"macro::lhs-bind-raw", with-location(mk-token("macro::lhs-bind-raw"),attr-loc) ),
-                  val
-               );
-            };
-         };
-         if non-zero(attr-key) {
-            attr-key = c"." + attr-key;
-            val = mk-app(
-               Var( c"macro::lhs-fields-field", with-location(mk-token("macro::lhs-fields-field"),attr-loc) ),
-               mk-cons(
-                  Var( attr-key, with-location(mk-token(attr-key),attr-loc) ),
-                  val
-               )
-            );
-         };
-         des-args = mk-app(
-            mk-var(c"macro::lhs-fields").with-location(loc),
-            mk-cons(
-               des-args,
-               val
-            )
-         );
-         if lsts-parse-head(tokens) != c"}" {
-            lsts-parse-expect(c",", tokens); tokens = tail(tokens);
-         };
-      };
-      if not(non-zero(des-args)) { des-args = mk-nil(); };
-      lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
-      let lhs-tag = if tag!=c"_"
-      then mk-lit(tag).with-location(loc)
-      else mk-nil();
-      mk-app(
-         mk-var(c"macro::lhs-tagged").with-location(loc),
-         mk-cons(
-            lhs-tag,
-            des-args
-         )
+      lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+      (let val, tokens) = lsts-parse-lhs-one(tokens);
+      base = mk-app(
+         mk-var(c"macro::lhs-bind").with-location(loc),
+         mk-cons(base, val)
       );
-   } else {
-      lsts-parse-expect(c"[Left Hand Side]", tokens);
-      mk-eof()
    };
-   Tuple ( base, tokens )
+   (base, tokens)
 );
 
 let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   let base = match tokens {
-      [ Token{key:c"["}.. _ ] => (
-         let base-rest = lsts-parse-lhs-list(tokens);
-         tokens = base-rest.second;
-         base-rest.first;
-      );
-      [ Token{key:c"("}.. _] => (
-         lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-         let base-rest = lsts-parse-lhs-big(tokens);
-         tokens = base-rest.second;
-         lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-         base-rest.first;
-      );
-      [ Token{key:c"let"}.. _] => (
-         let loc = head(tokens).location;
-         lsts-parse-expect(c"let", tokens); tokens = tail(tokens);
-         (let field-name-2, tokens) = lsts-parse-identifier(tokens);
-         mk-app(
-            mk-var(c"macro::let-binding").with-location(loc),
-            mk-var(field-name-2).with-location(loc)
-         ).with-location(loc);
-      );
-      [ Token{key:c"set"}.. _] => (
-         let loc = head(tokens).location;
-         lsts-parse-expect(c"set", tokens); tokens = tail(tokens);
-         (let field-name-3, tokens) = lsts-parse-identifier(tokens);
-         mk-app(
-            mk-var(c"macro::set-binding").with-location(loc),
-            mk-var(field-name-3).with-location(loc)
-         ).with-location(loc);
-      );
-      _ => (
-         let base-rest = lsts-parse-lhs-one(tokens);
-         tokens = base-rest.second;
-         base-rest.first;
-      );
-   };
+   (let base, tokens) = lsts-parse-lhs-one(tokens);
 
    while non-zero(tokens) and (lsts-parse-head(tokens)==c"." or lsts-parse-head(tokens)==c"[") {
       match tokens {
@@ -13647,124 +13884,230 @@ let lsts-parse-lhs(tokens: List<Token>): Tuple<AST,List<Token>> = (
          );
       }
    };
-   Tuple ( base, tokens )
+
+   (base, tokens)
 );
-let lsts-parse-lhs-big(tokens: List<Token>): Tuple<AST,List<Token>> = (
-   let base-rest = lsts-parse-lhs-one(tokens);
-   let base = base-rest.first;
-   tokens = base-rest.second;
-   if lsts-parse-head(tokens) == c"=" {
-      let loc = head(tokens).location;
-      lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-      let val-rest = lsts-parse-lhs(tokens);
-      tokens = val-rest.second;
-      base = mk-app(
-         Var( c"macro::lhs-bind", with-location(mk-token("macro::lhs-bind"),loc) ),
-         mk-cons(base, val-rest.first)
+
+let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
+   let base = match tokens {
+      [ Token{key:c"["}.. _ ] => (
+         (let l, tokens) = lsts-parse-lhs-list(tokens);
+         l
+      );
+      [ Token{key:c"("}.. _] => (
+         let loc = head(tokens).location;
+         lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+         (let base, tokens) = lsts-parse-lhs-big(tokens);
+         let bases = mk-vector(type(AST)).push(base);
+         while lsts-parse-head(tokens)==c"," {
+            lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+            (base, tokens) = lsts-parse-lhs-big(tokens);
+            bases = bases.push(base);
+         };
+         lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+         if bases.length==1 then bases[0]
+         else {
+            base = mk-nil();
+            let bi = 0_sz;
+            while bi < bases.length {
+               let f = match bi {
+                  0 => c".first";
+                  1 => c".second";
+                  2 => c".third";
+                  3 => c".fourth";
+               };
+               let field-base = mk-app(
+                  mk-var(c"macro::lhs-fields-field").with-location(loc),
+                  mk-cons(
+                     mk-var(f).with-location(loc),
+                     mk-app(
+                        mk-var(c"macro::lhs-bind").with-location(loc),
+                        mk-cons(
+                           bases[bi],
+                           mk-var(c"_").with-location(loc)
+                        )
+                     )
+                  )
+               );
+               base = mk-app(
+                  mk-var(c"macro::lhs-fields").with-location(loc),
+                  mk-cons(base, field-base)
+               );
+               bi = bi + 1;
+            };
+            mk-app(
+               mk-var(c"macro::lhs-tagged").with-location(loc),
+               mk-cons(
+                  mk-lit(c"Tuple").with-location(loc),
+                  base
+               )
+            )
+         };
+      );
+      [ Token{key:c"let"}.. _] => (
+         let loc = head(tokens).location;
+         lsts-parse-expect(c"let", tokens); tokens = tail(tokens);
+         (let field, tokens) = lsts-parse-lhs-one(tokens);
+         mk-app(
+            mk-var(c"macro::let-binding").with-location(loc),
+            field
+         ).with-location(loc);
+      );
+      [ Token{key:c"set"}.. _] => (
+         let loc = head(tokens).location;
+         lsts-parse-expect(c"set", tokens); tokens = tail(tokens);
+         (let field, tokens) = lsts-parse-lhs-one(tokens);
+         mk-app(
+            mk-var(c"macro::set-binding").with-location(loc),
+            field
+         ).with-location(loc);
+      );
+      _ => (
+         if lsts-parse-head(tokens)==c"uuid" or lsts-is-ident-head(lsts-parse-head(tokens)) {
+            (let id1, tokens) = lsts-parse-lhs-identifier(tokens);
+            id1
+         } else if lsts-parse-head(tokens)==c"&" {
+            let amp = head(tokens); tokens = tail(tokens);
+            (let lhs, tokens) = lsts-parse-lhs-one(tokens);
+            mk-cons( mk-var(c"&"), lhs )
+         } else if lsts-is-lit(lsts-parse-head(tokens)) and (not(non-zero(tokens)) or lsts-parse-head(tail(tokens))!=c"{") {
+            (let l, tokens) = lsts-parse-lit(tokens);
+            l
+         # TODO, make tag optional here
+         } else if non-zero(tokens) and lsts-parse-head(tail(tokens))==c"{" {
+            let loc = head(tokens).location;
+            let tag = lsts-parse-head(tokens); tokens = tail(tokens);
+            lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+            let des-args = mk-nil();
+            let early-tokens = tokens;
+            while non-zero(tokens) and lsts-parse-head(tokens)!=c"}" and (is(tokens,early-tokens) or lsts-parse-head(tokens)==c",") {
+               if lsts-parse-head(tokens) == c"," {
+                  lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+               };
+               let attr-loc = head(tokens).location;
+               let binding = c"";
+               let attr-key = c"";
+               let raw = false;
+               if lsts-parse-head(tokens) == c"raw" {
+                  raw = true; tokens = tail(tokens);
+               };
+               if lsts-is-ident-head(lsts-parse-head(tokens)) {
+                  attr-key = lsts-parse-head(tokens); tokens = tail(tokens);
+               };
+               let is-let = true;
+               if lsts-parse-head(tokens)==c"=" {
+                  binding = attr-key; tokens = tail(tokens);
+                  if lsts-parse-head(tokens) == c"set" {
+                     is-let = false; tokens = tail(tokens);
+                  };
+                  if lsts-parse-head(tokens) == c"raw" {
+                     raw = true; tokens = tail(tokens);
+                  };
+                  if lsts-is-ident-head(lsts-parse-head(tokens)) {
+                     attr-key = lsts-parse-head(tokens); tokens = tail(tokens);
+                  } else { lsts-parse-expect(c"[Identifier]", tokens); };
+               };
+               let val = if lsts-parse-head(tokens)==c":" {
+                  tokens = tail(tokens);
+                  (let val, tokens) = lsts-parse-lhs-one(tokens);
+                  val
+               } else { mk-eof() };
+               if not(non-zero(val)) and not(non-zero(binding)) and not(non-zero(attr-key)) {
+                  lsts-parse-expect(c"[Struct LHS]", tokens); tokens = tail(tokens);
+               };
+               if not(non-zero(val)) {
+                  val = Var( c"_", with-location(mk-token("_"),attr-loc) );
+               };
+               if non-zero(binding) {
+                  let macro-binding = if is-let
+                  then mk-var(c"macro::let-binding").with-location(attr-loc);
+                  else mk-var(c"macro::set-binding").with-location(attr-loc);
+                  val = mk-app(
+                     Var( c"macro::lhs-bind", with-location(mk-token("macro::lhs-bind"),attr-loc) ),
+                     mk-cons(
+                        mk-app( macro-binding, mk-var(binding).with-location(attr-loc) ),
+                        val
+                     )
+                  );
+                  if raw {
+                     val = mk-app(
+                        Var( c"macro::lhs-bind-raw", with-location(mk-token("macro::lhs-bind-raw"),attr-loc) ),
+                        val
+                     );
+                  };
+               };
+               if non-zero(attr-key) {
+                  attr-key = c"." + attr-key;
+                  val = mk-app(
+                     Var( c"macro::lhs-fields-field", with-location(mk-token("macro::lhs-fields-field"),attr-loc) ),
+                     mk-cons(
+                        Var( attr-key, with-location(mk-token(attr-key),attr-loc) ),
+                        val
+                     )
+                  );
+               };
+               des-args = mk-app(
+                  mk-var(c"macro::lhs-fields").with-location(loc),
+                  mk-cons(
+                     des-args,
+                     val
+                  )
+               );
+            };
+            if not(non-zero(des-args)) { des-args = mk-nil(); };
+            lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+            let lhs-tag = if tag!=c"_"
+            then mk-lit(tag).with-location(loc)
+            else mk-nil();
+            mk-app(
+               mk-var(c"macro::lhs-tagged").with-location(loc),
+               mk-cons(
+                  lhs-tag,
+                  des-args
+               )
+            );
+         } else  {
+            lsts-parse-expect(c"[LHS]", tokens);
+            mk-eof();
+         }
       );
    };
-   Tuple ( base, tokens )
+
+   ( base, tokens )
 );
 
 let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let base = mk-eof();
    if lsts-has-assign(tokens) {
       let loc = head(tokens).location;
-
-      if lsts-parse-head(tokens) == c"(" {
-         lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-
-         let lefts = [] : List<ASTOrIdent>;
-
-         let loop = true;
-         while loop {
-            match lsts-parse-head(tokens) {
-               c"_" => (
-                  tokens = tail(tokens);
-                  lefts = cons(ASTOrIdentIgnore(), lefts);
-               );
-
-               c"let" => (
-                  let lhs = lsts-parse-lhs(tokens);
-                  tokens = lhs.second;
-                  lefts = cons(ASTOrIdentId ( lhs.first ), lefts);
-               );
-
-               hd => (
-                  let lhs = lsts-parse-lhs(tokens);
-                  tokens = lhs.second;
-                  lefts = cons(ASTOrIdentAST ( lhs.first ), lefts);
-               );
-            };
-
-            if lsts-parse-head(tokens) == c"," {
-               tokens = tail(tokens);
-            } else {
-               loop = false;
-            };
-         };
-
-         lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-
-         lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-         let rhs-rest = lsts-parse-small-expression(tokens);
-         tokens = rhs-rest.second;
-         let rhs-tmp-name = uuid();
-         let rhs-tmp = Var( rhs-tmp-name, with-location(mk-token(rhs-tmp-name),loc) );
-         base = mk-app(
-            Var( c"macro::let", with-location(mk-token(c"macro::let"),loc) ),
-            mk-cons( rhs-tmp, rhs-rest.first )
-         );
-
-         let i = 0_u64;
-         for lhs in lefts {
-            let fieldstr = c"." + (i+1).into(type(CString));
-            let rexpr = mk-app(
-               Var( fieldstr, with-location(mk-token(fieldstr),loc) ),
-               rhs-tmp
-            );
-
-            match lhs {
-               ASTOrIdentIgnore {} => ();
-
-               ASTOrIdentAST { ast=ast } => (
-                  let x = mk-app(
-                     Var( c"macro::set", with-location(mk-token("macro::set"),loc) ),
-                     mk-cons(ast, rexpr)
-                  );
-                  base = mk-cons(base, x);
-               );
-
-               ASTOrIdentId { id=id } => (
-                  let x = mk-app(
-                     Var( c"macro::let", with-location(mk-token("macro::let"),loc) ),
-                     mk-cons( id, rexpr )
-                  );
-                  base = mk-cons(base, x);
-               );
-            };
-            i = i + 1;
-         };
-      } else {
-         let lhs-rest = lsts-parse-lhs(tokens);
-         tokens = lhs-rest.second;
-         lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-         let rhs-rest = lsts-parse-small-expression(tokens);
-         tokens = rhs-rest.second;
-         base = mk-app(
-            Var( c"macro::set", with-location(mk-token("macro::set"),loc) ),
-            mk-cons(
-               lhs-rest.first,
-               rhs-rest.first
-            )
-         );
-      };
+      (let lhs, tokens) = lsts-parse-lhs(tokens);
+      lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+      (let rhs, tokens) = lsts-parse-small-expression(tokens);
+      base = mk-app(
+         mk-var(c"macro::assign").with-location(loc),
+         mk-cons(lhs, rhs).with-location(loc)
+      );
    } else {
-      let base-rest = lsts-parse-ascript(tokens);
-      base = base-rest.first;
-      tokens = base-rest.second;
+      (base, tokens) = lsts-parse-ascript(tokens);
    };
-   Tuple ( base, tokens )
+   ( base, tokens )
+);
+
+let lsts-parse-lhs-identifier(tokens: List<Token>): (AST,List<Token>) = (
+   let loc = if non-zero(tokens) then head(tokens).location else mk-location();
+   if lsts-parse-head(tokens)==c"uuid" {
+      lsts-parse-expect(c"uuid", tokens); tokens = tail(tokens);
+      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
+      (let id2, tokens) = lsts-parse-identifier(tokens);
+      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
+      (mk-app(
+         mk-var(c"uuid").with-location(loc),
+         mk-var(id2).with-location(loc)
+      ), tokens)
+   } else {
+      (let id3, tokens) = lsts-parse-identifier(tokens);
+      (mk-var(id3).with-location(loc), tokens)
+   }
 );
 
 let lsts-parse-head(tokens: List<Token>): CString = (
@@ -13977,17 +14320,6 @@ let lsts-parse-top-level(tokens: List<Token>): Tuple<AST,List<Token>> = (
       [ Token{key:c"let"}.. _] => lsts-parse-let(tokens);
       [ Token{key:c"type"}.. _] => lsts-parse-typedef(tokens);
       [ Token{key:c"typed"}.. Token{key:c"macro"}.. _] => lsts-parse-typed-macro(tokens);
-      [ Token{key:c"deprecated"}.. Token{key:c"macro"}.. rst] => (
-         (let mlhs, tokens) = lsts-parse-atom-without-tail(rst);
-         let mrhs = ASTNil;
-         lsts-parse-expect(c"(",tokens); tokens = tail(tokens);
-         if lsts-parse-head(tokens)==c"let" then (mrhs, tokens) = lsts-parse-let(tokens)
-         else (mrhs, tokens) = lsts-parse-atom(tokens);
-         lsts-parse-expect(c")",tokens); tokens = tail(tokens);
-         preprocess-macros = MSeq( close(preprocess-macros), Macro(mlhs.without-location, mrhs.without-location) );
-         lsts-parse-expect(c";",tokens); tokens = tail(tokens);
-         (mk-eof(), tokens);
-      );
       [ Token{key:c"interface"}.. _] => (
          tokens = lsts-parse-interface(tokens);
          (mk-eof(), tokens);
@@ -14036,12 +14368,7 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c":", tokens); tokens = tail(tokens);
    (let mrett, tokens) = lsts-parse-type(tokens);
    lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-   let mbody = if lsts-parse-head(tokens)==c"(" {
-      lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
-      (let mbody, tokens) = lsts-parse-expression(tokens);
-      lsts-parse-expect(c")", tokens); tokens = tail(tokens);
-      mbody
-   } else {
+   let mbody = if lsts-parse-head(tokens)==c"{" {
       lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
       let mbodies = mk-vector(type(AST));
       while lsts-parse-head(tokens) != c"}" {
@@ -14050,6 +14377,9 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
       };
       lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
       mk-seq(mbodies);
+   } else {
+      (let mbody, tokens) = lsts-parse-small-expression(tokens);
+      mbody
    };
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    (mk-glb(
@@ -14788,7 +15118,7 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let base = mk-eof();
    match tokens {
       [Token{key:c"if"}.. Token{key:c"let"}.. rest] => (
-         let loc = head(tokens).location;
+         let loc = head(tokens).location; tokens = tail(tokens);
          let lhs-rest = lsts-parse-lhs(tokens); tokens = lhs-rest.second;
          lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
          let expr-rest = lsts-parse-small-expression(tokens); tokens = expr-rest.second;
@@ -14869,9 +15199,8 @@ let lsts-parse-small-expression(tokens: List<Token>): Tuple<AST,List<Token>> = (
             lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
             true-expr;
          } else {
-            let t-rest = lsts-parse-assign(tokens);
-            tokens = t-rest.second;
-            t-rest.first;
+            (let t, tokens) = lsts-parse-assign(tokens);
+            t
          };
          let f = mk-nil();
          if lsts-parse-head(tokens)==c";" and lsts-parse-head(tail(tokens))==c"else" then tokens = tail(tokens);
