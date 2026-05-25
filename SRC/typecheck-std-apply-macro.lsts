@@ -59,7 +59,7 @@ let std-apply-macro-constant(tctx: Maybe<TypeContext>, mname: CString, margs: AS
    match margs {
       App{ left:Lit{key:c":"}, right:App{left:Lit{},right:AType{}} } => (tctx, margs);
       App{ left:Var{key:c"intern"}, right:App{ left:Lit{key:c":"}, right:App{left:Lit{},right:AType{}} }} => (tctx, margs);
-      _ => (print("Not a constant \{margs}\n"); (tctx, mk-eof()));
+      _ => (tctx, mk-eof());
    }
 );
 
@@ -70,7 +70,6 @@ let std-apply-macro-location(tctx: Maybe<TypeContext>, mname: CString, margs: AS
 type MacroStrength = MacroTerm | MacroHelper | MacroWeak | MacroSuperWeak;
 
 let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed, strong: MacroStrength): (TypeContext?, AST) = (
-   print("Apply macro \{mname} \{margs}\n");
    let result = mk-eof();
    let peeped-type = ta;
    let return-type = ta;
