@@ -30,7 +30,7 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
    print("Try destructure mcandidate \{mcandidate}\n");
    let no = (None : AContext?)();
    let yes = Some([] : AContext);
-   if let Abs{lhs=lhs, rhs=rhs} = mcandidate then std-try-destructure-macro(tctx, margs, mtype, lhs)
+   let result = if let Abs{lhs=lhs, rhs=rhs} = mcandidate then std-try-destructure-macro(tctx, margs, mtype, lhs)
    else {
       match mtype {
          TGround{tag:interned-tag-cons, parameters:[p2.. p1..]} => (
@@ -47,6 +47,17 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                );
                _ => (tctx, no);
             }
+         );
+         TVar{name:c"macro::constant"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-constant(tctx, c"macro::constant", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
          );
          _ => (
             match mcandidate {
@@ -67,18 +78,18 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                         App{left:Var{maybe-helper=key}, helper-args=right} => (
                            if macro-helper==maybe-helper {
                               # infallible, like matching macro::a(x) against macro::a
-                              (tctx, let helped) = std-apply-macro-helper(tctx, macro-helper, helper-args, Used());
+                              (let new-tctx, let helped) = std-apply-macro-helper(tctx, macro-helper, helper-args, Used());
                               if non-zero(helped)
-                              then (tctx, std-direct-destructure-macro(helped, mstruct, macro-helper, mstruct, margs))
+                              then (new-tctx, std-direct-destructure-macro(helped, mstruct, macro-helper, mstruct, margs))
                               else (tctx, no)
                            } else (tctx, no)
                         );
                         _ => (
                            if index-macro-meta.has-key(macro-helper) {
                               # fallible, like matching x against macro::variable or macro::nil
-                              (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, margs, Used());
+                              (let new-tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, margs, Used());
                               if non-zero(helped)
-                              then (tctx, std-direct-destructure-macro(helped, mstruct, macro-helper, mstruct, margs))
+                              then (new-tctx, std-direct-destructure-macro(helped, mstruct, macro-helper, mstruct, margs))
                               else (tctx, no)
                            } else (tctx, no)
                         );
@@ -89,7 +100,9 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
             }
          );
       }
-   }
+   };
+   print("Try destructure success = \{result.second.is-some}\n");
+   result
 );
 
 let std-macro-helper-name(tt: Type): CString = (
