@@ -41,9 +41,9 @@ let lsts-parse-lhs-list(tokens: List<Token>): Tuple<AST,List<Token>> = (
 let lsts-parse-lhs-big(tokens: List<Token>): Tuple<AST,List<Token>> = (
    (let base, tokens) = lsts-parse-lhs-one(tokens);
    if lsts-parse-head(tokens) == c"=" {
-      if base.is-var then var = mk-app( mk-var(c"macro::let-binding"), base );
       let loc = head(tokens).location;
       lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+      if base.is-var then base = mk-app( mk-var(c"macro::let-binding").with-location(loc), base );
       (let val, tokens) = lsts-parse-lhs-one(tokens);
       base = mk-app(
          mk-var(c"macro::lhs-bind").with-location(loc),

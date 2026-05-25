@@ -58,6 +58,7 @@ let std-apply-macro-tag(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (
 let std-apply-macro-constant(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
       App{ left:Lit{key:c":"}, right:App{left:Lit{},right:AType{}} } => (tctx, margs);
+      App{ left:Var{key:c"intern"}, right:App{ left:Lit{key:c":"}, right:App{left:Lit{},right:AType{}} }} => (tctx, margs);
       _ => (tctx, mk-eof());
    }
 );
