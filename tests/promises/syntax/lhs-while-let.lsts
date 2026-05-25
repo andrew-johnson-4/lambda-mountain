@@ -1,0 +1,7 @@
+
+import lib/core/bedrock.lsts;
+
+while let xx = 5 {
+   assert(xx == 5);
+   exit(0);
+};
