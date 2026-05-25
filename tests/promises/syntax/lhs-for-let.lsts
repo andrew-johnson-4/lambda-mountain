@@ -1,0 +1,11 @@
+
+import lib/core/bedrock.lsts;
+
+let xxs = mk-vector(type((U8,U8))).push((0,1)).push((2,3)).push((4,5));
+
+let xsum = 0_u64;
+for (let x1,let x2) in xxs {
+   xsum = xsum + x1 + x2;
+};
+
+assert( xsum == 15 );
