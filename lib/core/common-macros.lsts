@@ -48,6 +48,11 @@ typed macro macro::assign(tag-guard fields-guard: macro::lhs-tagged, rhs: lazy):
         (fail(c"Fallible assignment failed ", macro::location(rhs)));
 );
 
+typed macro macro::fallible-bind(tag-guard fields-guard: macro::lhs-tagged, rhs: lazy): lazy = (
+   let uuid(term) = rhs;
+   macro::lhs-tagged-with-term(uuid(term), tag-guard, fields-guard)   
+);
+
 typed macro macro::assign(lhs-base lhs-index: macro::lhs-index, rhs: lazy): lazy = (
    $"set[]"(lhs-base, lhs-index, rhs)
 );
