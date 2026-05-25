@@ -1026,7 +1026,7 @@ typed macro macro::pats-none(ignore: lazy): lazy = (
 );
 
 typed macro macro::match-pats-arm(term: lazy, v: macro::let-binding): lazy = (
-   macro::match-pats-arms(term, v);
+   macro::match-pats-arm(term, v);
 );
 
 typed macro macro::match-pats-arm(term: lazy, v: macro::variable): lazy = (
@@ -9024,6 +9024,50 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                _ => (tctx, no);
             }
          );
+         TVar{name:c"macro::constant"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname1=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-constant(tctx, c"macro::constant", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname1, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
+         TVar{name:c"macro::variable"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname2=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-variable(tctx, c"macro::variable", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname2, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
+         TVar{name:c"macro::underscore"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname3=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-underscore(tctx, c"macro::underscore", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname3, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
+         TVar{name:c"macro::nil"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname4=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-nil(tctx, c"macro::nil", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname4, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
          _ => (
             match mcandidate {
                App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt:TVar{name:c"macro::literal",parameters:[TGround{literal-tag=tag,parameters=parameters}.. etc-parameters]}}}} => (
@@ -9043,18 +9087,18 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                         App{left:Var{maybe-helper=key}, helper-args=right} => (
                            if macro-helper==maybe-helper {
                               # infallible, like matching macro::a(x) against macro::a
-                              (tctx, let helped) = std-apply-macro-helper(tctx, macro-helper, helper-args, Used());
+                              (let new-tctx, let helped) = std-apply-macro-helper(tctx, macro-helper, helper-args, Used());
                               if non-zero(helped)
-                              then (tctx, std-direct-destructure-macro(helped, mstruct, macro-helper, mstruct, margs))
+                              then (new-tctx, std-direct-destructure-macro(helped, mstruct, macro-helper, mstruct, margs))
                               else (tctx, no)
                            } else (tctx, no)
                         );
                         _ => (
                            if index-macro-meta.has-key(macro-helper) {
                               # fallible, like matching x against macro::variable or macro::nil
-                              (tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, margs, Used());
+                              (let new-tctx, let helped) = std-apply-macro-weak(tctx, macro-helper, margs, Used());
                               if non-zero(helped)
-                              then (tctx, std-direct-destructure-macro(helped, mstruct, macro-helper, mstruct, margs))
+                              then (new-tctx, std-direct-destructure-macro(helped, mstruct, macro-helper, mstruct, margs))
                               else (tctx, no)
                            } else (tctx, no)
                         );
@@ -9065,7 +9109,7 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
             }
          );
       }
-   }
+   };
 );
 
 let std-macro-helper-name(tt: Type): CString = (
@@ -9141,6 +9185,7 @@ let std-apply-macro-tag(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (
 let std-apply-macro-constant(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
       App{ left:Lit{key:c":"}, right:App{left:Lit{},right:AType{}} } => (tctx, margs);
+      App{ left:Var{key:c"intern"}, right:App{ left:Lit{key:c":"}, right:App{left:Lit{},right:AType{}} }} => (tctx, margs);
       _ => (tctx, mk-eof());
    }
 );
@@ -13835,6 +13880,7 @@ let lsts-parse-lhs-big(tokens: List<Token>): Tuple<AST,List<Token>> = (
    if lsts-parse-head(tokens) == c"=" {
       let loc = head(tokens).location;
       lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
+      if base.is-var then base = mk-app( mk-var(c"macro::let-binding").with-location(loc), base );
       (let val, tokens) = lsts-parse-lhs-one(tokens);
       base = mk-app(
          mk-var(c"macro::lhs-bind").with-location(loc),

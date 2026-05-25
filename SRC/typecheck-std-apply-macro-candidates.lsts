@@ -47,10 +47,10 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
          );
          TVar{name:c"macro::constant"} => (
             match mcandidate {
-               App{left:Lit{key:c":"}, right:App{left:Var{vname=key}, right:AType{tt=tt}}} => (
+               App{left:Lit{key:c":"}, right:App{left:Var{vname1=key}, right:AType{tt=tt}}} => (
                   (let new-tctx, let new-term) = std-apply-macro-constant(tctx, c"macro::constant", margs);
                   if non-zero(new-term)
-                  then (new-tctx, yes.bind(vname, new-term))
+                  then (new-tctx, yes.bind(vname1, new-term))
                   else (tctx, no)
                );
                _ => (tctx, no);
@@ -58,10 +58,10 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
          );
          TVar{name:c"macro::variable"} => (
             match mcandidate {
-               App{left:Lit{key:c":"}, right:App{left:Var{vname=key}, right:AType{tt=tt}}} => (
+               App{left:Lit{key:c":"}, right:App{left:Var{vname2=key}, right:AType{tt=tt}}} => (
                   (let new-tctx, let new-term) = std-apply-macro-variable(tctx, c"macro::variable", margs);
                   if non-zero(new-term)
-                  then (new-tctx, yes.bind(vname, new-term))
+                  then (new-tctx, yes.bind(vname2, new-term))
                   else (tctx, no)
                );
                _ => (tctx, no);
@@ -69,10 +69,10 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
          );
          TVar{name:c"macro::underscore"} => (
             match mcandidate {
-               App{left:Lit{key:c":"}, right:App{left:Var{vname=key}, right:AType{tt=tt}}} => (
+               App{left:Lit{key:c":"}, right:App{left:Var{vname3=key}, right:AType{tt=tt}}} => (
                   (let new-tctx, let new-term) = std-apply-macro-underscore(tctx, c"macro::underscore", margs);
                   if non-zero(new-term)
-                  then (new-tctx, yes.bind(vname, new-term))
+                  then (new-tctx, yes.bind(vname3, new-term))
                   else (tctx, no)
                );
                _ => (tctx, no);
@@ -80,10 +80,10 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
          );
          TVar{name:c"macro::nil"} => (
             match mcandidate {
-               App{left:Lit{key:c":"}, right:App{left:Var{vname=key}, right:AType{tt=tt}}} => (
+               App{left:Lit{key:c":"}, right:App{left:Var{vname4=key}, right:AType{tt=tt}}} => (
                   (let new-tctx, let new-term) = std-apply-macro-nil(tctx, c"macro::nil", margs);
                   if non-zero(new-term)
-                  then (new-tctx, yes.bind(vname, new-term))
+                  then (new-tctx, yes.bind(vname4, new-term))
                   else (tctx, no)
                );
                _ => (tctx, no);
