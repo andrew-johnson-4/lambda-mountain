@@ -141,9 +141,8 @@ typed macro macro::while(cond: Bool, body: lazy): lazy = (
 typed macro macro::for(item: lazy, iterable: List<?>, loop: lazy): lazy = (
    let uuid(iter-term) = iterable;
    while non-zero(uuid(iter-term)) {
-      match head(uuid(iter-term)) {
-         item => loop;
-      };
+      if macro::fallible-bind(item, head(uuid(iter-term)))
+      then loop;
       uuid(iter-term) = tail(uuid(iter-term));
    };
 );
@@ -152,41 +151,21 @@ typed macro macro::for(item: lazy, iterable: Vector<?>, loop: lazy): lazy = (
    let uuid(iter-term) = iterable;
    let uuid(iter-i) = 0_sz;
    while uuid(iter-i) < uuid(iter-term).length {
-      match uuid(iter-term)[uuid(iter-i)] {
-         item => loop;
-      };
+      if macro::fallible-bind(item, uuid(iter-term)[uuid(iter-i)])
+      then loop;
       uuid(iter-i) = uuid(iter-i) + 1;
    };
 );
 
-#typed macro macro::for(item: lazy, iterable: List<?>, loop: lazy): lazy = (
-#   let uuid(iter-term) = iterable;
-#   while non-zero(uuid(iter-term)) {
-#      if macro::fallible-bind(item, head(uuid(iter-term)))
-#      then loop;
-#      uuid(iter-term) = tail(uuid(iter-term));
-#   };
-#);
-
-#typed macro macro::for(item: lazy, iterable: Vector<?>, loop: lazy): lazy = (
-#   let uuid(iter-term) = iterable;
-#   let uuid(iter-i) = 0_sz;
-#   while uuid(iter-i) < uuid(iter-term).length {
-#      if macro::fallible-bind(item, uuid(iter-term)[uuid(iter-i)])
-#      then loop;
-#      uuid(iter-i) = uuid(iter-i) + 1;
-#   };
-#);
-
-#typed macro macro::for(item: lazy, iterable: VectorView<?>, loop: lazy): lazy = (
-#   let uuid(iter-term) = iterable;
-#   let uuid(iter-i) = 0_sz;
-#   while uuid(iter-i) < uuid(iter-term).length {
-#      if macro::fallible-bind(item, uuid(iter-term)[uuid(iter-i)])
-#      then loop;
-#      uuid(iter-i) = uuid(iter-i) + 1;
-#   };
-#);
+typed macro macro::for(item: lazy, iterable: VectorView<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iterable;
+   let uuid(iter-i) = 0_sz;
+   while uuid(iter-i) < uuid(iter-term).length {
+      if macro::fallible-bind(item, uuid(iter-term)[uuid(iter-i)])
+      then loop;
+      uuid(iter-i) = uuid(iter-i) + 1;
+   };
+);
 
 typed macro macro::match(t: lazy, ps: lazy): lazy = (scope(
    let uuid(term) = open(t);
