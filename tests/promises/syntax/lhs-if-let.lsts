@@ -1,0 +1,17 @@
+
+import lib/core/bedrock.lsts;
+
+if let x = 5 {
+   assert(x == 5);
+} else assert( false );
+
+#let y = 3;
+#if set y = 5 {
+#   assert(y == 5);
+#} else assert( false );
+
+#if (let z, set y) = (1, 2) {
+#   assert(z == 1);
+#   assert(y == 2);
+#} else assert( false );
+
