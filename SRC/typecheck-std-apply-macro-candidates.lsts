@@ -56,6 +56,21 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                      _ => (tctx, no);
                   };
                );
+               App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt:TVar{name:c"macro::constant"}}}} => (
+                  (tctx, std-direct-destructure-macro(margs, mstruct, c"[direct]", mstruct, margs))
+               );
+               App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt:TVar{name:c"macro::literal"}}}} => (
+                  (tctx, std-direct-destructure-macro(margs, mstruct, c"[direct]", mstruct, margs))
+               );
+               App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt:TVar{name:c"macro::nil"}}}} => (
+                  (tctx, std-direct-destructure-macro(margs, mstruct, c"[direct]", mstruct, margs))
+               );
+               App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt:TVar{name:c"macro::variable"}}}} => (
+                  (tctx, std-direct-destructure-macro(margs, mstruct, c"[direct]", mstruct, margs))
+               );
+               App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt:TVar{name:c"macro::underscore"}}}} => (
+                  (tctx, std-direct-destructure-macro(margs, mstruct, c"[direct]", mstruct, margs))
+               );
                App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt=tt}}} => (
                   if non-zero(std-macro-helper-name(tt))
                   then {
