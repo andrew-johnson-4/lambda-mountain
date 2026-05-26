@@ -18,7 +18,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          (tctx, let check-tt) = typeof-var-raw(term, tctx, lname, true);
          if check-tt.is-t(interned-tag-local-variable,0)
          then exit-error("Variable Name Is Already Bound In Outer Scope \{lname}", term);
-         (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Tail(), ta);
+         (tctx, let new-rhs) = std-infer-expr(tctx, rhs, false, Tail, ta);
          if not(is(rhs,new-rhs)) then { rhs = new-rhs; term = mk-app(mk-abs(def,mk-nil(),misc-tt),rhs); };
          (tctx, let tt) = std-bind-term(tctx, lname, rhs, def, term, hint);
          tctx = tctx.ascript(def, tt);

@@ -1,0 +1,11 @@
+
+import lib/core/bedrock.lsts;
+
+#if let xx = 5 {
+#   assert(xx == 5);
+#};
+
+while let xx = 5 {
+#   assert(xx == 5);
+#   exit(0);
+};
