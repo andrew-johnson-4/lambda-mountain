@@ -287,7 +287,7 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
 
 let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
    let base = mk-eof();
-   if lsts-has-assign(tokens) {
+   if lsts-has-assign(tokens) and lsts-parse-head(tokens)!=c"for" and lsts-parse-head(tokens)!=c"while" and lsts-parse-head(tokens)!=c"if" {
       let loc = head(tokens).location;
       (let lhs, tokens) = lsts-parse-lhs(tokens);
       lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
