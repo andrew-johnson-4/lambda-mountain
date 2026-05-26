@@ -291,7 +291,7 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
       let loc = head(tokens).location;
       (let lhs, tokens) = lsts-parse-lhs(tokens);
       lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-      (let rhs, tokens) = lsts-parse-small-expression(tokens);
+      (let rhs, tokens) = lsts-parse-assign(tokens);
       base = mk-app(
          mk-var(c"macro::assign").with-location(loc),
          mk-cons(lhs, rhs).with-location(loc)
