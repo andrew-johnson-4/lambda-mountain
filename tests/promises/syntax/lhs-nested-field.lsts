@@ -8,10 +8,5 @@ type B = { a: A };
 let b = B(A(1));
 assert( b.a.x == 1 );
 
-#b.a.x = 2;
-macro::assign2(macro::lhs-field(macro::lhs-field(b,a),x), 2);
+b.a.x = 2;
 assert( b.a.x == 2 );
-
-typed macro macro::assign2(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Nil = (
-   macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs)
-);
