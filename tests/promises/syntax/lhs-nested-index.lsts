@@ -1,29 +1,31 @@
 
 import lib/core/bedrock.lsts;
 
-let xs = safe-alloc(2, type((U8,U8)));
-xs[0] = (1,2);
-xs[1] = (2,3);
+type A = { x: U8, y: U8 };
 
-assert( xs[0].first == 1 );
-assert( xs[0].second == 2 );
+let xs = safe-alloc(2, type(A));
+xs[0] = A(1,2);
+xs[1] = A(2,3);
 
-assert( xs[1].first == 2 );
-assert( xs[1].second == 3 );
+assert( xs[0].x == 1 );
+assert( xs[0].y == 2 );
 
-xs[0] = (3,4);
+assert( xs[1].x == 2 );
+assert( xs[1].y == 3 );
 
-assert( xs[0].first == 3 );
-assert( xs[0].second == 4 );
+xs[0] = A(3,4);
 
-assert( xs[1].first == 2 );
-assert( xs[1].second == 3 );
+assert( xs[0].x == 3 );
+assert( xs[0].y == 4 );
 
-xs[0].first = 5;
+assert( xs[1].x == 2 );
+assert( xs[1].y == 3 );
 
-assert( xs[0].first == 5 );
-assert( xs[0].second == 4 );
+xs[0].x = 5;
 
-assert( xs[1].first == 2 );
-assert( xs[1].second == 3 );
+assert( xs[0].x == 5 );
+assert( xs[0].y == 4 );
+
+assert( xs[1].x == 2 );
+assert( xs[1].y == 3 );
 
