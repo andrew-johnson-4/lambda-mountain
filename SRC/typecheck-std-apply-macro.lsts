@@ -82,13 +82,6 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
    else if mname==c"macro::tag" then (tctx, result) = std-apply-macro-tag(tctx, mname, margs)
    else {
       let row = index-macro-table.lookup(mname, [] : List<(Type,Type,AST)>);
-      for tr in row {
-         match tr.third {
-            Abs{mt-tt=tt} => (
-               if mt-tt.is-t(interned-tag-lazy,0) then strong = MacroSuperWeak;
-            );
-         }
-      };
       let peep-holes = ta;
       let peeped = ta;
       for Tuple{mtype=first, peep=second, mterm=third} in row {
