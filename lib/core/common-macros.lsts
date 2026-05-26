@@ -38,8 +38,6 @@ typed macro macro::let(lhs: macro::set-binding, rhs: lazy): lazy = (
 );
 
 typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (base; index);
-typed macro macro::lhs-field(base: lazy, field: lazy): lazy = (base; field);
-typed macro macro::lhs-field(base field1: macro::lhs-field, field2: lazy): lazy = (macro::concat($".", field1)(base); field2);
 
 typed macro macro::assign(tag-guard fields-guard: macro::lhs-tagged, rhs: lazy): Nil = (
    let uuid(term) = rhs;
@@ -60,10 +58,10 @@ typed macro macro::fallible-bind(lhs-base lhs-index: macro::lhs-index, rhs: lazy
 );
 
 typed macro macro::assign(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Nil = (
-   macro::concat($"set.", lhs-field-name)(lhs-base, rhs)
+   macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs)
 );
 typed macro macro::fallible-bind(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Bool = (
-   macro::concat($"set.", lhs-field-name)(lhs-base, rhs); true
+   macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs); true
 );
 
 typed macro macro::assign(lhs: macro::variable, rhs: lazy): Nil = (
@@ -103,15 +101,23 @@ typed macro macro::set(base index: macro::lhs-index, rhs: lazy): lazy = (
 );
 
 typed macro macro::set(base field: macro::lhs-field, rhs: lazy): lazy = (
-   macro::concat($"set.", field) (base, rhs)
+   macro::concat($"set.", field) (macro::lhs-as-rhs(base), rhs)
 );
 
 typed macro macro::lhs-as-rhs(v: macro::variable): lazy = (
    v
 );
 
+typed macro macro::lhs-as-rhs(base idx: macro::lhs-index): lazy = (
+   macro::lhs-as-rhs(base)[idx]
+);
+
 typed macro macro::lhs-as-rhs(base: macro::lhs-address-of): lazy = (
    &v
+);
+
+typed macro macro::lhs-as-rhs(base field: macro::lhs-field): lazy = (
+   macro::concat($".", field)(macro::lhs-as-rhs(base))
 );
 
 typed macro macro::lhs-address-of(base: lazy): lazy = (
@@ -120,10 +126,6 @@ typed macro macro::lhs-address-of(base: lazy): lazy = (
 
 typed macro macro::lhs-field(base: lazy, field: lazy): lazy = (
    base; field
-);
-
-typed macro macro::lhs-as-rhs(base field: macro::lhs-index): lazy = (
-   macro::concat(l".", field)(base)
 );
 
 typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (

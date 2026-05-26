@@ -1,0 +1,29 @@
+
+import lib/core/bedrock.lsts;
+
+let xs = safe-alloc(2, type((U8,U8)));
+xs[0] = (1,2);
+xs[1] = (2,3);
+
+assert( xs[0].first == 1 );
+assert( xs[0].second == 2 );
+
+assert( xs[1].first == 2 );
+assert( xs[1].second == 3 );
+
+xs[0] = (3,4);
+
+assert( xs[0].first == 3 );
+assert( xs[0].second == 4 );
+
+assert( xs[1].first == 2 );
+assert( xs[1].second == 3 );
+
+xs[0].first = 5;
+
+assert( xs[0].first == 5 );
+assert( xs[0].second == 4 );
+
+assert( xs[1].first == 2 );
+assert( xs[1].second == 3 );
+

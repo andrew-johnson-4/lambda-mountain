@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm tests/promises/syntax/lhs-while-let.lsts
+	lm tests/promises/syntax/lhs-nested-field.lsts > out.txt
 	gcc tmp.c
 	./a.out
 
