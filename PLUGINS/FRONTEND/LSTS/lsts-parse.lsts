@@ -236,6 +236,12 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c"typed", tokens); tokens = tail(tokens);
    lsts-parse-expect(c"macro", tokens); tokens = tail(tokens);
 
+   let misc-tt = ta;
+   if lsts-parse-head(tokens)==c":" {
+      lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+      (misc-tt, tokens) = lsts-parse-type(tokens);
+   };
+
    (let mname, tokens) = lsts-parse-identifier(tokens);
    let margs = mk-nil();
    lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
@@ -273,7 +279,7 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    (mk-glb(
       mk-token(mname), 
-      mk-abs(margs, mbody.without-location.ascript(mrett), t0(c"TypedMacro"))
+      mk-abs(margs, mbody.without-location.ascript(mrett), t0(c"TypedMacro") && misc-tt)
    ), tokens);
 );
 
