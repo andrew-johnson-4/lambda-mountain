@@ -77,7 +77,7 @@ typed macro macro::assign(lhs: macro::let-binding, rhs: lazy): Nil = (
    macro::maybe-let(lhs, rhs)
 );
 typed macro macro::fallible-bind(lhs: macro::let-binding, rhs: lazy): Bool = (
-   macro::maybe-let(lhs, rhs); true
+   macro::fallible-bind(lhs, rhs)
 );
 
 typed macro macro::assign(lhs: macro::set-binding, rhs: lazy): Nil = (
@@ -141,7 +141,7 @@ typed macro macro::while(cond: Bool, body: lazy): lazy = (
 typed macro macro::for(item: lazy, iterable: List<?>, loop: lazy): lazy = (
    let uuid(iter-term) = iterable;
    while non-zero(uuid(iter-term)) {
-      if macro::fallible-bind(item, head(uuid(iter-term)))
+      if macro::fallible-bind(item, open(head(uuid(iter-term))))
       then loop;
       uuid(iter-term) = tail(uuid(iter-term));
    };
@@ -151,7 +151,7 @@ typed macro macro::for(item: lazy, iterable: Vector<?>, loop: lazy): lazy = (
    let uuid(iter-term) = iterable;
    let uuid(iter-i) = 0_sz;
    while uuid(iter-i) < uuid(iter-term).length {
-      if macro::fallible-bind(item, uuid(iter-term)[uuid(iter-i)])
+      if macro::fallible-bind(item, open(uuid(iter-term)[uuid(iter-i)]))
       then loop;
       uuid(iter-i) = uuid(iter-i) + 1;
    };
@@ -161,7 +161,7 @@ typed macro macro::for(item: lazy, iterable: VectorView<?>, loop: lazy): lazy = 
    let uuid(iter-term) = iterable;
    let uuid(iter-i) = 0_sz;
    while uuid(iter-i) < uuid(iter-term).length {
-      if macro::fallible-bind(item, uuid(iter-term)[uuid(iter-i)])
+      if macro::fallible-bind(item, open(uuid(iter-term)[uuid(iter-i)]))
       then loop;
       uuid(iter-i) = uuid(iter-i) + 1;
    };
