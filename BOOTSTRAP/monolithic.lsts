@@ -8073,7 +8073,13 @@ let std-infer-call-arg(tctx: TypeContext?, term: AST, function-name: CString, hi
          (tctx, term)
       );
       _ => (tctx, term);
-   }} else std-infer-expr(tctx, term, false, Call(function-name), hint);
+   }} else {
+      (tctx, term) = std-infer-expr(tctx, term, false, Call(function-name), hint);
+      # The second inference exists to collapse lazy macros
+      if not(non-zero(typeof-term(term)))
+      then (tctx, term) = std-infer-expr(tctx, term, false, Call(function-name), hint);
+      (tctx, term)
+   };
 );
 
 let infer-bind-global(tctx: TypeContext?, key: CString, nt: Type, dt: Type, blame: AST): TypeContext? = (
