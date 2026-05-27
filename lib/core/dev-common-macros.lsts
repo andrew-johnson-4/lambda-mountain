@@ -272,7 +272,7 @@ typed macro macro::fallible-bind-tagged(term: lazy, prefix: macro::nil, rest: la
 
 typed macro macro::fallible-bind-tagged(term: lazy, tag-name tag-ordinal tag-type: macro::tag, rest: lazy): Bool = (
    term.discriminator-case-tag==(term as tag-type).discriminator-case-tag and
-   macro::fallible-bind(rest, term)
+   macro::fallible-bind(rest, (term as tag-type))
 );
 
 typed macro macro::infallible-bind-tagged(term: lazy, prefix: macro::nil, rest: lazy): Nil = (
@@ -282,5 +282,5 @@ typed macro macro::infallible-bind-tagged(term: lazy, prefix: macro::nil, rest: 
 typed macro macro::infallible-bind-tagged(term: lazy, tag-name tag-ordinal tag-type: macro::tag, rest: lazy): Nil = (
    if term.discriminator-case-tag != (term as tag-type).discriminator-case-tag
    then fail(c"Infallible binding failed ", macro::location(term));
-   macro::infallible-bind(rest, term)
+   macro::infallible-bind(rest, (term as tag-type))
 );
