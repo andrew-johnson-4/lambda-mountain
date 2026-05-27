@@ -106,7 +106,7 @@ typed macro macro::fallible-bind(bind pat: macro::lhs-bind, rhs: lazy): Bool = (
    macro::fallible-bind(pat, macro::maybe-let-var(bind))
 );
 typed macro macro::infallible-bind(bind pat: macro::lhs-bind, rhs: lazy): Nil = (
-   macro::maybe-let(bind, rhs);
+   macro::maybe-set(bind, rhs);
    macro::infallible-bind(pat, macro::maybe-let-var(bind))
 );
 
