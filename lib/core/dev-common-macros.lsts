@@ -46,6 +46,10 @@ typed macro macro::fallible-bind(lhs-base lhs-index: macro::lhs-index, rhs: lazy
    $"set[]"(lhs-base, lhs-index, rhs); true
 );
 
+typed macro macro::fallible-bind(lhs: macro::nil, rhs: lazy): Bool = (
+   rhs; true
+);
+
 typed macro macro::infallible-bind(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Nil = (
    macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs)
 );
@@ -210,4 +214,13 @@ typed macro macro::lhs-fields-field(field-key: macro::variable, pat: lazy): lazy
 
 typed macro macro::lhs-fields(prefix: lazy, fields: lazy): lazy = (
    prefix; fields;
+);
+
+typed macro macro::fallible-bind-tagged(term: lazy, prefix: macro::nil, rest: lazy): Bool = (
+   macro::fallible-bind(rest, term)
+);
+
+typed macro macro::fallible-bind-tagged(term: lazy, tag-name tag-ordinal tag-type: macro::tag, rest: lazy): Bool = (
+   term.discriminator-case-tag==(term as tag-type).discriminator-case-tag and
+   macro::fallible-bind(rest, term)
 );
