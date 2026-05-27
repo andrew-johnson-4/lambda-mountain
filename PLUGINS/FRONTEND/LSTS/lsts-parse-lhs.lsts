@@ -293,7 +293,7 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
       lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
       (let rhs, tokens) = lsts-parse-assign(tokens);
       base = mk-app(
-         mk-var(c"macro::assign").with-location(loc),
+         mk-var(c"macro::infallible-bind").with-location(loc),
          mk-cons(lhs, rhs).with-location(loc)
       );
    } else {
