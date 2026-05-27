@@ -86,6 +86,12 @@ typed macro macro::fallible-bind(tag-guard fields-guard: macro::lhs-tagged, rhs:
    macro::fallible-bind-tagged(uuid(term), tag-guard, fields-guard)
 );
 
+typed macro macro::infallible-bind(tag-guard fields-guard: macro::lhs-tagged, rhs: lazy): Nil = (
+   $"if"(macro::fallible-bind(macro::lhs-tagged(tag-guard,fields-guard),rhs))
+        ()
+        (fail(c"Fallible assignment failed ", macro::location(rhs)));
+);
+
 typed macro macro::set(lhs: lazy, rhs: lazy): lazy = (
    mov(rhs, lhs)
 );
@@ -205,5 +211,3 @@ typed macro macro::lhs-fields-field(field-key: macro::variable, pat: lazy): lazy
 typed macro macro::lhs-fields(prefix: lazy, fields: lazy): lazy = (
    prefix; fields;
 );
-
-
