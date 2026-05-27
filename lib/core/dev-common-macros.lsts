@@ -10,19 +10,6 @@ typed macro $"assert"(c: lazy): lazy = (
 typed macro macro::let-binding(v: lazy): lazy = (v);
 typed macro macro::set-binding(v: lazy): lazy = (v);
 
-typed macro macro::maybe-let-var(lhs: macro::underscore): Nil = (
-   lhs
-);
-typed macro macro::maybe-let-var(lhs: macro::variable): Nil = (
-   lhs
-);
-typed macro macro::maybe-let-var(lhs: macro::let-binding): Nil = (
-   lhs
-);
-typed macro macro::maybe-let-var(lhs: macro::set-binding): Nil = (
-   lhs
-);
-
 typed macro macro::maybe-let(lhs: macro::let-binding, rhs: lazy): Nil = (
    macro::maybe-let(lhs, rhs)
 );
@@ -86,6 +73,14 @@ typed macro macro::fallible-bind(lhs: macro::variable, rhs: lazy): Bool = (
    macro::maybe-let(lhs; rhs); true
 );
 
+typed macro macro::infallible-bind(lhs: macro::constant, rhs: lazy): Bool = (
+   if lhs != rhs
+   then fail(c"Infallible binding failed ", macro::location(lhs))
+);
+typed macro macro::fallible-bind(lhs: macro::constant, rhs: lazy): Bool = (
+   lhs == rhs
+);
+
 typed macro macro::infallible-bind(lhs: macro::let-binding, rhs: lazy): Nil = (
    macro::maybe-let(lhs, rhs)
 );
@@ -105,12 +100,14 @@ typed macro macro::lhs-bind(bind: lazy, pat: lazy): lazy = (
 );
 
 typed macro macro::fallible-bind(bind pat: macro::lhs-bind, rhs: lazy): Bool = (
-   macro::maybe-let(bind, rhs);
-   macro::fallible-bind(pat, macro::maybe-let-var(bind))
+   let uuid(r) = rhs;
+   macro::fallible-bind(bind, uuid(r)) and
+   macro::fallible-bind(pat, uuid(r))
 );
 typed macro macro::infallible-bind(bind pat: macro::lhs-bind, rhs: lazy): Nil = (
-   macro::maybe-set(bind, rhs);
-   macro::infallible-bind(pat, macro::maybe-let-var(bind))
+   let uuid(r) = rhs;
+   macro::infallible-bind(bind, uuid(r));
+   macro::infallible-bind(pat, uuid(r))
 );
 
 typed macro macro::fallible-bind(prefix suffix: macro::lhs-fields, rhs: lazy): Bool = (
@@ -246,7 +243,7 @@ typed macro macro::match-pats(term: lazy, cases: macro::pats-none, remainder: la
 );
 
 typed macro macro::match-pats(term: lazy, ps lhs rhs: macro::pats-some, remainder: lazy): lazy = (
-   macro::match-pats(term, ps, scope($"if"(macro::match-pats-arm(term,lhs))(rhs)(remainder)));
+   macro::match-pats(term, ps, scope($"if"(macro::fallible-bind(lhs,term))(rhs)(remainder)));
 );
 
 typed macro macro::pats-some(ps: lazy, lhs: lazy, rhs: lazy): lazy = (
