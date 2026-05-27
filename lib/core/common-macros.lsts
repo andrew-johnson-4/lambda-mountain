@@ -57,17 +57,11 @@ typed macro macro::fallible-bind(lhs-base lhs-index: macro::lhs-index, rhs: lazy
    $"set[]"(lhs-base, lhs-index, rhs); true
 );
 
-#typed macro macro::assign(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Nil = (
-#   macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs)
-#);
-#typed macro macro::fallible-bind(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Bool = (
-#   macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs); true
-#);
 typed macro macro::assign(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Nil = (
-   macro::concat($"set.", lhs-field-name)(lhs-base, rhs)
+   macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs)
 );
 typed macro macro::fallible-bind(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Bool = (
-   macro::concat($"set.", lhs-field-name)(lhs-base, rhs); true
+   macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs); true
 );
 
 typed macro macro::assign(lhs: macro::variable, rhs: lazy): Nil = (
@@ -110,19 +104,19 @@ typed macro macro::set(base field: macro::lhs-field, rhs: lazy): lazy = (
    macro::concat($"set.", field) (macro::lhs-as-rhs(base), rhs)
 );
 
-typed macro macro::lhs-as-rhs(v: macro::variable): lazy = (
+typed macro :Lazy macro::lhs-as-rhs(v: macro::variable): lazy = (
    v
 );
 
-typed macro macro::lhs-as-rhs(base idx: macro::lhs-index): lazy = (
+typed macro :Lazy macro::lhs-as-rhs(base idx: macro::lhs-index): lazy = (
    macro::lhs-as-rhs(base)[idx]
 );
 
-typed macro macro::lhs-as-rhs(base: macro::lhs-address-of): lazy = (
+typed macro :Lazy macro::lhs-as-rhs(base: macro::lhs-address-of): lazy = (
    &v
 );
 
-typed macro macro::lhs-as-rhs(base field: macro::lhs-field): lazy = (
+typed macro :Lazy macro::lhs-as-rhs(base field: macro::lhs-field): lazy = (
    macro::concat($".", field)(macro::lhs-as-rhs(base))
 );
 
