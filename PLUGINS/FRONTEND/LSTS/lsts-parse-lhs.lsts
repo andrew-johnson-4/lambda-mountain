@@ -221,6 +221,10 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
                let val = if lsts-parse-head(tokens)==c":" {
                   tokens = tail(tokens);
                   (let val, tokens) = lsts-parse-lhs-one(tokens);
+                  if val.is-var then val = mk-app(
+                     mk-var(c"macro::variable-as-constant").with-location(attr-loc),
+                     val
+                  );
                   val
                } else { mk-eof() };
                if not(non-zero(val)) and not(non-zero(binding)) and not(non-zero(attr-key)) {

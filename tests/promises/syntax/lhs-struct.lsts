@@ -1,0 +1,14 @@
+
+import lib/core/bedrock.lsts;
+
+type A = { x: U8 };
+
+let xx = 5;
+
+match A(5) {
+   A{x:5} => ();
+};
+
+match A(5) {
+   A{x:xx} => ();
+};
