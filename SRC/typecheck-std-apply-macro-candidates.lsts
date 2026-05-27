@@ -25,9 +25,6 @@ let std-macro-unpack-args(actx: AContext?, parameters: Vector<Type>, margs: AST)
 );
 
 let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcandidate: AST): (TypeContext?, AContext?) = (
-   print("Try destructure margs \{margs}\n");
-   print("Try destructure mtype \{mtype}\n");
-   print("Try destructure mcandidate \{mcandidate}\n");
    let no = (None : AContext?)();
    let yes = Some([] : AContext);
    if let Abs{lhs=lhs, rhs=rhs} = mcandidate then std-try-destructure-macro(tctx, margs, mtype, lhs)
