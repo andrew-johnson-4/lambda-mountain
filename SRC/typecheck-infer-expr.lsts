@@ -1,7 +1,7 @@
 
 let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, blame: AST, hint: Type): (TypeContext?, Type) = (
    let rhs-tt = tctx.with-phi(typeof-term(rhs), rhs);
-   let tt = rhs-tt && t0(c"LocalVariable");
+   let tt = rhs-tt && if non-zero(tctx.function-name) then t0(interned-tag-local-variable) else t0(interned-tag-global-variable);
    tctx = tctx.bind(key, ta, tt, def);
    (tctx, tt)
 );

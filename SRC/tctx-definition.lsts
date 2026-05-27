@@ -6,6 +6,7 @@ type TypeContextRow zero NullTypeContextRow implies MustRetain, MustRelease = Nu
 type PhiContextRow zero NullPhiContextRow implies MustRetain, MustRelease = NullPhiContextRow | PhiContextRow { phi-id: U32, phi-tt: Type, blame: AST, dead-on-arrival: Bool, is-global: Bool };
 type TypeContext implies MustRetain, MustRelease = { tctx:List<TypeContextRow>, pctx: PBTree<U32,PhiContextRow>, is-unsafe: Bool, is-blob: Bool, function-name:CString };
 let .into(pr: PhiContextRow, tt: Type<String>): String = "#\{pr.phi-id-or-zero} : \{pr.phi-tt-or-zero}";
+let .function-name(tctx: TypeContext?): CString = tctx.get-or(mk-tctx()).function-name;
 
 let mk-tctx(): TypeContext = TypeContext( [] : List<TypeContextRow>, mk-pbtree(type(U32), type(PhiContextRow)), false, false, c"" );
 
