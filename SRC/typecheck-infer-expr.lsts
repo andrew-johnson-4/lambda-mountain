@@ -316,6 +316,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             # TailPosition LocalVariables don't need to be retained because +1/-1 retain/release cancels itself out
             if not(hint.is-t(interned-tag-tail-position,0) and vt.is-t(interned-tag-local-variable,0))
             and not(hint.is-t(interned-tag-must-not-retain,0))
+            and not(used.function-name.is-lazy-macro)
             and not(tctx.get-or(mk-tctx()).is-blob) {
                tctx = tctx.ascript(term, vt);
                (tctx, term) = maybe-retain(tctx, term);
@@ -447,7 +448,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                tctx = tctx.ascript(term, rt);
 
                let is-released-after-call = false;
-               if not(r.is-var-or-ascripted-var) and not(var-name-if-var-or-lit(l).is-lazy-macro) {
+               if not(r.is-var-or-ascripted-var) {
                   # if a field access is not retained and is just a variable reference then it shouldn't be released after the call
                   # this is complicated to do in the type system atm, so we just hard code it for now
                   # TODO: revisit and generalize this

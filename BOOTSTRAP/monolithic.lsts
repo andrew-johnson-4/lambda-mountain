@@ -3945,6 +3945,12 @@ type ApplyResult = { function-type:Type , return-type:Type };
 type CompileMode = ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
 type IsUsed = Used | Unused | Tail | Call { function-name: CString };
+let .function-name(used: IsUsed): CString = (
+   match used {
+      Call{function-name=function-name} => function-name;
+      _ => c"";
+   }
+);
 let .is-call(used: IsUsed): Bool = (
    match used {
       Call{} => true;
@@ -7846,6 +7852,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             # TailPosition LocalVariables don't need to be retained because +1/-1 retain/release cancels itself out
             if not(hint.is-t(interned-tag-tail-position,0) and vt.is-t(interned-tag-local-variable,0))
             and not(hint.is-t(interned-tag-must-not-retain,0))
+            and not(used.function-name.is-lazy-macro)
             and not(tctx.get-or(mk-tctx()).is-blob) {
                tctx = tctx.ascript(term, vt);
                (tctx, term) = maybe-retain(tctx, term);
@@ -7977,7 +7984,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                tctx = tctx.ascript(term, rt);
 
                let is-released-after-call = false;
-               if not(r.is-var-or-ascripted-var) and not(var-name-if-var-or-lit(l).is-lazy-macro) {
+               if not(r.is-var-or-ascripted-var) {
                   # if a field access is not retained and is just a variable reference then it shouldn't be released after the call
                   # this is complicated to do in the type system atm, so we just hard code it for now
                   # TODO: revisit and generalize this
@@ -8981,9 +8988,9 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
          };
       };
       (let peeped-tctx, peeped-type, margs) = if not(is(strong,MacroSuperWeak)) {
-         std-infer-peeped-arguments(tctx, margs, peep-holes, true);
+         std-infer-peeped-arguments(tctx, mname, margs, peep-holes, true);
       } else {
-         std-infer-peeped-arguments(tctx, margs, peep-holes, false);
+         std-infer-peeped-arguments(tctx, mname, margs, peep-holes, false);
       };
       let peeped-tctx-unwrapped = peeped-tctx.get-or(mk-tctx());
       peeped-tctx-unwrapped.pctx = tctx.get-or(mk-tctx()).pctx; # Phi Variables are irrelevant to peeped arguments
@@ -9015,13 +9022,13 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
 
    if not(is(strong,MacroWeak) or is(strong,MacroSuperWeak)) and not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs} : \{peeped-type}\n", margs);
    if is(strong,MacroTerm) {
-      (tctx, result) = std-infer-expr(tctx, result, false, if return-type==type-lazy then used else Tail, ta);
+      (tctx, result) = std-infer-expr(tctx, result, false, if mname.is-lazy-macro then Call(mname) else if return-type==type-lazy then used else Tail, ta);
       mark-free-and-seen(result);
    };
    (tctx, result)
 );
 
-let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type, strong: Bool): (TypeContext?, Type, AST) = (
+let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, mname: CString, t: AST, peep: Type, strong: Bool): (TypeContext?, Type, AST) = (
    let o-t = t;
    let rewritten = false;
    match t {
@@ -9047,8 +9054,8 @@ let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type, str
       TGround{tag:interned-tag-cons, parameters:[p2.. p1..]} => (
          match t {
             App{is-cons=is-cons, left=left, right=right} => (
-               (tctx, let lt, let new-left) = std-infer-peeped-arguments(tctx, left, p1, strong);
-               (tctx, let rt, let new-right) = std-infer-peeped-arguments(tctx, right, p2, strong);
+               (tctx, let lt, let new-left) = std-infer-peeped-arguments(tctx, mname, left, p1, strong);
+               (tctx, let rt, let new-right) = std-infer-peeped-arguments(tctx, mname, right, p2, strong);
                if not(is(left,new-left)) or not(is(right,new-right))
                then t = mk-cons-or-app(is-cons,new-left,new-right);
                (tctx, t2(interned-tag-cons,lt,rt), t)
@@ -9060,7 +9067,7 @@ let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type, str
       _ => (
          if strong {
             if not rewritten {
-               (let protected-tctx, t) = std-infer-expr(tctx, t, false, Used(), ta);
+               (let protected-tctx, t) = std-infer-expr(tctx, t, false, if mname.is-lazy-macro then Call(mname) else Used(), ta);
                mark-free-and-seen(t);
                tctx = tctx.with-pctx( protected-tctx.get-or(mk-tctx()).pctx );
             };

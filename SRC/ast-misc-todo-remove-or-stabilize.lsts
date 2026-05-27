@@ -14,6 +14,12 @@ type ApplyResult = { function-type:Type , return-type:Type };
 type CompileMode = ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
 type IsUsed = Used | Unused | Tail | Call { function-name: CString };
+let .function-name(used: IsUsed): CString = (
+   match used {
+      Call{function-name=function-name} => function-name;
+      _ => c"";
+   }
+);
 let .is-call(used: IsUsed): Bool = (
    match used {
       Call{} => true;
