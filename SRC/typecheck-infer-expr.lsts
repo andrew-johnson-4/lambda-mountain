@@ -11,6 +11,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type, rewritten-constant: Bool): (TypeContext?, AST) = (
+   print("Term: \{term}\n");
    #profile-visit-ast-unique(term);
    #profile-visit-ast-equal(term);
    if not(term.is-free-and-seen) { match term {

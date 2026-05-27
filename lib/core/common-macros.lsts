@@ -39,7 +39,7 @@ typed macro macro::let(lhs: macro::set-binding, rhs: lazy): lazy = (
 
 typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (base; index);
 
-typed macro macro::infallible-bind(tag-guard fields-guard: macro::lhs-tagged, rhs: lazy): Nil = (
+typed macro macro::assign(tag-guard fields-guard: macro::lhs-tagged, rhs: lazy): Nil = (
    let uuid(term) = rhs;
    $"if"(macro::lhs-tagged-with-term(uuid(term), tag-guard, fields-guard))
         ()
@@ -50,42 +50,42 @@ typed macro macro::fallible-bind(tag-guard fields-guard: macro::lhs-tagged, rhs:
    macro::lhs-tagged-with-term(uuid(term), tag-guard, fields-guard)   
 );
 
-typed macro macro::infallible-bind(lhs-base lhs-index: macro::lhs-index, rhs: lazy): Nil = (
+typed macro macro::assign(lhs-base lhs-index: macro::lhs-index, rhs: lazy): Nil = (
    $"set[]"(lhs-base, lhs-index, rhs)
 );
 typed macro macro::fallible-bind(lhs-base lhs-index: macro::lhs-index, rhs: lazy): Bool = (
    $"set[]"(lhs-base, lhs-index, rhs); true
 );
 
-typed macro macro::infallible-bind(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Nil = (
+typed macro macro::assign(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Nil = (
    macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs)
 );
 typed macro macro::fallible-bind(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Bool = (
    macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs); true
 );
 
-typed macro macro::infallible-bind(lhs: macro::variable, rhs: lazy): Nil = (
+typed macro macro::assign(lhs: macro::variable, rhs: lazy): Nil = (
    mov(rhs, lhs)
 );
 typed macro macro::fallible-bind(lhs: macro::variable, rhs: lazy): Bool = (
    macro::maybe-let(lhs; rhs); true
 );
 
-typed macro macro::infallible-bind(lhs: macro::let-binding, rhs: lazy): Nil = (
+typed macro macro::assign(lhs: macro::let-binding, rhs: lazy): Nil = (
    macro::maybe-let(lhs, rhs)
 );
 typed macro macro::fallible-bind(lhs: macro::let-binding, rhs: lazy): Bool = (
    macro::fallible-bind(lhs, rhs)
 );
 
-typed macro macro::infallible-bind(lhs: macro::set-binding, rhs: lazy): Nil = (
+typed macro macro::assign(lhs: macro::set-binding, rhs: lazy): Nil = (
    macro::maybe-set(lhs, rhs)
 );
 typed macro macro::fallible-bind(lhs: macro::set-binding, rhs: lazy): Bool = (
    macro::maybe-set(lhs, rhs); true
 );
 
-typed macro macro::infallible-bind(lhs: macro::underscore, rhs: lazy): Nil = (
+typed macro macro::assign(lhs: macro::underscore, rhs: lazy): Nil = (
    rhs; ();
 );
 typed macro macro::fallible-bind(lhs: macro::underscore, rhs: lazy): Bool = (
