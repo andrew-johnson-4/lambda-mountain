@@ -10,6 +10,22 @@ typed macro $"assert"(c: lazy): lazy = (
 typed macro macro::let-binding(v: lazy): lazy = (v);
 typed macro macro::set-binding(v: lazy): lazy = (v);
 
+typed macro macro::maybe-let-var(lhs: macro::underscore): Nil = (
+   lhs
+);
+typed macro macro::maybe-let-var(lhs: macro::variable): Nil = (
+   lhs
+);
+typed macro macro::maybe-let-var(lhs: macro::let-binding): Nil = (
+   lhs
+);
+typed macro macro::maybe-let-var(lhs: macro::set-binding): Nil = (
+   lhs
+);
+
+typed macro macro::maybe-let(lhs: macro::let-binding, rhs: lazy): Nil = (
+   macro::maybe-let(lhs, rhs)
+);
 typed macro macro::maybe-let(lhs: macro::underscore, rhs: lazy): Nil = (
    rhs; ();
 );
@@ -76,6 +92,15 @@ typed macro macro::infallible-bind(lhs: macro::set-binding, rhs: lazy): Nil = (
 );
 typed macro macro::fallible-bind(lhs: macro::set-binding, rhs: lazy): Bool = (
    macro::maybe-set(lhs, rhs); true
+);
+
+typed macro macro::lhs-bind(bind: lazy, pat: lazy): lazy = (
+   bind; pat;
+);
+
+typed macro macro::fallible-bind(bind pat: macro::lhs-bind, rhs: lazy): Bool = (
+   macro::maybe-let(bind, rhs);
+   macro::fallible-bind(pat, macro::maybe-let-var(bind))
 );
 
 typed macro macro::fallible-bind(prefix suffix: macro::lhs-fields, rhs: lazy): Bool = (
