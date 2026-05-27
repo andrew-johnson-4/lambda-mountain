@@ -316,6 +316,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             # TailPosition LocalVariables don't need to be retained because +1/-1 retain/release cancels itself out
             if not(hint.is-t(interned-tag-tail-position,0) and vt.is-t(interned-tag-local-variable,0))
             and not(hint.is-t(interned-tag-must-not-retain,0))
+            and not(used.function-name.is-lazy-macro)
             and not(tctx.get-or(mk-tctx()).is-blob) {
                tctx = tctx.ascript(term, vt);
                (tctx, term) = maybe-retain(tctx, term);
@@ -543,5 +544,7 @@ let std-infer-call-arg(tctx: TypeContext?, term: AST, function-name: CString, hi
          (tctx, term)
       );
       _ => (tctx, term);
-   }} else std-infer-expr(tctx, term, false, Call(function-name), hint);
+   }} else {
+      std-infer-expr(tctx, term, false, Call(function-name), hint);
+   };
 );

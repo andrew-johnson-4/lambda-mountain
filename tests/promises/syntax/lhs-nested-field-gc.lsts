@@ -1,0 +1,12 @@
+
+import lib/core/bedrock.lsts;
+
+let xs = (1,2);
+
+assert( xs.first == 1 );
+assert( xs.second == 2 );
+
+xs.first = 3;
+
+assert( xs.first == 3 );
+assert( xs.second == 2 );

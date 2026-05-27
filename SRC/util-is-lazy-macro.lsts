@@ -1,0 +1,10 @@
+
+let is-lazy-macro-index = mk-set(type(CString));
+
+let mark-is-lazy-macro(c: CString): Nil = (
+   is-lazy-macro-index = is-lazy-macro-index.bind(c);
+);
+
+let .is-lazy-macro(c: CString): Bool = (
+   is-lazy-macro-index.has(c)
+);

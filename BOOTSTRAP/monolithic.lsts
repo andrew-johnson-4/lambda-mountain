@@ -480,8 +480,6 @@ typed macro macro::let(lhs: macro::set-binding, rhs: lazy): lazy = (
 );
 
 typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (base; index);
-typed macro macro::lhs-field(base: lazy, field: lazy): lazy = (base; field);
-typed macro macro::lhs-field(base field1: macro::lhs-field, field2: lazy): lazy = (macro::concat($".", field1)(base); field2);
 
 typed macro macro::assign(tag-guard fields-guard: macro::lhs-tagged, rhs: lazy): Nil = (
    let uuid(term) = rhs;
@@ -502,10 +500,10 @@ typed macro macro::fallible-bind(lhs-base lhs-index: macro::lhs-index, rhs: lazy
 );
 
 typed macro macro::assign(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Nil = (
-   macro::concat($"set.", lhs-field-name)(lhs-base, rhs)
+   macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs)
 );
 typed macro macro::fallible-bind(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Bool = (
-   macro::concat($"set.", lhs-field-name)(lhs-base, rhs); true
+   macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs); true
 );
 
 typed macro macro::assign(lhs: macro::variable, rhs: lazy): Nil = (
@@ -545,15 +543,23 @@ typed macro macro::set(base index: macro::lhs-index, rhs: lazy): lazy = (
 );
 
 typed macro macro::set(base field: macro::lhs-field, rhs: lazy): lazy = (
-   macro::concat($"set.", field) (base, rhs)
+   macro::concat($"set.", field) (macro::lhs-as-rhs(base), rhs)
 );
 
-typed macro macro::lhs-as-rhs(v: macro::variable): lazy = (
+typed macro :Lazy macro::lhs-as-rhs(v: macro::variable): lazy = (
    v
 );
 
-typed macro macro::lhs-as-rhs(base: macro::lhs-address-of): lazy = (
+typed macro :Lazy macro::lhs-as-rhs(base idx: macro::lhs-index): lazy = (
+   macro::lhs-as-rhs(base)[idx]
+);
+
+typed macro :Lazy macro::lhs-as-rhs(base: macro::lhs-address-of): lazy = (
    &v
+);
+
+typed macro :Lazy macro::lhs-as-rhs(base field: macro::lhs-field): lazy = (
+   macro::concat($".", field)(macro::lhs-as-rhs(base))
 );
 
 typed macro macro::lhs-address-of(base: lazy): lazy = (
@@ -562,10 +568,6 @@ typed macro macro::lhs-address-of(base: lazy): lazy = (
 
 typed macro macro::lhs-field(base: lazy, field: lazy): lazy = (
    base; field
-);
-
-typed macro macro::lhs-as-rhs(base field: macro::lhs-index): lazy = (
-   macro::concat(l".", field)(base)
 );
 
 typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (
@@ -945,350 +947,6 @@ let .is-digit(base: CString): Bool = (
       r
    } else false
 );
-
-typed macro macro::define-zero(base-type: lazy, constructor: lazy, con-tag: lazy): lazy = {
-   let non-zero(t: base-type): Bool = t.discriminator-case-tag != (t as con-tag).discriminator-case-tag;
-};
-
-typed macro $"assert"(c: lazy): lazy = (
-   if not c then fail(c"Assertion Failed At ", macro::location(c));
-);
-
-typed macro macro::let-binding(v: lazy): lazy = (v);
-typed macro macro::set-binding(v: lazy): lazy = (v);
-
-typed macro macro::maybe-let(lhs: macro::underscore, rhs: lazy): Nil = (
-   rhs; ();
-);
-typed macro macro::maybe-let(lhs: macro::variable, rhs: lazy): Nil = (
-   (fn(lhs) = ()) (rhs)
-);
-typed macro macro::let(lhs: macro::let-binding, rhs: lazy): lazy = (
-   macro::maybe-let(lhs, rhs)
-);
-
-typed macro macro::let(lhs: macro::variable, rhs: lazy): lazy = (
-   macro::maybe-set(lhs, rhs)
-);
-typed macro macro::let(lhs: macro::underscore, rhs: lazy): lazy = (
-   macro::maybe-set(lhs, rhs)
-);
-
-typed macro macro::maybe-set(lhs: macro::underscore, rhs: lazy): Nil = (
-   rhs; ();
-);
-typed macro macro::maybe-set(lhs: macro::variable, rhs: lazy): Nil = (
-   mov(rhs, lhs)
-);
-typed macro macro::let(lhs: macro::set-binding, rhs: lazy): lazy = (
-   macro::maybe-set(lhs, rhs)
-);
-
-typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (base; index);
-typed macro macro::lhs-field(base: lazy, field: lazy): lazy = (base; field);
-typed macro macro::lhs-field(base field1: macro::lhs-field, field2: lazy): lazy = (macro::concat($".", field1)(base); field2);
-
-typed macro macro::assign(tag-guard fields-guard: macro::lhs-tagged, rhs: lazy): lazy = (
-   let uuid(term) = rhs;
-   $"if"(macro::lhs-tagged-with-term(uuid(term), tag-guard, fields-guard))
-        ()
-        (fail(c"Fallible assignment failed ", macro::location(rhs)));
-);
-
-typed macro macro::assign(lhs-base lhs-index: macro::lhs-index, rhs: lazy): lazy = (
-   $"set[]"(lhs-base, lhs-index, rhs)
-);
-
-typed macro macro::assign(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): lazy = (
-   macro::concat($"set.", lhs-field-name)(lhs-base, rhs)
-);
-
-typed macro macro::assign(lhs: macro::variable, rhs: lazy): lazy = (
-   mov(rhs, lhs)
-);
-
-typed macro macro::assign(lhs: macro::underscore, rhs: lazy): lazy = (
-   rhs; ();
-);
-
-typed macro macro::set(lhs: lazy, rhs: lazy): lazy = (
-   mov(rhs, lhs)
-);
-
-typed macro macro::set(base index: macro::lhs-index, rhs: lazy): lazy = (
-   $"set[]"( base, index, rhs )
-);
-
-typed macro macro::set(base field: macro::lhs-field, rhs: lazy): lazy = (
-   macro::concat($"set.", field) (base, rhs)
-);
-
-typed macro macro::lhs-as-rhs(v: macro::variable): lazy = (
-   v
-);
-
-typed macro macro::lhs-as-rhs(base: macro::lhs-address-of): lazy = (
-   &v
-);
-
-typed macro macro::lhs-address-of(base: lazy): lazy = (
-   base
-);
-
-typed macro macro::lhs-field(base: lazy, field: lazy): lazy = (
-   base; field
-);
-
-typed macro macro::lhs-as-rhs(base field: macro::lhs-index): lazy = (
-   macro::concat(l".", field)(base)
-);
-
-typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (
-   base; index
-);
-
-typed macro macro::lhs-index(base field: macro::lhs-field, index: lazy): lazy = (
-   macro::concat($".", field)(base); index
-);
-
-typed macro macro::while(cond: Bool, body: lazy): lazy = (
-   primitive::while( cond, body as Nil )
-);
-
-typed macro macro::for(item: lazy, iterable: List<?>, loop: lazy): lazy = (
-   let uuid(iter-term) = iterable;
-   while non-zero(uuid(iter-term)) {
-      match head(uuid(iter-term)) {
-         item => loop;
-      };
-      uuid(iter-term) = tail(uuid(iter-term));
-   };
-);
-
-typed macro macro::for(item: lazy, iterable: Vector<?>, loop: lazy): lazy = (
-   let uuid(iter-term) = iterable;
-   let uuid(iter-i) = 0_sz;
-   while uuid(iter-i) < uuid(iter-term).length {
-      match uuid(iter-term)[uuid(iter-i)] {
-         item => loop;
-      };
-      uuid(iter-i) = uuid(iter-i) + 1;
-   };
-);
-
-typed macro macro::for(item: lazy, iterable: VectorView<?>, loop: lazy): lazy = (
-   let uuid(iter-term) = iterable;
-   let uuid(iter-i) = 0_sz;
-   while uuid(iter-i) < uuid(iter-term).length {
-      match uuid(iter-term)[uuid(iter-i)] {
-         item => loop;
-      };
-      uuid(iter-i) = uuid(iter-i) + 1;
-   };
-);
-
-typed macro macro::match(t: lazy, ps: lazy): lazy = (scope(
-   let uuid(term) = open(t);
-   macro::match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
-));
-
-typed macro macro::match(t: macro::bind-raw, ps: lazy): lazy = (scope(
-   let uuid(term) = t;
-   macro::match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
-));
-
-typed macro macro::match(f t: macro::bind-raw-field, ps: lazy): lazy = (scope(
-   let uuid(term) = f($"raw"(t));
-   macro:: match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
-));
-
-typed macro macro::match-pats(term: lazy, cases: macro::pats-none, remainder: lazy): lazy = (
-   remainder
-);
-
-typed macro macro::match-pats(term: lazy, ps lhs rhs: macro::pats-some, remainder: lazy): lazy = (
-   macro::match-pats(term, ps, scope($"if"(macro::match-pats-arm(term,lhs))(rhs)(remainder)));
-);
-
-typed macro macro::pats-some(ps: lazy, lhs: lazy, rhs: lazy): lazy = (
-   ps; lhs; rhs
-);
-
-typed macro macro::pats-none(ignore: lazy): lazy = (
-   ()
-);
-
-typed macro macro::match-pats-arm(term: lazy, v: macro::let-binding): lazy = (
-   macro::match-pats-arm(term, v);
-);
-
-typed macro macro::match-pats-arm(term: lazy, v: macro::variable): lazy = (
-   let v = term; branchtrue()
-);
-
-typed macro macro::match-pats-arm(term: lazy, v pat: macro::match-lhs-binding): lazy = (
-   macro::let(v, term); match-pats-arm(v, pat)
-);
-
-typed macro macro::match-pats-arm(term: lazy, ignore: macro::underscore): lazy = (
-   branchtrue()
-);
-
-typed macro macro::match-pats-arm(term: lazy, x rest: macro::lhs-head): lazy = (
-   let uuid(v) = term;
-   $"if"(uuid(v).has-head)
-      ($"if"(macro::match-pats-arm(head(uuid(v)),x))
-         ( macro::match-pats-arm(tail(uuid(v)),rest) )
-         (branchfalse())
-      )
-      (branchfalse())
-);
-
-typed macro macro::match-pats-arm(term: lazy, c: macro::constant): lazy = (
-   let uuid(v) = term; uuid(v)==c;
-);
-
-typed macro macro::lhs-tagged(tag-guard: lazy, fields-guard: lazy): lazy = (
-   tag-guard; fields-guard;
-);
-
-typed macro macro::lhs-fields-field(field-key: macro::variable, pat: lazy): lazy = (
-   field-key; pat;
-);
-
-typed macro macro::lhs-bind(bind-key: macro::variable, pat: lazy): lazy = (
-   bind-key; pat;
-);
-typed macro macro::lhs-bind(bind-key: macro::underscore, pat: lazy): lazy = (
-   bind-key; pat;
-);
-typed macro macro::lhs-bind(bind-key: macro::let-binding, pat: lazy): lazy = (
-   macro::let-binding(bind-key); pat;
-);
-typed macro macro::lhs-bind(bind-key: macro::set-binding, pat: lazy): lazy = (
-   macro::let-binding(bind-key); pat;
-);
-
-typed macro macro::lhs-fields(prefix: lazy, fields: lazy): lazy = (
-   prefix; fields;
-);
-
-typed macro macro::lhs-fields-with-term(term: lazy, prefix last: macro::lhs-fields): Bool = (
-   $"if"(macro::lhs-fields-with-term(term, prefix))
-        (macro::lhs-fields-with-term(term, last))
-        (branchfalse())
-);
-
-typed macro macro::lhs-head(x: head, xs: tail): lazy = (
-   x; xs;
-);
-
-typed macro macro::match-pats-arm(term: lazy, case: macro::literal<MACRO::LHS-LIST-SENTINEL,_>): lazy = (
-   true
-);
-
-typed macro macro::lhs-fields-with-term(term: lazy, case: macro::literal<MACRO::LHS-LIST-SENTINEL,_>): lazy = (
-   true
-);
-
-typed macro macro::lhs-fields-with-term(term: lazy, v: macro::variable): Bool = (
-   term == v
-);
-
-typed macro macro::lhs-fields-with-term(term: lazy, x rest: macro::lhs-head): Bool = (
-   let uuid(v) = term;
-   $"if"(uuid(v).has-head)
-      ($"if"(macro::match-pats-arm(head(uuid(v)),x))
-         ( macro::match-pats-arm(tail(uuid(v)),rest) )
-         (branchfalse())
-      )
-      (branchfalse())
-);
-
-typed macro macro::lhs-fields-with-term(term: lazy, bind pat: macro::lhs-bind): Bool = (
-   macro::let(bind, term);
-   macro::lhs-fields-with-term(bind, pat)
-);
-
-typed macro macro::lhs-fields-with-term(term: lazy, field-key pat: macro::lhs-fields-field): Bool = (
-   let uuid(x) = open(field-key(term));
-   macro::lhs-fields-with-term(uuid(x), pat)
-);
-
-typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::nil): Bool = (
-   true
-);
-
-typed macro macro::lhs-fields-with-term(term: lazy, c: macro::constant): Bool = (
-   term == c
-);
-
-typed macro macro::lhs-fields-with-term(term: lazy, ignore: macro::underscore): Bool = (
-   true
-);
-
-typed macro macro::lhs-fields-with-term(term: lazy, tag-guard fields-guard: macro::lhs-tagged): Bool = (
-   macro::lhs-tagged-with-term(term, tag-guard, fields-guard)
-);
-
-typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields: lazy): Bool = (
-   $"if"(term.discriminator-case-tag==(term as tag-type).discriminator-case-tag)
-        (macro::lhs-fields-with-term((term as tag-type), fields))
-        (branchfalse())
-);
-
-typed macro macro::lhs-tagged-with-term(term: lazy, tag-guard: macro::nil, prefix pat: macro::lhs-fields): Bool = (
-   macro::lhs-fields-with-term(term, prefix, pat)
-);
-
-typed macro macro::lhs-tagged-with-term(term: lazy, tag-name tag-ordinal tag-type: macro::tag, fields-guard: macro::nil): Bool = (
-   term.discriminator-case-tag==(term as tag-type).discriminator-case-tag
-);
-
-typed macro macro::match-pats-arm(term: lazy, tag-guard fields-guard: macro::lhs-tagged): lazy = (
-   macro::lhs-tagged-with-term(term, tag-guard, fields-guard);
-);
-
-typed macro macro::match-pats-arm-with-term(term: lazy, bind prefix: macro::lhs-bind, suffix: lazy): Bool = (
-   let uuid(v) = term;
-   let uuid(s) = uuid(v).remove-prefix(prefix);
-   let uuid(p) = uuid(v).get-prefix(prefix);
-   $"if"(uuid(p).is-some and uuid(s).is-some)
-        (macro::let(bind, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,suffix))
-        (branchfalse())
-);
-
-typed macro macro::match-pats-arm-with-term(term: lazy, prefix: lazy, bind suffix: macro::lhs-bind): Bool = (
-   let uuid(v) = term;
-   let uuid(s) = uuid(v).remove-suffix(suffix);
-   let uuid(p) = uuid(v).get-suffix(suffix);
-   $"if"(uuid(p).is-some and uuid(s).is-some)
-        (macro::let(bind, uuid(p).get-or-panic); macro::match-pats-arm(uuid(s).get-or-panic,prefix))
-        (branchfalse())
-);
-
-typed macro macro::match-pats-arm-with-term(term: lazy, pat: macro::constant, rest: lazy): Bool = (
-   let uuid(v) = term;
-   let uuid(p) = uuid(v).remove-prefix(pat);
-   $"if"(uuid(p).is-some)
-        (macro::match-pats-arm(uuid(p).get-or-panic, rest))
-        (branchfalse())
-);
-
-typed macro macro::match-pats-arm-with-term(term: lazy, rest: lazy, pat: macro::constant): Bool = (
-   let uuid(v) = term;
-   let uuid(p) = uuid(v).remove-suffix(pat);
-   $"if"(uuid(p).is-some)
-        (macro::match-pats-arm(uuid(p).get-or-panic, rest))
-        (branchfalse())
-);
-
-typed macro macro::lhs-prefix-or-suffix(prefix: lazy, suffix: lazy): Bool = (prefix; suffix);
-
-typed macro macro::match-pats-arm(term: lazy, prefix suffix: macro::lhs-prefix-or-suffix): Bool = (
-   macro::match-pats-arm-with-term(term, prefix, suffix);
-);
-
 
 # This library is to provide alternatives to libc functions that are not SIMD enabled
 # SIMD operators fail on some machines if load overlaps the program break boundary
@@ -4281,6 +3939,12 @@ type ApplyResult = { function-type:Type , return-type:Type };
 type CompileMode = ModeTokenize | ModeParse | ModePreprocess | ModeTypecheck | ModeCompile;
 
 type IsUsed = Used | Unused | Tail | Call { function-name: CString };
+let .function-name(used: IsUsed): CString = (
+   match used {
+      Call{function-name=function-name} => function-name;
+      _ => c"";
+   }
+);
 let .is-call(used: IsUsed): Bool = (
    match used {
       Call{} => true;
@@ -6679,6 +6343,7 @@ let interned-tag-must-not-rewrite = intern-type-tag(c"MustNotRewrite");
 let interned-tag-vararg = intern-type-tag(c"...");
 let interned-tag-any = intern-type-tag(c"Any");
 let interned-tag-nil = intern-type-tag(c"Nil");
+let interned-tag-lazy = intern-type-tag(c"Lazy");
 let interned-tag-typedef = intern-type-tag(c"typedef");
 let interned-tag-tail-position = intern-type-tag(c"TailPosition");
 let interned-tag-const = intern-type-tag(c"const");
@@ -8181,6 +7846,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             # TailPosition LocalVariables don't need to be retained because +1/-1 retain/release cancels itself out
             if not(hint.is-t(interned-tag-tail-position,0) and vt.is-t(interned-tag-local-variable,0))
             and not(hint.is-t(interned-tag-must-not-retain,0))
+            and not(used.function-name.is-lazy-macro)
             and not(tctx.get-or(mk-tctx()).is-blob) {
                tctx = tctx.ascript(term, vt);
                (tctx, term) = maybe-retain(tctx, term);
@@ -8408,7 +8074,9 @@ let std-infer-call-arg(tctx: TypeContext?, term: AST, function-name: CString, hi
          (tctx, term)
       );
       _ => (tctx, term);
-   }} else std-infer-expr(tctx, term, false, Call(function-name), hint);
+   }} else {
+      std-infer-expr(tctx, term, false, Call(function-name), hint);
+   };
 );
 
 let infer-bind-global(tctx: TypeContext?, key: CString, nt: Type, dt: Type, blame: AST): TypeContext? = (
@@ -8530,6 +8198,7 @@ let infer-global-macro(term: AST): Nil = (
          for s in seq { infer-global-macro(s) };
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
+         if misc-tt.is-t(interned-tag-lazy,0) then mark-is-lazy-macro(k.key);
          if misc-tt.is-t(interned-tag-typed-macro,0) then bind-new-macro(k.key, frhs)
       );
       _ => ();
@@ -9313,9 +8982,9 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
          };
       };
       (let peeped-tctx, peeped-type, margs) = if not(is(strong,MacroSuperWeak)) {
-         std-infer-peeped-arguments(tctx, margs, peep-holes, true);
+         std-infer-peeped-arguments(tctx, mname, margs, peep-holes, true);
       } else {
-         std-infer-peeped-arguments(tctx, margs, peep-holes, false);
+         std-infer-peeped-arguments(tctx, mname, margs, peep-holes, false);
       };
       let peeped-tctx-unwrapped = peeped-tctx.get-or(mk-tctx());
       peeped-tctx-unwrapped.pctx = tctx.get-or(mk-tctx()).pctx; # Phi Variables are irrelevant to peeped arguments
@@ -9347,13 +9016,13 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
 
    if not(is(strong,MacroWeak) or is(strong,MacroSuperWeak)) and not(non-zero(result)) then exit-error("Failed to Apply Macro: \{mname}\nArgs: \{margs} : \{peeped-type}\n", margs);
    if is(strong,MacroTerm) {
-      (tctx, result) = std-infer-expr(tctx, result, false, if return-type==type-lazy then used else Tail, ta);
+      (tctx, result) = std-infer-expr(tctx, result, false, if mname.is-lazy-macro then Call(mname) else if return-type==type-lazy then used else Tail, ta);
       mark-free-and-seen(result);
    };
    (tctx, result)
 );
 
-let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type, strong: Bool): (TypeContext?, Type, AST) = (
+let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, mname: CString, t: AST, peep: Type, strong: Bool): (TypeContext?, Type, AST) = (
    let o-t = t;
    let rewritten = false;
    match t {
@@ -9379,8 +9048,8 @@ let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type, str
       TGround{tag:interned-tag-cons, parameters:[p2.. p1..]} => (
          match t {
             App{is-cons=is-cons, left=left, right=right} => (
-               (tctx, let lt, let new-left) = std-infer-peeped-arguments(tctx, left, p1, strong);
-               (tctx, let rt, let new-right) = std-infer-peeped-arguments(tctx, right, p2, strong);
+               (tctx, let lt, let new-left) = std-infer-peeped-arguments(tctx, mname, left, p1, strong);
+               (tctx, let rt, let new-right) = std-infer-peeped-arguments(tctx, mname, right, p2, strong);
                if not(is(left,new-left)) or not(is(right,new-right))
                then t = mk-cons-or-app(is-cons,new-left,new-right);
                (tctx, t2(interned-tag-cons,lt,rt), t)
@@ -9392,7 +9061,7 @@ let std-infer-peeped-arguments(tctx: Maybe<TypeContext>, t: AST, peep: Type, str
       _ => (
          if strong {
             if not rewritten {
-               (let protected-tctx, t) = std-infer-expr(tctx, t, false, Used(), ta);
+               (let protected-tctx, t) = std-infer-expr(tctx, t, false, if mname.is-lazy-macro then Call(mname) else Used(), ta);
                mark-free-and-seen(t);
                tctx = tctx.with-pctx( protected-tctx.get-or(mk-tctx()).pctx );
             };
@@ -10147,6 +9816,17 @@ import lib/core/bedrock.lsts;
 let safe-alloc-block-count = 0;
 
 import SRC/util-uuid.lsts;
+import SRC/util-is-lazy-macro.lsts;
+
+let is-lazy-macro-index = mk-set(type(CString));
+
+let mark-is-lazy-macro(c: CString): Nil = (
+   is-lazy-macro-index = is-lazy-macro-index.bind(c);
+);
+
+let .is-lazy-macro(c: CString): Bool = (
+   is-lazy-macro-index.has(c)
+);
 
 let uuid-counter = 0_u32;
 
@@ -14485,6 +14165,12 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c"typed", tokens); tokens = tail(tokens);
    lsts-parse-expect(c"macro", tokens); tokens = tail(tokens);
 
+   let misc-tt = ta;
+   if lsts-parse-head(tokens)==c":" {
+      lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+      (misc-tt, tokens) = lsts-parse-type(tokens);
+   };
+
    (let mname, tokens) = lsts-parse-identifier(tokens);
    let margs = mk-nil();
    lsts-parse-expect(c"(", tokens); tokens = tail(tokens);
@@ -14522,7 +14208,7 @@ let lsts-parse-typed-macro(tokens: List<Token>): (AST, List<Token>) = (
    lsts-parse-expect(c";", tokens); tokens = tail(tokens);
    (mk-glb(
       mk-token(mname), 
-      mk-abs(margs, mbody.without-location.ascript(mrett), t0(c"TypedMacro"))
+      mk-abs(margs, mbody.without-location.ascript(mrett), t0(c"TypedMacro") && misc-tt)
    ), tokens);
 );
 
