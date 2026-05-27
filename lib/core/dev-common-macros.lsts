@@ -78,6 +78,17 @@ typed macro macro::fallible-bind(lhs: macro::set-binding, rhs: lazy): Bool = (
    macro::maybe-set(lhs, rhs); true
 );
 
+typed macro macro::fallible-bind(prefix suffix: macro::lhs-fields, rhs: lazy): Bool = (
+   $"if"(macro::fallible-bind(prefix, rhs))
+        (macro::fallible-bind(suffix, rhs))
+        (false)
+);
+
+typed macro macro::fallible-bind(field-key suffix: macro::lhs-fields-field, rhs: lazy): Bool = (
+   let uuid(x) = open(field-key(rhs));
+   macro::fallible-bind(suffix, uuid(x));
+);
+
 typed macro macro::infallible-bind(lhs: macro::underscore, rhs: lazy): Nil = (
    rhs; ();
 );
