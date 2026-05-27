@@ -65,6 +65,9 @@ typed macro macro::fallible-bind(lhs-base lhs-index: macro::lhs-index, rhs: lazy
 typed macro macro::fallible-bind(lhs: macro::nil, rhs: lazy): Bool = (
    rhs; true
 );
+typed macro macro::infallible-bind(lhs: macro::nil, rhs: lazy): Nil = (
+   rhs; ()
+);
 
 typed macro macro::infallible-bind(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Nil = (
    macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs)
@@ -102,16 +105,28 @@ typed macro macro::fallible-bind(bind pat: macro::lhs-bind, rhs: lazy): Bool = (
    macro::maybe-let(bind, rhs);
    macro::fallible-bind(pat, macro::maybe-let-var(bind))
 );
+typed macro macro::infallible-bind(bind pat: macro::lhs-bind, rhs: lazy): Nil = (
+   macro::maybe-let(bind, rhs);
+   macro::infallible-bind(pat, macro::maybe-let-var(bind))
+);
 
 typed macro macro::fallible-bind(prefix suffix: macro::lhs-fields, rhs: lazy): Bool = (
    $"if"(macro::fallible-bind(prefix, rhs))
         (macro::fallible-bind(suffix, rhs))
         (false)
 );
+typed macro macro::infallible-bind(prefix suffix: macro::lhs-fields, rhs: lazy): Nil = (
+   macro::infallible-bind(prefix, rhs);
+   macro::infallible-bind(suffix, rhs);
+);
 
 typed macro macro::fallible-bind(field-key suffix: macro::lhs-fields-field, rhs: lazy): Bool = (
    let uuid(x) = open(field-key(rhs));
    macro::fallible-bind(suffix, uuid(x));
+);
+typed macro macro::infallible-bind(field-key suffix: macro::lhs-fields-field, rhs: lazy): Nil = (
+   let uuid(x) = open(field-key(rhs));
+   macro::infallible-bind(suffix, uuid(x));
 );
 
 typed macro macro::infallible-bind(lhs: macro::underscore, rhs: lazy): Nil = (
@@ -127,9 +142,8 @@ typed macro macro::fallible-bind(tag-guard fields-guard: macro::lhs-tagged, rhs:
 );
 
 typed macro macro::infallible-bind(tag-guard fields-guard: macro::lhs-tagged, rhs: lazy): Nil = (
-   $"if"(macro::fallible-bind(macro::lhs-tagged(tag-guard,fields-guard),rhs))
-        ()
-        (fail(c"Fallible assignment failed ", macro::location(rhs)));
+   let uuid(term) = rhs;
+   macro::infallible-bind-tagged(uuid(term), tag-guard, fields-guard)
 );
 
 typed macro macro::set(lhs: lazy, rhs: lazy): lazy = (
@@ -259,4 +273,14 @@ typed macro macro::fallible-bind-tagged(term: lazy, prefix: macro::nil, rest: la
 typed macro macro::fallible-bind-tagged(term: lazy, tag-name tag-ordinal tag-type: macro::tag, rest: lazy): Bool = (
    term.discriminator-case-tag==(term as tag-type).discriminator-case-tag and
    macro::fallible-bind(rest, term)
+);
+
+typed macro macro::infallible-bind-tagged(term: lazy, prefix: macro::nil, rest: lazy): Nil = (
+   macro::infallible-bind(rest, term)
+);
+
+typed macro macro::infallible-bind-tagged(term: lazy, tag-name tag-ordinal tag-type: macro::tag, rest: lazy): Nil = (
+   if term.discriminator-case-tag != (term as tag-type).discriminator-case-tag
+   then fail(c"Infallible binding failed ", macro::location(term));
+   macro::infallible-bind(rest, term)
 );
