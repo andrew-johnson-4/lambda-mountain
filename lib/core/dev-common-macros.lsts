@@ -98,6 +98,9 @@ typed macro macro::fallible-bind(lhs: macro::set-binding, rhs: lazy): Bool = (
 typed macro macro::lhs-bind(bind: lazy, pat: lazy): lazy = (
    bind; pat;
 );
+typed macro macro::lhs-head(hd: lazy, tl: lazy): lazy = (
+   hd; tl;
+);
 
 typed macro macro::fallible-bind(bind pat: macro::lhs-bind, rhs: lazy): Bool = (
    let uuid(r) = rhs;
@@ -283,4 +286,28 @@ typed macro macro::infallible-bind-tagged(term: lazy, tag-name tag-ordinal tag-t
    if term.discriminator-case-tag != (term as tag-type).discriminator-case-tag
    then fail(c"Infallible binding failed ", macro::location(term));
    macro::infallible-bind(rest, (term as tag-type))
+);
+
+typed macro macro::fallible-bind(x rest: macro::lhs-head, term: lazy): Bool = (
+   let uuid(v) = term;
+   $"if"(uuid(v).has-head)
+      ($"if"
+         (macro::fallible-bind(x, head(uuid(v))))
+         (macro::fallible-bind(rest, tail(uuid(v))))
+         (false)
+      )
+      (false)
+);
+typed macro macro::infallible-bind(x rest: macro::lhs-head, term: lazy): Nil = (
+   let uuid(v) = term;
+   if not uuid(v).has-head then fail(c"Infallible binding failed ", macro::location(term));
+   macro::infallible-bind(x, head(uuid(v)));
+   macro::infallible-bind(rest, tail(uuid(v)));
+);
+
+typed macro macro::fallible-bind(case: macro::literal<MACRO::LHS-LIST-SENTINEL,_>, rhs: lazy): Bool = (
+   true
+);
+typed macro macro::infallible-bind(x rest: macro::literal<MACRO::LHS-LIST-SENTINEL,_>, rhs: lazy): Nil = (
+   ()
 );
