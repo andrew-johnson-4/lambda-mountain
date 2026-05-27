@@ -70,7 +70,6 @@ let std-apply-macro-location(tctx: Maybe<TypeContext>, mname: CString, margs: AS
 type MacroStrength = MacroTerm | MacroHelper | MacroWeak | MacroSuperWeak;
 
 let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed, strong: MacroStrength): (TypeContext?, AST) = (
-   print("Apply macro \{mname} \{margs}\n");
    let result = mk-eof();
    let peeped-type = ta;
    let return-type = ta;
