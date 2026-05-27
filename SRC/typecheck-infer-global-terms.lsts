@@ -83,6 +83,7 @@ let infer-global-context-prim(term: AST): AST = (
       App{l=left, margs=right} => (
          if var-name-if-var(l)!=c"macro::for" and index-macro-table.has-key(var-name-if-var(l)) {
             (global-flow-tctx, let rterm) = std-apply-macro-super-weak(global-flow-tctx, var-name-if-var(l), margs, Used);
+            if not(non-zero(rterm)) then exit-error("Rewriting global term failed: \{term}\n", term);
             match rterm {
                Seq{rseq=seq} => (
                   let out-seq = mk-vector(type(AST));
