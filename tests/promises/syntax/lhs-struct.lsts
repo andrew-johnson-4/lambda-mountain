@@ -6,6 +6,7 @@ type A = { x: U8 };
 let xx = 5;
 
 match A(5) {
+   A{x:3} => assert(false);
    A{x:5} => ();
 };
 
