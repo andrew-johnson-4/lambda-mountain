@@ -1,4 +1,0 @@
-
-typed macro :Lazy macro::lhs-as-rhs(v: macro::variable): lazy = (
-   v
-);

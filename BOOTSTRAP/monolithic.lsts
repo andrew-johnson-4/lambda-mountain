@@ -7977,7 +7977,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                tctx = tctx.ascript(term, rt);
 
                let is-released-after-call = false;
-               if not(r.is-var-or-ascripted-var) {
+               if not(r.is-var-or-ascripted-var) and not(var-name-if-var-or-lit(l).is-lazy-macro) {
                   # if a field access is not retained and is just a variable reference then it shouldn't be released after the call
                   # this is complicated to do in the type system atm, so we just hard code it for now
                   # TODO: revisit and generalize this
@@ -8074,11 +8074,7 @@ let std-infer-call-arg(tctx: TypeContext?, term: AST, function-name: CString, hi
       );
       _ => (tctx, term);
    }} else {
-      (tctx, term) = std-infer-expr(tctx, term, false, Call(function-name), hint);
-      # The second inference exists to collapse lazy macros
-      if not(non-zero(typeof-term(term)))
-      then (tctx, term) = std-infer-expr(tctx, term, false, Call(function-name), hint);
-      (tctx, term)
+      std-infer-expr(tctx, term, false, Call(function-name), hint);
    };
 );
 
@@ -8201,6 +8197,7 @@ let infer-global-macro(term: AST): Nil = (
          for s in seq { infer-global-macro(s) };
       );
       Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
+         if misc-tt.is-t(interned-tag-lazy,0) then mark-is-lazy-macro(k.key);
          if misc-tt.is-t(interned-tag-typed-macro,0) then bind-new-macro(k.key, frhs)
       );
       _ => ();
@@ -8973,13 +8970,6 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
    else if mname==c"macro::tag" then (tctx, result) = std-apply-macro-tag(tctx, mname, margs)
    else {
       let row = index-macro-table.lookup(mname, [] : List<(Type,Type,AST)>);
-      for tr in row {
-         match tr.third {
-            Abs{mt-tt=tt} => (
-               if mt-tt.is-t(interned-tag-lazy,0) then strong = MacroSuperWeak;
-            );
-         }
-      };
       let peep-holes = ta;
       let peeped = ta;
       for Tuple{mtype=first, peep=second, mterm=third} in row {
@@ -9825,6 +9815,17 @@ import lib/core/bedrock.lsts;
 let safe-alloc-block-count = 0;
 
 import SRC/util-uuid.lsts;
+import SRC/util-is-lazy-macro.lsts;
+
+let is-lazy-macro-index = mk-set(type(CString));
+
+let mark-is-lazy-macro(c: CString): Nil = (
+   is-lazy-macro-index = is-lazy-macro-index.bind(c);
+);
+
+let .is-lazy-macro(c: CString): Bool = (
+   is-lazy-macro-index.has(c)
+);
 
 let uuid-counter = 0_u32;
 

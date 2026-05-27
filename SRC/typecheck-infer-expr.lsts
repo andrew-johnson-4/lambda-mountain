@@ -11,7 +11,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type, rewritten-constant: Bool): (TypeContext?, AST) = (
-   print("Term: \{term}\n");
    #profile-visit-ast-unique(term);
    #profile-visit-ast-equal(term);
    if not(term.is-free-and-seen) { match term {
@@ -448,7 +447,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                tctx = tctx.ascript(term, rt);
 
                let is-released-after-call = false;
-               if not(r.is-var-or-ascripted-var) {
+               if not(r.is-var-or-ascripted-var) and not(var-name-if-var-or-lit(l).is-lazy-macro) {
                   # if a field access is not retained and is just a variable reference then it shouldn't be released after the call
                   # this is complicated to do in the type system atm, so we just hard code it for now
                   # TODO: revisit and generalize this
@@ -503,7 +502,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       }
    }};
    (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(interned-tag-must-not-fresh,0) or hint.is-t(interned-tag-tail-position,0));
-   print("Term: \{term} : \{typeof-term(term)}\n");
    (tctx, term);
 );
 

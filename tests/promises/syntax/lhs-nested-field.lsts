@@ -1,6 +1,5 @@
 
 import lib/core/bedrock.lsts;
-import lib/core/dev-common-macro.lsts;
 
 type A = { x: U8 };
 type B = { a: A };

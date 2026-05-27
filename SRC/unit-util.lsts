@@ -4,3 +4,4 @@ import lib/core/bedrock.lsts;
 let safe-alloc-block-count = 0;
 
 import SRC/util-uuid.lsts;
+import SRC/util-is-lazy-macro.lsts;
