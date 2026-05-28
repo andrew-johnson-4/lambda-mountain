@@ -1,0 +1,10 @@
+
+import lib/core/bedrock.lsts;
+
+match c"abc" {
+   c"b"..xx1 => assert( false );
+   c"a"..xx2 => assert( xx2 == c"bc" );
+};
+
+#c"a"..xx = c"abcd";
+#assert( xx == c"bcd" );
