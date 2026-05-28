@@ -70,7 +70,6 @@ let std-apply-macro-location(tctx: Maybe<TypeContext>, mname: CString, margs: AS
 type MacroStrength = MacroTerm | MacroHelper | MacroWeak | MacroSuperWeak;
 
 let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: IsUsed, strong: MacroStrength): (TypeContext?, AST) = (
-   print("Macro: \{mname} \{margs}\n");
    let result = mk-eof();
    let peeped-type = ta;
    let return-type = ta;
@@ -131,9 +130,6 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
       (tctx, result) = std-infer-expr(tctx, result, false, if mname.is-lazy-macro then Call(mname) else if return-type==type-lazy then used else Tail, ta);
       mark-free-and-seen(result);
    };
-
-   let xx-tt = tctx.lookup(c"xx");
-   print("Macro End: \{mname} \{margs} xx : \{xx-tt}\n");
 
    (tctx, result)
 );
