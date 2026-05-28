@@ -11,5 +11,8 @@ match "abc" {
    (xx4=r/a/)..xx5 => assert( xx4 == "a" and xx5 == "bc" );
 };
 
-#c"a"..xx = c"abcd";
-#assert( xx == c"bcd" );
+c"a"..let xx = c"abcd";
+assert( xx == c"bcd" );
+
+c"a"..xx = c"abc";
+assert( xx == c"bc" );

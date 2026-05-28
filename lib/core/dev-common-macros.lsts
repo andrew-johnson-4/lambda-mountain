@@ -24,10 +24,10 @@ typed macro macro::let(lhs: macro::let-binding, rhs: lazy): lazy = (
 );
 
 typed macro macro::let(lhs: macro::variable, rhs: lazy): lazy = (
-   macro::maybe-set(lhs, rhs)
+   macro::maybe-let(lhs, rhs)
 );
 typed macro macro::let(lhs: macro::underscore, rhs: lazy): lazy = (
-   macro::maybe-set(lhs, rhs)
+   macro::maybe-let(lhs, rhs)
 );
 
 typed macro macro::maybe-set(lhs: macro::let-binding, rhs: lazy): lazy = (
