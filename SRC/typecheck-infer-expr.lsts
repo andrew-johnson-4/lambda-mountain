@@ -11,6 +11,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
 );
 
 let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: IsUsed, hint: Type, rewritten-constant: Bool): (TypeContext?, AST) = (
+   print("Term: \{term}\n");
    #profile-visit-ast-unique(term);
    #profile-visit-ast-equal(term);
    if not(term.is-free-and-seen) { match term {
@@ -187,6 +188,20 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             tctx = tctx.phi-move(inner-tt, term);
          };
          tctx = tctx.ascript(term, tt);
+      );
+      # this case is necessary because cond can create variables that affect body
+      # TODO: generalize chain / apply to remove these cases
+      App{ ifv=left:Var{key:c"macro::while"}, right:App{ cond=left, t=right } } => (
+         (tctx, cond) = std-infer-expr(tctx, cond, false, Used, ta);
+         (tctx, t) = std-infer-expr(tctx, t, false, Used, ta);
+         let ftype = tctx.find-callable( c"primitive::while", t2(interned-tag-cons,typeof-term(cond),typeof-term(t)), term, ta ).direct-type;
+         tctx = tctx.ascript(ifv, ftype);
+         let args = mk-cons( cond, t );
+         tctx = tctx.ascript(args, t2(interned-tag-cons,typeof-term(cond),typeof-term(t)));
+         let pw = mk-var(c"primitive::while").with-location(term.location);
+         tctx = tctx.ascript(pw, ftype);
+         term = mk-app( pw, args );
+         tctx = tctx.ascript(term, t0(interned-tag-nil));
       );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
          let short-circuit = ASTEOF;

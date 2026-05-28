@@ -59,6 +59,10 @@ typed macro macro::infallible-bind(lhs: macro::nil, rhs: lazy): Nil = (
    rhs; ()
 );
 
+typed macro macro::while(cond: lazy, body: lazy): lazy = (
+   primitive::while( cond, body as Nil )
+);
+
 typed macro macro::infallible-bind(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Nil = (
    macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs)
 );
@@ -105,7 +109,7 @@ typed macro macro::infallible-bind(lhs: macro::let-binding, rhs: lazy): Nil = (
    macro::maybe-let(lhs, rhs)
 );
 typed macro macro::fallible-bind(lhs: macro::let-binding, rhs: lazy): Bool = (
-   macro::fallible-bind(lhs, rhs)
+   macro::maybe-let(lhs, rhs); true
 );
 
 typed macro macro::infallible-bind(lhs: macro::set-binding, rhs: lazy): Nil = (
@@ -211,10 +215,6 @@ typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (
 
 typed macro macro::lhs-index(base field: macro::lhs-field, index: lazy): lazy = (
    macro::concat($".", field)(base); index
-);
-
-typed macro macro::while(cond: Bool, body: lazy): lazy = (
-   primitive::while( cond, body as Nil )
 );
 
 typed macro macro::for(item: lazy, iterable: List<?>, loop: lazy): lazy = (
