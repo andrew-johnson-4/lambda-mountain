@@ -10,8 +10,8 @@ if set yy = 5 {
    assert(yy == 5);
 } else assert( false );
 
-if (let z, set y) = (1, 2) {
-   assert(z == 1);
-   assert(y == 2);
+if (let zz, set yy) = (1, 2) {
+   assert(zz == 1);
+   assert(yy == 2);
 } else assert( false );
 
