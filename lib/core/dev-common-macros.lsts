@@ -83,8 +83,18 @@ typed macro macro::fallible-bind(lhs: macro::constant, rhs: lazy): Bool = (
 
 typed macro macro::variable-as-constant(v: lazy): lazy = v;
 
+typed macro macro::maybe-compare(lhs: macro::variable, rhs: lazy): Bool = (
+   lhs == rhs
+);
+typed macro macro::maybe-compare(lhs: macro::constant, rhs: lazy): Bool = (
+   lhs == rhs
+);
+typed macro macro::maybe-compare(lhs: macro::underscore, rhs: lazy): Bool = (
+   rhs; true
+);
+
 typed macro macro::infallible-bind(lhs: macro::variable-as-constant, rhs: lazy): Bool = (
-   if lhs != rhs
+   if not macro::maybe-compare(lhs, rhs)
    then fail(c"Infallible binding failed ", macro::location(lhs))
 );
 typed macro macro::fallible-bind(lhs: macro::variable-as-constant, rhs: lazy): Bool = (
