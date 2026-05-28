@@ -6,5 +6,10 @@ match c"abc" {
    c"a"..xx2 => assert( xx2 == c"bc" );
 };
 
+match "abc" {
+   r/b/..xx3 => assert( false );
+   (xx4=r/a/)..xx5 => assert( xx4 == "a" and xx5 == "bc" );
+};
+
 #c"a"..xx = c"abcd";
 #assert( xx == c"bcd" );

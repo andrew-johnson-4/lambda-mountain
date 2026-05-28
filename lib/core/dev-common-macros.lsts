@@ -348,16 +348,16 @@ typed macro macro::infallible-bind-prefix(pfx: macro::constant, term: lazy, rest
 
 typed macro macro::fallible-bind-prefix(bind pfx: macro::lhs-bind, term: lazy, rest: lazy): Bool = (
    let uuid(v) = term;
-   let uuid(s) = uuid(v).remove-prefix(prefix);
-   let uuid(p) = uuid(v).get-prefix(prefix);
+   let uuid(s) = uuid(v).remove-prefix(pfx);
+   let uuid(p) = uuid(v).get-prefix(pfx);
    $"if"(uuid(p).is-some and uuid(s).is-some)
         (macro::let(bind, uuid(p).get-or-panic); macro::fallible-bind(rest,uuid(s).get-or-panic))
         (false)
 );
 typed macro macro::infallible-bind-prefix(bind pfx: macro::lhs-bind, term: lazy, rest: lazy): Nil = (
    let uuid(v) = term;
-   let uuid(s) = uuid(v).remove-prefix(prefix);
-   let uuid(p) = uuid(v).get-prefix(prefix);
+   let uuid(s) = uuid(v).remove-prefix(pfx);
+   let uuid(p) = uuid(v).get-prefix(pfx);
    if not uuid(p).is-some or not uuid(s).is-some then fail(c"Infallible binding failed ", macro::location(term));
    macro::let(bind, uuid(p).get-or-panic);
    macro::infallible-bind(rest,uuid(s).get-or-panic);
