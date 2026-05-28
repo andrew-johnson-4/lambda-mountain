@@ -109,7 +109,7 @@ typed macro macro::infallible-bind(lhs: macro::let-binding, rhs: lazy): Nil = (
    macro::maybe-let(lhs, rhs)
 );
 typed macro macro::fallible-bind(lhs: macro::let-binding, rhs: lazy): Bool = (
-   macro::maybe-let(lhs, rhs); true
+   macro::fallible-bind(lhs, rhs)
 );
 
 typed macro macro::infallible-bind(lhs: macro::set-binding, rhs: lazy): Nil = (

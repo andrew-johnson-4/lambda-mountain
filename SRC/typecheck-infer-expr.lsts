@@ -518,6 +518,10 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       }
    }};
    (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(interned-tag-must-not-fresh,0) or hint.is-t(interned-tag-tail-position,0));
+
+   let xx-tt = tctx.lookup(c"xx");
+   print("Term End: \{term} xx : \{xx-tt}\n");
+
    (tctx, term);
 );
 
