@@ -1011,6 +1011,10 @@ typed macro macro::infallible-bind(lhs: macro::nil, rhs: lazy): Nil = (
    rhs; ()
 );
 
+typed macro macro::while(cond: lazy, body: lazy): lazy = (
+   primitive::while( cond, body as Nil )
+);
+
 typed macro macro::infallible-bind(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Nil = (
    macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs)
 );
@@ -1025,7 +1029,7 @@ typed macro macro::fallible-bind(lhs: macro::variable, rhs: lazy): Bool = (
    macro::maybe-let(lhs; rhs); true
 );
 
-typed macro macro::infallible-bind(lhs: macro::constant, rhs: lazy): Bool = (
+typed macro macro::infallible-bind(lhs: macro::constant, rhs: lazy): Nil = (
    if lhs != rhs
    then fail(c"Infallible binding failed ", macro::location(lhs))
 );
@@ -1045,7 +1049,7 @@ typed macro macro::maybe-compare(lhs: macro::underscore, rhs: lazy): Bool = (
    rhs; true
 );
 
-typed macro macro::infallible-bind(lhs: macro::variable-as-constant, rhs: lazy): Bool = (
+typed macro macro::infallible-bind(lhs: macro::variable-as-constant, rhs: lazy): Nil = (
    if not macro::maybe-compare(lhs, rhs)
    then fail(c"Infallible binding failed ", macro::location(lhs))
 );
@@ -1163,10 +1167,6 @@ typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (
 
 typed macro macro::lhs-index(base field: macro::lhs-field, index: lazy): lazy = (
    macro::concat($".", field)(base); index
-);
-
-typed macro macro::while(cond: Bool, body: lazy): lazy = (
-   primitive::while( cond, body as Nil )
 );
 
 typed macro macro::for(item: lazy, iterable: List<?>, loop: lazy): lazy = (
@@ -8095,6 +8095,20 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          };
          tctx = tctx.ascript(term, tt);
       );
+      # this case is necessary because cond can create variables that affect body
+      # TODO: generalize chain / apply to remove these cases
+      App{ ifv=left:Var{key:c"macro::while"}, right:App{ cond=left, t=right } } => (
+         (tctx, cond) = std-infer-expr(tctx, cond, false, Used, ta);
+         (tctx, t) = std-infer-expr(tctx, t, false, Used, ta);
+         let ftype = tctx.find-callable( c"primitive::while", t2(interned-tag-cons,typeof-term(cond),typeof-term(t)), term, ta ).direct-type;
+         tctx = tctx.ascript(ifv, ftype);
+         let args = mk-cons( cond, t );
+         tctx = tctx.ascript(args, t2(interned-tag-cons,typeof-term(cond),typeof-term(t)));
+         let pw = mk-var(c"primitive::while").with-location(term.location);
+         tctx = tctx.ascript(pw, ftype);
+         term = mk-app( pw, args );
+         tctx = tctx.ascript(term, t0(interned-tag-nil));
+      );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
          let short-circuit = ASTEOF;
          match cond {
@@ -8410,6 +8424,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       }
    }};
    (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(interned-tag-must-not-fresh,0) or hint.is-t(interned-tag-tail-position,0));
+
    (tctx, term);
 );
 
@@ -8538,7 +8553,12 @@ let infer-global-context-prim(term: AST): AST = (
          };
       );
       App{l=left, margs=right} => (
-         if var-name-if-var(l)!=c"macro::for" and index-macro-table.has-key(var-name-if-var(l)) {
+         if var-name-if-var(l)!=c"macro::for" and
+            var-name-if-var(l)!=c"macro::while" and
+            var-name-if-var(l)!=c"macro::if" and
+            var-name-if-var(l)!=c"macro::fallible-bind" and
+            var-name-if-var(l)!=c"macro::infallible-bind" and
+            index-macro-table.has-key(var-name-if-var(l)) {
             (global-flow-tctx, let rterm) = std-apply-macro-super-weak(global-flow-tctx, var-name-if-var(l), margs, Used);
             if not(non-zero(rterm)) then exit-error("Rewriting global term failed: \{term}\n", term);
             match rterm {
@@ -9397,6 +9417,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
       (tctx, result) = std-infer-expr(tctx, result, false, if mname.is-lazy-macro then Call(mname) else if return-type==type-lazy then used else Tail, ta);
       mark-free-and-seen(result);
    };
+
    (tctx, result)
 );
 
@@ -10668,21 +10689,21 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
                      kt = kt.slot(interned-tag-vararg,0).r1;
                      if can-unify(kt, typeof-term(re)) {
                         if kt.is-open { callee-ctx = union(callee-ctx, unify(kt, typeof-term(re), rhs)); };
+                        (f, callee-ctx, caller-ctx) = std-c-compile-args(callee-ctx, caller-ctx, lhs, le, f);
                         let c1 = std-c-compile-expr(caller-ctx, re, false);
                         caller-ctx = open(c1.context);
                         callee-ctx = bind-vararg(callee-ctx, k1, kt, c1);
-                        (f, callee-ctx, caller-ctx) = std-c-compile-args(callee-ctx, caller-ctx, lhs, le, f);
                         f = f.set(c"frame", f.get(c"frame") + c1.get(c"frame"));
                      } else {
                         (f, callee-ctx, caller-ctx) = std-c-compile-args(callee-ctx, caller-ctx, lhs-rst, rhs, f);  
                      }
                   } else {
                      if kt.is-open { callee-ctx = union(callee-ctx, unify(kt, typeof-term(re), rhs)); };
+                     (f, callee-ctx, caller-ctx) = std-c-compile-args(callee-ctx, caller-ctx, lhs-rst, le, f);
                      let c1 = std-c-compile-expr(caller-ctx, re, false);
                      caller-ctx = open(c1.context);
                      callee-ctx = callee-ctx.bind(k1, kt, c1);
                      std-c-fragment-context = std-c-fragment-context.bind( left-lhs, c1 );
-                     (f, callee-ctx, caller-ctx) = std-c-compile-args(callee-ctx, caller-ctx, lhs-rst, le, f);
                      f = f.set(c"frame", f.get(c"frame") + c1.get(c"frame"));
                   }
                );
@@ -10717,10 +10738,10 @@ let std-c-compile-args(callee-ctx: FContext, caller-ctx: FContext, lhs: AST, rhs
                   if kt.is-t(interned-tag-vararg,0) {
                      kt = kt.slot(interned-tag-vararg,0).r1;
                      if kt.is-open { callee-ctx = union(callee-ctx, unify(kt, typeof-term(re), rhs)); };
+                     (f, callee-ctx, caller-ctx) = std-c-compile-args(callee-ctx, caller-ctx, lhs, le, f);
                      let c1 = std-c-compile-expr(caller-ctx, re, false);
                      caller-ctx = open(c1.context);
                      callee-ctx = bind-vararg(callee-ctx, k2, kt, c1);
-                     (f, callee-ctx, caller-ctx) = std-c-compile-args(callee-ctx, caller-ctx, lhs, le, f);
                      f = f.set(c"frame", f.get(c"frame") + c1.get(c"frame"));
                   } else {
                      fail("std-c-compile-args unexpected RHS, vararg mismatch");
