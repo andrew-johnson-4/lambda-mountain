@@ -130,6 +130,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
       (tctx, result) = std-infer-expr(tctx, result, false, if mname.is-lazy-macro then Call(mname) else if return-type==type-lazy then used else Tail, ta);
       mark-free-and-seen(result);
    };
+
    (tctx, result)
 );
 

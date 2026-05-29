@@ -1,0 +1,373 @@
+
+typed macro macro::define-zero(base-type: lazy, constructor: lazy, con-tag: lazy): lazy = {
+   let non-zero(t: base-type): Bool = t.discriminator-case-tag != (t as con-tag).discriminator-case-tag;
+};
+
+typed macro $"assert"(c: lazy): lazy = (
+   if not c then fail(c"Assertion Failed At ", macro::location(c));
+);
+
+typed macro macro::let-binding(v: lazy): lazy = (v);
+typed macro macro::set-binding(v: lazy): lazy = (v);
+
+typed macro macro::maybe-let(lhs: macro::let-binding, rhs: lazy): Nil = (
+   macro::maybe-let(lhs, rhs)
+);
+typed macro macro::maybe-let(lhs: macro::underscore, rhs: lazy): Nil = (
+   rhs; ();
+);
+typed macro macro::maybe-let(lhs: macro::variable, rhs: lazy): Nil = (
+   (fn(lhs) = ()) (rhs)
+);
+typed macro macro::let(lhs: macro::let-binding, rhs: lazy): lazy = (
+   macro::maybe-let(lhs, rhs)
+);
+
+typed macro macro::let(lhs: macro::variable, rhs: lazy): lazy = (
+   macro::maybe-let(lhs, rhs)
+);
+typed macro macro::let(lhs: macro::underscore, rhs: lazy): lazy = (
+   macro::maybe-let(lhs, rhs)
+);
+
+typed macro macro::maybe-set(lhs: macro::let-binding, rhs: lazy): lazy = (
+   macro::maybe-let(lhs, rhs)
+);
+typed macro macro::maybe-set(lhs: macro::underscore, rhs: lazy): Nil = (
+   rhs; ();
+);
+typed macro macro::maybe-set(lhs: macro::variable, rhs: lazy): Nil = (
+   mov(rhs, lhs)
+);
+typed macro macro::let(lhs: macro::set-binding, rhs: lazy): lazy = (
+   macro::maybe-set(lhs, rhs)
+);
+
+typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (base; index);
+
+typed macro macro::infallible-bind(lhs-base lhs-index: macro::lhs-index, rhs: lazy): Nil = (
+   $"set[]"(lhs-base, lhs-index, rhs)
+);
+typed macro macro::fallible-bind(lhs-base lhs-index: macro::lhs-index, rhs: lazy): Bool = (
+   $"set[]"(lhs-base, lhs-index, rhs); true
+);
+
+typed macro macro::fallible-bind(lhs: macro::nil, rhs: lazy): Bool = (
+   rhs; true
+);
+typed macro macro::infallible-bind(lhs: macro::nil, rhs: lazy): Nil = (
+   rhs; ()
+);
+
+typed macro macro::while(cond: lazy, body: lazy): lazy = (
+   primitive::while( cond, body as Nil )
+);
+
+typed macro macro::infallible-bind(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Nil = (
+   macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs)
+);
+typed macro macro::fallible-bind(lhs-base lhs-field-name: macro::lhs-field, rhs: lazy): Bool = (
+   macro::concat($"set.", lhs-field-name)(macro::lhs-as-rhs(lhs-base), rhs); true
+);
+
+typed macro macro::infallible-bind(lhs: macro::variable, rhs: lazy): Nil = (
+   mov(rhs, lhs)
+);
+typed macro macro::fallible-bind(lhs: macro::variable, rhs: lazy): Bool = (
+   macro::maybe-let(lhs; rhs); true
+);
+
+typed macro macro::infallible-bind(lhs: macro::constant, rhs: lazy): Nil = (
+   if lhs != rhs
+   then fail(c"Infallible binding failed ", macro::location(lhs))
+);
+typed macro macro::fallible-bind(lhs: macro::constant, rhs: lazy): Bool = (
+   lhs == rhs
+);
+
+typed macro macro::variable-as-constant(v: lazy): lazy = v;
+
+typed macro macro::maybe-compare(lhs: macro::variable, rhs: lazy): Bool = (
+   lhs == rhs
+);
+typed macro macro::maybe-compare(lhs: macro::constant, rhs: lazy): Bool = (
+   lhs == rhs
+);
+typed macro macro::maybe-compare(lhs: macro::underscore, rhs: lazy): Bool = (
+   rhs; true
+);
+
+typed macro macro::infallible-bind(lhs: macro::variable-as-constant, rhs: lazy): Nil = (
+   if not macro::maybe-compare(lhs, rhs)
+   then fail(c"Infallible binding failed ", macro::location(lhs))
+);
+typed macro macro::fallible-bind(lhs: macro::variable-as-constant, rhs: lazy): Bool = (
+   macro::maybe-compare(lhs, rhs)
+);
+
+typed macro macro::infallible-bind(lhs: macro::let-binding, rhs: lazy): Nil = (
+   macro::maybe-let(lhs, rhs)
+);
+typed macro macro::fallible-bind(lhs: macro::let-binding, rhs: lazy): Bool = (
+   macro::fallible-bind(lhs, rhs)
+);
+
+typed macro macro::infallible-bind(lhs: macro::set-binding, rhs: lazy): Nil = (
+   macro::maybe-set(lhs, rhs)
+);
+typed macro macro::fallible-bind(lhs: macro::set-binding, rhs: lazy): Bool = (
+   macro::maybe-set(lhs, rhs); true
+);
+
+typed macro macro::lhs-bind(bind: lazy, pat: lazy): lazy = (
+   bind; pat;
+);
+typed macro macro::lhs-head(hd: lazy, tl: lazy): lazy = (
+   hd; tl;
+);
+
+typed macro macro::fallible-bind(bind pat: macro::lhs-bind, rhs: lazy): Bool = (
+   let uuid(r) = rhs;
+   macro::fallible-bind(bind, uuid(r)) and
+   macro::fallible-bind(pat, uuid(r))
+);
+typed macro macro::infallible-bind(bind pat: macro::lhs-bind, rhs: lazy): Nil = (
+   let uuid(r) = rhs;
+   macro::infallible-bind(bind, uuid(r));
+   macro::infallible-bind(pat, uuid(r))
+);
+
+typed macro macro::fallible-bind(prefix suffix: macro::lhs-fields, rhs: lazy): Bool = (
+   $"if"(macro::fallible-bind(prefix, rhs))
+        (macro::fallible-bind(suffix, rhs))
+        (false)
+);
+typed macro macro::infallible-bind(prefix suffix: macro::lhs-fields, rhs: lazy): Nil = (
+   macro::infallible-bind(prefix, rhs);
+   macro::infallible-bind(suffix, rhs);
+);
+
+typed macro macro::fallible-bind(field-key suffix: macro::lhs-fields-field, rhs: lazy): Bool = (
+   let uuid(x) = open(field-key(rhs));
+   macro::fallible-bind(suffix, uuid(x));
+);
+typed macro macro::infallible-bind(field-key suffix: macro::lhs-fields-field, rhs: lazy): Nil = (
+   let uuid(x) = open(field-key(rhs));
+   macro::infallible-bind(suffix, uuid(x));
+);
+
+typed macro macro::infallible-bind(lhs: macro::underscore, rhs: lazy): Nil = (
+   rhs; ();
+);
+typed macro macro::fallible-bind(lhs: macro::underscore, rhs: lazy): Bool = (
+   rhs; true;
+);
+
+typed macro macro::fallible-bind(tag-guard fields-guard: macro::lhs-tagged, rhs: lazy): Bool = (
+   let uuid(term) = rhs;
+   macro::fallible-bind-tagged(uuid(term), tag-guard, fields-guard)
+);
+
+typed macro macro::infallible-bind(tag-guard fields-guard: macro::lhs-tagged, rhs: lazy): Nil = (
+   let uuid(term) = rhs;
+   macro::infallible-bind-tagged(uuid(term), tag-guard, fields-guard)
+);
+
+typed macro macro::set(lhs: lazy, rhs: lazy): lazy = (
+   mov(rhs, lhs)
+);
+
+typed macro macro::set(base index: macro::lhs-index, rhs: lazy): lazy = (
+   $"set[]"( base, index, rhs )
+);
+
+typed macro macro::set(base field: macro::lhs-field, rhs: lazy): lazy = (
+   macro::concat($"set.", field) (macro::lhs-as-rhs(base), rhs)
+);
+
+typed macro :Lazy macro::lhs-as-rhs(v: macro::variable): lazy = (
+   v
+);
+
+typed macro :Lazy macro::lhs-as-rhs(base idx: macro::lhs-index): lazy = (
+   macro::lhs-as-rhs(base)[idx]
+);
+
+typed macro :Lazy macro::lhs-as-rhs(base: macro::lhs-address-of): lazy = (
+   &v
+);
+
+typed macro :Lazy macro::lhs-as-rhs(base field: macro::lhs-field): lazy = (
+   macro::concat($".", field)(macro::lhs-as-rhs(base))
+);
+
+typed macro macro::lhs-address-of(base: lazy): lazy = (
+   base
+);
+
+typed macro macro::lhs-field(base: lazy, field: lazy): lazy = (
+   base; field
+);
+
+typed macro macro::lhs-index(base: lazy, index: lazy): lazy = (
+   base; index
+);
+
+typed macro macro::lhs-index(base field: macro::lhs-field, index: lazy): lazy = (
+   macro::concat($".", field)(base); index
+);
+
+typed macro macro::for(item: lazy, iterable: List<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iterable;
+   while non-zero(uuid(iter-term)) {
+      if macro::fallible-bind(item, open(head(uuid(iter-term))))
+      then loop;
+      uuid(iter-term) = tail(uuid(iter-term));
+   };
+);
+
+typed macro macro::for(item: lazy, iterable: Vector<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iterable;
+   let uuid(iter-i) = 0_sz;
+   while uuid(iter-i) < uuid(iter-term).length {
+      if macro::fallible-bind(item, open(uuid(iter-term)[uuid(iter-i)]))
+      then loop;
+      uuid(iter-i) = uuid(iter-i) + 1;
+   };
+);
+
+typed macro macro::for(item: lazy, iterable: VectorView<?>, loop: lazy): lazy = (
+   let uuid(iter-term) = iterable;
+   let uuid(iter-i) = 0_sz;
+   while uuid(iter-i) < uuid(iter-term).length {
+      if macro::fallible-bind(item, open(uuid(iter-term)[uuid(iter-i)]))
+      then loop;
+      uuid(iter-i) = uuid(iter-i) + 1;
+   };
+);
+
+typed macro macro::match(t: lazy, ps: lazy): lazy = (scope(
+   let uuid(term) = open(t);
+   macro::match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
+));
+
+typed macro macro::match(t: macro::bind-raw, ps: lazy): lazy = (scope(
+   let uuid(term) = t;
+   macro::match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
+));
+
+typed macro macro::match(f t: macro::bind-raw-field, ps: lazy): lazy = (scope(
+   let uuid(term) = f($"raw"(t));
+   macro:: match-pats( uuid(term), ps, fail(c"Pattern Match Failure ", macro::location(t)) );
+));
+
+typed macro macro::match-pats(term: lazy, cases: macro::pats-none, remainder: lazy): lazy = (
+   remainder
+);
+
+typed macro macro::match-pats(term: lazy, ps lhs rhs: macro::pats-some, remainder: lazy): lazy = (
+   macro::match-pats(term, ps, scope($"if"(macro::fallible-bind(lhs,term))(rhs)(remainder)));
+);
+
+typed macro macro::pats-some(ps: lazy, lhs: lazy, rhs: lazy): lazy = (
+   ps; lhs; rhs
+);
+
+typed macro macro::pats-none(ignore: lazy): lazy = (
+   ()
+);
+
+typed macro macro::lhs-tagged(tag-guard: lazy, fields-guard: lazy): lazy = (
+   tag-guard; fields-guard;
+);
+
+typed macro macro::lhs-fields-field(field-key: macro::variable, pat: lazy): lazy = (
+   field-key; pat;
+);
+
+typed macro macro::lhs-fields(prefix: lazy, fields: lazy): lazy = (
+   prefix; fields;
+);
+
+typed macro macro::fallible-bind-tagged(term: lazy, prefix: macro::nil, rest: lazy): Bool = (
+   macro::fallible-bind(rest, term)
+);
+
+typed macro macro::fallible-bind-tagged(term: lazy, tag-name tag-ordinal tag-type: macro::tag, rest: lazy): Bool = (
+   term.discriminator-case-tag==(term as tag-type).discriminator-case-tag and
+   macro::fallible-bind(rest, (term as tag-type))
+);
+
+typed macro macro::infallible-bind-tagged(term: lazy, prefix: macro::nil, rest: lazy): Nil = (
+   macro::infallible-bind(rest, term)
+);
+
+typed macro macro::infallible-bind-tagged(term: lazy, tag-name tag-ordinal tag-type: macro::tag, rest: lazy): Nil = (
+   if term.discriminator-case-tag != (term as tag-type).discriminator-case-tag
+   then fail(c"Infallible binding failed ", macro::location(term));
+   macro::infallible-bind(rest, (term as tag-type))
+);
+
+typed macro macro::fallible-bind(x rest: macro::lhs-head, term: lazy): Bool = (
+   let uuid(v) = term;
+   $"if"(uuid(v).has-head)
+      ($"if"
+         (macro::fallible-bind(x, head(uuid(v))))
+         (macro::fallible-bind(rest, tail(uuid(v))))
+         (false)
+      )
+      (false)
+);
+typed macro macro::infallible-bind(x rest: macro::lhs-head, term: lazy): Nil = (
+   let uuid(v) = term;
+   if not uuid(v).has-head then fail(c"Infallible binding failed ", macro::location(term));
+   macro::infallible-bind(x, head(uuid(v)));
+   macro::infallible-bind(rest, tail(uuid(v)));
+);
+
+typed macro macro::fallible-bind(case: macro::literal<MACRO::LHS-LIST-SENTINEL,_>, rhs: lazy): Bool = (
+   true
+);
+typed macro macro::infallible-bind(x rest: macro::literal<MACRO::LHS-LIST-SENTINEL,_>, rhs: lazy): Nil = (
+   ()
+);
+
+typed macro macro::fallible-bind-prefix(pfx: macro::constant, term: lazy, rest: lazy): Bool = (
+   let uuid(v) = term;
+   let uuid(p) = uuid(v).remove-prefix(pfx);
+   $"if"(uuid(p).is-some)
+        (macro::fallible-bind(rest, uuid(p).get-or-panic))
+        (false)
+);
+typed macro macro::infallible-bind-prefix(pfx: macro::constant, term: lazy, rest: lazy): Nil = (
+   let uuid(v) = term;
+   let uuid(p) = uuid(v).remove-prefix(pfx);
+   if not uuid(p).is-some then fail(c"Infallible binding failed ", macro::location(term));
+   macro::infallible-bind(rest, uuid(p).get-or-panic)
+);
+
+typed macro macro::fallible-bind-prefix(bind pfx: macro::lhs-bind, term: lazy, rest: lazy): Bool = (
+   let uuid(v) = term;
+   let uuid(s) = uuid(v).remove-prefix(pfx);
+   let uuid(p) = uuid(v).get-prefix(pfx);
+   $"if"(uuid(p).is-some and uuid(s).is-some)
+        (macro::let(bind, uuid(p).get-or-panic); macro::fallible-bind(rest,uuid(s).get-or-panic))
+        (false)
+);
+typed macro macro::infallible-bind-prefix(bind pfx: macro::lhs-bind, term: lazy, rest: lazy): Nil = (
+   let uuid(v) = term;
+   let uuid(s) = uuid(v).remove-prefix(pfx);
+   let uuid(p) = uuid(v).get-prefix(pfx);
+   if not uuid(p).is-some or not uuid(s).is-some then fail(c"Infallible binding failed ", macro::location(term));
+   macro::let(bind, uuid(p).get-or-panic);
+   macro::infallible-bind(rest,uuid(s).get-or-panic);
+);
+
+typed macro macro::fallible-bind(pfx rest: macro::lhs-prefix-or-suffix, term: lazy): Bool = (
+   macro::fallible-bind-prefix(pfx, term, rest);
+);
+typed macro macro::infallible-bind(pfx rest: macro::lhs-prefix-or-suffix, term: lazy): Nil = (
+   macro::infallible-bind-prefix(pfx, term, rest);
+);
+
+typed macro macro::lhs-prefix-or-suffix(pfx: lazy, sfx: lazy): lazy = (pfx; sfx);

@@ -43,7 +43,6 @@ let lsts-parse-lhs-big(tokens: List<Token>): Tuple<AST,List<Token>> = (
    if lsts-parse-head(tokens) == c"=" {
       let loc = head(tokens).location;
       lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
-      if base.is-var then base = mk-app( mk-var(c"macro::let-binding").with-location(loc), base );
       (let val, tokens) = lsts-parse-lhs-one(tokens);
       base = mk-app(
          mk-var(c"macro::lhs-bind").with-location(loc),
@@ -203,11 +202,14 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
                if lsts-is-ident-head(lsts-parse-head(tokens)) {
                   attr-key = lsts-parse-head(tokens); tokens = tail(tokens);
                };
-               let is-let = true;
+               let is-let = false;
+               let is-set = false;
                if lsts-parse-head(tokens)==c"=" {
                   binding = attr-key; tokens = tail(tokens);
-                  if lsts-parse-head(tokens) == c"set" {
-                     is-let = false; tokens = tail(tokens);
+                  if lsts-parse-head(tokens) == c"let" {
+                     is-let = true; tokens = tail(tokens);
+                  } else if lsts-parse-head(tokens) == c"set" {
+                     is-set = true; tokens = tail(tokens);
                   };
                   if lsts-parse-head(tokens) == c"raw" {
                      raw = true; tokens = tail(tokens);
@@ -219,6 +221,10 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
                let val = if lsts-parse-head(tokens)==c":" {
                   tokens = tail(tokens);
                   (let val, tokens) = lsts-parse-lhs-one(tokens);
+                  if val.is-var then val = mk-app(
+                     mk-var(c"macro::variable-as-constant").with-location(attr-loc),
+                     val
+                  );
                   val
                } else { mk-eof() };
                if not(non-zero(val)) and not(non-zero(binding)) and not(non-zero(attr-key)) {
@@ -228,13 +234,19 @@ let lsts-parse-lhs-one(tokens: List<Token>): Tuple<AST,List<Token>> = (
                   val = Var( c"_", with-location(mk-token("_"),attr-loc) );
                };
                if non-zero(binding) {
-                  let macro-binding = if is-let
-                  then mk-var(c"macro::let-binding").with-location(attr-loc);
-                  else mk-var(c"macro::set-binding").with-location(attr-loc);
+                  let macro-binding = mk-var(binding).with-location(attr-loc);
+                  if is-let then macro-binding = mk-app(
+                     mk-var(c"macro::let-binding").with-location(attr-loc),
+                     macro-binding
+                  );
+                  if is-set then macro-binding = mk-app(
+                     mk-var(c"macro::set-binding").with-location(attr-loc),
+                     macro-binding
+                  );
                   val = mk-app(
                      Var( c"macro::lhs-bind", with-location(mk-token("macro::lhs-bind"),attr-loc) ),
                      mk-cons(
-                        mk-app( macro-binding, mk-var(binding).with-location(attr-loc) ),
+                        macro-binding,
                         val
                      )
                   );
@@ -293,7 +305,7 @@ let lsts-parse-assign(tokens: List<Token>): Tuple<AST,List<Token>> = (
       lsts-parse-expect(c"=", tokens); tokens = tail(tokens);
       (let rhs, tokens) = lsts-parse-assign(tokens);
       base = mk-app(
-         mk-var(c"macro::assign").with-location(loc),
+         mk-var(c"macro::infallible-bind").with-location(loc),
          mk-cons(lhs, rhs).with-location(loc)
       );
    } else {

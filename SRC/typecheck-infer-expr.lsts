@@ -1,7 +1,7 @@
 
 let std-bind-term(tctx: Maybe<TypeContext>, key: CString, rhs: AST, def: AST, blame: AST, hint: Type): (TypeContext?, Type) = (
    let rhs-tt = tctx.with-phi(typeof-term(rhs), rhs);
-   let tt = rhs-tt && t0(c"LocalVariable");
+   let tt = rhs-tt && if non-zero(tctx.function-name) then t0(interned-tag-local-variable) else t0(interned-tag-global-variable);
    tctx = tctx.bind(key, ta, tt, def);
    (tctx, tt)
 );
@@ -187,6 +187,20 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             tctx = tctx.phi-move(inner-tt, term);
          };
          tctx = tctx.ascript(term, tt);
+      );
+      # this case is necessary because cond can create variables that affect body
+      # TODO: generalize chain / apply to remove these cases
+      App{ ifv=left:Var{key:c"macro::while"}, right:App{ cond=left, t=right } } => (
+         (tctx, cond) = std-infer-expr(tctx, cond, false, Used, ta);
+         (tctx, t) = std-infer-expr(tctx, t, false, Used, ta);
+         let ftype = tctx.find-callable( c"primitive::while", t2(interned-tag-cons,typeof-term(cond),typeof-term(t)), term, ta ).direct-type;
+         tctx = tctx.ascript(ifv, ftype);
+         let args = mk-cons( cond, t );
+         tctx = tctx.ascript(args, t2(interned-tag-cons,typeof-term(cond),typeof-term(t)));
+         let pw = mk-var(c"primitive::while").with-location(term.location);
+         tctx = tctx.ascript(pw, ftype);
+         term = mk-app( pw, args );
+         tctx = tctx.ascript(term, t0(interned-tag-nil));
       );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
          let short-circuit = ASTEOF;
@@ -503,6 +517,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       }
    }};
    (_, let dom-tt) = typeof-var-raw(term, tctx, c"dom", hint.is-t(interned-tag-must-not-fresh,0) or hint.is-t(interned-tag-tail-position,0));
+
    (tctx, term);
 );
 
