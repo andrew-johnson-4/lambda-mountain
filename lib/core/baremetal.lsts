@@ -1,9 +1,11 @@
 
-import stdint.h;
-import stdio.h;
-import stdlib.h;
-import string.h;
-import regex.h;
+#import stdint.h;
+#import stdio.h;
+#import stdlib.h;
+#import string.h;
+#import regex.h;
+# TODO: find a better way to create a hermetic distribution for these headers not manually
+import lib/core/hermetic-c-headers.h;
 
 # not sure why this is necessary, the C frontend must be missing this definition?
 let :FFI mktemp(template: U8[]): U8[] = ();

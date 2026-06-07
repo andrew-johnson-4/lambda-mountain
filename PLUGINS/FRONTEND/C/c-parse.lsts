@@ -384,6 +384,7 @@ let std-c-parse-storage-class-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>
 let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = (None : Maybe<CTerm>)();
    if std-c-can-take(tokens, "const") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "const"); Tuple(Some(CType1(t)), tokens) )
+   else if std-c-can-take(tokens, "__extension__") then (tokens = std-c-take-expect(tokens, "__extension__"); Tuple(Some(CType1("__extension__")), tokens) )
    else if std-c-can-take(tokens, "restrict") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "restrict"); Tuple(Some(CType1(t)), tokens) )
    else if std-c-can-take(tokens, "__restrict") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "__restrict"); Tuple(Some(CType1(t)), tokens) )
    else if std-c-can-take(tokens, "volatile") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "volatile"); Tuple(Some(CType1(t)), tokens) )
