@@ -1,5 +1,7 @@
 
+let lsts-active-file = c"";
 let lsts-frontend(fp: CString): Nil = (
+   lsts-active-file = fp;
    lsts-parse(lsts-tokenize(fp));
 );
 register-frontend(c".lsts", lsts-frontend);

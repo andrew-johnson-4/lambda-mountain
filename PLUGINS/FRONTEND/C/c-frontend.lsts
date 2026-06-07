@@ -1,5 +1,7 @@
 
+let c-active-file = c"";
 let c-frontend(fp: CString): Nil = (
+   c-active-file = fp;
    # mktemp modifies this buffer, so it can't be a string constant
    # string concatenation is used to create a dynamic string
    let tmpfile = c"/tmp/lm.tmp.XXXXXX" + c"";

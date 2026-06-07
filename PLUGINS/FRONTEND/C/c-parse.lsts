@@ -169,7 +169,7 @@ let std-c-can-take(tokens: List<Token>, cls: String): Bool = (
 let std-c-take-expect(tokens: List<Token>, cls: String): List<Token> = (
    if non-zero(tokens) and std-c-has-class(head(tokens).skey, cls) then tail(tokens)
    else (
-      print("Expected token [\{cls}] at \{tokens.formatted-location}\n");
+      print("Expected token [\{cls}] at \{tokens.formatted-location} \{c-active-file}\n");
       exit(1); tokens
    );
 );

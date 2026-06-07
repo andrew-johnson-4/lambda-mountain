@@ -12356,7 +12356,9 @@ let std-c-type-of-integer(i: String): Type = (
    };
 );
 
+let c-active-file = c"";
 let c-frontend(fp: CString): Nil = (
+   c-active-file = fp;
    # mktemp modifies this buffer, so it can't be a string constant
    # string concatenation is used to create a dynamic string
    let tmpfile = c"/tmp/lm.tmp.XXXXXX" + c"";
@@ -12551,7 +12553,7 @@ let std-c-can-take(tokens: List<Token>, cls: String): Bool = (
 let std-c-take-expect(tokens: List<Token>, cls: String): List<Token> = (
    if non-zero(tokens) and std-c-has-class(head(tokens).skey, cls) then tail(tokens)
    else (
-      print("Expected token [\{cls}] at \{tokens.formatted-location}\n");
+      print("Expected token [\{cls}] at \{tokens.formatted-location} \{c-active-file}\n");
       exit(1); tokens
    );
 );
@@ -13999,7 +14001,9 @@ import PLUGINS/FRONTEND/LSTS/lsts-parse.lsts;
 import PLUGINS/FRONTEND/LSTS/mk-lsts-token.lsts;
 import PLUGINS/FRONTEND/LSTS/lsts-parse-lhs.lsts;
 
+let lsts-active-file = c"";
 let lsts-frontend(fp: CString): Nil = (
+   lsts-active-file = fp;
    lsts-parse(lsts-tokenize(fp));
 );
 register-frontend(c".lsts", lsts-frontend);
@@ -14357,13 +14361,13 @@ let lsts-unwrap-identifier(ident: Token): Token = (
 
 let lsts-parse-expect(expect: CString, tokens: List<Token>): Nil = (
    if lsts-parse-head(tokens) != expect {
-      fail("Parse Error: Expected \{expect} at \{tokens.formatted-location}\n");
+      fail("Parse Error: Expected \{expect} at \{tokens.formatted-location} \{lsts-active-file}\n");
    }; ();
 );
 
 let lsts-parse-expect(expect: CString, b: Bool, tokens: List<Token>): Nil = (
    if not(b) {
-      fail("Parse Error: Expected \{expect} at \{tokens.formatted-location}\n")
+      fail("Parse Error: Expected \{expect} at \{tokens.formatted-location} \{lsts-active-file}\n")
    }; ();
 );
 
