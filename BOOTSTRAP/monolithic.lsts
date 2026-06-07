@@ -280,13 +280,16 @@ let .into(i: x, tt: Type<CString>): CString = (
 );
 
 
-#import stdint.h;
-#import stdio.h;
-#import stdlib.h;
-#import string.h;
-#import regex.h;
+import stdint.h;
+import stdio.h;
+import stdlib.h;
+import string.h;
+import regex.h;
 # TODO: find a better way to create a hermetic distribution for these headers not manually
-import lib/core/hermetic-c-headers.h;
+# TODO: hermetic distribution should only include the live symbols, not dead code
+# Reason: Hermetic C headers allow us to declare C dependencies in LSTS instead of relying on random C mess on user's system
+#import lib/core/hermetic-c-headers.lsts;
+#import lib/core/hermetic-c-headers.h;
 
 # not sure why this is necessary, the C frontend must be missing this definition?
 let :FFI mktemp(template: U8[]): U8[] = ();
@@ -1561,6 +1564,10 @@ let .as-vector(table: Hashtable<k,v>): Vector<(k,v)> = (
    let v = mk-vector(type((k,v)));
    v
 );
+
+
+let :FFI mktemp(template: U8[]): U8[] = ();
+let :FFI write(ft: USize, buf: C<"void">[], count: USize): USize = ();
 
 type alias I16 suffix _i16 = I64;
 
@@ -4450,6 +4457,8 @@ let var-name-if-var-or-lit(t: AST): CString = (
    match t {
       Var{key1=key} => key1;
       Lit{key2=key} => key2;
+      App{ left:Lit{key:c":"}, right:App{ left:Var{key3=key}, right:AType{} } } => key3;
+      App{ left:Lit{key:c":"}, right:App{ left:Lit{key4=key}, right:AType{} } } => key4;
       _ => c"";
    }
 );
