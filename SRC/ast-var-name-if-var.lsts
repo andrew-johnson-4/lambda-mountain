@@ -10,6 +10,8 @@ let var-name-if-var-or-lit(t: AST): CString = (
    match t {
       Var{key1=key} => key1;
       Lit{key2=key} => key2;
+      App{ left:Lit{key:c":"}, right:App{ left:Var{key3=key}, right:AType{} } } => key3;
+      App{ left:Lit{key:c":"}, right:App{ left:Lit{key4=key}, right:AType{} } } => key4;
       _ => c"";
    }
 );
