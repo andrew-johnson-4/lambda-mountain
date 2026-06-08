@@ -304,13 +304,6 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
          else match decl {
             CMaybe{value:None{}} => ();
             CMaybe{value:Some{def=content}} => (
-               ast-parsed-program = ast-parsed-program + Glb(
-                  mk-token(uuid()), close(
-                     mk-lit(c"struct " + cname1 + c"{\n" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
-                        t0(c"C-Fragment") && t0(c"C-FFI") && t0(c"Literal")
-                     )
-                  )
-               );
             );
          };
          (t1(c"C",t0(c"struct " + cname1)), ta)
@@ -320,13 +313,6 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
          match decl {
             CMaybe{value:None{}} => ();
             CMaybe{value:Some{def=content}} => (
-               ast-parsed-program = ast-parsed-program + Glb(
-                  mk-token(uuid()), close(
-                     mk-lit(c"union " + cname2 + c"{\n" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
-                        t0(c"C-Fragment") && t0(c"C-FFI") && t0(c"Literal")
-                     )
-                  )
-               );
             );
          };
          (t1(c"C",t0(c"union " + cname2)), ta)

@@ -64,7 +64,7 @@ compile-production: compile-bootstrap
 	rm -f production
 	$(LSTSFLAGS) time ./bootstrap.exe -o production.c SRC/index.lsts
 	$(CC) $(CFLAGS) -o production production.c
-	#rm -f production.c
+	rm -f production.c
 
 install-production: compile-production
 ifeq ($(shell test -w /usr/local/bin; echo $$?), 0)

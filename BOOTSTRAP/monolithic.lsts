@@ -288,8 +288,6 @@ import regex.h;
 # TODO: find a better way to create a hermetic distribution for these headers not manually
 # TODO: hermetic distribution should only include the live symbols, not dead code
 # Reason: Hermetic C headers allow us to declare C dependencies in LSTS instead of relying on random C mess on user's system
-#import lib/core/hermetic-c-headers.lsts;
-#import lib/core/hermetic-c-headers.h;
 
 # not sure why this is necessary, the C frontend must be missing this definition?
 let :FFI mktemp(template: U8[]): U8[] = ();
@@ -11194,6 +11192,7 @@ let std-c-finish-forced-imports(): S = (
    (if std-c-force-imports.has-key(c"stdio.h") then SAtom(c"#include <stdio.h>\n") else SNil()) +
    (if std-c-force-imports.has-key(c"regex.h") then SAtom(c"#include <regex.h>\n") else SNil()) +
    (if std-c-force-imports.has-key(c"string.h") then SAtom(c"#include <string.h>\n") else SNil()) +
+   (SAtom(c"#include <stdint.h>\n")) +
    (SAtom(c"#include <malloc.h>\n")) +
    (SAtom(c"#include <unistd.h>\n"))
 );
@@ -11242,7 +11241,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom(c";\n");
          if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void then ()
          else if can-unify(type-c-typedef, tt) or can-unify(type-array-c-typedef, tt) {
-            assemble-header-typedef-section = assemble-header-typedef-section + text;
+            #ignore?
+            #assemble-header-typedef-section = assemble-header-typedef-section + text;
          } else {
             assemble-gdecl-section = assemble-gdecl-section + text;
          }
@@ -11281,7 +11281,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
                text = SNil;
                text = SAtom(k) + SAtom(c" = ") + inner-expr.get(c"expression") + SAtom(c";\n");
             } else if can-unify(type-c-typedef, tt) or can-unify(type-array-c-typedef, tt) {
-               assemble-header-typedef-section = assemble-header-typedef-section + text;
+               #ignore?
+               #assemble-header-typedef-section = assemble-header-typedef-section + text;
             } else {
                assemble-gdecl-section = assemble-gdecl-section + text;
                text = SAtom(k) + SAtom(c" = ") + inner-expr.get(c"expression") + SAtom(c";\n");
@@ -11299,7 +11300,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             App{ left:Lit{key:c":"}, right:App{ left:ASTNil{}, right:AType{asc-tt=tt} } } => asc-tt.is-t(interned-tag-nil,0);
             _ => true;
          };
-         if initialized or can-unify(type-c-typedef, tt) {
+         if can-unify(type-c-typedef, tt) {}
+         else if initialized or can-unify(type-c-typedef, tt) {
             let text = SNil();
             if not(config-strip-debug) and loc.filename != c"Unknown" {
                text = text + SAtom(c"\n#line ");
@@ -11322,7 +11324,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             }
          };
 
-         if initialized {
+         if can-unify(type-c-typedef, tt) {}
+         else if initialized {
             let text = SNil();
             if not(config-strip-debug) and loc.filename != c"Unknown" {
                text = text + SAtom(c"\n#line ");
@@ -12044,13 +12047,6 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
          else match decl {
             CMaybe{value:None{}} => ();
             CMaybe{value:Some{def=content}} => (
-               ast-parsed-program = ast-parsed-program + Glb(
-                  mk-token(uuid()), close(
-                     mk-lit(c"struct " + cname1 + c"{\n" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
-                        t0(c"C-Fragment") && t0(c"C-FFI") && t0(c"Literal")
-                     )
-                  )
-               );
             );
          };
          (t1(c"C",t0(c"struct " + cname1)), ta)
@@ -12060,13 +12056,6 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
          match decl {
             CMaybe{value:None{}} => ();
             CMaybe{value:Some{def=content}} => (
-               ast-parsed-program = ast-parsed-program + Glb(
-                  mk-token(uuid()), close(
-                     mk-lit(c"union " + cname2 + c"{\n" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
-                        t0(c"C-Fragment") && t0(c"C-FFI") && t0(c"Literal")
-                     )
-                  )
-               );
             );
          };
          (t1(c"C",t0(c"union " + cname2)), ta)
