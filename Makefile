@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm tests/promises/syntax/lhs-while-let.lsts > out.txt
+	lm tests/c/offending-1.c
 	gcc tmp.c
 	./a.out
 

@@ -285,6 +285,9 @@ import stdio.h;
 import stdlib.h;
 import string.h;
 import regex.h;
+# TODO: find a better way to create a hermetic distribution for these headers not manually
+# TODO: hermetic distribution should only include the live symbols, not dead code
+# Reason: Hermetic C headers allow us to declare C dependencies in LSTS instead of relying on random C mess on user's system
 
 # not sure why this is necessary, the C frontend must be missing this definition?
 let :FFI mktemp(template: U8[]): U8[] = ();
@@ -1559,6 +1562,10 @@ let .as-vector(table: Hashtable<k,v>): Vector<(k,v)> = (
    let v = mk-vector(type((k,v)));
    v
 );
+
+
+let :FFI mktemp(template: U8[]): U8[] = ();
+let :FFI write(ft: USize, buf: C<"void">[], count: USize): USize = ();
 
 type alias I16 suffix _i16 = I64;
 
@@ -4448,6 +4455,8 @@ let var-name-if-var-or-lit(t: AST): CString = (
    match t {
       Var{key1=key} => key1;
       Lit{key2=key} => key2;
+      App{ left:Lit{key:c":"}, right:App{ left:Var{key3=key}, right:AType{} } } => key3;
+      App{ left:Lit{key:c":"}, right:App{ left:Lit{key4=key}, right:AType{} } } => key4;
       _ => c"";
    }
 );
@@ -11183,6 +11192,7 @@ let std-c-finish-forced-imports(): S = (
    (if std-c-force-imports.has-key(c"stdio.h") then SAtom(c"#include <stdio.h>\n") else SNil()) +
    (if std-c-force-imports.has-key(c"regex.h") then SAtom(c"#include <regex.h>\n") else SNil()) +
    (if std-c-force-imports.has-key(c"string.h") then SAtom(c"#include <string.h>\n") else SNil()) +
+   (SAtom(c"#include <stdint.h>\n")) +
    (SAtom(c"#include <malloc.h>\n")) +
    (SAtom(c"#include <unistd.h>\n"))
 );
@@ -11231,7 +11241,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
          text = text + SAtom(c";\n");
          if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void then ()
          else if can-unify(type-c-typedef, tt) or can-unify(type-array-c-typedef, tt) {
-            assemble-header-typedef-section = assemble-header-typedef-section + text;
+            #ignore?
+            #assemble-header-typedef-section = assemble-header-typedef-section + text;
          } else {
             assemble-gdecl-section = assemble-gdecl-section + text;
          }
@@ -11270,7 +11281,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
                text = SNil;
                text = SAtom(k) + SAtom(c" = ") + inner-expr.get(c"expression") + SAtom(c";\n");
             } else if can-unify(type-c-typedef, tt) or can-unify(type-array-c-typedef, tt) {
-               assemble-header-typedef-section = assemble-header-typedef-section + text;
+               #ignore?
+               #assemble-header-typedef-section = assemble-header-typedef-section + text;
             } else {
                assemble-gdecl-section = assemble-gdecl-section + text;
                text = SAtom(k) + SAtom(c" = ") + inner-expr.get(c"expression") + SAtom(c";\n");
@@ -11288,7 +11300,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             App{ left:Lit{key:c":"}, right:App{ left:ASTNil{}, right:AType{asc-tt=tt} } } => asc-tt.is-t(interned-tag-nil,0);
             _ => true;
          };
-         if initialized or can-unify(type-c-typedef, tt) {
+         if can-unify(type-c-typedef, tt) {}
+         else if initialized or can-unify(type-c-typedef, tt) {
             let text = SNil();
             if not(config-strip-debug) and loc.filename != c"Unknown" {
                text = text + SAtom(c"\n#line ");
@@ -11311,7 +11324,8 @@ let std-c-compile-global(ctx: FContext, k: CString, term: AST): Nil = (
             }
          };
 
-         if initialized {
+         if can-unify(type-c-typedef, tt) {}
+         else if initialized {
             let text = SNil();
             if not(config-strip-debug) and loc.filename != c"Unknown" {
                text = text + SAtom(c"\n#line ");
@@ -12033,13 +12047,6 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
          else match decl {
             CMaybe{value:None{}} => ();
             CMaybe{value:Some{def=content}} => (
-               ast-parsed-program = ast-parsed-program + Glb(
-                  mk-token(uuid()), close(
-                     mk-lit(c"struct " + cname1 + c"{\n" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
-                        t0(c"C-Fragment") && t0(c"C-FFI") && t0(c"Literal")
-                     )
-                  )
-               );
             );
          };
          (t1(c"C",t0(c"struct " + cname1)), ta)
@@ -12049,13 +12056,6 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
          match decl {
             CMaybe{value:None{}} => ();
             CMaybe{value:Some{def=content}} => (
-               ast-parsed-program = ast-parsed-program + Glb(
-                  mk-token(uuid()), close(
-                     mk-lit(c"union " + cname2 + c"{\n" + std-c-fragment-of-struct-definition-body(def) + c"};\n").ascript(
-                        t0(c"C-Fragment") && t0(c"C-FFI") && t0(c"Literal")
-                     )
-                  )
-               );
             );
          };
          (t1(c"C",t0(c"union " + cname2)), ta)
@@ -12356,7 +12356,9 @@ let std-c-type-of-integer(i: String): Type = (
    };
 );
 
+let c-active-file = c"";
 let c-frontend(fp: CString): Nil = (
+   c-active-file = fp;
    # mktemp modifies this buffer, so it can't be a string constant
    # string concatenation is used to create a dynamic string
    let tmpfile = c"/tmp/lm.tmp.XXXXXX" + c"";
@@ -12551,7 +12553,7 @@ let std-c-can-take(tokens: List<Token>, cls: String): Bool = (
 let std-c-take-expect(tokens: List<Token>, cls: String): List<Token> = (
    if non-zero(tokens) and std-c-has-class(head(tokens).skey, cls) then tail(tokens)
    else (
-      print("Expected token [\{cls}] at \{tokens.formatted-location}\n");
+      print("Expected token [\{cls}] at \{tokens.formatted-location} \{c-active-file}\n");
       exit(1); tokens
    );
 );
@@ -12766,6 +12768,7 @@ let std-c-parse-storage-class-specifier(tokens: List<Token>): Tuple<Maybe<CTerm>
 let std-c-parse-type-qualifier(tokens: List<Token>): Tuple<Maybe<CTerm>,List<Token>> = (
    let no = (None : Maybe<CTerm>)();
    if std-c-can-take(tokens, "const") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "const"); Tuple(Some(CType1(t)), tokens) )
+   else if std-c-can-take(tokens, "__extension__") then (tokens = std-c-take-expect(tokens, "__extension__"); Tuple(Some(CType1("__extension__")), tokens) )
    else if std-c-can-take(tokens, "restrict") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "restrict"); Tuple(Some(CType1(t)), tokens) )
    else if std-c-can-take(tokens, "__restrict") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "__restrict"); Tuple(Some(CType1(t)), tokens) )
    else if std-c-can-take(tokens, "volatile") then (let t = head(tokens).skey; tokens = std-c-take-expect(tokens, "volatile"); Tuple(Some(CType1(t)), tokens) )
@@ -13999,7 +14002,9 @@ import PLUGINS/FRONTEND/LSTS/lsts-parse.lsts;
 import PLUGINS/FRONTEND/LSTS/mk-lsts-token.lsts;
 import PLUGINS/FRONTEND/LSTS/lsts-parse-lhs.lsts;
 
+let lsts-active-file = c"";
 let lsts-frontend(fp: CString): Nil = (
+   lsts-active-file = fp;
    lsts-parse(lsts-tokenize(fp));
 );
 register-frontend(c".lsts", lsts-frontend);
@@ -14357,13 +14362,13 @@ let lsts-unwrap-identifier(ident: Token): Token = (
 
 let lsts-parse-expect(expect: CString, tokens: List<Token>): Nil = (
    if lsts-parse-head(tokens) != expect {
-      fail("Parse Error: Expected \{expect} at \{tokens.formatted-location}\n");
+      fail("Parse Error: Expected \{expect} at \{tokens.formatted-location} \{lsts-active-file}\n");
    }; ();
 );
 
 let lsts-parse-expect(expect: CString, b: Bool, tokens: List<Token>): Nil = (
    if not(b) {
-      fail("Parse Error: Expected \{expect} at \{tokens.formatted-location}\n")
+      fail("Parse Error: Expected \{expect} at \{tokens.formatted-location} \{lsts-active-file}\n")
    }; ();
 );
 

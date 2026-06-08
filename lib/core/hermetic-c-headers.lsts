@@ -1,0 +1,4 @@
+
+
+let :FFI mktemp(template: U8[]): U8[] = ();
+let :FFI write(ft: USize, buf: C<"void">[], count: USize): USize = ();

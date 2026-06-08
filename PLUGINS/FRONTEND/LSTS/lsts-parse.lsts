@@ -20,13 +20,13 @@ let lsts-unwrap-identifier(ident: Token): Token = (
 
 let lsts-parse-expect(expect: CString, tokens: List<Token>): Nil = (
    if lsts-parse-head(tokens) != expect {
-      fail("Parse Error: Expected \{expect} at \{tokens.formatted-location}\n");
+      fail("Parse Error: Expected \{expect} at \{tokens.formatted-location} \{lsts-active-file}\n");
    }; ();
 );
 
 let lsts-parse-expect(expect: CString, b: Bool, tokens: List<Token>): Nil = (
    if not(b) {
-      fail("Parse Error: Expected \{expect} at \{tokens.formatted-location}\n")
+      fail("Parse Error: Expected \{expect} at \{tokens.formatted-location} \{lsts-active-file}\n")
    }; ();
 );
 
