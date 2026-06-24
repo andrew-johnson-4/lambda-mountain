@@ -139,6 +139,10 @@ let :Blob current_allocated_memory(): U64 = (
     $":expression"($":expression"(l"({struct mallinfo2 mi = mallinfo2(); mi.uordblks;})"))
 );
 
+typed macro macro::backend::render(t: macro::constant): lazy = (
+   t
+);
+
 let .into(b: Bool, tt: Type<String>): String = if b then "true" else "false";
 let .into(i: U8, tt: Type<String>): String = (i as U64).into(type(String));
 let .into(i: USize, tt: Type<String>): String = (i as U64).into(type(String));
@@ -297,6 +301,7 @@ import lib/core/l.lsts;
 import lib/core/phi.lsts;
 import lib/core/platform-macros.lsts;
 import lib/core/common-macros.lsts;
+import lib/core/backend-macros.lsts;
 import lib/core/primitives.lsts;
 import lib/core/bool.lsts;
 import lib/core/u8.lsts;
@@ -1853,6 +1858,9 @@ let .expect(l: Maybe<x>, msg: String): x = (
       _ => fail(msg);
    }
 );
+
+import lib/core/l.lsts;
+import lib/core/backend-macros.lsts;
 
 type OneOwnedData<t> = {
    reference-count: USize,
@@ -4145,6 +4153,7 @@ type AST zero ASTEOF implies MustRetain, MustRelease
          | Lit { key: CString, token: Token }
          | Abs { lhs: OneOwnedData<AST>[], rhs: OneOwnedData<AST>[], tt: Type }
          | AType { tt: Type }
+         | Fragment { kvs: Hashtable<CString,AST> }
          | Seq { seq: Vector<AST> }
          | Glb { key: Token , val: OneOwnedData<AST>[] }
          | Typedef { td: OneOwnedData<ASTTypedef>[] };
@@ -4641,6 +4650,24 @@ let mk-fragment(): Fragment = (
 
 let non-zero(f: Fragment): Bool = (
    non-zero(open(f.keyvals))
+);
+
+let render(): String = (
+   let result = "";
+   for t in ast-parsed-program.unroll-seq {
+      t = mk-app( mk-var(c"macro::backend::render"), t );
+      (global-flow-tctx, t) = std-infer-expr(global-flow-tctx, t, false, Used, ta);
+      result = result + render(t);
+   };
+   result;
+);
+
+let render(t: AST): String = (
+   match t {
+      ASTNil{} => "";
+      ASTEOF{} => "";
+      _ => fail("render unknown term \{t}");
+   }
 );
 
 import SRC/unit-util.lsts;
@@ -8868,6 +8895,17 @@ index-macro-table = index-macro-table.bind(c"macro::nil", [] : List<(Type,Type,A
 index-macro-table = index-macro-table.bind(c"macro::constant", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::tag", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::for", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::ast::typedef", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::ast::var", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::ast::nil", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::ast::eof", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::ast::app", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::ast::lit", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::ast::abs", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::ast::type", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::ast::fragment", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::ast::seq", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::ast::glb", [] : List<(Type,Type,AST)>);
 
 # Meta variables can be used to match syntax patterns
 let index-macro-meta = {} : Hashtable<CString,List<(Type,Type,AST)>>;
@@ -8876,6 +8914,17 @@ index-macro-meta = index-macro-meta.bind(c"macro::variable", [] : List<(Type,Typ
 index-macro-meta = index-macro-meta.bind(c"macro::underscore", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::nil", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::constant", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::ast::typedef", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::ast::nil", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::ast::var", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::ast::eof", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::ast::app", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::ast::lit", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::ast::abs", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::ast::type", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::ast::fragment", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::ast::seq", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::ast::glb", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::tag", [] : List<(Type,Type,AST)>);
 
 let bind-new-macro(mname: CString, mterm: AST): Nil = (
@@ -9320,6 +9369,79 @@ let std-apply-macro-variable(tctx: Maybe<TypeContext>, mname: CString, margs: AS
    }
 );
 
+let std-apply-macro-ast-var(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      Var{} => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+let std-apply-macro-ast-typedef(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      Typedef{} => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+let std-apply-macro-ast-nil(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      ASTNil{} => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+let std-apply-macro-ast-eof(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      ASTEOF{} => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+let std-apply-macro-ast-app(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      App{} => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+let std-apply-macro-ast-meta(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      Meta{} => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+let std-apply-macro-ast-lit(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      Lit{} => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+let std-apply-macro-ast-abs(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      Abs{} => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+let std-apply-macro-ast-type(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      AType{} => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+let std-apply-macro-ast-fragment(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      Fragment{} => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+let std-apply-macro-ast-seq(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      Seq{} => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+let std-apply-macro-ast-glb(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      Glb{} => (tctx, margs);
+      _ => (tctx, mk-eof());
+   }
+);
+
 let std-apply-macro-underscore(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
       Var{key:c"_"} => (tctx, margs);
@@ -9371,6 +9493,16 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
    else if mname==c"macro::variable" then (tctx, result) = std-apply-macro-variable(tctx, mname, margs)
    else if mname==c"macro::underscore" then (tctx, result) = std-apply-macro-underscore(tctx, mname, margs)
    else if mname==c"macro::nil" then (tctx, result) = std-apply-macro-nil(tctx, mname, margs)
+   else if mname==c"macro::ast::nil" then (tctx, result) = std-apply-macro-ast-nil(tctx, mname, margs)
+   else if mname==c"macro::ast::var" then (tctx, result) = std-apply-macro-ast-var(tctx, mname, margs)
+   else if mname==c"macro::ast::eof" then (tctx, result) = std-apply-macro-ast-eof(tctx, mname, margs)
+   else if mname==c"macro::ast::lit" then (tctx, result) = std-apply-macro-ast-lit(tctx, mname, margs)
+   else if mname==c"macro::ast::type" then (tctx, result) = std-apply-macro-ast-type(tctx, mname, margs)
+   else if mname==c"macro::ast::app" then (tctx, result) = std-apply-macro-ast-app(tctx, mname, margs)
+   else if mname==c"macro::ast::glb" then (tctx, result) = std-apply-macro-ast-glb(tctx, mname, margs)
+   else if mname==c"macro::ast::meta" then (tctx, result) = std-apply-macro-ast-meta(tctx, mname, margs)
+   else if mname==c"macro::ast::typedef" then (tctx, result) = std-apply-macro-ast-typedef(tctx, mname, margs)
+   else if mname==c"macro::ast::fragment" then (tctx, result) = std-apply-macro-ast-fragment(tctx, mname, margs)
    else if mname==c"macro::constant" then (tctx, result) = std-apply-macro-constant(tctx, mname, margs)
    else if mname==c"macro::tag" then (tctx, result) = std-apply-macro-tag(tctx, mname, margs)
    else {
@@ -9902,6 +10034,9 @@ import SRC/backend-fragment-set.lsts;
 import SRC/backend-fragment-get.lsts;
 import SRC/backend-bind-varargs.lsts;
 import SRC/backend-global-ctx.lsts;
+
+import SRC/unit-typecheck-core.lsts;
+import SRC/backend-render.lsts;
 
 # TODO: --tokenize is disabled because it has a hard dependency on lsts plugin
 #       to reenable, core should only reference placeholder methods that are overwritten or configured by the plugins
