@@ -2,3 +2,7 @@
 typed macro macro::backend::render(t: macro::constant): lazy = (
    t
 );
+
+typed macro macro::backend::render(t: macro::typedef): lazy = (
+   ()
+);
