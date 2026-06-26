@@ -1,0 +1,10 @@
+
+import SRC/unit-codegen-core.lsts;
+import PLUGINS/FRONTEND/LSTS/index.lsts;
+
+ast-parsed-program = mk-eof();
+frontend(c"lib/core/nocode.lsts");
+lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"$fragment { a: b, c: d }"));
+let ts = ast-parsed-program.unroll-seq;
+let tl = ts[ts.length-1];
+assert( tl == mk-fragment(mk-hashtable(type(CString), type(AST)).bind(mk-var(c"a"), mk-var(c"b")).bind(mk-var(c"c"), mk-var(c"d")), mk-location()); );

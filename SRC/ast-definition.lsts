@@ -33,7 +33,7 @@ type AST zero ASTEOF implies MustRetain, MustRelease
          | Lit { key: CString, token: Token }
          | Abs { lhs: OneOwnedData<AST>[], rhs: OneOwnedData<AST>[], tt: Type }
          | AType { tt: Type }
-         | Fragment { kvs: Hashtable<CString,AST> }
+         | Fragment { kvs: Hashtable<CString,AST>, location: SourceLocation }
          | Seq { seq: Vector<AST> }
          | Glb { key: Token , val: OneOwnedData<AST>[] }
          | Typedef { td: OneOwnedData<ASTTypedef>[] };

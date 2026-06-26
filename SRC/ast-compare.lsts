@@ -13,6 +13,7 @@ let cmp(lt: AST, rt: AST): Ord = (
       cmp(llhs,rlhs) && cmp(lrhs,rrhs) && cmp(ltt,rtt);
       Tuple{ first:Glb{lkey=key,lval=val}, second:Glb{rkey=key,rval=val} } => cmp(lkey,rkey) && cmp(lval,rval);
       Tuple{ first:Typedef{}, second:Typedef{} } => LessThan;
+      Tuple{ first:Fragment{kvs1=kvs}, second:Fragment{kvs2=kvs} } => cmp(kvs1, kvs2);
       Tuple{ first:Seq{}, second:Seq{} } => LessThan;
       _ => cmp(lt.discriminator-case-tag, rt.discriminator-case-tag);
    }

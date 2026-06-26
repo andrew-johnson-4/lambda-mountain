@@ -6,6 +6,7 @@ let .location(term: AST): SourceLocation = (
       App{ left=left, right=right } => left.location || right.location;
       Abs{ lhs=lhs, rhs=rhs } => lhs.location || rhs.location;
       Glb{ key=key, val=val } => key.location || val.location;
+      Fragment{ location=location } => location;
       Seq{ seq=seq } => (
          let loc = mk-location();
          for s in seq { loc = loc || s.location };

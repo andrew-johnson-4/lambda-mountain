@@ -10,6 +10,7 @@ let .with-location-preserve(term: AST, loc: SourceLocation): AST = (
          Seq(ret)
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => Abs(close(lhs.with-location-preserve(loc)),close(rhs.with-location-preserve(loc)),tt);
+      Fragment{kvs=kvs} => mk-fragment(kvs, loc);
       Glb{key3=key,val=val} => Glb(with-location(key3,loc),close(val.with-location-preserve(loc)));
       _ => term;
    }
