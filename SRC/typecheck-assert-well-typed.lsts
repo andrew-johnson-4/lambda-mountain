@@ -1,5 +1,6 @@
 
 let assert-well-typed(term: AST): Nil = (
+   print("Assert well typed \{term}\n");
    match term {
       Meta{} => ();
       Typedef{} => ();
