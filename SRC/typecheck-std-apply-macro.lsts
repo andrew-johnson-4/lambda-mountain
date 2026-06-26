@@ -214,6 +214,9 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
       mark-free-and-seen(result);
    };
 
+   print("Apply macro: \{mname} \{margs}\n");
+   print("Apply macro result: \{result}\n");
+
    (tctx, result)
 );
 

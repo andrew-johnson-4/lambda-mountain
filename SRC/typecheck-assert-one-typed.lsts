@@ -1,4 +1,5 @@
 
 let assert-one-typed(term: AST): Nil = (
+   print("One typed: \{term} : \{typeof-term(term)}\n");
    if not(non-zero(typeof-term(term))) then exit-error("Unable to infer type of expression \{term}", term); ()
 );
