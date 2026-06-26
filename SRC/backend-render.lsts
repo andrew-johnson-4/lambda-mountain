@@ -13,6 +13,8 @@ let render(t: AST): String = (
    match t {
       ASTNil{} => "";
       ASTEOF{} => "";
+      Lit{key1=key} => key1.into(type(String));
+      App{ left:Lit{key:c":"}, right:App{ left:Lit{key2=key}, right:AType{} } } => key2.into(type(String));
       _ => fail("render unknown term \{t}");
    }
 );

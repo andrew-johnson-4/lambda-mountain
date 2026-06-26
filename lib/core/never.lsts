@@ -1,0 +1,2 @@
+
+type opaque alias Never = C<"void">;
