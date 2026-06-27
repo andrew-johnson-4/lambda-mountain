@@ -1,0 +1,16 @@
+
+typed macro macro::backend::render(t: macro::constant): lazy = (
+   t
+);
+
+typed macro macro::backend::render(t: macro::ast::lit): lazy = (
+   t
+);
+
+typed macro macro::backend::render(t: macro::ast::typedef): lazy = (
+   ()
+);
+
+typed macro macro::backend::render(t: macro::ast::glb): lazy = (
+   ()
+);

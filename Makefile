@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm tests/c/offending-1.c
+	lm tests/promises/backend/parse-fragment.lsts
 	gcc tmp.c
 	./a.out
 

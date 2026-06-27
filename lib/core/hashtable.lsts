@@ -167,3 +167,7 @@ let .as-vector(table: Hashtable<k,v>): Vector<(k,v)> = (
    let v = mk-vector(type((k,v)));
    v
 );
+
+let cmp(h1: Hashtable<k,v>, h2: Hashtable<k,v>): Ord = (
+   cmp(h1.as-vector.sort, h2.as-vector.sort)
+);

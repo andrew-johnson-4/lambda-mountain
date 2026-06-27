@@ -1352,6 +1352,22 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
          Var( amp.key, amp ),
          inner-term
       );
+   } else if lsts-parse-head(tokens)==c"$fragment" {
+      let loc = head(tokens).location; tokens = tail(tokens);
+      let kvs = mk-hashtable(type(CString), type(AST));
+      lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+      while non-zero(tokens) and lsts-parse-head(tokens) != c"}" {
+         (let k, tokens) = lsts-parse-identifier(tokens);
+         lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+         (let v, tokens) = lsts-parse-assign(tokens);
+         kvs = kvs.bind(k, v);
+         if non-zero(tokens) and lsts-parse-head(tokens) != c"}"
+         then {
+            lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+         }
+      };
+      lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+      term = mk-fragment(kvs, loc);
    } else if lsts-parse-head(tokens)==c"&" {
       let amp = head(tokens);
       tokens = tail(tokens);

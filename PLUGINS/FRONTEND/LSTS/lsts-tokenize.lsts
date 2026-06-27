@@ -9,9 +9,17 @@ let lsts-is-reserved-word(text: CString): Bool = (
    text == c"while" or
    text == c"for" or
    text == c"type" or
-   text == c"interface" or
    text == c"raw" or
-   text == c"match"
+   text == c"raw-type" or
+   text == c"match" or
+   text == c"interface" or
+   text == c"implies" or
+   text == c"suffix" or
+   text == c"alias" or
+   text == c"opaque" or
+   text == c"$fragment" or
+   text == c"$fields-of" or
+   text == c"$cases-of"
 );
 
 let lsts-is-ident-head(text: CString): Bool = (

@@ -21,6 +21,11 @@ let mk-glb(k: Token, v: AST): AST = (
    Glb( k, close(v) )
 );
 
+let mk-fragment(kvs: Hashtable<CString,AST>, loc: SourceLocation): AST = (
+   ast-count = ast-count + 1;
+   Fragment( kvs, loc )
+);
+
 let mk-seq(): AST = (
    ast-count = ast-count + 1;
    Seq( mk-vector(type(AST)) )

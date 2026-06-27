@@ -1,0 +1,2 @@
+
+type opaque alias Nil = C<"void">;

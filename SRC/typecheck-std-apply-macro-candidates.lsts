@@ -89,6 +89,127 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                _ => (tctx, no);
             };
          );
+         TVar{name:c"macro::ast::nil"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname5=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-nil(tctx, c"macro::ast::nil", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname5, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
+         TVar{name:c"macro::ast::eof"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname6=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-eof(tctx, c"macro::ast::eof", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname6, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
+         TVar{name:c"macro::ast::var"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname7=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-var(tctx, c"macro::ast::var", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname7, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
+         TVar{name:c"macro::ast::lit"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname8=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-lit(tctx, c"macro::ast::lit", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname8, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
+         TVar{name:c"macro::ast::meta"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname9=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-meta(tctx, c"macro::ast::meta", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname9, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
+         TVar{name:c"macro::ast::app"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname10=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-app(tctx, c"macro::ast::app", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname10, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
+         TVar{name:c"macro::ast::fragment"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname11=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-fragment(tctx, c"macro::ast::fragment", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname11, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
+         TVar{name:c"macro::ast::typedef"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname12=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-typedef(tctx, c"macro::ast::typedef", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname12, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
+         TVar{name:c"macro::ast::type"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname13=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-type(tctx, c"macro::ast::type", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname13, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
+         TVar{name:c"macro::ast::glb"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname14=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-glb(tctx, c"macro::ast::glb", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname14, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
+         TVar{name:c"macro::ast::seq"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname15=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-seq(tctx, c"macro::ast::seq", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname15, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
          _ => (
             match mcandidate {
                App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt:TVar{name:c"macro::literal",parameters:[TGround{literal-tag=tag,parameters=parameters}.. etc-parameters]}}}} => (
