@@ -28,8 +28,8 @@ let render-global-declaration(t: AST): String = (
    match t {
       Seq{seq=seq} => (
          let result = "";
-         for t in seq {
-            result = result + render-global-declaration(t);
+         for s in seq {
+            result = result + render-global-declaration(s);
          };
          result;
       );
@@ -89,10 +89,10 @@ let render(t: AST): String = (
    match t {
       Seq{seq=seq} => (
          let result = "";
-         for t in ast-parsed-program.unroll-seq {
-            t = mk-app( mk-var(c"macro::backend::render"), t );
-            (global-flow-tctx, t) = std-infer-expr(global-flow-tctx, t, false, Used, ta);
-            result = result + render(t);
+         for s in seq {
+            s = mk-app( mk-var(c"macro::backend::render"), s );
+            (global-flow-tctx, s) = std-infer-expr(global-flow-tctx, s, false, Used, ta);
+            result = result + render(s);
          };
          result;
       );
