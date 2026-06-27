@@ -45,7 +45,7 @@ let render-global-declaration(t: AST): String = (
 
 let render-declaration(k: CString, kt: Type, t: AST): String = (
    (let prefix, let suffix) = render-declaration(kt);
-   if t.is-nil
+   if t.is-nil-constant
    then "\{prefix} \{k}\{suffix};"
    else "\{prefix} \{k}\{suffix} = \{render(t)};"
 );
@@ -99,7 +99,7 @@ let render(t: AST): String = (
       ASTNil{} => "";
       ASTEOF{} => "";
       Lit{key1=key} => key1.into(type(String));
-      App{ left:Lit{key:c":"}, right:App{ left:Lit{key2=key}, right:AType{} } } => key2.into(type(String));
+      App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => inner.into(type(String));
       AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
       AType{tt=tt} => render(tt);
       _ => fail("render unknown term \{t}");

@@ -6,4 +6,4 @@ ast-parsed-program = mk-eof();
 frontend(c"lib/core/nocode.lsts");
 lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"l\"A\";"));
 typecheck();
-assert( render() == "A" );
+assert( render(ast-parsed-program) == "A" );

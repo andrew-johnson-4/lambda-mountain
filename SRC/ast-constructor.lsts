@@ -281,3 +281,11 @@ let .is-nil(t: AST): Bool = (
       _ => false;
    }
 );
+
+let .is-nil-constant(t: AST): Bool = (
+   match t {
+      ASTNil{} => true;
+      App{left:Lit{key:c":"}, right:App{ left:ASTNil{}, right:AType{} }} => true;
+      _ => false;
+   }
+);
