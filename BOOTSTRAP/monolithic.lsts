@@ -143,7 +143,15 @@ typed macro macro::backend::render(t: macro::constant): lazy = (
    t
 );
 
-typed macro macro::backend::render(t: macro::typedef): lazy = (
+typed macro macro::backend::render(t: macro::ast::lit): lazy = (
+   t
+);
+
+typed macro macro::backend::render(t: macro::ast::typedef): lazy = (
+   ()
+);
+
+typed macro macro::backend::render(t: macro::ast::glb): lazy = (
    ()
 );
 
@@ -302,6 +310,8 @@ let :FFI mktemp(template: U8[]): U8[] = ();
 let :FFI write(ft: USize, buf: C<"void">[], count: USize): USize;
 
 import lib/core/l.lsts;
+import lib/core/nil.lsts;
+import lib/core/never.lsts;
 import lib/core/phi.lsts;
 import lib/core/platform-macros.lsts;
 import lib/core/common-macros.lsts;
@@ -1572,6 +1582,10 @@ let .as-vector(table: Hashtable<k,v>): Vector<(k,v)> = (
    v
 );
 
+let cmp(h1: Hashtable<k,v>, h2: Hashtable<k,v>): Ord = (
+   cmp(h1.as-vector.sort, h2.as-vector.sort)
+);
+
 
 let :FFI mktemp(template: U8[]): U8[] = ();
 let :FFI write(ft: USize, buf: C<"void">[], count: USize): USize = ();
@@ -1636,8 +1650,6 @@ let non-zero(x: I64): Bool = x != 0;
 type alias I8 suffix _i8 = I64;
 
 type opaque alias "IO::File" = C<"FILE">[];
-type opaque alias Never = C<"void">;
-type opaque alias Nil = C<"void">;
 
 let file-exists(fp: CString): Bool = (
    let f = fopen(fp as C<"char">[], c"r" as C<"char">[]);
@@ -1662,7 +1674,7 @@ let :Blob $":frame"(x0: Any): L;
 
 let :Blob $":function-id"(x: ImplicitContext): L;
 
-let :Blob mangle(t: L): L = ();
+let :Blob mangle(t: L): L;
 let :Blob mangle-pre(t: Type<Any>): L;
 let :Blob mangle-post(t: Type<Any>): L;
 
@@ -1863,7 +1875,13 @@ let .expect(l: Maybe<x>, msg: String): x = (
    }
 );
 
+type opaque alias Never = C<"void">;
+
+type opaque alias Nil = C<"void">;
+
 import lib/core/l.lsts;
+import lib/core/nil.lsts;
+import lib/core/never.lsts;
 import lib/core/backend-macros.lsts;
 
 type OneOwnedData<t> = {
@@ -3839,6 +3857,7 @@ let cmp(lt: AST, rt: AST): Ord = (
       cmp(llhs,rlhs) && cmp(lrhs,rrhs) && cmp(ltt,rtt);
       Tuple{ first:Glb{lkey=key,lval=val}, second:Glb{rkey=key,rval=val} } => cmp(lkey,rkey) && cmp(lval,rval);
       Tuple{ first:Typedef{}, second:Typedef{} } => LessThan;
+      Tuple{ first:Fragment{kvs1=kvs}, second:Fragment{kvs2=kvs} } => cmp(kvs1, kvs2);
       Tuple{ first:Seq{}, second:Seq{} } => LessThan;
       _ => cmp(lt.discriminator-case-tag, rt.discriminator-case-tag);
    }
@@ -3865,6 +3884,11 @@ let mk-cons(f: AST, a: AST): AST = (
 let mk-glb(k: Token, v: AST): AST = (
    ast-count = ast-count + 1;
    Glb( k, close(v) )
+);
+
+let mk-fragment(kvs: Hashtable<CString,AST>, loc: SourceLocation): AST = (
+   ast-count = ast-count + 1;
+   Fragment( kvs, loc )
 );
 
 let mk-seq(): AST = (
@@ -4157,7 +4181,7 @@ type AST zero ASTEOF implies MustRetain, MustRelease
          | Lit { key: CString, token: Token }
          | Abs { lhs: OneOwnedData<AST>[], rhs: OneOwnedData<AST>[], tt: Type }
          | AType { tt: Type }
-         | Fragment { kvs: Hashtable<CString,AST> }
+         | Fragment { kvs: Hashtable<CString,AST>, location: SourceLocation }
          | Seq { seq: Vector<AST> }
          | Glb { key: Token , val: OneOwnedData<AST>[] }
          | Typedef { td: OneOwnedData<ASTTypedef>[] };
@@ -4256,6 +4280,7 @@ let .location(term: AST): SourceLocation = (
       App{ left=left, right=right } => left.location || right.location;
       Abs{ lhs=lhs, rhs=rhs } => lhs.location || rhs.location;
       Glb{ key=key, val=val } => key.location || val.location;
+      Fragment{ location=location } => location;
       Seq{ seq=seq } => (
          let loc = mk-location();
          for s in seq { loc = loc || s.location };
@@ -4500,6 +4525,7 @@ let .with-location-preserve(term: AST, loc: SourceLocation): AST = (
          Seq(ret)
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => Abs(close(lhs.with-location-preserve(loc)),close(rhs.with-location-preserve(loc)),tt);
+      Fragment{kvs=kvs} => mk-fragment(kvs, loc);
       Glb{key3=key,val=val} => Glb(with-location(key3,loc),close(val.with-location-preserve(loc)));
       _ => term;
    }
@@ -4516,6 +4542,7 @@ let .with-location(term: AST, loc: SourceLocation): AST = (
          Seq(ret)
       );
       Abs{lhs=lhs,rhs=rhs,tt=tt} => Abs(close(lhs.with-location(loc)),close(rhs.with-location(loc)),tt);
+      Fragment{kvs=kvs} => mk-fragment(kvs, loc);
       Glb{key3=key,val=val} => Glb(with-location(key3,loc),close(val.with-location(loc)));
       _ => term;
    }
@@ -4670,6 +4697,8 @@ let render(t: AST): String = (
    match t {
       ASTNil{} => "";
       ASTEOF{} => "";
+      Lit{key1=key} => key1.into(type(String));
+      App{ left:Lit{key:c":"}, right:App{ left:Lit{key2=key}, right:AType{} } } => key2.into(type(String));
       _ => fail("render unknown term \{t}");
    }
 );
@@ -8329,6 +8358,8 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                term = mk-abs(lhs,rhs,misc-tt);
             };
             if not(misc-tt.is-t(interned-tag-blob,0)) and not(misc-tt.is-t(interned-tag-cffi,0)) then tctx = tctx.ascript(inner-rhs, return-type);
+         } else {
+            tctx = tctx.ascript(inner-rhs, type-nil);
          };
          tctx = tctx.ascript(rhs, return-type);
          let domain-tt = typeof-lhs(lhs);
@@ -15954,6 +15985,22 @@ let lsts-parse-atom-without-tail(tokens: List<Token>): Tuple<AST,List<Token>> = 
          Var( amp.key, amp ),
          inner-term
       );
+   } else if lsts-parse-head(tokens)==c"$fragment" {
+      let loc = head(tokens).location; tokens = tail(tokens);
+      let kvs = mk-hashtable(type(CString), type(AST));
+      lsts-parse-expect(c"{", tokens); tokens = tail(tokens);
+      while non-zero(tokens) and lsts-parse-head(tokens) != c"}" {
+         (let k, tokens) = lsts-parse-identifier(tokens);
+         lsts-parse-expect(c":", tokens); tokens = tail(tokens);
+         (let v, tokens) = lsts-parse-assign(tokens);
+         kvs = kvs.bind(k, v);
+         if non-zero(tokens) and lsts-parse-head(tokens) != c"}"
+         then {
+            lsts-parse-expect(c",", tokens); tokens = tail(tokens);
+         }
+      };
+      lsts-parse-expect(c"}", tokens); tokens = tail(tokens);
+      term = mk-fragment(kvs, loc);
    } else if lsts-parse-head(tokens)==c"&" {
       let amp = head(tokens);
       tokens = tail(tokens);
@@ -16244,9 +16291,17 @@ let lsts-is-reserved-word(text: CString): Bool = (
    text == c"while" or
    text == c"for" or
    text == c"type" or
-   text == c"interface" or
    text == c"raw" or
-   text == c"match"
+   text == c"raw-type" or
+   text == c"match" or
+   text == c"interface" or
+   text == c"implies" or
+   text == c"suffix" or
+   text == c"alias" or
+   text == c"opaque" or
+   text == c"$fragment" or
+   text == c"$fields-of" or
+   text == c"$cases-of"
 );
 
 let lsts-is-ident-head(text: CString): Bool = (
