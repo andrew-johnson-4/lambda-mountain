@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-bootstrap
-	lm tests/promises/backend/render-type-mangled.lsts
+	lm tests/promises/backend/render-global-variable.lsts
 	gcc tmp.c
 	./a.out
 

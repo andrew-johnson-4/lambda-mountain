@@ -1,16 +1,101 @@
 
 let render(): String = (
-   let result = "";
-   for t in ast-parsed-program.unroll-seq {
-      t = mk-app( mk-var(c"macro::backend::render"), t );
-      (global-flow-tctx, t) = std-infer-expr(global-flow-tctx, t, false, Used, ta);
-      result = result + render(t);
-   };
-   result;
+   (ast-parsed-program, let includes) = render-includes(ast-parsed-program);
+   includes +
+   render-forward-type-declaration(ast-parsed-program) +
+   render-direct-type-declaration(ast-parsed-program) +
+   render-forward-function-declaration(ast-parsed-program) +
+   render-direct-function-declaration(ast-parsed-program) +
+   render(ast-parsed-program)
+);
+
+let render-includes(t: AST): (AST, String) = (
+   (t, "")
+);
+let render-forward-type-declaration(t: AST): String = (
+   ""
+);
+let render-direct-type-declaration(t: AST): String = (
+   ""
+);
+let render-forward-function-declaration(t: AST): String = (
+   ""
+);
+let render-direct-function-declaration(t: AST): String = (
+   ""
+);
+let render-global-declaration(t: AST): String = (
+   match t {
+      Seq{seq=seq} => (
+         let result = "";
+         for t in seq {
+            result = result + render-global-declaration(t);
+         };
+         result;
+      );
+      Glb{key=key, val=val} => (
+         match val {
+            Abs{} => "";
+            _ => render-declaration(key.key, typeof-term(val), val);
+         }
+      );
+      _ => "";
+   }
+);
+
+let render-declaration(k: CString, kt: Type, t: AST): String = (
+   (let prefix, let suffix) = render-declaration(kt);
+   if t.is-nil
+   then "\{prefix} \{k}\{suffix};"
+   else "\{prefix} \{k}\{suffix} = \{render(t)};"
+);
+
+let render-declaration(tt: Type): (String, String) = (
+   let is-flexible-array-member = tt.is-t(interned-tag-flexible-array-member,0);
+   tt = tt.normalize.rewrite-opaque-type-alias.without-any-phi;
+   render-declaration(tt, is-flexible-array-member);
+);
+
+let render-declaration(tt: Type, is-flexible-array-member: Bool): (String, String) = (
+   match tt {
+      TGround{tag:interned-tag-array, parameters:[ TGround{tag:interned-tag-CONST}.. array-base.. ]} => (
+         (let prefix, let suffix) = render-declaration(array-base, false);
+         ( prefix, "\{suffix}[]" )
+      );
+      TGround{tag:interned-tag-array, parameters:[ TGround{tag:interned-tag-c,parameters:[TGround{width1=tag}..]}.. array-base.. ]} => (
+         (let prefix, let suffix) = render-declaration(array-base, false);
+         ( prefix, "\{suffix}[\{untern(width1)}]" )
+      );
+      TGround{tag:interned-tag-array, parameters:[ TGround{width2=tag}.. array-base.. ]} => (
+         (let prefix, let suffix) = render-declaration(array-base, false);
+         ( prefix, "\{suffix}[\{untern(width2)}]" )
+      );
+      TGround{tag:interned-tag-array, parameters:[ TAny{}.. array-base.. ]} => (
+         if is-flexible-array-member {
+            (let prefix, let suffix) = render-declaration(array-base, false);
+            ( prefix, "\{suffix}[]" )
+         } else {
+            (render(array-base), "")
+         }
+      );
+      TGround{tag:interned-tag-arrow, parameters:[ rng.. dom.. ]} => (
+         ("(*\{render(rng)})(", "\{render(dom)})")
+      );
+      _ => (render(tt), "");
+   }
 );
 
 let render(t: AST): String = (
    match t {
+      Seq{seq=seq} => (
+         let result = "";
+         for t in ast-parsed-program.unroll-seq {
+            t = mk-app( mk-var(c"macro::backend::render"), t );
+            (global-flow-tctx, t) = std-infer-expr(global-flow-tctx, t, false, Used, ta);
+            result = result + render(t);
+         };
+         result;
+      );
       ASTNil{} => "";
       ASTEOF{} => "";
       Lit{key1=key} => key1.into(type(String));
