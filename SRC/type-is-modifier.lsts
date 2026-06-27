@@ -1,0 +1,6 @@
+
+let .is-modifier(tt: Type): Bool = (
+   match tt {
+      _ => false;
+   }
+);

@@ -179,3 +179,9 @@ let .remove-prefix(base: String, pfx: String): String? = (
 
 let tail(x: String): String = x[ 1_i64 : x.length as I64 ];
 let head(x: String): U8 = x[0];
+
+let .encode-ascii(x: U8, tt: Type<String>): String = (
+   let buf = mk-vector(type(U8));
+   buf = buf.push(x);
+   buf.buffer-into-string;
+);
