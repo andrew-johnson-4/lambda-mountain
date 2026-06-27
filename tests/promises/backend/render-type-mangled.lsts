@@ -1,0 +1,10 @@
+
+import SRC/unit-codegen-core.lsts;
+import PLUGINS/FRONTEND/LSTS/index.lsts;
+
+ast-parsed-program = mk-eof();
+frontend(c"lib/core/nocode.lsts");
+lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"type A = {};"));
+lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"(type(A));"));
+typecheck();
+assert( render() == "LM_A" );
