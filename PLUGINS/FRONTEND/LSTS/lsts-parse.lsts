@@ -206,7 +206,14 @@ let lsts-parse(tokens: List<Token>): Nil = (
 let lsts-parse-top-level(tokens: List<Token>): Tuple<AST,List<Token>> = (
    match tokens {
       [ Token{key:c"let"}.. _] => lsts-parse-let(tokens);
-      [ Token{key:c"type"}.. _] => lsts-parse-typedef(tokens);
+      [ Token{key:c"type"}.. _] => (
+         if lsts-parse-head(tail(tokens)) == c"("
+         then {
+            (let t, tokens) = lsts-parse-assign(tokens);
+            lsts-parse-expect(c";",tokens); tokens = tail(tokens);
+            (t, tokens);
+         } else lsts-parse-typedef(tokens);
+      );
       [ Token{key:c"typed"}.. Token{key:c"macro"}.. _] => lsts-parse-typed-macro(tokens);
       [ Token{key:c"interface"}.. _] => (
          tokens = lsts-parse-interface(tokens);

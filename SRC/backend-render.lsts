@@ -1,20 +1,211 @@
 
 let render(): String = (
-   let result = "";
-   for t in ast-parsed-program.unroll-seq {
-      t = mk-app( mk-var(c"macro::backend::render"), t );
-      (global-flow-tctx, t) = std-infer-expr(global-flow-tctx, t, false, Used, ta);
-      result = result + render(t);
-   };
-   result;
+   (ast-parsed-program, let includes) = render-includes(ast-parsed-program);
+   includes +
+   render-forward-type-declaration(ast-parsed-program) +
+   render-direct-type-declaration(ast-parsed-program) +
+   render-forward-function-declaration(ast-parsed-program) +
+   render-direct-function-declaration(ast-parsed-program) +
+   render(ast-parsed-program)
+);
+
+let render-includes(t: AST): (AST, String) = (
+   (t, "")
+);
+let render-forward-type-declaration(t: AST): String = (
+   ""
+);
+let render-direct-type-declaration(t: AST): String = (
+   ""
+);
+let render-forward-function-declaration(t: AST): String = (
+   ""
+);
+let render-direct-function-declaration(t: AST): String = (
+   ""
+);
+let render-global-declaration(t: AST): String = (
+   match t {
+      Seq{seq=seq} => (
+         let result = "";
+         for s in seq {
+            result = result + render-global-declaration(s);
+         };
+         result;
+      );
+      Glb{key=key, val=val} => (
+         match val {
+            Abs{} => "";
+            _ => render-declaration(key.key, typeof-term(val), val);
+         }
+      );
+      _ => "";
+   }
+);
+
+let render-declaration(k: CString, kt: Type, t: AST): String = (
+   (let prefix, let suffix) = render-declaration(kt);
+   if t.is-nil-constant
+   then "\{prefix} \{k}\{suffix};"
+   else "\{prefix} \{k}\{suffix} = \{render(t)};"
+);
+
+let render-declaration(tt: Type): (String, String) = (
+   let is-flexible-array-member = tt.is-t(interned-tag-flexible-array-member,0);
+   tt = tt.normalize.rewrite-opaque-type-alias.without-any-phi;
+   render-declaration(tt, is-flexible-array-member);
+);
+
+let render-declaration(tt: Type, is-flexible-array-member: Bool): (String, String) = (
+   match tt {
+      TGround{tag:interned-tag-array, parameters:[ TGround{tag:interned-tag-CONST}.. array-base.. ]} => (
+         (let prefix, let suffix) = render-declaration(array-base, false);
+         ( prefix, "\{suffix}[]" )
+      );
+      TGround{tag:interned-tag-array, parameters:[ TGround{tag:interned-tag-c,parameters:[TGround{width1=tag}..]}.. array-base.. ]} => (
+         (let prefix, let suffix) = render-declaration(array-base, false);
+         ( prefix, "\{suffix}[\{untern(width1)}]" )
+      );
+      TGround{tag:interned-tag-array, parameters:[ TGround{width2=tag}.. array-base.. ]} => (
+         (let prefix, let suffix) = render-declaration(array-base, false);
+         ( prefix, "\{suffix}[\{untern(width2)}]" )
+      );
+      TGround{tag:interned-tag-array, parameters:[ TAny{}.. array-base.. ]} => (
+         if is-flexible-array-member {
+            (let prefix, let suffix) = render-declaration(array-base, false);
+            ( prefix, "\{suffix}[]" )
+         } else {
+            (render(array-base), "")
+         }
+      );
+      TGround{tag:interned-tag-arrow, parameters:[ rng.. dom.. ]} => (
+         ("(*\{render(rng)})(", "\{render(dom)})")
+      );
+      _ => (render(tt), "");
+   }
 );
 
 let render(t: AST): String = (
    match t {
+      Seq{seq=seq} => (
+         let result = "";
+         for s in seq {
+            s = mk-app( mk-var(c"macro::backend::render"), s );
+            (global-flow-tctx, s) = std-infer-expr(global-flow-tctx, s, false, Used, ta);
+            result = result + render(s);
+         };
+         result;
+      );
       ASTNil{} => "";
       ASTEOF{} => "";
       Lit{key1=key} => key1.into(type(String));
-      App{ left:Lit{key:c":"}, right:App{ left:Lit{key2=key}, right:AType{} } } => key2.into(type(String));
+      App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => inner.into(type(String));
+      AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
+      AType{tt=tt} => render(tt);
       _ => fail("render unknown term \{t}");
+   }
+);
+
+let render(tt: Type): String = (
+   match tt {
+      TAnd{ conjugate=conjugate } => (
+         let modifiers = "";
+         let datatype = "";
+         for c in conjugate {
+            if c.is-modifier
+            then {
+               if non-zero(modifiers)
+               then modifiers = modifiers + " " + render(c);
+               else modifiers = render(c);
+            } else datatype = render(c);
+         };
+         if non-zero(modifiers) and non-zero(datatype)
+         then modifiers + " " + datatype;
+         else modifiers + datatype;
+      );
+      TGround{tag:interned-tag-array, parameters:[_.. TAny{}..]} => "void*";
+      TGround{tag:interned-tag-array, parameters:[_.. array-base..]} => (
+         if array-base.is-arrow
+         then render(array-base);
+         else render(array-base) + "*";
+      );
+      TGround{tag:interned-tag-arrow} => fail("TODO: render type \{tt}\n");
+      TGround{tag:interned-tag-c, parameters:[TGround{tag1=tag}..]} => untern(tag1).into(type(String));
+      TGround{tag:interned-tag-sized, parameters:[_..]} => "";
+      TGround{tag2=tag, parameters=parameters} => (
+         if not tt.is-datatype then "" else {
+            let r = "LM_" + render-mangle(untern(tag2));
+            if parameters.length > 0 then r = r + render-mangle(c"<");
+            let p0 = true;
+            for p in parameters {
+               if not p0 then r = r + render-mangle(c",");
+               r = r + render-mangle(p);
+               p0 = false;
+            };
+            if parameters.length > 0 then r = r + render-mangle(c">");
+            r;
+         }
+      );
+      _ => "";
+   }
+);
+
+let render-mangle(k: CString): String = (
+   let cs = "";
+   while head(k) != 0 { match head(k) {
+      33 => cs = cs + "_EX_"; # !
+      36 => cs = cs + "_DL_"; # $
+      37 => cs = cs + "_MD_"; # %
+      38 => cs = cs + "_AM_"; # &
+      39 => cs = cs + "_SQ_"; # '
+      42 => cs = cs + "_ML_"; # *
+      43 => cs = cs + "_AD_"; # +
+      44 => cs = cs + "_CM_"; # ,
+      45 => cs = cs + "_SB_"; # -
+      46 => cs = cs + "_DT_"; # .
+      47 => cs = cs + "_DV_"; # /
+      58 => cs = cs + "_CL_"; # :
+      59 => cs = cs + "_SC_"; # ;
+      60 => cs = cs + "_LT_"; # <
+      61 => cs = cs + "_EQ_"; # =
+      62 => cs = cs + "_GT_"; # >
+      63 => cs = cs + "_QM_"; # ?
+      64 => cs = cs + "_AT_"; # @
+      91 => cs = cs + "_LB_"; # [
+      93 => cs = cs + "_RB_"; # ]
+      94 => cs = cs + "_HT_"; # ^
+      95 => cs = cs + "_US_"; # _
+      96 => cs = cs + "_TK_"; # `
+      124 => cs = cs + "_BR_"; # |
+      126 => cs = cs + "_TL_"; # ~
+      c => cs = c.encode-ascii(type(String));
+   }; k = tail(k); };
+   cs
+);
+
+let render-mangle(tt: Type): String = (
+   match tt {
+      TAnd{ conjugate=conjugate } => (
+         let datatype = "";
+         for c in conjugate {
+            datatype = render(c);
+         };
+         datatype;
+      );
+      TGround{tag2=tag, parameters=parameters} => (
+         if not tt.is-datatype then "" else {
+            let r = render-mangle(untern(tag2));
+            if parameters.length > 0 then r = r + render-mangle(c"<");
+            let p0 = true;
+            for p in parameters {
+               if not p0 then r = r + render-mangle(c",");
+               r = r + render-mangle(p);
+               p0 = false;
+            };
+            if parameters.length > 0 then r = r + render-mangle(c">");
+            r;
+         }
+      );
+      _ => "";
    }
 );
