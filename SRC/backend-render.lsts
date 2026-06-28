@@ -92,6 +92,7 @@ let render(t: AST): String = (
          for s in seq {
             s = mk-app( mk-var(c"macro::backend::render"), s );
             (global-flow-tctx, s) = std-infer-expr(global-flow-tctx, s, false, Used, ta);
+            print("Render \{s} = \{render(s)}\n");
             result = result + render(s);
          };
          result;
