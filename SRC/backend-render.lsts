@@ -96,12 +96,19 @@ let render(t: AST): String = (
          };
          result;
       );
+      App{asc=left:Var{key:c"as"}, right:App{it=left,ot=right:AType{tt=tt}}} => (
+         "((\{render(tt)})(\{render(it)}))"
+      );
+      App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
+         "((\{cond})?(\{tterm}):(\{fterm}))"
+      );
       ASTNil{} => "";
       ASTEOF{} => "";
       Lit{key1=key} => key1.into(type(String));
       App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => inner.into(type(String));
       AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
       AType{tt=tt} => render(tt);
+      Glb{} => "";
       _ => fail("render unknown term \{t}");
    }
 );

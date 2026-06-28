@@ -100,6 +100,28 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                _ => (tctx, no);
             };
          );
+         TVar{name:c"macro::ast::as"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname21=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-as(tctx, c"macro::ast::as", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname21, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
+         TVar{name:c"macro::ast::if"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname22=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-if(tctx, c"macro::ast::if", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname22, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
          TVar{name:c"macro::ast::eof"} => (
             match mcandidate {
                App{left:Lit{key:c":"}, right:App{left:Var{vname6=key}, right:AType{tt=tt}}} => (

@@ -20,6 +20,8 @@ index-macro-table = index-macro-table.bind(c"macro::ast::type", [] : List<(Type,
 index-macro-table = index-macro-table.bind(c"macro::ast::fragment", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::ast::seq", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::ast::glb", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::ast::as", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::ast::if", [] : List<(Type,Type,AST)>);
 
 # Meta variables can be used to match syntax patterns
 let index-macro-meta = {} : Hashtable<CString,List<(Type,Type,AST)>>;
@@ -28,6 +30,7 @@ index-macro-meta = index-macro-meta.bind(c"macro::variable", [] : List<(Type,Typ
 index-macro-meta = index-macro-meta.bind(c"macro::underscore", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::nil", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::constant", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::tag", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::ast::typedef", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::ast::nil", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::ast::var", [] : List<(Type,Type,AST)>);
@@ -39,7 +42,8 @@ index-macro-meta = index-macro-meta.bind(c"macro::ast::type", [] : List<(Type,Ty
 index-macro-meta = index-macro-meta.bind(c"macro::ast::fragment", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::ast::seq", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::ast::glb", [] : List<(Type,Type,AST)>);
-index-macro-meta = index-macro-meta.bind(c"macro::tag", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::ast::as", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::ast::if", [] : List<(Type,Type,AST)>);
 
 let bind-new-macro(mname: CString, mterm: AST): Nil = (
    let row = index-macro-table.lookup(mname, [] : List<(Type,Type,AST)>);
