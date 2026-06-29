@@ -7,10 +7,11 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recursion is used fairly heavily
 # recommendation: ulimit -s unlimited
 
-dev: install-production
+dev: install-bootstrap
 	lm tests/promises/backend/render-if.lsts
 	gcc tmp.c
 	./a.out
+	echo $?
 
 build: compile-production
 	time env $(LSTSFLAGS) ./production -o deploy1.c SRC/index.lsts

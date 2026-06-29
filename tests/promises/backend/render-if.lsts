@@ -6,5 +6,4 @@ ast-parsed-program = mk-eof();
 frontend(c"lib/core/nocode.lsts");
 lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"if l\"A\" then l\"B\" else l\"C\";"));
 typecheck();
-print(render(ast-parsed-program));
 assert( render(ast-parsed-program) == "((A)?(B):(C))" );
