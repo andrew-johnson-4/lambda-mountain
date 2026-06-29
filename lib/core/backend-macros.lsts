@@ -26,3 +26,7 @@ typed macro macro::backend::render(t tt: macro::ast::as): lazy = (
 typed macro macro::backend::render(c t f: macro::ast::if): lazy = (
    if c then t else f
 );
+
+typed macro macro::backend::render(lhs rhs: macro::ast::let): lazy = (
+   (fn (lhs) = ())(rhs)
+);

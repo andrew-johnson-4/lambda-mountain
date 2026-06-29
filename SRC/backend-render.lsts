@@ -100,6 +100,7 @@ let render(t: AST): String = (
          "((\{render(tt)})(\{render(it)}))"
       );
       App{ left:Var{key:c"scope"}, st=right } => render(st);
+      App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => render-declaration(lname, typeof-term(rhs), rhs);
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
          "((\{render(cond)})?(\{render(tterm)}):(\{render(fterm)}))"
       );

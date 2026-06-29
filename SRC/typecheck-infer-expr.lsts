@@ -158,7 +158,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                tctx = tctx.ascript(term, typeof-term(t));
             };
             let direct-tctx = tctx.get-or(mk-tctx());
-            if not(direct-tctx.is-blob or is-nullary) {
+            if not(direct-tctx.is-blob or typeof-term(t).is-t(interned-tag-l,0) or is-nullary) {
                # TODO: remove the special exception for "Arrows" here, which is a workaround for raw constructors
                # frontend is producing ((None : TContext?)()) instead of (None() : TContext?)
                # the return hint stuff is working, so all the hard work is done. I think only the frontend needs to change
