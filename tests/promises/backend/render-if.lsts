@@ -1,0 +1,9 @@
+
+import SRC/unit-codegen-core.lsts;
+import PLUGINS/FRONTEND/LSTS/index.lsts;
+
+ast-parsed-program = mk-eof();
+frontend(c"lib/core/nocode.lsts");
+lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"if l\"A\" then l\"B\" else l\"C\";"));
+typecheck();
+assert( render(ast-parsed-program) == "((A)?(B):(C))" );

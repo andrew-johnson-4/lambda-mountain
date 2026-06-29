@@ -252,9 +252,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                then { cond = new-cond; t = new-t; f = new-f; term = mk-app(mk-app(mk-app(ifv,new-cond),new-t),new-f) };
                tctx = tctx.with-pctx( phi-merge(tctx,tctx-t.get-or(mk-tctx()).pctx,tctx-f.get-or(mk-tctx()).pctx,term) );
             };
-            if not(typeof-term(cond).is-t(interned-tag-bool,0) or typeof-term(cond).is-t(interned-tag-u64,0)) {
-               tctx.apply-callable(c"into-branch-conditional", typeof-term(cond), cond);
-            };
             let lub = if typeof-term(f).is-t(interned-tag-never,0) then typeof-term(t)
             else if typeof-term(t).is-t(interned-tag-never,0) then typeof-term(f)
             else if typeof-term(f).is-t(interned-tag-nil,0) or typeof-term(t).is-t(interned-tag-nil,0) then type-nil
