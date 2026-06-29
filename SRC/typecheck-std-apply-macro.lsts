@@ -27,6 +27,22 @@ let std-apply-macro-variable(tctx: Maybe<TypeContext>, mname: CString, margs: AS
    }
 );
 
+let std-apply-macro-ast-as(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      App{ left:Var{key:c"as"}, right:App{ inner=left, outer=right:AType{tt=tt} } } => (
+         (tctx, mk-cons(inner, outer))
+      );
+      _ => (tctx, mk-eof());
+   }
+);
+let std-apply-macro-ast-if(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, t=right }, f=right} => (
+         (tctx, mk-cons(mk-cons(cond, t), f))
+      );
+      _ => (tctx, mk-eof());
+   }
+);
 let std-apply-macro-ast-var(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
       Var{} => (tctx, margs);
@@ -151,6 +167,8 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
    else if mname==c"macro::variable" then (tctx, result) = std-apply-macro-variable(tctx, mname, margs)
    else if mname==c"macro::underscore" then (tctx, result) = std-apply-macro-underscore(tctx, mname, margs)
    else if mname==c"macro::nil" then (tctx, result) = std-apply-macro-nil(tctx, mname, margs)
+   else if mname==c"macro::ast::as" then (tctx, result) = std-apply-macro-ast-as(tctx, mname, margs)
+   else if mname==c"macro::ast::if" then (tctx, result) = std-apply-macro-ast-if(tctx, mname, margs)
    else if mname==c"macro::ast::nil" then (tctx, result) = std-apply-macro-ast-nil(tctx, mname, margs)
    else if mname==c"macro::ast::var" then (tctx, result) = std-apply-macro-ast-var(tctx, mname, margs)
    else if mname==c"macro::ast::eof" then (tctx, result) = std-apply-macro-ast-eof(tctx, mname, margs)
