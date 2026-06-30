@@ -137,6 +137,23 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                _ => (tctx, no);
             };
          );
+         TVar{name:c"macro::ast::let"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{
+                  left:App{ left:Var{vname26=key}, right:Var{vname27=key} },
+                  right:AType{tt=tt}
+               } } => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-let(tctx, c"macro::ast::let", margs);
+                  match new-term {
+                     App{ let-lhs=left, let-rhs=right } => (
+                        (new-tctx, yes.bind(vname26,let-lhs).bind(vname27,let-rhs))
+                     );
+                     _ => (tctx, no);
+                  }
+               );
+               _ => (tctx, no);
+            };
+         );
          TVar{name:c"macro::ast::eof"} => (
             match mcandidate {
                App{left:Lit{key:c":"}, right:App{left:Var{vname6=key}, right:AType{tt=tt}}} => (
@@ -242,6 +259,17 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                   (let new-tctx, let new-term) = std-apply-macro-ast-seq(tctx, c"macro::ast::seq", margs);
                   if non-zero(new-term)
                   then (new-tctx, yes.bind(vname15, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
+         TVar{name:c"macro::ast::sizeof"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname16=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-sizeof(tctx, c"macro::ast::sizeof", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname16, new-term))
                   else (tctx, no)
                );
                _ => (tctx, no);
