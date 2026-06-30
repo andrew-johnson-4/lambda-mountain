@@ -198,17 +198,6 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                _ => (tctx, no);
             };
          );
-         TVar{name:c"macro::ast::app"} => (
-            match mcandidate {
-               App{left:Lit{key:c":"}, right:App{left:Var{vname10=key}, right:AType{tt=tt}}} => (
-                  (let new-tctx, let new-term) = std-apply-macro-ast-app(tctx, c"macro::ast::app", margs);
-                  if non-zero(new-term)
-                  then (new-tctx, yes.bind(vname10, new-term))
-                  else (tctx, no)
-               );
-               _ => (tctx, no);
-            };
-         );
          TVar{name:c"macro::ast::fragment"} => (
             match mcandidate {
                App{left:Lit{key:c":"}, right:App{left:Var{vname11=key}, right:AType{tt=tt}}} => (
@@ -270,6 +259,22 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                   (let new-tctx, let new-term) = std-apply-macro-ast-sizeof(tctx, c"macro::ast::sizeof", margs);
                   if non-zero(new-term)
                   then (new-tctx, yes.bind(vname16, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
+         TVar{name:c"macro::ast::app"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{ left:App{ left:Var{vname17=key}, right:Var{vname18=key} } , right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-app(tctx, c"macro::ast::app", margs);
+                  if non-zero(new-term)
+                  then (match new-term {
+                     App{ app-lhs=left, app-rhs=right } => (
+                        (new-tctx, yes.bind(vname17,app-lhs).bind(vname18,app-rhs))
+                     );
+                     _ => (tctx, no);
+                  })
                   else (tctx, no)
                );
                _ => (tctx, no);

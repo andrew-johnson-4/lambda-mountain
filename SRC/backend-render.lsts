@@ -105,10 +105,19 @@ let render(t: AST): String = (
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
          "((\{render(cond)})?(\{render(tterm)}):(\{render(fterm)}))"
       );
+      App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
+      App{left=left, right=right} => (
+         if typeof-term(t).is-t(interned-tag-cons,2)
+         then (
+            if typeof-term(right).is-datatype and typeof-term(left).is-datatype-or-cons-datatype
+            then "\{render(left)},\{render(right)}"
+            else "\{render(left)}\{render(right)}"
+         ) else "\{render(left)}(\{render(right)})"
+      );
       ASTNil{} => "";
       ASTEOF{} => "";
       Lit{key1=key} => key1.into(type(String));
-      App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
+      Var{key2=key} => key2.into(type(String));
       AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
       AType{tt=tt} => render(tt);
       Glb{} => "";
