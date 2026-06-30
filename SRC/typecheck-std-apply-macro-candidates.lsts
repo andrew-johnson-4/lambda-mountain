@@ -264,6 +264,17 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                _ => (tctx, no);
             };
          );
+         TVar{name:c"macro::ast::sizeof"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname16=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-sizeof(tctx, c"macro::ast::sizeof", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname16, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
          _ => (
             match mcandidate {
                App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt:TVar{name:c"macro::literal",parameters:[TGround{literal-tag=tag,parameters=parameters}.. etc-parameters]}}}} => (
