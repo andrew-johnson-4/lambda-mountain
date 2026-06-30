@@ -163,8 +163,16 @@ typed macro macro::backend::render(t tt: macro::ast::as): lazy = (
    t as tt
 );
 
+typed macro macro::backend::render(tt: macro::ast::sizeof): lazy = (
+   sizeof(tt)
+);
+
 typed macro macro::backend::render(c t f: macro::ast::if): lazy = (
    if c then t else f
+);
+
+typed macro macro::backend::render(lhs rhs: macro::ast::let): lazy = (
+   (fn (lhs) = ())(rhs)
 );
 
 let .into(b: Bool, tt: Type<String>): String = if b then "true" else "false";
@@ -4809,8 +4817,11 @@ let render(t: AST): String = (
       App{asc=left:Var{key:c"as"}, right:App{it=left,ot=right:AType{tt=tt}}} => (
          "((\{render(tt)})(\{render(it)}))"
       );
+      App{ left:Var{key:c"scope"}, st=right } => render(st);
+      App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => "(sizeof(\{render(tt)}))";
+      App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => render-declaration(lname, typeof-term(rhs), rhs);
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
-         "((\{cond})?(\{tterm}):(\{fterm}))"
+         "((\{render(cond)})?(\{render(tterm)}):(\{render(fterm)}))"
       );
       ASTNil{} => "";
       ASTEOF{} => "";
@@ -8361,7 +8372,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                tctx = tctx.ascript(term, typeof-term(t));
             };
             let direct-tctx = tctx.get-or(mk-tctx());
-            if not(direct-tctx.is-blob or is-nullary) {
+            if not(direct-tctx.is-blob or typeof-term(t).is-t(interned-tag-l,0) or is-nullary) {
                # TODO: remove the special exception for "Arrows" here, which is a workaround for raw constructors
                # frontend is producing ((None : TContext?)()) instead of (None() : TContext?)
                # the return hint stuff is working, so all the hard work is done. I think only the frontend needs to change
@@ -9170,6 +9181,8 @@ index-macro-table = index-macro-table.bind(c"macro::ast::seq", [] : List<(Type,T
 index-macro-table = index-macro-table.bind(c"macro::ast::glb", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::ast::as", [] : List<(Type,Type,AST)>);
 index-macro-table = index-macro-table.bind(c"macro::ast::if", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::ast::let", [] : List<(Type,Type,AST)>);
+index-macro-table = index-macro-table.bind(c"macro::ast::sizeof", [] : List<(Type,Type,AST)>);
 
 # Meta variables can be used to match syntax patterns
 let index-macro-meta = {} : Hashtable<CString,List<(Type,Type,AST)>>;
@@ -9192,6 +9205,8 @@ index-macro-meta = index-macro-meta.bind(c"macro::ast::seq", [] : List<(Type,Typ
 index-macro-meta = index-macro-meta.bind(c"macro::ast::glb", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::ast::as", [] : List<(Type,Type,AST)>);
 index-macro-meta = index-macro-meta.bind(c"macro::ast::if", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::ast::let", [] : List<(Type,Type,AST)>);
+index-macro-meta = index-macro-meta.bind(c"macro::ast::sizeof", [] : List<(Type,Type,AST)>);
 
 let bind-new-macro(mname: CString, mterm: AST): Nil = (
    let row = index-macro-table.lookup(mname, [] : List<(Type,Type,AST)>);
@@ -9597,6 +9612,23 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                _ => (tctx, no);
             };
          );
+         TVar{name:c"macro::ast::let"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{
+                  left:App{ left:Var{vname26=key}, right:Var{vname27=key} },
+                  right:AType{tt=tt}
+               } } => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-let(tctx, c"macro::ast::let", margs);
+                  match new-term {
+                     App{ let-lhs=left, let-rhs=right } => (
+                        (new-tctx, yes.bind(vname26,let-lhs).bind(vname27,let-rhs))
+                     );
+                     _ => (tctx, no);
+                  }
+               );
+               _ => (tctx, no);
+            };
+         );
          TVar{name:c"macro::ast::eof"} => (
             match mcandidate {
                App{left:Lit{key:c":"}, right:App{left:Var{vname6=key}, right:AType{tt=tt}}} => (
@@ -9707,6 +9739,17 @@ let std-try-destructure-macro(tctx: TypeContext?, margs: AST, mtype: Type, mcand
                _ => (tctx, no);
             };
          );
+         TVar{name:c"macro::ast::sizeof"} => (
+            match mcandidate {
+               App{left:Lit{key:c":"}, right:App{left:Var{vname16=key}, right:AType{tt=tt}}} => (
+                  (let new-tctx, let new-term) = std-apply-macro-ast-sizeof(tctx, c"macro::ast::sizeof", margs);
+                  if non-zero(new-term)
+                  then (new-tctx, yes.bind(vname16, new-term))
+                  else (tctx, no)
+               );
+               _ => (tctx, no);
+            };
+         );
          _ => (
             match mcandidate {
                App{left:Lit{key:c":"}, right:App{mstruct=left, right:AType{tt:TVar{name:c"macro::literal",parameters:[TGround{literal-tag=tag,parameters=parameters}.. etc-parameters]}}}} => (
@@ -9793,10 +9836,26 @@ let std-apply-macro-variable(tctx: Maybe<TypeContext>, mname: CString, margs: AS
    }
 );
 
+let std-apply-macro-ast-sizeof(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      App{ left:Var{key:c"sizeof"}, outer=right:AType{tt=tt} } => (
+         (tctx, outer)
+      );
+      _ => (tctx, mk-eof());
+   }
+);
 let std-apply-macro-ast-as(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
       App{ left:Var{key:c"as"}, right:App{ inner=left, outer=right:AType{tt=tt} } } => (
          (tctx, mk-cons(inner, outer))
+      );
+      _ => (tctx, mk-eof());
+   }
+);
+let std-apply-macro-ast-let(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      App{ left:Abs{lhs=lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => (
+         (tctx, mk-cons(lhs, rhs))
       );
       _ => (tctx, mk-eof());
    }
@@ -9936,6 +9995,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
    else if mname==c"macro::ast::as" then (tctx, result) = std-apply-macro-ast-as(tctx, mname, margs)
    else if mname==c"macro::ast::if" then (tctx, result) = std-apply-macro-ast-if(tctx, mname, margs)
    else if mname==c"macro::ast::nil" then (tctx, result) = std-apply-macro-ast-nil(tctx, mname, margs)
+   else if mname==c"macro::ast::sizeof" then (tctx, result) = std-apply-macro-ast-sizeof(tctx, mname, margs)
    else if mname==c"macro::ast::var" then (tctx, result) = std-apply-macro-ast-var(tctx, mname, margs)
    else if mname==c"macro::ast::eof" then (tctx, result) = std-apply-macro-ast-eof(tctx, mname, margs)
    else if mname==c"macro::ast::lit" then (tctx, result) = std-apply-macro-ast-lit(tctx, mname, margs)
@@ -9945,6 +10005,7 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
    else if mname==c"macro::ast::meta" then (tctx, result) = std-apply-macro-ast-meta(tctx, mname, margs)
    else if mname==c"macro::ast::typedef" then (tctx, result) = std-apply-macro-ast-typedef(tctx, mname, margs)
    else if mname==c"macro::ast::fragment" then (tctx, result) = std-apply-macro-ast-fragment(tctx, mname, margs)
+   else if mname==c"macro::ast::let" then (tctx, result) = std-apply-macro-ast-let(tctx, mname, margs)
    else if mname==c"macro::constant" then (tctx, result) = std-apply-macro-constant(tctx, mname, margs)
    else if mname==c"macro::tag" then (tctx, result) = std-apply-macro-tag(tctx, mname, margs)
    else {
