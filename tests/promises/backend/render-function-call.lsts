@@ -8,4 +8,4 @@ lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"type
 lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"let f(a: A): A = a;"));
 lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"f(l\"A\" as A);"));
 typecheck();
-assert( render(ast-parsed-program) == "f(((LM_A)(A)));" );
+assert( render(ast-parsed-program) == "f(((LM_A)(A)))" );
