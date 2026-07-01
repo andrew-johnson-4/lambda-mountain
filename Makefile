@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev: install-production
-	lm tests/promises/backend/render-function-call.lsts
+	lm tests/promises/backend/render-main.lsts
 	gcc tmp.c
 	./a.out
 	echo $?
