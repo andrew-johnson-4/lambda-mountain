@@ -19,6 +19,10 @@ typed macro macro::backend::render(t: macro::ast::glb): lazy = (
    t
 );
 
+typed macro macro::backend::render(f x: macro::ast::app): lazy = (
+   f(x)
+);
+
 typed macro macro::backend::render(t tt: macro::ast::as): lazy = (
    t as tt
 );

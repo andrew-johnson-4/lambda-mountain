@@ -27,6 +27,16 @@ let std-apply-macro-variable(tctx: Maybe<TypeContext>, mname: CString, margs: AS
    }
 );
 
+let std-apply-macro-ast-app(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
+   match margs {
+      App{ is-cons=is-cons, left=left, right=right } => (
+         if is-cons
+         then (tctx, mk-eof())
+         else (tctx, mk-cons(left, right))
+      );
+      _ => (tctx, mk-eof());
+   }
+);
 let std-apply-macro-ast-sizeof(tctx: Maybe<TypeContext>, mname: CString, margs: AST): (TypeContext?, AST) = (
    match margs {
       App{ left:Var{key:c"sizeof"}, outer=right:AType{tt=tt} } => (
@@ -191,12 +201,12 @@ let std-apply-macro(tctx: Maybe<TypeContext>, mname: CString, margs: AST, used: 
    else if mname==c"macro::ast::eof" then (tctx, result) = std-apply-macro-ast-eof(tctx, mname, margs)
    else if mname==c"macro::ast::lit" then (tctx, result) = std-apply-macro-ast-lit(tctx, mname, margs)
    else if mname==c"macro::ast::type" then (tctx, result) = std-apply-macro-ast-type(tctx, mname, margs)
-   else if mname==c"macro::ast::app" then (tctx, result) = std-apply-macro-ast-app(tctx, mname, margs)
    else if mname==c"macro::ast::glb" then (tctx, result) = std-apply-macro-ast-glb(tctx, mname, margs)
    else if mname==c"macro::ast::meta" then (tctx, result) = std-apply-macro-ast-meta(tctx, mname, margs)
    else if mname==c"macro::ast::typedef" then (tctx, result) = std-apply-macro-ast-typedef(tctx, mname, margs)
    else if mname==c"macro::ast::fragment" then (tctx, result) = std-apply-macro-ast-fragment(tctx, mname, margs)
    else if mname==c"macro::ast::let" then (tctx, result) = std-apply-macro-ast-let(tctx, mname, margs)
+   else if mname==c"macro::ast::app" then (tctx, result) = std-apply-macro-ast-app(tctx, mname, margs)
    else if mname==c"macro::constant" then (tctx, result) = std-apply-macro-constant(tctx, mname, margs)
    else if mname==c"macro::tag" then (tctx, result) = std-apply-macro-tag(tctx, mname, margs)
    else {

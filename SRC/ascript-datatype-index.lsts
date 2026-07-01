@@ -18,3 +18,10 @@ let .is-datatype(tt: Type): Bool = (
       );
    }
 );
+
+let .is-datatype-or-cons-datatype(tt: Type): Bool = (
+   match tt {
+      TGround{tag:interned-tag-cons, parameters:[p2..p1..]} => p2.is-datatype-or-cons-datatype or p1.is-datatype-or-cons-datatype;
+      _ => tt.is-datatype;
+   }
+);
