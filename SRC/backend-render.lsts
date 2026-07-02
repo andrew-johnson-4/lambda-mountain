@@ -21,9 +21,80 @@ let render-direct-type-declaration(t: AST): String = (
 let render-forward-function-declaration(t: AST): String = (
    ""
 );
+
 let render-direct-function-declaration(t: AST): String = (
+   match t {
+      Seq{seq=seq} => (
+         let global-expressions = "";
+         let global-functions = "";
+         let main-function = mk-eof();
+         for s in seq {
+            match s {
+               Glb{key:Token{key:c"main"}} => main-function = s;
+               Glb{val:Abs{}} => global-functions = global-functions + render-direct-function-declaration(s);
+               _ => (
+                  let e = render(s);
+                  if non-zero(e) then global-expressions = global-expressions + e + ";";
+               );
+            };
+         };
+         global-functions + render-direct-function-declaration(global-expressions, main-function);
+      );
+      Glb{val:Abs{}} => render-direct-function-declaration("", t);
+      _ => render-direct-function-declaration(render(t), mk-eof());
+   }
+);
+
+let render-direct-function-declaration(exprs: String, t: AST): String = (
+   match t {
+      Glb{key=key, val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
+         if not tt.is-t(interned-tag-blob,0) and
+            not tt.is-t(interned-tag-typed-macro,0)
+         then (
+            "\{render(typeof-term(t).range)} \{key.key}(\{render-function-parameters(lhs)}){\{exprs}\{render-return(rhs)}}"
+         ) else ""
+      );
+      ASTEOF{} => "int main(){\{exprs}}";
+      _ => "";
+   }
+);
+
+let render-function-parameters(lhs: AST): String = (
    ""
 );
+
+let render-return(t: AST): String = (
+   match t {
+      App{is-cons=is-cons, left=left, right=right} => (
+         if is-cons
+         then (
+            let lt = render-statement(left);
+            let rt = render-statement(right);
+            if non-zero(rt) then "\{lt}return \{rt}"
+            else "\{lt}\{rt}"
+         ) else render-statement(t);
+      );
+      _ => render-statement(t);
+   };
+);
+
+let render-statement(t: AST): String = (
+   match t {
+      App{is-cons=is-cons, left=left, right=right} => (
+         if is-cons
+         then render-statement(left) + render-statement(right)
+         else (
+            let rt = render(t);
+            if non-zero(rt) then "\{rt};" else ""
+         );
+      );
+      _ => (
+         let rt = render(t);
+         if non-zero(rt) then "\{rt};" else ""
+      );
+   };
+);
+
 let render-global-declaration(t: AST): String = (
    match t {
       Seq{seq=seq} => (
@@ -121,6 +192,7 @@ let render(t: AST): String = (
       AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
       AType{tt=tt} => render(tt);
       Glb{} => "";
+      Typedef{} => "";
       _ => fail("render unknown term \{t}");
    }
 );
