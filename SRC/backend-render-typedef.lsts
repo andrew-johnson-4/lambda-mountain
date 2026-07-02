@@ -1,0 +1,24 @@
+
+let codegen-defined-type-index = mk-set(type(Type));
+
+let define-codegen(tt: Type) = codegen-defined-type-index = codegen-defined-type-index.bind(tt);
+
+let .is-codegen-defined(tt: Type): Bool = (
+   tt.is-codegen-defined(tt.is-t(interned-tag-flexible-array-member,0));
+);
+
+let .is-codegen-defined(tt: Type, is-flexible-array-member: Bool): Bool = (
+   match tt {
+      TAnd{conjugate=conjugate} => (
+         let r = false;
+         for c in conjugate { r = r or c.is-codegen-defined(is-flexible-array-member) };
+         r
+      );
+      TAny{} => false;
+      TVar{} => false;
+      TGround{tag:interned-tag-sized,parameters:[st..]} => st.is-codegen-defined;
+      TGround{tag:interned-tag-array,parameters:[_..base-type..]} => is-flexible-array-member and base-type.is-codegen-defined;
+      TGround{} => complex-type-index.has(tt.ground-tag-and-arity)
+                and not codegen-defined-type-index.lookup(tt, false);
+   }
+);
