@@ -30,7 +30,7 @@ let render-direct-function-declaration(t: AST): String = (
          let main-function = mk-eof();
          for s in seq {
             match s {
-               Glb{key:c"main"} => main-function = s;
+               Glb{key:Token{key:c"main"}} => main-function = s;
                Glb{val:Abs{}} => global-functions = global-functions + render-direct-function-declaration(s);
                _ => (
                   let e = render(s);
@@ -47,15 +47,14 @@ let render-direct-function-declaration(t: AST): String = (
 
 let render-direct-function-declaration(exprs: String, t: AST): String = (
    match t {
-      Glb{key=key, val=Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
+      Glb{key=key, val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
          if not tt.is-t(interned-tag-blob,0) and
             not tt.is-t(interned-tag-typed-macro,0)
          then (
-            "\{render(typeof-term(t).range)} \{render(key.key)}(\{render-function-parameters(lhs)}){\{exprs}\{render-return(rhs)}}"
+            "\{render(typeof-term(t).range)} \{key.key}(\{render-function-parameters(lhs)}){\{exprs}\{render-return(rhs)}}"
          ) else ""
       );
-      ASTEOF{} => (
-      );
+      ASTEOF{} => "int main(){\{exprs}}";
       _ => "";
    }
 );
@@ -193,6 +192,7 @@ let render(t: AST): String = (
       AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
       AType{tt=tt} => render(tt);
       Glb{} => "";
+      Typedef{} => "";
       _ => fail("render unknown term \{t}");
    }
 );
