@@ -19,7 +19,23 @@ let render-direct-type-declaration(t: AST): String = (
    ""
 );
 let render-forward-function-declaration(t: AST): String = (
-   ""
+   match t {
+      Seq{seq=seq} => (
+         let decls = "";
+         for s in seq {
+            decls = decls + render-forward-function-declaration(s);
+         };
+         decls
+      );
+      Glb{key=key, val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
+         if not tt.is-t(interned-tag-blob,0) and
+            not tt.is-t(interned-tag-typed-macro,0)
+         then (
+            "\{render(typeof-term(t).range)} \{key.key}(\{render-function-parameters(lhs)});\n"
+         ) else ""
+      );
+      _ => "";
+   }
 );
 
 let render-direct-function-declaration(t: AST): String = (
@@ -51,20 +67,35 @@ let render-direct-function-declaration(exprs: String, t: AST): String = (
          if not tt.is-t(interned-tag-blob,0) and
             not tt.is-t(interned-tag-typed-macro,0)
          then (
-            "\{render(typeof-term(t).range)} \{key.key}(\{render-function-parameters(lhs)}){\{exprs}\{render-return(rhs)}}"
+            "\{render(typeof-term(t).range)} \{key.key}(\{render-function-parameters(lhs)}){\{exprs}\{render-return(rhs)}}\n"
          ) else ""
       );
-      ASTEOF{} => "int main(){\{exprs}}";
+      ASTEOF{} => "int main(){\{exprs}}\n";
       _ => "";
    }
 );
 
 let render-function-parameters(lhs: AST): String = (
-   ""
+   match lhs {
+      App{ rst=left, bind=right:App{ left:Lit{key:c":"}, right:App{ left:Var{}, right:AType{} } } } => (
+         let m = render-function-parameters(rst);
+         let n = render-function-parameters(bind);
+         if non-zero(m) and non-zero(n)
+         then "\{m},\{n}"
+         else "\{m}\{n}"
+      );
+      App{ left:Lit{key:c":"}, right:App{ vbind=left:Var{vid=key}, right:AType{vtt=tt} } } => (
+         if vtt.is-datatype
+         then "\{render(vtt)} \{render(vbind)}"
+         else ""
+      );
+      _ => "";
+   };
 );
 
 let render-return(t: AST): String = (
    match t {
+      App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render-return(inner);
       App{is-cons=is-cons, left=left, right=right} => (
          if is-cons
          then (
@@ -74,12 +105,17 @@ let render-return(t: AST): String = (
             else "\{lt}\{rt}"
          ) else render-statement(t);
       );
-      _ => render-statement(t);
+      _ => (
+         let rt = render-statement(t);
+         if non-zero(rt) then "return \{rt}"
+         else rt
+      );
    };
 );
 
 let render-statement(t: AST): String = (
    match t {
+      App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render-statement(inner);
       App{is-cons=is-cons, left=left, right=right} => (
          if is-cons
          then render-statement(left) + render-statement(right)
