@@ -7,4 +7,5 @@ frontend(c"lib/core/nocode.lsts");
 lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"type B = { a: A };"));
 lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"type A = {};"));
 typecheck();
-assert( render-global-declaration(ast-parsed-program) == "LM_A a;" );
+assert( render-forward-type-declaration(ast-parsed-program) == "LM_A a;" );
+assert( render-direct-type-declaration(ast-parsed-program) == "LM_A a;" );

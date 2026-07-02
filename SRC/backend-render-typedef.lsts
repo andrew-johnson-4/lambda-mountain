@@ -22,3 +22,34 @@ let .is-codegen-defined(tt: Type, is-flexible-array-member: Bool): Bool = (
                 and not codegen-defined-type-index.lookup(tt, false);
    }
 );
+
+let find-concrete-types(t: AST): Vector<(Type,Type)> = (
+   let vs = mk-vector(type((Type,Type)));
+   match t {
+      Seq{seq=seq} => (
+         for s in seq {
+            for tt in find-concrete-types(s) {
+               vs = vs.push(tt);
+            };
+         };
+      );
+      Typedef{lhs-type=lhs-type} => (
+         for concrete-type in concrete-type-instances-index.lookup(lhs.ground-tag-and-arity, mk-vector(type(Type))) {
+            vs = vs.push((lhs-type, concrete-type));
+         }
+      );
+      _ => ();
+   };
+   vs
+);
+
+let render-forward-type-declaration(t: AST): Vector<Type> = (
+   let ts = find-concrete-types(t);
+
+   for Tuple{lhs-type=first, concrete-type=second} in ts {
+      print("Render forward type declaration \{lhs-type} \{concrete-type}\n");
+   };
+);
+
+let render-direct-type-declaration(t: AST) = (
+);
