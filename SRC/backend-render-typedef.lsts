@@ -87,15 +87,57 @@ let .sort-concrete-types(ts: Vector<(Type,Type)>): Vector<(Type,Type)> = (
 );
 
 let render-forward-type-declaration(t: AST): String = (
+   let decls = "";
    let ts = find-concrete-types(t);
 
    for Tuple{lhs-type=first, concrete-type=second} in ts {
-      print("Render forward type declaration \{lhs-type} \{concrete-type}\n");
+      let tctx = unify(lhs-type, concrete-type, t);
+      decls = "\{decls}typedef struct \{render(concrete-type)} \{render(concrete-type)};\n"
    };
 
-   ""
+   decls
 );
 
 let render-direct-type-declaration(t: AST): String = (
-   ""
+   let decls = "";
+   let ts = find-concrete-types(t);
+
+   decls = "\{decls}struct \{render(concrete-type)}{\n";
+   for Tuple{lhs-type=first, concrete-type=second} in ts {
+      let td = index-typedef.lookup(concrete-type.ground-tag-and-arity, mk-eof());
+      match td { Typedef{} => (); _ => exit-error("Invalid compile type \{concrete-type} \{td}\n", td); };
+      let tctx = unify(lhs-type, concrete-type, td);
+
+      let has-guarded-cases = false;
+      for Tuple{case-tag=first, case-fields=second} in cases {
+         if case-tag == c"" {
+            for Tuple{field-name=first, field-type=second} in case-fields {
+               let mangled-field-name = c"0_" + field-name;
+               field-type = tctx.substitute(field-type);
+               decls = "\{decls}\t\{render-declaration(mangled-field-name,field-type,td)}\n";
+            }
+         } else has-guarded-cases = true;
+      };
+      let case-number = 0_sz;
+      if has-guarded-cases {
+         decls = "\{decls}\tunion{\n";
+         for Tuple{case-tag=first, case-fields=second} in cases {
+            if case-tag != c"" {
+               if case-fields.length > 0 then decls = "\{decls}\t\tstruct{\n";
+               for Tuple{field-name=first, field-type=second} in case-fields {
+                  let mangled-field-name = case-number.into(type(CString)) + c"_" + field-name;
+                  field-type = tctx.substitute(field-type);
+                  decls = "\{decls}\t\t\t\{render-declaration(mangled-field-name,field-type,td)}\n";
+               }
+               if case-fields.length > 0 then decls = "\{decls}\t\t};\n";
+               case-number = case-number + 1;
+            }
+         };
+         decls = "\{decls}\t};\n";
+      };
+
+   };
+   decls = "\{decls}};\n";
+
+   decls
 );

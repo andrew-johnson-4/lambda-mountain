@@ -10,5 +10,7 @@ frontend(c"lib/core/primitives.lsts");
 lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"type B = { a: A };"));
 lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"type A = {};"));
 typecheck();
+print(render-forward-type-declaration(ast-parsed-program));
 assert( render-forward-type-declaration(ast-parsed-program) == "LM_A a;" );
+print(render-direct-type-declaration(ast-parsed-program));
 assert( render-direct-type-declaration(ast-parsed-program) == "LM_A a;" );
