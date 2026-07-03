@@ -73,6 +73,7 @@ let .sort-concrete-types(ts: Vector<(Type,Type)>): Vector<(Type,Type)> = (
          };
          exit(1);
       };
+      ts = next-ts;
    };
    out
 );
