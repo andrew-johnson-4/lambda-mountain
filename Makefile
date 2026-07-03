@@ -7,7 +7,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recursion is used fairly heavily
 # recommendation: ulimit -s unlimited
 
-dev: install-production
+dev: install-bootstrap
 	lm tests/promises/backend/render-type-definition.lsts
 	gcc tmp.c
 	./a.out
