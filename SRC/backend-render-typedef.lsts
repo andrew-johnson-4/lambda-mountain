@@ -19,7 +19,7 @@ let .is-codegen-defined(tt: Type, is-flexible-array-member: Bool): Bool = (
       TGround{tag:interned-tag-sized,parameters:[st..]} => st.is-codegen-defined;
       TGround{tag:interned-tag-array,parameters:[_..base-type..]} => is-flexible-array-member and base-type.is-codegen-defined;
       TGround{} => complex-type-index.has(tt.ground-tag-and-arity)
-                and not codegen-defined-type-index.lookup(tt, false);
+                and not codegen-defined-type-index.has(tt);
    }
 );
 
@@ -34,7 +34,7 @@ let find-concrete-types(t: AST): Vector<(Type,Type)> = (
          };
       );
       Typedef{lhs-type=lhs-type} => (
-         for concrete-type in concrete-type-instances-index.lookup(lhs.ground-tag-and-arity, mk-vector(type(Type))) {
+         for concrete-type in concrete-type-instances-index.lookup(lhs-type.ground-tag-and-arity, mk-vector(type(Type))) {
             vs = vs.push((lhs-type, concrete-type));
          }
       );
@@ -43,13 +43,16 @@ let find-concrete-types(t: AST): Vector<(Type,Type)> = (
    vs
 );
 
-let render-forward-type-declaration(t: AST): Vector<Type> = (
+let render-forward-type-declaration(t: AST): String = (
    let ts = find-concrete-types(t);
 
    for Tuple{lhs-type=first, concrete-type=second} in ts {
       print("Render forward type declaration \{lhs-type} \{concrete-type}\n");
    };
+
+   ""
 );
 
-let render-direct-type-declaration(t: AST) = (
+let render-direct-type-declaration(t: AST): String = (
+   ""
 );

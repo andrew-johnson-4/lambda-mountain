@@ -3,7 +3,10 @@ import SRC/unit-codegen-core.lsts;
 import PLUGINS/FRONTEND/LSTS/index.lsts;
 
 ast-parsed-program = mk-eof();
+
 frontend(c"lib/core/nocode.lsts");
+frontend(c"lib/core/platform-macros.lsts");
+frontend(c"lib/core/primitives.lsts");
 lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"type B = { a: A };"));
 lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"type A = {};"));
 typecheck();
