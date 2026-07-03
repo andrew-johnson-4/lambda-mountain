@@ -47,7 +47,7 @@ let find-concrete-types-unsorted(t: AST): Vector<(Type,Type)> = (
 );
 
 let find-concrete-types(t: AST): Vector<(Type,Type)> = (
-   find-concrete-types-unsorted(vs).sort-concrete-types
+   find-concrete-types-unsorted(t).sort-concrete-types
 );
 
 let .sort-concrete-types(ts: Vector<(Type,Type)>): Vector<(Type,Type)> = (
