@@ -47,7 +47,6 @@ let main(argc: C<"int">, argv: CString[]): Nil = (
       match argv[argi] {
          c"--typecheck" => config-mode = ModeTypecheck();
          c"--parse" => config-mode = ModeParse();
-         c"--preprocess" => config-mode = ModePreprocess();
          c"--compile" => config-mode = ModeCompile();
          c"--highlight" => (
             config-mode = ModeTokenize();
@@ -98,11 +97,6 @@ let main(argc: C<"int">, argv: CString[]): Nil = (
          for fp3 in input.reverse { frontend(fp3); };
          print("\{ast-parsed-program}\n");
       );
-      ModePreprocess{} => (
-         for fp32 in input.reverse { frontend(fp32); };
-         preprocess();
-         print("\{ast-parsed-program}\n");
-      );
       _ => (
          for fp4 in input.reverse { frontend(fp4); };
          if show-alloc-count-in-program {
@@ -131,8 +125,8 @@ let main(argc: C<"int">, argv: CString[]): Nil = (
          };
          ast-parsed-count = ast-count;
          match config-mode {
-            ModeTypecheck{} => (preprocess(); typecheck(););
-            ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(););
+            ModeTypecheck{} => (typecheck(););
+            ModeCompile{} => (typecheck(); plugin-current-backend(););
          };
          ast-typed-count = ast-count;
       );

@@ -29,7 +29,6 @@ import SRC/typecheck-tctx-substitute.lsts;
 import SRC/typecheck-try-destructure-macro.lsts;
 import SRC/typecheck-validate-interfaces.lsts;
 import SRC/typecheck-index-typedefs.lsts;
-import SRC/typecheck-preprocess.lsts;
 import SRC/typecheck-infer-type-definition.lsts;
 import SRC/typecheck-assert-no-infinite-types.lsts;
 import SRC/typecheck-assert-one-typed.lsts;

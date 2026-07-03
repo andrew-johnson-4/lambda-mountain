@@ -62,7 +62,7 @@ let .sort-concrete-types(ts: Vector<(Type,Type)>): Vector<(Type,Type)> = (
          if is-incomplete
          then next-ts = next-ts.push((lhs-type,concrete-type));
          else {
-            out = out.push(lhs-type,concrete-type);
+            out = out.push((lhs-type,concrete-type));
             define-codegen(concrete-type);
          };
       };

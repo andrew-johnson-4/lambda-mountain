@@ -1,5 +1,6 @@
 
 let typecheck(): Nil = (
+   index-typedefs(ast-parsed-program);
    infer-global-macro(ast-parsed-program);
    ast-parsed-program = infer-global-context-prim(ast-parsed-program);
    infer-global-context-td(ast-parsed-program);
