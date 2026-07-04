@@ -1,7 +1,6 @@
 
 let render(): String = (
-   (ast-parsed-program, let includes) = render-includes(ast-parsed-program);
-   includes +
+   render-includes(ast-parsed-program) +
    render-forward-type-declaration(ast-parsed-program) +
    render-direct-type-declaration(ast-parsed-program) +
    render-forward-function-declaration(ast-parsed-program) +
@@ -9,9 +8,24 @@ let render(): String = (
    render(ast-parsed-program)
 );
 
-let render-includes(t: AST): (AST, String) = (
-   (t, "")
+let render-includes(t: AST): String = (
+   match t {
+      Seq{seq=seq} => (
+         let decls = "";
+         for s in seq {
+            decls = decls + render-includes(s);
+         };
+         decls
+      );
+      App{ left:Var{key:c"import"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{fp=key}, right:AType{} } } } => (
+         if fp.has-suffix(c".h") or fp.has-suffix(c".c")
+         then "#include <\{fp}>\n";
+         else "";
+      );
+      _ => "";
+   }
 );
+
 let render-forward-function-declaration(t: AST): String = (
    match t {
       Seq{seq=seq} => (

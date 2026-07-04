@@ -9,3 +9,5 @@ let :Blob $":function-id"(x: ImplicitContext): L;
 let :Blob mangle(t: L): L;
 let :Blob mangle-pre(t: Type<Any>): L;
 let :Blob mangle-post(t: Type<Any>): L;
+
+let :Blob import(t: L): Nil;
