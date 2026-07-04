@@ -227,8 +227,9 @@ let lsts-parse-top-level(tokens: List<Token>): Tuple<AST,List<Token>> = (
             tokens = tail(tokens);
          };
          lsts-parse-expect(c";",tokens); tokens = tail(tokens);
-         frontend(clone-rope(path));
-         (mk-eof(), tokens);
+         let cpath = clone-rope(path);
+         frontend(cpath);
+         (mk-app(mk-var(c"import"), mk-lit(cpath).ascript(type-l)), tokens);
       );
       _ => (
          (let t, tokens) = lsts-parse-assign(tokens);
