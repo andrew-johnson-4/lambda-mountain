@@ -93,8 +93,6 @@ let render-forward-type-declaration(t: AST): String = (
       decls = "\{decls}typedef struct \{render(concrete-type)} \{render(concrete-type)};\n";
    };
 
-   print("Forwards: \{decls}\n");
-
    decls
 );
 
@@ -118,7 +116,7 @@ let render-direct-type-declaration(t: AST): String = (
             }
          } else has-guarded-cases = true;
       };
-      let case-number = 0_sz;
+      let case-number = 1_sz;
       if has-guarded-cases {
          decls = "\{decls}\tunion{\n";
          for Tuple{case-tag2=first, case-fields=second} in (td as Tag::Typedef).cases {
@@ -137,8 +135,6 @@ let render-direct-type-declaration(t: AST): String = (
       };
       decls = "\{decls}};\n";
    };
-
-   print("Direct: \{decls}\n");
 
    decls
 );

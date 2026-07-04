@@ -13,10 +13,11 @@ let .escape-as-cstring(in: CString): S = (
       c"\\o"..  rest9 => (out = out + SAtom(c"#"); in = rest9;);
       c"\\s"..  rest10 => (out = out + SAtom(c" "); in = rest10;);
       c"\\t"..  rest11 => (out = out + SAtom(c"\\\\t"); in = rest11;);
-      c"\\"..   rest12 => fail("Illegal Escape Character: \{head(rest12)}");
-      rest13 => (
-         out = out + SAtom(clone-rope(head(rest13)));
-         in = tail(rest13);
+      c"\n"..   rest12 => (out = out + SAtom(c"\\\\n"); in = rest12;);
+      c"\\"..   rest13 => fail("Illegal Escape Character: \{head(rest13)}");
+      rest14 => (
+         out = out + SAtom(clone-rope(head(rest14)));
+         in = tail(rest14);
       );
    }};
    SAtom(c"\"") + out + SAtom(c"\"")

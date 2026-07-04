@@ -11,7 +11,26 @@ lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"type
 lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"type B = { a: A };"));
 lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"type A = {};"));
 typecheck();
-render-forward-type-declaration(ast-parsed-program);
-render-direct-type-declaration(ast-parsed-program);
-assert( render-forward-type-declaration(ast-parsed-program) == "LM_A a;" );
-assert( render-direct-type-declaration(ast-parsed-program) == "LM_A a;" );
+assert( render-forward-type-declaration(ast-parsed-program) == "typedef struct LM_A LM_A;
+typedef struct LM_B LM_B;
+typedef struct LM_C LM_C;
+" );
+assert( render-direct-type-declaration(ast-parsed-program) == "struct LM_A{
+};
+struct LM_B{
+	LM_A 0_a;
+};
+struct LM_C{
+	LM_A 0_a;
+	union{
+		struct{
+			LM_B 1_b;
+			LM_A 1_a;
+		};
+		struct{
+			LM_B 2_b;
+			LM_A 2_a;
+		};
+	};
+};
+" );
