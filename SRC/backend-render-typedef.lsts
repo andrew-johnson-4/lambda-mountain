@@ -1,0 +1,140 @@
+
+let codegen-defined-type-index = mk-set(type(Type));
+
+let define-codegen(tt: Type) = (
+   codegen-defined-type-index = codegen-defined-type-index.bind(tt);
+);
+
+let .is-codegen-defined(tt: Type): Bool = (
+   tt.is-codegen-defined(tt.is-t(interned-tag-flexible-array-member,0));
+);
+
+let .is-codegen-defined(tt: Type, is-flexible-array-member: Bool): Bool = (
+   match tt {
+      TAnd{conjugate=conjugate} => (
+         let r = false;
+         for c in conjugate { r = r or c.is-codegen-defined(is-flexible-array-member) };
+         r
+      );
+      TAny{} => false;
+      TVar{} => false;
+      TGround{tag:interned-tag-sized,parameters:[st..]} => st.is-codegen-defined;
+      TGround{tag:interned-tag-array,parameters:[_..base-type..]} => is-flexible-array-member and base-type.is-codegen-defined;
+      TGround{} => not complex-type-index.has(tt.ground-tag-and-arity)
+                or codegen-defined-type-index.has(tt);
+   }
+);
+
+let find-concrete-types-unsorted(t: AST): Vector<(Type,Type)> = (
+   let vs = mk-vector(type((Type,Type)));
+   match t {
+      Seq{seq=seq} => (
+         for s in seq {
+            for tt in find-concrete-types-unsorted(s) {
+               vs = vs.push(tt);
+            };
+         };
+      );
+      Typedef{lhs-type=lhs-type} => (
+         for concrete-type in concrete-type-instances-index.lookup(lhs-type.ground-tag-and-arity, mk-vector(type(Type))) {
+            vs = vs.push((lhs-type, concrete-type));
+         }
+      );
+      _ => ();
+   };
+   vs
+);
+
+let find-concrete-types(t: AST): Vector<(Type,Type)> = (
+   find-concrete-types-unsorted(t).sort-concrete-types
+);
+
+let .sort-concrete-types(ts: Vector<(Type,Type)>): Vector<(Type,Type)> = (
+   codegen-defined-type-index = mk-set(type(Type));
+   let out = mk-vector(type((Type,Type)));
+   while ts.length > 0 {
+      let next-ts = mk-vector(type((Type,Type)));
+      for Tuple{lhs-type=first, concrete-type=second} in ts {
+         let td = index-typedef.lookup(concrete-type.ground-tag-and-arity, mk-eof());
+         match td { Typedef{} => (); _ => exit-error("Invalid compile type \{concrete-type} \{td}\n", td); };
+         let tctx = unify(lhs-type, concrete-type, td);
+         let is-incomplete = false;
+         for Tuple{case-tag1=first, case-fields=second} in (td as Tag::Typedef).cases {
+            for Tuple{field-name1=first, field-type=second} in case-fields {
+               field-type = tctx.substitute(field-type).rewrite-type-alias;
+               is-incomplete = is-incomplete or not field-type.is-codegen-defined;
+            }
+         };
+         if is-incomplete
+         then next-ts = next-ts.push((lhs-type,concrete-type));
+         else {
+            out = out.push((lhs-type,concrete-type));
+            define-codegen(concrete-type);
+         };
+      };
+      if ts.length == next-ts.length {
+         eprint("Unable to resolve circular type dependencies:\n");
+         for Tuple{lhs-type=first, concrete-type=second} in ts {
+            eprint("\t\{concrete-type}\n");
+         };
+         exit(1);
+      };
+      ts = next-ts;
+   };
+   out
+);
+
+let render-forward-type-declaration(t: AST): String = (
+   let decls = "";
+   let ts = find-concrete-types(t);
+
+   for Tuple{lhs-type=first, concrete-type=second} in ts {
+      let tctx = unify(lhs-type, concrete-type, t);
+      decls = "\{decls}typedef struct \{render(concrete-type)} \{render(concrete-type)};\n";
+   };
+
+   decls
+);
+
+let render-direct-type-declaration(t: AST): String = (
+   let decls = "";
+   let ts = find-concrete-types(t);
+
+   for Tuple{lhs-type=first, concrete-type=second} in ts {
+      decls = "\{decls}struct \{render(concrete-type)}{\n";
+      let td = index-typedef.lookup(concrete-type.ground-tag-and-arity, mk-eof());
+      match td { Typedef{} => (); _ => exit-error("Invalid compile type \{concrete-type} \{td}\n", td); };
+      let tctx = unify(lhs-type, concrete-type, td);
+
+      let has-guarded-cases = false;
+      for Tuple{case-tag1=first, case-fields=second} in (td as Tag::Typedef).cases {
+         if case-tag1 == c"" {
+            for Tuple{field-name1=first, field-type=second} in case-fields {
+               let mangled-field-name1 = c"0_" + field-name1;
+               field-type = tctx.substitute(field-type);
+               decls = "\{decls}\t\{render-declaration(mangled-field-name1,field-type,mk-nil())}\n";
+            }
+         } else has-guarded-cases = true;
+      };
+      let case-number = 1_sz;
+      if has-guarded-cases {
+         decls = "\{decls}\tunion{\n";
+         for Tuple{case-tag2=first, case-fields=second} in (td as Tag::Typedef).cases {
+            if case-tag2 != c"" {
+               if case-fields.length > 0 then decls = "\{decls}\t\tstruct{\n";
+               for Tuple{field-name2=first, field-type=second} in case-fields {
+                  let mangled-field-name2 = case-number.into(type(CString)) + c"_" + field-name2;
+                  field-type = tctx.substitute(field-type);
+                  decls = "\{decls}\t\t\t\{render-declaration(mangled-field-name2,field-type,mk-nil())}\n";
+               };
+               if case-fields.length > 0 then decls = "\{decls}\t\t};\n";
+               case-number = case-number + 1;
+            }
+         };
+         decls = "\{decls}\t};\n";
+      };
+      decls = "\{decls}};\n";
+   };
+
+   decls
+);

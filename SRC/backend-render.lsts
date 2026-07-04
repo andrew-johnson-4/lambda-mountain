@@ -12,12 +12,6 @@ let render(): String = (
 let render-includes(t: AST): (AST, String) = (
    (t, "")
 );
-let render-forward-type-declaration(t: AST): String = (
-   ""
-);
-let render-direct-type-declaration(t: AST): String = (
-   ""
-);
 let render-forward-function-declaration(t: AST): String = (
    match t {
       Seq{seq=seq} => (
