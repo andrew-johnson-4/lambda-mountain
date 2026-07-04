@@ -4886,7 +4886,9 @@ let render-includes(t: AST): String = (
          decls
       );
       App{ left:Var{key:c"import"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{fp=key}, right:AType{} } } } => (
-         "#include <\{fp}>\n";
+         if fp.has-suffix(c".h") or fp.has-suffix(c".c")
+         then "#include <\{fp}>\n";
+         else "";
       );
       _ => "";
    }
