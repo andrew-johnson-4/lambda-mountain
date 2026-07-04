@@ -4727,7 +4727,9 @@ let non-zero(f: Fragment): Bool = (
 
 let codegen-defined-type-index = mk-set(type(Type));
 
-let define-codegen(tt: Type) = codegen-defined-type-index = codegen-defined-type-index.bind(tt);
+let define-codegen(tt: Type) = (
+   codegen-defined-type-index = codegen-defined-type-index.bind(tt);
+);
 
 let .is-codegen-defined(tt: Type): Bool = (
    tt.is-codegen-defined(tt.is-t(interned-tag-flexible-array-member,0));
@@ -4744,17 +4746,17 @@ let .is-codegen-defined(tt: Type, is-flexible-array-member: Bool): Bool = (
       TVar{} => false;
       TGround{tag:interned-tag-sized,parameters:[st..]} => st.is-codegen-defined;
       TGround{tag:interned-tag-array,parameters:[_..base-type..]} => is-flexible-array-member and base-type.is-codegen-defined;
-      TGround{} => complex-type-index.has(tt.ground-tag-and-arity)
-                and not codegen-defined-type-index.has(tt);
+      TGround{} => not complex-type-index.has(tt.ground-tag-and-arity)
+                or codegen-defined-type-index.has(tt);
    }
 );
 
-let find-concrete-types(t: AST): Vector<(Type,Type)> = (
+let find-concrete-types-unsorted(t: AST): Vector<(Type,Type)> = (
    let vs = mk-vector(type((Type,Type)));
    match t {
       Seq{seq=seq} => (
          for s in seq {
-            for tt in find-concrete-types(s) {
+            for tt in find-concrete-types-unsorted(s) {
                vs = vs.push(tt);
             };
          };
@@ -4769,18 +4771,102 @@ let find-concrete-types(t: AST): Vector<(Type,Type)> = (
    vs
 );
 
+let find-concrete-types(t: AST): Vector<(Type,Type)> = (
+   find-concrete-types-unsorted(t).sort-concrete-types
+);
+
+let .sort-concrete-types(ts: Vector<(Type,Type)>): Vector<(Type,Type)> = (
+   codegen-defined-type-index = mk-set(type(Type));
+   let out = mk-vector(type((Type,Type)));
+   while ts.length > 0 {
+      let next-ts = mk-vector(type((Type,Type)));
+      for Tuple{lhs-type=first, concrete-type=second} in ts {
+         let td = index-typedef.lookup(concrete-type.ground-tag-and-arity, mk-eof());
+         match td { Typedef{} => (); _ => exit-error("Invalid compile type \{concrete-type} \{td}\n", td); };
+         let tctx = unify(lhs-type, concrete-type, td);
+         let is-incomplete = false;
+         for Tuple{case-tag1=first, case-fields=second} in (td as Tag::Typedef).cases {
+            for Tuple{field-name1=first, field-type=second} in case-fields {
+               field-type = tctx.substitute(field-type).rewrite-type-alias;
+               is-incomplete = is-incomplete or not field-type.is-codegen-defined;
+            }
+         };
+         if is-incomplete
+         then next-ts = next-ts.push((lhs-type,concrete-type));
+         else {
+            out = out.push((lhs-type,concrete-type));
+            define-codegen(concrete-type);
+         };
+      };
+      if ts.length == next-ts.length {
+         eprint("Unable to resolve circular type dependencies:\n");
+         for Tuple{lhs-type=first, concrete-type=second} in ts {
+            eprint("\t\{concrete-type}\n");
+         };
+         exit(1);
+      };
+      ts = next-ts;
+   };
+   out
+);
+
 let render-forward-type-declaration(t: AST): String = (
+   let decls = "";
    let ts = find-concrete-types(t);
 
    for Tuple{lhs-type=first, concrete-type=second} in ts {
-      print("Render forward type declaration \{lhs-type} \{concrete-type}\n");
+      let tctx = unify(lhs-type, concrete-type, t);
+      decls = "\{decls}typedef struct \{render(concrete-type)} \{render(concrete-type)};\n";
    };
 
-   ""
+   print("Forwards: \{decls}\n");
+
+   decls
 );
 
 let render-direct-type-declaration(t: AST): String = (
-   ""
+   let decls = "";
+   let ts = find-concrete-types(t);
+
+   for Tuple{lhs-type=first, concrete-type=second} in ts {
+      decls = "\{decls}struct \{render(concrete-type)}{\n";
+      let td = index-typedef.lookup(concrete-type.ground-tag-and-arity, mk-eof());
+      match td { Typedef{} => (); _ => exit-error("Invalid compile type \{concrete-type} \{td}\n", td); };
+      let tctx = unify(lhs-type, concrete-type, td);
+
+      let has-guarded-cases = false;
+      for Tuple{case-tag1=first, case-fields=second} in (td as Tag::Typedef).cases {
+         if case-tag1 == c"" {
+            for Tuple{field-name1=first, field-type=second} in case-fields {
+               let mangled-field-name1 = c"0_" + field-name1;
+               field-type = tctx.substitute(field-type);
+               decls = "\{decls}\t\{render-declaration(mangled-field-name1,field-type,mk-nil())}\n";
+            }
+         } else has-guarded-cases = true;
+      };
+      let case-number = 1_sz;
+      if has-guarded-cases {
+         decls = "\{decls}\tunion{\n";
+         for Tuple{case-tag2=first, case-fields=second} in (td as Tag::Typedef).cases {
+            if case-tag2 != c"" {
+               if case-fields.length > 0 then decls = "\{decls}\t\tstruct{\n";
+               for Tuple{field-name2=first, field-type=second} in case-fields {
+                  let mangled-field-name2 = case-number.into(type(CString)) + c"_" + field-name2;
+                  field-type = tctx.substitute(field-type);
+                  decls = "\{decls}\t\t\t\{render-declaration(mangled-field-name2,field-type,mk-nil())}\n";
+               };
+               if case-fields.length > 0 then decls = "\{decls}\t\t};\n";
+               case-number = case-number + 1;
+            }
+         };
+         decls = "\{decls}\t};\n";
+      };
+      decls = "\{decls}};\n";
+   };
+
+   print("Direct: \{decls}\n");
+
+   decls
 );
 
 let render(): String = (
@@ -9544,10 +9630,6 @@ let register-frontend(extension: CString, hook: CString -> Nil): Nil = (
    plugins-frontends-index = plugins-frontends-index.bind(extension, hook);
 );
 
-let preprocess(): Nil = (
-   index-typedefs(ast-parsed-program);
-);
-
 let release-locals(tctx-before: PBTree<k,v>, tctx-after: PBTree<k,v>, tctx-after-iter: PBTree<k,v>, pid-seen: Set<U32>): (Set<U32>, PBTree<k,v>) = (
    if is(tctx-before,tctx-after) then (pid-seen, tctx-after)
    else match tctx-after-iter {
@@ -10552,6 +10634,7 @@ let try-destructure-macro(loc: SourceLocation, lhs: AST, term: AST): AContext? =
 );
 
 let typecheck(): Nil = (
+   index-typedefs(ast-parsed-program);
    infer-global-macro(ast-parsed-program);
    ast-parsed-program = infer-global-context-prim(ast-parsed-program);
    infer-global-context-td(ast-parsed-program);
@@ -10782,7 +10865,6 @@ let main(argc: C<"int">, argv: CString[]): Nil = (
       match argv[argi] {
          c"--typecheck" => config-mode = ModeTypecheck();
          c"--parse" => config-mode = ModeParse();
-         c"--preprocess" => config-mode = ModePreprocess();
          c"--compile" => config-mode = ModeCompile();
          c"--highlight" => (
             config-mode = ModeTokenize();
@@ -10833,11 +10915,6 @@ let main(argc: C<"int">, argv: CString[]): Nil = (
          for fp3 in input.reverse { frontend(fp3); };
          print("\{ast-parsed-program}\n");
       );
-      ModePreprocess{} => (
-         for fp32 in input.reverse { frontend(fp32); };
-         preprocess();
-         print("\{ast-parsed-program}\n");
-      );
       _ => (
          for fp4 in input.reverse { frontend(fp4); };
          if show-alloc-count-in-program {
@@ -10866,8 +10943,8 @@ let main(argc: C<"int">, argv: CString[]): Nil = (
          };
          ast-parsed-count = ast-count;
          match config-mode {
-            ModeTypecheck{} => (preprocess(); typecheck(););
-            ModeCompile{} => (preprocess(); typecheck(); plugin-current-backend(););
+            ModeTypecheck{} => (typecheck(););
+            ModeCompile{} => (typecheck(); plugin-current-backend(););
          };
          ast-typed-count = ast-count;
       );
@@ -11036,7 +11113,6 @@ import SRC/typecheck-tctx-substitute.lsts;
 import SRC/typecheck-try-destructure-macro.lsts;
 import SRC/typecheck-validate-interfaces.lsts;
 import SRC/typecheck-index-typedefs.lsts;
-import SRC/typecheck-preprocess.lsts;
 import SRC/typecheck-infer-type-definition.lsts;
 import SRC/typecheck-assert-no-infinite-types.lsts;
 import SRC/typecheck-assert-one-typed.lsts;
@@ -11349,10 +11425,11 @@ let .escape-as-cstring(in: CString): S = (
       c"\\o"..  rest9 => (out = out + SAtom(c"#"); in = rest9;);
       c"\\s"..  rest10 => (out = out + SAtom(c" "); in = rest10;);
       c"\\t"..  rest11 => (out = out + SAtom(c"\\\\t"); in = rest11;);
-      c"\\"..   rest12 => fail("Illegal Escape Character: \{head(rest12)}");
-      rest13 => (
-         out = out + SAtom(clone-rope(head(rest13)));
-         in = tail(rest13);
+      c"\n"..   rest12 => (out = out + SAtom(c"\\\\n"); in = rest12;);
+      c"\\"..   rest13 => fail("Illegal Escape Character: \{head(rest13)}");
+      rest14 => (
+         out = out + SAtom(clone-rope(head(rest14)));
+         in = tail(rest14);
       );
    }};
    SAtom(c"\"") + out + SAtom(c"\"")
