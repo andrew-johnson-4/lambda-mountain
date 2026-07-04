@@ -1702,6 +1702,8 @@ let :Blob mangle(t: L): L;
 let :Blob mangle-pre(t: Type<Any>): L;
 let :Blob mangle-post(t: Type<Any>): L;
 
+let :Blob import(t: L): Nil;
+
 type List<x> implies MustRetain, MustRelease zero LEOF = LEOF | LCons { head: x, tail: OneOwnedData<List<x>>[] };
 
 # new allocations = 1
@@ -4819,8 +4821,6 @@ let render-forward-type-declaration(t: AST): String = (
       decls = "\{decls}typedef struct \{render(concrete-type)} \{render(concrete-type)};\n";
    };
 
-   print("Forwards: \{decls}\n");
-
    decls
 );
 
@@ -4864,14 +4864,11 @@ let render-direct-type-declaration(t: AST): String = (
       decls = "\{decls}};\n";
    };
 
-   print("Direct: \{decls}\n");
-
    decls
 );
 
 let render(): String = (
-   (ast-parsed-program, let includes) = render-includes(ast-parsed-program);
-   includes +
+   render-includes(ast-parsed-program) +
    render-forward-type-declaration(ast-parsed-program) +
    render-direct-type-declaration(ast-parsed-program) +
    render-forward-function-declaration(ast-parsed-program) +
@@ -4879,9 +4876,22 @@ let render(): String = (
    render(ast-parsed-program)
 );
 
-let render-includes(t: AST): (AST, String) = (
-   (t, "")
+let render-includes(t: AST): String = (
+   match t {
+      Seq{seq=seq} => (
+         let decls = "";
+         for s in seq {
+            decls = decls + render-includes(s);
+         };
+         decls
+      );
+      App{ left:Var{key:c"import"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{fp=key}, right:AType{} } } } => (
+         "#include <\{fp}>\n";
+      );
+      _ => "";
+   }
 );
+
 let render-forward-function-declaration(t: AST): String = (
    match t {
       Seq{seq=seq} => (
@@ -7355,6 +7365,9 @@ let tv1(name: CString, p2: Type): Type = TVar(name, mk-vector(type(Type)).push(p
 
 # new allocations = 0 (constant)
 let type-nil = t0(c"Nil");
+
+# new allocations = 0 (constant)
+let type-l = t0(c"L");
 
 # new allocations = 0 (constant)
 let type-any = t0(c"Any");
@@ -15478,8 +15491,9 @@ let lsts-parse-top-level(tokens: List<Token>): Tuple<AST,List<Token>> = (
             tokens = tail(tokens);
          };
          lsts-parse-expect(c";",tokens); tokens = tail(tokens);
-         frontend(clone-rope(path));
-         (mk-eof(), tokens);
+         let cpath = clone-rope(path);
+         frontend(cpath);
+         (mk-app(mk-var(c"import"), mk-lit(cpath).ascript(type-l)), tokens);
       );
       _ => (
          (let t, tokens) = lsts-parse-assign(tokens);
