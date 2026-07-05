@@ -35,7 +35,7 @@ let .into(t: AST, tgt: Type<String>): String = (
          let s = "$fragment{";
          for Tuple{k=first, v=second} in kvs.as-vector {
             if s != "$fragment{" then s = "\{s},";
-            s = "s\{k}:\{v}";
+            s = "\{s}\{k}:\{v}";
          };
          "\{s}}";
       );
