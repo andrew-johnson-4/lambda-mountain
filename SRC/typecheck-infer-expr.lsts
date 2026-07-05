@@ -168,6 +168,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             };
          };
       );
+      Fragment{} => (
+         tctx = tctx.ascript(term, hint);
+      );
       App{asc=left:Var{key:c"as"}, right:App{t=left,right:AType{tt=tt}}} => (
          let original-tt = tt;
          tt = tt.rewrite-type-alias.expand-implied-phi;
