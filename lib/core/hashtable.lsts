@@ -165,6 +165,16 @@ let .as-vector(table: Hashtable<Sized<k>,v>): Vector<(k,v)> = (
 
 let .as-vector(table: Hashtable<k,v>): Vector<(k,v)> = (
    let v = mk-vector(type((k,v)));
+   let data = table.data;
+   let ki = 0_sz;
+   if (data as U64) != 0 {
+   while ki < data.capacity {
+      let kv = data.data[ki];
+      if is(kv.first,HashtableRowFilled) {
+         v.push((k.second, k.third));
+      };
+      ki = ki + 1;
+   }};
    v
 );
 
