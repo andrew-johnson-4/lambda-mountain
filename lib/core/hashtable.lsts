@@ -160,6 +160,16 @@ let .has-key(h: Hashtable<k,v>, key: k): Bool = h[key].is-some;
 
 let .as-vector(table: Hashtable<Sized<k>,v>): Vector<(k,v)> = (
    let v = mk-vector(type((k,v)));
+   let data = table.data;
+   let ki = 0_sz;
+   if (data as U64) != 0 {
+   while ki < data.capacity {
+      let kv = data.data[ki];
+      if is(kv.first,HashtableRowFilled) {
+         v = v.push((kv.second, kv.third));
+      };
+      ki = ki + 1;
+   }};
    v
 );
 
@@ -171,7 +181,7 @@ let .as-vector(table: Hashtable<k,v>): Vector<(k,v)> = (
    while ki < data.capacity {
       let kv = data.data[ki];
       if is(kv.first,HashtableRowFilled) {
-         v.push((k.second, k.third));
+         v = v.push((kv.second, kv.third));
       };
       ki = ki + 1;
    }};
