@@ -221,14 +221,15 @@ let render(t: AST): String = (
          "((\{render(cond)})?(\{render(tterm)}):(\{render(fterm)}))"
       );
       App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
-      App{ left:Var{key:c"import"}, right:Lit{} } => "";
+      App{ left:Var{key:c"import"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{}, right:AType{} } } } => "";
       App{left=left, right=right} => (
          let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
             print("Apply Blob args \{right}\n");
             print("Apply Blob body \{fterm}\n");
-         } if typeof-term(t).is-t(interned-tag-cons,2)
+            ""
+         } else if typeof-term(t).is-t(interned-tag-cons,2)
          then (
             if typeof-term(right).is-datatype and typeof-term(left).is-datatype-or-cons-datatype
             then "\{render(left)},\{render(right)}"
