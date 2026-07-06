@@ -1,11 +1,13 @@
 
+let .frame(f: Hashtable<CString,S>): S = f.lookup(c"frame", SNil);
+let .expression(f: Hashtable<CString,S>): S = f.lookup(c"expression", SNil);
+
 let render(): String = (
    render-includes(ast-parsed-program) +
    render-forward-type-declaration(ast-parsed-program) +
    render-direct-type-declaration(ast-parsed-program) +
    render-forward-function-declaration(ast-parsed-program) +
-   render-direct-function-declaration(ast-parsed-program) +
-   render(ast-parsed-program)
+   render-direct-function-declaration(ast-parsed-program)
 );
 
 let render-includes(t: AST): String = (
@@ -49,6 +51,7 @@ let render-forward-function-declaration(t: AST): String = (
 let render-direct-function-declaration(t: AST): String = (
    match t {
       Seq{seq=seq} => (
+         let global-frames = "";
          let global-expressions = "";
          let global-functions = "";
          let main-function = mk-eof();
@@ -58,7 +61,8 @@ let render-direct-function-declaration(t: AST): String = (
                Glb{val:Abs{}} => global-functions = global-functions + render-direct-function-declaration(s);
                _ => (
                   let e = render(s);
-                  if non-zero(e) then global-expressions = global-expressions + e + ";";
+                  if non-zero(e) and non-zero(e.frame) then global-frames = global-frames + e.frame + ";";
+                  if non-zero(e) and non-zero(e.expression) then global-expressions = global-expressions + e.expression + ";";
                );
             };
          };
