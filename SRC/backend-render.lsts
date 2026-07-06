@@ -51,8 +51,8 @@ let render-forward-function-declaration(t: AST): String = (
 let render-direct-function-declaration(t: AST): String = (
    match t {
       Seq{seq=seq} => (
-         let global-frames = "";
-         let global-expressions = "";
+         let global-frames = SNil;
+         let global-expressions = SNil;
          let global-functions = "";
          let main-function = mk-eof();
          for s in seq {
@@ -66,20 +66,23 @@ let render-direct-function-declaration(t: AST): String = (
                );
             };
          };
-         global-functions + render-direct-function-declaration(global-expressions, main-function);
+         global-functions + render-direct-function-declaration(global-frames + global-expressions, main-function);
       );
-      Glb{val:Abs{}} => render-direct-function-declaration("", t);
-      _ => render-direct-function-declaration(render(t), mk-eof());
+      Glb{val:Abs{}} => render-direct-function-declaration(SNil, t);
+      _ => (
+         let rt = render(t);
+         render-direct-function-declaration(rt.frame + rt.expression, mk-eof());
+      );
    }
 );
 
-let render-direct-function-declaration(exprs: String, t: AST): String = (
+let render-direct-function-declaration(exprs: S, t: AST): String = (
    match t {
       Glb{key=key, val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
          if not tt.is-t(interned-tag-blob,0) and
             not tt.is-t(interned-tag-typed-macro,0)
          then (
-            "\{render(typeof-term(t).range)} \{key.key}(\{render-function-parameters(lhs)}){\{exprs}\{render-return(rhs)}}\n"
+            "\{SNil}\{render(typeof-term(t).range)} \{key.key}(\{render-function-parameters(lhs)}){\{exprs}\{render-return(rhs)}}\n"
          ) else ""
       );
       ASTEOF{} => "int main(){\{exprs}}\n";
@@ -98,7 +101,7 @@ let render-function-parameters(lhs: AST): String = (
       );
       App{ left:Lit{key:c":"}, right:App{ vbind=left:Var{vid=key}, right:AType{vtt=tt} } } => (
          if vtt.is-datatype
-         then "\{render(vtt)} \{render(vbind)}"
+         then "\{render(vtt)} \{render(vbind).expression}"
          else ""
       );
       _ => "";
@@ -133,12 +136,14 @@ let render-statement(t: AST): String = (
          then render-statement(left) + render-statement(right)
          else (
             let rt = render(t);
-            if non-zero(rt) then "\{rt};" else ""
+            rt = rt.set(c"expression", if non-zero(rt.expression) then "\{rt.expression};" else "");
+            rt
          );
       );
       _ => (
          let rt = render(t);
-         if non-zero(rt) then "\{rt};" else ""
+         rt = rt.set(c"expression", if non-zero(rt.expression) then "\{rt.expression};" else "");
+         rt
       );
    };
 );
@@ -164,9 +169,10 @@ let render-global-declaration(t: AST): String = (
 
 let render-declaration(k: CString, kt: Type, t: AST): String = (
    (let prefix, let suffix) = render-declaration(kt);
+   let rt = render(t);
    if t.is-nil-constant
    then "\{prefix} \{k}\{suffix};"
-   else "\{prefix} \{k}\{suffix} = \{render(t)};"
+   else "\{rt.frame}\{prefix} \{k}\{suffix} = \{rt.expression};"
 );
 
 let render-declaration(tt: Type): (String, String) = (
