@@ -42,6 +42,13 @@ let $"+"(l: S, r: S): S = (
       else (l = r);
    ); l
 );
+let $"+"(l: S, r: String): S = (
+   if non-zero(r) then (
+      if non-zero(l)
+      then (l = SCons(close(l), close(SAtom(r))))
+      else (l = SAtom(r));
+   ); l
+);
 
 let $"=="(ls: S, rs: S): Bool = (
    match (Tuple( ls, rs )) {
