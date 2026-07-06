@@ -1,11 +1,28 @@
 
 let render(): String = (
+   render-context(ast-parsed-program);
    render-includes(ast-parsed-program) +
    render-forward-type-declaration(ast-parsed-program) +
    render-direct-type-declaration(ast-parsed-program) +
    render-forward-function-declaration(ast-parsed-program) +
    render-direct-function-declaration(ast-parsed-program) +
    render(ast-parsed-program)
+);
+
+let render-context(t: AST): Nil = (
+   match t {
+      Seq{seq=seq} => (
+         for s in seq {
+            render-context(s);
+         };
+      );
+      Glb{key=key, val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
+         if tt.is-t(interned-tag-blob,0) {
+            print("Render Blob \{t}\n");
+         };
+      );
+      _ => ();
+   }
 );
 
 let render-includes(t: AST): String = (
