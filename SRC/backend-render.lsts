@@ -227,20 +227,20 @@ let render(t: AST): Hashtable<CString,S> = (
          };
          result;
       );
-      #App{asc=left:Var{key:c"as"}, right:App{it=left,ot=right:AType{tt=tt}}} => (
-      #   let f = render(it);
-      #   f.set(c"expression", "((\{render(tt)})(\{f.expression}}))");
-      #);
-      #App{ left:Var{key:c"scope"}, st=right } => render(st);
-      #App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => mk-io-expression("(sizeof(\{render(tt)}))");
-      #App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => mk-io-expression(render-declaration(lname, typeof-term(rhs), rhs));
-      #App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
-      #   let cf = render(cond);
-      #   let tf = render(tterm);
-      #   let ff = render(fterm);
-      #   let f = cf.chain(tf).chain(ff);
-      #   f.set(c"expression", "((\{cf.expression})?(\{tf.expression}):(\{ff.expression}))");
-      #);
+      App{asc=left:Var{key:c"as"}, right:App{it=left,ot=right:AType{tt=tt}}} => (
+         let f = render(it);
+         f.set(c"expression", "((\{render(tt)})(\{f.expression}}))");
+      );
+      App{ left:Var{key:c"scope"}, st=right } => render(st);
+      App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => mk-io-expression("(sizeof(\{render(tt)}))");
+      App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => mk-io-expression(render-declaration(lname, typeof-term(rhs), rhs));
+      App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
+         let cf = render(cond);
+         let tf = render(tterm);
+         let ff = render(fterm);
+         let f = cf + tf + ff;
+         f.set(c"expression", "((\{cf.expression})?(\{tf.expression}):(\{ff.expression}))");
+      );
       #App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
       #App{ left:Var{key:c"import"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{}, right:AType{} } } } => mk-io-fragment();
       #App{left=left, right=right} => (
@@ -257,14 +257,14 @@ let render(t: AST): Hashtable<CString,S> = (
       #      else "\{render(left)}\{render(right)}"
       #   ) else "\{render(left)}(\{render(right)})"
       #);
-      #ASTNil{} => mk-io-fragment();
-      #ASTEOF{} => mk-io-fragment();
-      #Lit{key1=key} => mk-io-expression(key1.into(type(String)));
-      #Var{key2=key} => mk-io-expression(key2.into(type(String)));
+      ASTNil{} => mk-io-fragment();
+      ASTEOF{} => mk-io-fragment();
+      Lit{key1=key} => mk-io-expression(key1.into(type(String)));
+      Var{key2=key} => mk-io-expression(key2.into(type(String)));
       #AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
-      #AType{tt=tt} => mk-io-expression(render(tt));
-      #Glb{} => mk-io-fragment();
-      #Typedef{} => mk-io-fragment();
+      AType{tt=tt} => mk-io-expression(render(tt));
+      Glb{} => mk-io-fragment();
+      Typedef{} => mk-io-fragment();
       #_ => fail("render unknown term \{t}");
    }
 );
