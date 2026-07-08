@@ -241,22 +241,24 @@ let render(t: AST): Hashtable<CString,S> = (
          let f = cf + tf + ff;
          f.set(c"expression", "((\{cf.expression})?(\{tf.expression}):(\{ff.expression}))");
       );
-      #App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
-      #App{ left:Var{key:c"import"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{}, right:AType{} } } } => mk-io-fragment();
-      #App{left=left, right=right} => (
-      #   let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
-      #   if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
-      #      let fterm = tr.get-or-panic.blame-or-zero;
-      #      print("Apply Blob args \{right}\n");
-      #      print("Apply Blob body \{fterm}\n");
-      #      ""
-      #   } else if typeof-term(t).is-t(interned-tag-cons,2)
-      #   then (
-      #      if typeof-term(right).is-datatype and typeof-term(left).is-datatype-or-cons-datatype
-      #      then "\{render(left)},\{render(right)}"
-      #      else "\{render(left)}\{render(right)}"
-      #   ) else "\{render(left)}(\{render(right)})"
-      #);
+      App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
+      App{ left:Var{key:c"import"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{}, right:AType{} } } } => mk-io-fragment();
+      App{left=left, right=right} => (
+         let lt = render(left);
+         let rt = render(right);
+         let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
+         if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
+            let fterm = tr.get-or-panic.blame-or-zero;
+            print("Render blob args \{right}\n");
+            print("Render blob body \{fterm}\n");
+            mk-io-fragment()
+         } else if typeof-term(t).is-t(interned-tag-cons,2)
+         then (
+            if typeof-term(right).is-datatype and typeof-term(left).is-datatype-or-cons-datatype
+            then (lt + rt).set(c"expression", "\{lt.expression},\{rt.expression}")
+            else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
+         ) else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
+      );
       ASTNil{} => mk-io-fragment();
       ASTEOF{} => mk-io-fragment();
       Lit{key1=key} => mk-io-expression(key1.into(type(String)));
