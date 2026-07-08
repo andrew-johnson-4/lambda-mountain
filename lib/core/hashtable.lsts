@@ -196,14 +196,14 @@ let cmp(h1: Hashtable<k,v>, h2: Hashtable<k,v>): Ord = (
 
 let $"+"(l: Hashtable<k,v>, r: Hashtable<k,v>): Hashtable<k,v> = (
    let out = mk-hashtable(type(k), type(v));
-   for Tuple{tk=first, tv=second} in l.as-vector {
-      if r.has-key(tk)
-      then out = out.bind(tk, tv + r[tk].get-or-panic);
-      else out = out.bind(tk, tv);
+   for Tuple{tk1=first, tv1=second} in l.as-vector {
+      if r.has-key(tk1)
+      then out = out.bind(tk1, tv1 + r[tk1].get-or-panic);
+      else out = out.bind(tk1, tv1);
    };
-   for Tuple{tk=first, tv=second} in r.as-vector {
-      if not out.has-key(tk)
-      then out = out.bind(tk, tv);
+   for Tuple{tk2=first, tv2=second} in r.as-vector {
+      if not out.has-key(tk2)
+      then out = out.bind(tk2, tv2);
    };
    out
 );
