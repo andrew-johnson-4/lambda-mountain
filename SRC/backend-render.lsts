@@ -251,7 +251,7 @@ let render(t: AST): Hashtable<CString,S> = (
             let fterm = tr.get-or-panic.blame-or-zero;
             let tctx = Some(mk-tctx()).apply-lhs(fterm, right);
             print("TCTX:\n");
-            print(tctx.into(type(String)));
+            print(tctx.into-with-blame(type(String)));
             mk-io-fragment()
          } else if typeof-term(t).is-t(interned-tag-cons,2)
          then (
