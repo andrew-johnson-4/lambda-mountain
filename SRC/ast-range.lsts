@@ -3,6 +3,6 @@ let .range(t: AST): AST = (
    match t {
       Glb{val=val} => val.range;
       Abs{rhs=rhs} => rhs;
-      t => t;
+      r => r;
    };
 );

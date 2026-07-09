@@ -43,5 +43,13 @@ let .substitute(tctx: TypeContext?, t: AST, is-return: Bool): AST = (
          };
          mk-glb(k.unique,tctx.substitute(rt))
       );
+      Fragment{kvs=kvs, location=location} => (
+         let new-kvs = mk-hashtable(type(CString), type(AST));
+         for Tuple{fk=first, fv=second} in kvs.as-vector {
+            new-kvs = new-kvs.bind(fk, tctx.substitute(fv));
+         };
+         mk-fragment(kvs, location);
+      );
+      _ => fail("tctx.substitute unknown term \{t}\n");
    }
 );

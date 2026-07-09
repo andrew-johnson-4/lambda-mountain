@@ -3,6 +3,6 @@ let .domain(t: AST): AST = (
    match t {
       Glb{val=val} => val.domain;
       Abs{lhs=lhs} => lhs;
-      t => t;
+      r => r;
    };
 );
