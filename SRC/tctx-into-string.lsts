@@ -25,3 +25,12 @@ let .into(tctx: Maybe<TypeContext>, tt: Type<String>): String = (
    result = result + tctx.get-or(mk-tctx()).pctx.into(type(String));
    result
 );
+
+let .into-with-blame(tctx: Maybe<TypeContext>, tt: Type<String>): String = (
+   let result = "";
+   for tr in tctx.get-or(mk-tctx()).tctx {
+      result = result + "\{tr.key-or-zero} : \{tr.direct-type} = \{tr.blame-or-zero}\n";
+   };
+   result = result + tctx.get-or(mk-tctx()).pctx.into(type(String));
+   result
+);

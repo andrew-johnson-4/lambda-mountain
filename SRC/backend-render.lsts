@@ -249,8 +249,9 @@ let render(t: AST): Hashtable<CString,S> = (
          let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
-            print("Render blob args \{right}\n");
-            print("Render blob body \{fterm}\n");
+            let tctx = Some(mk-tctx()).apply-lhs(fterm, right);
+            print("TCTX:\n");
+            print(tctx.into(type(String)));
             mk-io-fragment()
          } else if typeof-term(t).is-t(interned-tag-cons,2)
          then (

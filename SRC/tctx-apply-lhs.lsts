@@ -1,0 +1,25 @@
+
+# this method assumes that function type matches argument type
+# if there are domain mismatches here it is not the responsibility of this function to catch them
+# i.e. (x: A)(1, 2) should never happen to bind a cons cell into a single arg.
+let .apply-lhs(tctx: TypeContext?, f: AST, args: AST): TypeContext? = (
+   match f {
+      Glb{val=val} => tctx = tctx.apply-lhs(val, args);
+      Abs{lhs=lhs} => tctx = tctx.apply-lhs(lhs, args);
+      App{ left:Lit{key:c":"}, right:App{ left:Var{k1=key}, right:AType{kt=tt} } } => (
+         tctx = tctx.bind(k1, kt, args);
+      );
+      App{ frst=left, right:App{ left:Lit{key:c":"}, right:App{ left:Var{k2=key}, right:AType{kt=tt} } } } => (
+         match args {
+            App{ left=left, right=right } => (
+               tctx = tctx.apply-lhs(frst, left);
+               tctx = tctx.bind(k2, kt, right);
+            );
+            _ => fail("tctx.apply-lhs domain mismatch f=\{f} args=\{args}");
+         }
+      );
+      ASTNil{} => ();
+      _ => fail("tctx.apply-lhs domain mismatch f=\{f} args=\{args}");
+   };
+   tctx
+);
