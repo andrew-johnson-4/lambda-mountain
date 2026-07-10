@@ -1,0 +1,2 @@
+
+let or(l: AST, r: AST): AST = if non-zero(l) then l else r;

@@ -252,7 +252,7 @@ let render(t: AST): Hashtable<CString,S> = (
             let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
             print("TCTX:\n");
             print(tctx.into-with-blame(type(String)));
-            let beta = tctx.substitute(fterm.range);
+            let beta = tctx.beta-substitute(fterm.range);
             print("BETA: \{beta}\n");
             mk-io-fragment()
          } else if typeof-term(t).is-t(interned-tag-cons,2)

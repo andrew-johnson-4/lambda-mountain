@@ -48,7 +48,47 @@ let .substitute(tctx: TypeContext?, t: AST, is-return: Bool): AST = (
          for Tuple{fk=first, fv=second} in kvs.as-vector {
             new-kvs = new-kvs.bind(fk, tctx.substitute(fv));
          };
-         mk-fragment(kvs, location);
+         mk-fragment(new-kvs, location);
+      );
+      _ => fail("tctx.substitute unknown term \{t}\n");
+   }
+);
+
+let .beta-substitute(tctx: TypeContext?, t: AST): AST = tctx.beta-substitute(t,false);
+
+let .beta-substitute(tctx: TypeContext?, t: AST, is-return: Bool): AST = (
+   match t {
+      ASTEOF{} => t;
+      ASTNil{} => t;
+      Var{v2=key,vtk2=token} => tctx.lookup(v2).blame-or-zero or t;
+      Lit{v3=key,vtk3=token} => mk-var(v3,vtk3.unique);
+      Abs{lhs=lhs,rhs=rhs,tt1=tt} => mk-abs(substitute-lhs(tctx,lhs),tctx.beta-substitute(rhs,true),tctx.substitute(tt1));
+      AType{tt2=tt} => mk-atype(tctx.substitute(tt2).sanitize-phi);
+      App{is-cons=is-cons,lt=left,rt=right} => mk-cons-or-app(is-cons,tctx.beta-substitute(lt),tctx.beta-substitute(rt));
+      Seq{seq=seq} => (
+         t = mk-eof();
+         for s in seq { t = t + tctx.beta-substitute(s); };
+         t
+      );
+      Glb{k=key, rt=val} => (
+         let found = false;
+         for TypeContextRow{tk2=key,ta=def} in tctx.get-or(mk-tctx()).tctx {
+            if not(found) and k.key==tk2 {
+               match ta {
+                  Var{tvtk=token} => k = tvtk;
+                  _ => ();
+               };
+               found = true;
+            }
+         };
+         mk-glb(k.unique,tctx.beta-substitute(rt))
+      );
+      Fragment{kvs=kvs, location=location} => (
+         let new-kvs = mk-hashtable(type(CString), type(AST));
+         for Tuple{fk=first, fv=second} in kvs.as-vector {
+            new-kvs = new-kvs.bind(fk, tctx.beta-substitute(fv));
+         };
+         mk-fragment(new-kvs, location);
       );
       _ => fail("tctx.substitute unknown term \{t}\n");
    }
