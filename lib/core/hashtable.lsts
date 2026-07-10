@@ -207,3 +207,12 @@ let $"+"(l: Hashtable<k,v>, r: Hashtable<k,v>): Hashtable<k,v> = (
    };
    out
 );
+
+let .into(h: Hashtable<k,v>, tt: Type<String>): String = (
+   let r = "{";
+   for Tuple{k1=first, v1=second} in h.as-vector {
+      if r != "{" then r = r + ",";
+      r = "\{r}\{k1}:\{v1}";
+   };
+   r + "}";
+);

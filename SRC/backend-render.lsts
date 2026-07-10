@@ -229,7 +229,7 @@ let render(t: AST): Hashtable<CString,S> = (
       );
       App{asc=left:Var{key:c"as"}, right:App{it=left,ot=right:AType{tt=tt}}} => (
          let f = render(it);
-         f.set(c"expression", "((\{render(tt)})(\{f.expression}}))");
+         f.set(c"expression", "((\{render(tt)})(\{f.expression}))");
       );
       App{ left:Var{key:c"scope"}, st=right } => render(st);
       App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => mk-io-expression("(sizeof(\{render(tt)}))");
@@ -250,17 +250,24 @@ let render(t: AST): Hashtable<CString,S> = (
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
             let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
-            print("TCTX:\n");
-            print(tctx.into-with-blame(type(String)));
-            let beta = tctx.beta-substitute(fterm.range);
-            print("BETA: \{beta}\n");
-            mk-io-fragment()
+            match tctx.beta-substitute(fterm.range) {
+               App{ left:Lit{key:c":"}, right:App{ f=left:Fragment{}, right:AType{} } } => render(f);
+               f => render(f);
+            };
          } else if typeof-term(t).is-t(interned-tag-cons,2)
          then (
             if typeof-term(right).is-datatype and typeof-term(left).is-datatype-or-cons-datatype
             then (lt + rt).set(c"expression", "\{lt.expression},\{rt.expression}")
             else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
          ) else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
+      );
+      Fragment{kvs=kvs} => (
+         let f = mk-io-fragment();
+         for Tuple{fk=first, fv=second} in kvs.as-vector {
+            f = f.set(fk, render(fv).expression);
+         };
+         print("fragment: \{f}\n");
+         f
       );
       ASTNil{} => mk-io-fragment();
       ASTEOF{} => mk-io-fragment();
