@@ -77,8 +77,9 @@ let render-direct-function-declaration(t: AST): String = (
       #);
       Glb{val:Abs{}} => render-direct-function-declaration(SNil, t);
       _ => (
-         let rt = render(t);
-         render-direct-function-declaration(rt.frame + rt.expression, mk-eof());
+         let rt = render-statement(t);
+         let result = render-direct-function-declaration(rt.frame + rt.expression, mk-eof());
+         result
       );
    }
 );
@@ -244,6 +245,7 @@ let render(t: AST): Hashtable<CString,S> = (
          f.set(c"expression", "((\{cf.expression})?(\{tf.expression}):(\{ff.expression}))");
       );
       App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
+      App{ left:Var{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
       App{ left:Var{key:c"import"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{}, right:AType{} } } } => mk-io-fragment();
       App{left=left, right=right} => (
          let lt = render(left);
@@ -268,7 +270,6 @@ let render(t: AST): Hashtable<CString,S> = (
          for Tuple{fk=first, fv=second} in kvs.as-vector {
             f = f.set(fk, render(fv).expression);
          };
-         print("fragment: \{f}\n");
          f
       );
       ASTNil{} => mk-io-fragment();
@@ -280,7 +281,7 @@ let render(t: AST): Hashtable<CString,S> = (
       Glb{} => mk-io-fragment();
       Typedef{} => mk-io-fragment();
       #_ => fail("render unknown term \{t}");
-   }
+   };
 );
 
 let render(tt: Type): String = (

@@ -8,4 +8,4 @@ lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"let 
 lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"f(l\"1\" as A, l\"2\" as B);"));
 typecheck();
 print(render());
-assert( render() == "12" );
+assert( render() == "int main(){12;}\n" );
