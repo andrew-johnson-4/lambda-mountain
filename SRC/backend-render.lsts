@@ -229,7 +229,9 @@ let render(t: AST): Hashtable<CString,S> = (
       );
       App{asc=left:Var{key:c"as"}, right:App{it=left,ot=right:AType{tt=tt}}} => (
          let f = render(it);
-         f.set(c"expression", "((\{render(tt)})(\{f.expression}))");
+         if not typeof-term(it).is-t(interned-tag-l,0)
+         then f = f.set(c"expression", "((\{render(tt)})(\{f.expression}))");
+         f
       );
       App{ left:Var{key:c"scope"}, st=right } => render(st);
       App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => mk-io-expression("(sizeof(\{render(tt)}))");
