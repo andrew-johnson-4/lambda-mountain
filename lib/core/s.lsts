@@ -7,6 +7,8 @@ type S zero SNil = SNil
 # TODO: remove after GC enabled, this is for compatibility of constructors
 let $"SAtom"(key: CString): S = SAtom(key.into(type(String)));
 
+let .into(s: S, tt: Type<String>): String = clone-rope(s).into(type(String));
+
 let clone-rope(s: S): CString = (
    let out = mk-vector(type(U8));
    out = clone-rope-impl(s, out);
@@ -40,6 +42,13 @@ let $"+"(l: S, r: S): S = (
       if non-zero(l)
       then (l = SCons(close(l), close(r)))
       else (l = r);
+   ); l
+);
+let $"+"(l: S, r: String): S = (
+   if non-zero(r) then (
+      if non-zero(l)
+      then (l = SCons(close(l), close(SAtom(r))))
+      else (l = SAtom(r));
    ); l
 );
 

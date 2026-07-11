@@ -25,3 +25,4 @@ import SRC/tctx-misc-globals.lsts;
 import SRC/typecheck-infer-tctx.lsts;
 import SRC/tctx-move-diff.lsts;
 import SRC/tctx-prune-moved.lsts;
+import SRC/tctx-apply-lhs.lsts;

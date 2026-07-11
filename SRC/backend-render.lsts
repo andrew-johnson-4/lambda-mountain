@@ -1,11 +1,20 @@
 
+let .frame(f: Hashtable<CString,S>): S = f.lookup(c"frame", SNil);
+let .expression(f: Hashtable<CString,S>): S = f.lookup(c"expression", SNil);
+
+let .set(f: Hashtable<CString,S>, key: CString, val: S): Hashtable<CString,S> = f.bind(key,val);
+let .set(f: Hashtable<CString,S>, key: CString, val: String): Hashtable<CString,S> = f.bind(key,SAtom(val));
+
+let mk-io-fragment(): Hashtable<CString,S> = mk-hashtable(type(CString), type(S));
+let mk-io-expression(s: S): Hashtable<CString,S> = mk-hashtable(type(CString), type(S)).bind(c"expression", s);
+let mk-io-expression(s: String): Hashtable<CString,S> = mk-hashtable(type(CString), type(S)).bind(c"expression", SAtom(s));
+
 let render(): String = (
    render-includes(ast-parsed-program) +
    render-forward-type-declaration(ast-parsed-program) +
    render-direct-type-declaration(ast-parsed-program) +
    render-forward-function-declaration(ast-parsed-program) +
-   render-direct-function-declaration(ast-parsed-program) +
-   render(ast-parsed-program)
+   render-direct-function-declaration(ast-parsed-program)
 );
 
 let render-includes(t: AST): String = (
@@ -48,34 +57,41 @@ let render-forward-function-declaration(t: AST): String = (
 
 let render-direct-function-declaration(t: AST): String = (
    match t {
-      Seq{seq=seq} => (
-         let global-expressions = "";
-         let global-functions = "";
-         let main-function = mk-eof();
-         for s in seq {
-            match s {
-               Glb{key:Token{key:c"main"}} => main-function = s;
-               Glb{val:Abs{}} => global-functions = global-functions + render-direct-function-declaration(s);
-               _ => (
-                  let e = render(s);
-                  if non-zero(e) then global-expressions = global-expressions + e + ";";
-               );
-            };
-         };
-         global-functions + render-direct-function-declaration(global-expressions, main-function);
+      #Seq{seq=seq} => (
+      #   let global-frames = SNil;
+      #   let global-expressions = SNil;
+      #   let global-functions = "";
+      #   let main-function = mk-eof();
+      #   for s in seq {
+      #      match s {
+      #         Glb{key:Token{key:c"main"}} => main-function = s;
+      #         Glb{val:Abs{}} => global-functions = global-functions + render-direct-function-declaration(s);
+      #         _ => (
+      #            let e = render(s);
+      #            if non-zero(e) and non-zero(e.frame) then global-frames = global-frames + e.frame + ";";
+      #            if non-zero(e) and non-zero(e.expression) then global-expressions = global-expressions + e.expression + ";";
+      #         );
+      #      };
+      #   };
+      #   SAtom(global-functions) + render-direct-function-declaration(global-frames + global-expressions, main-function);
+      #);
+      Glb{val:Abs{}} => render-direct-function-declaration(SNil, t);
+      _ => (
+         let rt = render-statement(t);
+         let result = render-direct-function-declaration(rt.frame + rt.expression, mk-eof());
+         result
       );
-      Glb{val:Abs{}} => render-direct-function-declaration("", t);
-      _ => render-direct-function-declaration(render(t), mk-eof());
    }
 );
 
-let render-direct-function-declaration(exprs: String, t: AST): String = (
+let render-direct-function-declaration(exprs: S, t: AST): String = (
    match t {
       Glb{key=key, val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
          if not tt.is-t(interned-tag-blob,0) and
             not tt.is-t(interned-tag-typed-macro,0)
          then (
-            "\{render(typeof-term(t).range)} \{key.key}(\{render-function-parameters(lhs)}){\{exprs}\{render-return(rhs)}}\n"
+            let rt = render-return(rhs);
+            "\{render(typeof-term(t).range)} \{key.key}(\{render-function-parameters(lhs)}){\{exprs}\{rt.frame}\{rt.expression}}\n"
          ) else ""
       );
       ASTEOF{} => "int main(){\{exprs}}\n";
@@ -94,14 +110,14 @@ let render-function-parameters(lhs: AST): String = (
       );
       App{ left:Lit{key:c":"}, right:App{ vbind=left:Var{vid=key}, right:AType{vtt=tt} } } => (
          if vtt.is-datatype
-         then "\{render(vtt)} \{render(vbind)}"
+         then "\{render(vtt)} \{render(vbind).expression}"
          else ""
       );
       _ => "";
    };
 );
 
-let render-return(t: AST): String = (
+let render-return(t: AST): Hashtable<CString,S> = (
    match t {
       App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render-return(inner);
       App{is-cons=is-cons, left=left, right=right} => (
@@ -109,19 +125,19 @@ let render-return(t: AST): String = (
          then (
             let lt = render-statement(left);
             let rt = render-statement(right);
-            if non-zero(rt) then "\{lt}return \{rt}"
-            else "\{lt}\{rt}"
+            if non-zero(rt) then (lt + rt).set(c"expression", "\{lt.expression}return \{rt.expression}")
+            else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
          ) else render-statement(t);
       );
       _ => (
          let rt = render-statement(t);
-         if non-zero(rt) then "return \{rt}"
+         if non-zero(rt) then rt.set(c"expression", "return \{rt.expression}");
          else rt
       );
    };
 );
 
-let render-statement(t: AST): String = (
+let render-statement(t: AST): Hashtable<CString,S> = (
    match t {
       App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render-statement(inner);
       App{is-cons=is-cons, left=left, right=right} => (
@@ -129,12 +145,12 @@ let render-statement(t: AST): String = (
          then render-statement(left) + render-statement(right)
          else (
             let rt = render(t);
-            if non-zero(rt) then "\{rt};" else ""
+            rt.set(c"expression", if non-zero(rt.expression) then "\{rt.expression};" else "");
          );
       );
       _ => (
          let rt = render(t);
-         if non-zero(rt) then "\{rt};" else ""
+         rt.set(c"expression", if non-zero(rt.expression) then "\{rt.expression};" else "");
       );
    };
 );
@@ -160,9 +176,10 @@ let render-global-declaration(t: AST): String = (
 
 let render-declaration(k: CString, kt: Type, t: AST): String = (
    (let prefix, let suffix) = render-declaration(kt);
+   let rt = render(t);
    if t.is-nil-constant
    then "\{prefix} \{k}\{suffix};"
-   else "\{prefix} \{k}\{suffix} = \{render(t)};"
+   else "\{rt.frame}\{prefix} \{k}\{suffix} = \{rt.expression};"
 );
 
 let render-declaration(tt: Type): (String, String) = (
@@ -200,10 +217,10 @@ let render-declaration(tt: Type, is-flexible-array-member: Bool): (String, Strin
    }
 );
 
-let render(t: AST): String = (
+let render(t: AST): Hashtable<CString,S> = (
    match t {
       Seq{seq=seq} => (
-         let result = "";
+         let result = mk-io-fragment();
          for s in seq {
             s = mk-app( mk-var(c"macro::backend::render"), s );
             (global-flow-tctx, s) = std-infer-expr(global-flow-tctx, s, false, Used, ta);
@@ -212,33 +229,59 @@ let render(t: AST): String = (
          result;
       );
       App{asc=left:Var{key:c"as"}, right:App{it=left,ot=right:AType{tt=tt}}} => (
-         "((\{render(tt)})(\{render(it)}))"
+         let f = render(it);
+         if not typeof-term(it).is-t(interned-tag-l,0)
+         then f = f.set(c"expression", "((\{render(tt)})(\{f.expression}))");
+         f
       );
       App{ left:Var{key:c"scope"}, st=right } => render(st);
-      App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => "(sizeof(\{render(tt)}))";
-      App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => render-declaration(lname, typeof-term(rhs), rhs);
+      App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => mk-io-expression("(sizeof(\{render(tt)}))");
+      App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => mk-io-expression(render-declaration(lname, typeof-term(rhs), rhs));
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
-         "((\{render(cond)})?(\{render(tterm)}):(\{render(fterm)}))"
+         let cf = render(cond);
+         let tf = render(tterm);
+         let ff = render(fterm);
+         let f = cf + tf + ff;
+         f.set(c"expression", "((\{cf.expression})?(\{tf.expression}):(\{ff.expression}))");
       );
       App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
+      App{ left:Var{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
+      App{ left:Var{key:c"import"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{}, right:AType{} } } } => mk-io-fragment();
       App{left=left, right=right} => (
-         if typeof-term(t).is-t(interned-tag-cons,2)
+         let lt = render(left);
+         let rt = render(right);
+         let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
+         if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
+            let fterm = tr.get-or-panic.blame-or-zero;
+            let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
+            match tctx.beta-substitute(fterm.range) {
+               App{ left:Lit{key:c":"}, right:App{ f=left:Fragment{}, right:AType{} } } => render(f);
+               f => render(f);
+            };
+         } else if typeof-term(t).is-t(interned-tag-cons,2)
          then (
             if typeof-term(right).is-datatype and typeof-term(left).is-datatype-or-cons-datatype
-            then "\{render(left)},\{render(right)}"
-            else "\{render(left)}\{render(right)}"
-         ) else "\{render(left)}(\{render(right)})"
+            then (lt + rt).set(c"expression", "\{lt.expression},\{rt.expression}")
+            else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
+         ) else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
       );
-      ASTNil{} => "";
-      ASTEOF{} => "";
-      Lit{key1=key} => key1.into(type(String));
-      Var{key2=key} => key2.into(type(String));
-      AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
-      AType{tt=tt} => render(tt);
-      Glb{} => "";
-      Typedef{} => "";
-      _ => fail("render unknown term \{t}");
-   }
+      Fragment{kvs=kvs} => (
+         let f = mk-io-fragment();
+         for Tuple{fk=first, fv=second} in kvs.as-vector {
+            f = f.set(fk, render(fv).expression);
+         };
+         f
+      );
+      ASTNil{} => mk-io-fragment();
+      ASTEOF{} => mk-io-fragment();
+      Lit{key1=key} => mk-io-expression(key1.into(type(String)));
+      Var{key2=key} => mk-io-expression(key2.into(type(String)));
+      #AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
+      AType{tt=tt} => mk-io-expression(render(tt));
+      Glb{} => mk-io-fragment();
+      Typedef{} => mk-io-fragment();
+      #_ => fail("render unknown term \{t}");
+   };
 );
 
 let render(tt: Type): String = (

@@ -4,6 +4,8 @@ type HashtableRowExists = HashtableRowEmpty | HashtableRowFilled | HashtableRowM
 type Hashtable<k,v> implies MustRetain, MustRelease
    = { data: SparseOwnedData<(HashtableRowExists,k,v)>[] };
 
+let non-zero(h: Hashtable<k,v>): Bool = (h.data as U64) != 0;
+
 # new allocations = 0 if capacity==0
 #                 | 1
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>, capacity: USize): Hashtable<k,v> = (
@@ -160,14 +162,57 @@ let .has-key(h: Hashtable<k,v>, key: k): Bool = h[key].is-some;
 
 let .as-vector(table: Hashtable<Sized<k>,v>): Vector<(k,v)> = (
    let v = mk-vector(type((k,v)));
+#   let data = table.data;
+#   let ki = 0_sz;
+#   if (data as U64) != 0 {
+#   while ki < data.capacity {
+#      let kv = data.data[ki];
+#      if is(kv.first,HashtableRowFilled) {
+#         v = v.push((kv.second, kv.third));
+#      };
+#      ki = ki + 1;
+#   }};
    v
 );
 
 let .as-vector(table: Hashtable<k,v>): Vector<(k,v)> = (
    let v = mk-vector(type((k,v)));
+   let data = table.data;
+   let ki = 0_sz;
+   if (data as U64) != 0 {
+   while ki < data.capacity {
+      let kv = data.data[ki];
+      if is(kv.first,HashtableRowFilled) {
+         v = v.push((kv.second, kv.third));
+      };
+      ki = ki + 1;
+   }};
    v
 );
 
 let cmp(h1: Hashtable<k,v>, h2: Hashtable<k,v>): Ord = (
    cmp(h1.as-vector.sort, h2.as-vector.sort)
+);
+
+let $"+"(l: Hashtable<k,v>, r: Hashtable<k,v>): Hashtable<k,v> = (
+   let out = mk-hashtable(type(k), type(v));
+   for Tuple{tk1=first, tv1=second} in l.as-vector {
+      if r.has-key(tk1)
+      then out = out.bind(tk1, tv1 + r[tk1].get-or-panic);
+      else out = out.bind(tk1, tv1);
+   };
+   for Tuple{tk2=first, tv2=second} in r.as-vector {
+      if not out.has-key(tk2)
+      then out = out.bind(tk2, tv2);
+   };
+   out
+);
+
+let .into(h: Hashtable<k,v>, tt: Type<String>): String = (
+   let r = "{";
+   for Tuple{k1=first, v1=second} in h.as-vector {
+      if r != "{" then r = r + ",";
+      r = "\{r}\{k1}:\{v1}";
+   };
+   r + "}";
 );

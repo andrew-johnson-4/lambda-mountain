@@ -5,6 +5,7 @@ let assert-well-typed(term: AST): Nil = (
       Typedef{} => ();
       ASTEOF{} => ();
       AType{} => ();
+      Fragment{} => ();
       ASTNil{} => assert-one-typed(term);
       Glb{key=key, val=val} => if not(typeof-term(term).is-open) then assert-well-typed(val);
       App{ left:Abs{}, rhs=right } => (assert-well-typed(rhs); assert-one-typed(term));

@@ -1,0 +1,10 @@
+
+import SRC/unit-codegen-core.lsts;
+import PLUGINS/FRONTEND/LSTS/index.lsts;
+
+ast-parsed-program = mk-eof();
+frontend(c"lib/core/nocode.lsts");
+lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"let :Blob f(x: A, y: B): C = $fragment { expression: (x; y) };"));
+lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"f(l\"1\" as A, l\"2\" as B);"));
+typecheck();
+assert( render() == "int main(){12;}\n" );

@@ -4,7 +4,7 @@ let apply(ctx: AContext, term: AST): AST = (
       ASTEOF{} => term;
       ASTNil{} => term;
       Lit{} => term;
-      AType{tt=tt} => AType(substitute(ctx,tt));
+      AType{tt=tt} => AType(ctx.substitute(tt));
       Var{n=key} => (
          let nr = ctx.lookup(n, mk-eof());
          if non-zero(nr) then nr else term;
@@ -16,6 +16,6 @@ let apply(ctx: AContext, term: AST): AST = (
          for s in seq { return = return + apply(ctx,s) };
          return
       );
-      Glb{key=key, val=val} => mk-glb( substitute(ctx,key), apply(ctx,val) );
+      Glb{key=key, val=val} => mk-glb( ctx.substitute(key), apply(ctx,val) );
    }
 );
