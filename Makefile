@@ -8,7 +8,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recommendation: ulimit -s unlimited
 
 dev:
-	lm tests/promises/backend/render-blob.lsts
+	lm tests/promises/backend/render-printf.lsts
 	gcc tmp.c
 	./a.out
 	echo $?
