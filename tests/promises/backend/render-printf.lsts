@@ -1,10 +1,13 @@
 
 import SRC/unit-codegen-core.lsts;
+import SRC/unit-backend-core.lsts;
 import PLUGINS/FRONTEND/LSTS/index.lsts;
+import PLUGINS/FRONTEND/C/index.lsts;
+import PLUGINS/BACKEND/C/index.lsts;
 
 ast-parsed-program = mk-eof();
 frontend(c"lib/core/baremetal-c.lsts");
 lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"printf(c\"Hello World\\n\");"));
 typecheck();
-print(render(ast-parsed-program));
-assert( render(ast-parsed-program) == "A" );
+print(render());
+assert( render() == "A" );
