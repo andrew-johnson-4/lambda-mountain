@@ -9,5 +9,10 @@ ast-parsed-program = mk-eof();
 frontend(c"lib/core/baremetal-c.lsts");
 lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"printf(c\"Hello World\\n\");"));
 typecheck();
-print(render());
-assert( render() == "A" );
+assert( render() == "#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <regex.h>
+int main(){printf(\"Hello World\\n\");}
+" );

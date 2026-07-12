@@ -76,7 +76,7 @@ let render-direct-function-declaration(t: AST): String = (
       #   };
       #   SAtom(global-functions) + render-direct-function-declaration(global-frames + global-expressions, main-function);
       #);
-      Glb{val:Abs{},tt=tt} => (
+      Glb{val:Abs{tt=tt}} => (
          if tt.is-t(interned-tag-cffi,0)
          then ""
          else render-direct-function-declaration(SNil, t);
@@ -249,11 +249,11 @@ let render(t: AST): Hashtable<CString,S> = (
          let f = cf + tf + ff;
          f.set(c"expression", "((\{cf.expression})?(\{tf.expression}):(\{ff.expression}))");
       );
-      App{ left:Lit{key:c":"}, right:App{ left:Lit{cv=key}, tt=right:AType{} } } => (
+      App{ left:Lit{key:c":"}, right:App{ left:Lit{cv=key}, right:AType{tt=tt} } } => (
          if tt <: type-cstring-literal or
             tt <: type-char-array-literal 
-         then render-cstring(cv)
-         else cv.into(type(String))
+         then mk-io-expression(render-cstring(cv))
+         else mk-io-expression(cv.into(type(String)))
       );
       App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
       App{ left:Var{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
@@ -274,7 +274,7 @@ let render(t: AST): Hashtable<CString,S> = (
             if typeof-term(right).is-datatype and typeof-term(left).is-datatype-or-cons-datatype
             then (lt + rt).set(c"expression", "\{lt.expression},\{rt.expression}")
             else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
-         ) else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
+         ) else (lt + rt).set(c"expression", "\{lt.expression}(\{rt.expression})")
       );
       Fragment{kvs=kvs} => (
          let f = mk-io-fragment();
@@ -298,22 +298,22 @@ let render(t: AST): Hashtable<CString,S> = (
 let render-cstring(cs: CString): String = (
    let s = "\"";
    while non-zero(cs) { match cs {
-      c"\""..  rest1 => (s = s + "\\\\\""); s = tail(s););
-      c"\\:"..  rest2 => (s = s + ";"); s = rest2;);
-      c"\\["..  rest3 => (s = s + "("); s = rest3;);
-      c"\\]"..  rest4 => (s = s + ")"); s = rest4;);
-      c"\\\\".. rest5 => (s = s + "\\\\\\\\"); s = rest5;);
-      c"\\`"..  rest6 => (s = s + "'"); s = rest6;);
-      c"\\l"..  rest7 => (s = s + "λ"); s = rest7;);
-      c"\\n"..  rest8 => (s = s + "\\\\n"); s = rest8;);
-      c"\\o"..  rest9 => (s = s + "#"); s = rest9;);
-      c"\\s"..  rest10 => (s = s + " "); s = rest10;);
-      c"\\t"..  rest11 => (s = s + "\\\\t"); s = rest11;);
-      c"\n"..   rest12 => (s = s + "\\\\n"); s = rest12;);
+      c"\""..  rest1 => (s = s + "\\\""; cs = tail(cs););
+      c"\\:"..  rest2 => (s = s + ";"; cs = rest2;);
+      c"\\["..  rest3 => (s = s + "("; cs = rest3;);
+      c"\\]"..  rest4 => (s = s + ")"; cs = rest4;);
+      c"\\\\".. rest5 => (s = s + "\\\\"; cs = rest5;);
+      c"\\`"..  rest6 => (s = s + "'"; cs = rest6;);
+      c"\\l"..  rest7 => (s = s + "λ"; cs = rest7;);
+      c"\\n"..  rest8 => (s = s + "\\n"; cs = rest8;);
+      c"\\o"..  rest9 => (s = s + "#"; cs = rest9;);
+      c"\\s"..  rest10 => (s = s + " "; cs = rest10;);
+      c"\\t"..  rest11 => (s = s + "\\t"; cs = rest11;);
+      c"\n"..   rest12 => (s = s + "\\n"; cs = rest12;);
       c"\\"..   rest13 => fail("Illegal Escape Character: \{head(rest13)}");
       rest14 => (
          s = s + clone-rope(head(rest14)).into(type(String));
-         s = tail(rest14);
+         cs = tail(rest14);
       );
    }};
    s + "\""
