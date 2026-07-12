@@ -141,7 +141,7 @@ let type-c-void = t1(interned-tag-c,t0(c"void"));
 let type-c-label = t1(interned-tag-c,t0(c":Label"));
 
 # new allocations = 0 (constant)
-let type-c-vararg = t1(interned-tag-c,t0(c"..."));
+let type-c-vararg = t0(interned-tag-vararg);
 
 # new allocations = 0 (constant)
 let type-c-tany = t1(interned-tag-c,ta);
