@@ -45,7 +45,8 @@ let render-forward-function-declaration(t: AST): String = (
          decls
       );
       Glb{key=key, val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
-         if not tt.is-t(interned-tag-blob,0) and
+         if not tt.is-t(interned-tag-cffi,0) and
+            not tt.is-t(interned-tag-blob,0) and
             not tt.is-t(interned-tag-typed-macro,0)
          then (
             "\{render(typeof-term(t).range)} \{key.key}(\{render-function-parameters(lhs)});\n"
@@ -75,7 +76,11 @@ let render-direct-function-declaration(t: AST): String = (
       #   };
       #   SAtom(global-functions) + render-direct-function-declaration(global-frames + global-expressions, main-function);
       #);
-      Glb{val:Abs{}} => render-direct-function-declaration(SNil, t);
+      Glb{val:Abs{},tt=tt} => (
+         if tt.is-t(interned-tag-cffi,0)
+         then ""
+         else render-direct-function-declaration(SNil, t);
+      );
       _ => (
          let rt = render-statement(t);
          let result = render-direct-function-declaration(rt.frame + rt.expression, mk-eof());
