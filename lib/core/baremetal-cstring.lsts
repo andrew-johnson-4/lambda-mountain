@@ -1,0 +1,2 @@
+
+type alias CString suffix _s = C<"char">[];

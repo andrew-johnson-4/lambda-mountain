@@ -29,12 +29,12 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       );
       Tuple{
           first:TGround{tag:interned-tag-cons, parameters:[
-             TGround{tag:interned-tag-vararg, parameters:[lp1..]}..
+             TGround{tag:interned-tag-vararg, parameters:[]}..
              lpr..
           ]},
           rp1=second
       } => (
-         if can-unify(lp1,rp1) then can-unify(lpr,type-nil) else can-unify(lpr,rp1)
+         if rp1.is-t(interned-tag-nil,0) then true else can-unify(lpr,rp1)
       );
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},

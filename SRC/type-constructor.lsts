@@ -129,6 +129,9 @@ let type-type-string = t1(c"Type",t0(c"String"));
 let type-cstring-literal = t0(c"CString") && t0(c"Literal");
 
 # new allocations = 0 (constant)
+let type-char-array-literal = t2(c"Array",t1(c"C",t0(c"char")),ta) && t0(c"Literal");
+
+# new allocations = 0 (constant)
 let type-linear-moved = t1(interned-tag-linear,t0(interned-tag-phi-moved));
 
 # new allocations = 0 (constant)
@@ -141,7 +144,7 @@ let type-c-void = t1(interned-tag-c,t0(c"void"));
 let type-c-label = t1(interned-tag-c,t0(c":Label"));
 
 # new allocations = 0 (constant)
-let type-c-vararg = t1(interned-tag-c,t0(c"..."));
+let type-c-vararg = t0(interned-tag-vararg);
 
 # new allocations = 0 (constant)
 let type-c-tany = t1(interned-tag-c,ta);

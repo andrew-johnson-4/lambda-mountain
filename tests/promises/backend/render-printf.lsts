@@ -1,0 +1,18 @@
+
+import SRC/unit-codegen-core.lsts;
+import SRC/unit-backend-core.lsts;
+import PLUGINS/FRONTEND/LSTS/index.lsts;
+import PLUGINS/FRONTEND/C/index.lsts;
+import PLUGINS/BACKEND/C/index.lsts;
+
+ast-parsed-program = mk-eof();
+frontend(c"lib/core/baremetal-c.lsts");
+lsts-parse(lsts-tokenize-string(c"tests/promises/backend/initialize.lsts",c"printf(c\"Hello World\\n\");"));
+typecheck();
+assert( render() == "#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <regex.h>
+int main(){printf(\"Hello World\\n\");}
+" );
