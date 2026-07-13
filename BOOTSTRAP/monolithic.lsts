@@ -179,6 +179,20 @@ typed macro macro::backend::render(lhs rhs: macro::ast::let): lazy = (
    (fn (lhs) = ())(rhs)
 );
 
+import stdint.h;
+import stdio.h;
+import stdlib.h;
+import string.h;
+import regex.h;
+
+import lib/core/backend-macros.lsts;
+import lib/core/l.lsts;
+import lib/core/nil.lsts;
+import lib/core/never.lsts;
+import lib/core/baremetal-cstring.lsts;
+
+type alias CString suffix _s = C<"char">[];
+
 let .into(b: Bool, tt: Type<String>): String = if b then "true" else "false";
 let .into(i: U8, tt: Type<String>): String = (i as U64).into(type(String));
 let .into(i: USize, tt: Type<String>): String = (i as U64).into(type(String));
@@ -1442,6 +1456,8 @@ type HashtableRowExists = HashtableRowEmpty | HashtableRowFilled | HashtableRowM
 type Hashtable<k,v> implies MustRetain, MustRelease
    = { data: SparseOwnedData<(HashtableRowExists,k,v)>[] };
 
+let non-zero(h: Hashtable<k,v>): Bool = (h.data as U64) != 0;
+
 # new allocations = 0 if capacity==0
 #                 | 1
 let mk-hashtable(tyk: Type<k>, tyv: Type<v>, capacity: USize): Hashtable<k,v> = (
@@ -1598,16 +1614,59 @@ let .has-key(h: Hashtable<k,v>, key: k): Bool = h[key].is-some;
 
 let .as-vector(table: Hashtable<Sized<k>,v>): Vector<(k,v)> = (
    let v = mk-vector(type((k,v)));
+#   let data = table.data;
+#   let ki = 0_sz;
+#   if (data as U64) != 0 {
+#   while ki < data.capacity {
+#      let kv = data.data[ki];
+#      if is(kv.first,HashtableRowFilled) {
+#         v = v.push((kv.second, kv.third));
+#      };
+#      ki = ki + 1;
+#   }};
    v
 );
 
 let .as-vector(table: Hashtable<k,v>): Vector<(k,v)> = (
    let v = mk-vector(type((k,v)));
+   let data = table.data;
+   let ki = 0_sz;
+   if (data as U64) != 0 {
+   while ki < data.capacity {
+      let kv = data.data[ki];
+      if is(kv.first,HashtableRowFilled) {
+         v = v.push((kv.second, kv.third));
+      };
+      ki = ki + 1;
+   }};
    v
 );
 
 let cmp(h1: Hashtable<k,v>, h2: Hashtable<k,v>): Ord = (
    cmp(h1.as-vector.sort, h2.as-vector.sort)
+);
+
+let $"+"(l: Hashtable<k,v>, r: Hashtable<k,v>): Hashtable<k,v> = (
+   let out = mk-hashtable(type(k), type(v));
+   for Tuple{tk1=first, tv1=second} in l.as-vector {
+      if r.has-key(tk1)
+      then out = out.bind(tk1, tv1 + r[tk1].get-or-panic);
+      else out = out.bind(tk1, tv1);
+   };
+   for Tuple{tk2=first, tv2=second} in r.as-vector {
+      if not out.has-key(tk2)
+      then out = out.bind(tk2, tv2);
+   };
+   out
+);
+
+let .into(h: Hashtable<k,v>, tt: Type<String>): String = (
+   let r = "{";
+   for Tuple{k1=first, v1=second} in h.as-vector {
+      if r != "{" then r = r + ",";
+      r = "\{r}\{k1}:\{v1}";
+   };
+   r + "}";
 );
 
 
@@ -2518,6 +2577,8 @@ type S zero SNil = SNil
 # TODO: remove after GC enabled, this is for compatibility of constructors
 let $"SAtom"(key: CString): S = SAtom(key.into(type(String)));
 
+let .into(s: S, tt: Type<String>): String = clone-rope(s).into(type(String));
+
 let clone-rope(s: S): CString = (
    let out = mk-vector(type(U8));
    out = clone-rope-impl(s, out);
@@ -2551,6 +2612,13 @@ let $"+"(l: S, r: S): S = (
       if non-zero(l)
       then (l = SCons(close(l), close(r)))
       else (l = r);
+   ); l
+);
+let $"+"(l: S, r: String): S = (
+   if non-zero(r) then (
+      if non-zero(l)
+      then (l = SCons(close(l), close(SAtom(r))))
+      else (l = SAtom(r));
    ); l
 );
 
@@ -3773,7 +3841,7 @@ let apply(ctx: AContext, term: AST): AST = (
       ASTEOF{} => term;
       ASTNil{} => term;
       Lit{} => term;
-      AType{tt=tt} => AType(substitute(ctx,tt));
+      AType{tt=tt} => AType(ctx.substitute(tt));
       Var{n=key} => (
          let nr = ctx.lookup(n, mk-eof());
          if non-zero(nr) then nr else term;
@@ -3785,7 +3853,7 @@ let apply(ctx: AContext, term: AST): AST = (
          for s in seq { return = return + apply(ctx,s) };
          return
       );
-      Glb{key=key, val=val} => mk-glb( substitute(ctx,key), apply(ctx,val) );
+      Glb{key=key, val=val} => mk-glb( ctx.substitute(key), apply(ctx,val) );
    }
 );
 
@@ -3797,7 +3865,7 @@ let .bind(ctx: AContext, key: CString, val: AST): AContext = (
    cons( Tuple(key,val), ctx )
 );
 
-let substitute(ctx: AContext, v: Token): Token = (
+let .substitute(ctx: AContext, v: Token): Token = (
    match ctx.lookup(v.key, mk-eof()) {
       Lit{t=token} => t;
       Var{t=token} => t;
@@ -3805,7 +3873,7 @@ let substitute(ctx: AContext, v: Token): Token = (
    }
 );
 
-let substitute(ctx: AContext, tt: Type): Type = (
+let .substitute(ctx: AContext, tt: Type): Type = (
    match tt {
       TVar{v=name} => match ctx.lookup(v, mk-eof()) {
          Lit{tv1=key} => t0(tv1);
@@ -3814,12 +3882,12 @@ let substitute(ctx: AContext, tt: Type): Type = (
          _ => tt;
       };
       TGround{tag=tag,parameters=parameters} => (
-         TGround( tag, substitute(ctx,parameters) )
+         TGround( tag, ctx.substitute(parameters) )
       );
       TAnd{conjugate=conjugate} => (
          let result = mk-vector(type(Type), 0);
          for c in conjugate {
-            match substitute(ctx,c) {
+            match ctx.substitute(c) {
                TAnd{rconjugate=conjugate} => for rc in rconjugate { result = result.push(rc) };
                TAny{} => ();
                rc => ( result = result.push(rc); () );
@@ -3833,34 +3901,34 @@ let substitute(ctx: AContext, tt: Type): Type = (
    }
 );
 
-let substitute(ctx: AContext, tt: Vector<Type>): Vector<Type> = (
+let .substitute(ctx: AContext, tt: Vector<Type>): Vector<Type> = (
    let next = mk-vector(type(Type));
    for t in tt {
-      next = next.push(substitute(ctx,t));
+      next = next.push(ctx.substitute(t));
    };
    next
 );
 
-let substitute(ctx: AContext, term: AST): AST = (
+let .substitute(ctx: AContext, term: AST): AST = (
    match term {
       App{left:Var{key:c"uuid"}, right:Var{x1=key}} => ctx.lookup(x1,term).unique;
       Var{x2=key} => ctx.lookup(x2,term).unique;
       Lit{} => term.unique;
       Seq{seq=seq} => (
          let ret = mk-vector(type(AST), seq.length);
-         for s in seq { ret = ret.push(substitute(ctx,s)) };
+         for s in seq { ret = ret.push(ctx.substitute(s)) };
          Seq(ret)
       );
-      App{is-cons=is-cons,left=left,right=right} => mk-cons-or-app(is-cons,substitute(ctx,left),substitute(ctx,right));
-      Abs{lhs=lhs,rhs=rhs,tt=tt} => mk-abs(substitute(ctx,lhs), substitute(ctx,rhs), tt);
+      App{is-cons=is-cons,left=left,right=right} => mk-cons-or-app(is-cons,ctx.substitute(left),ctx.substitute(right));
+      Abs{lhs=lhs,rhs=rhs,tt=tt} => mk-abs(ctx.substitute(lhs), ctx.substitute(rhs), tt);
       Glb{key=key,val=val} => (
          match ctx.lookup(key.key,mk-eof()) {
             Var{nkey1=key} => key = mk-token(nkey1);
             _ => ();
          };
-         mk-glb(key, substitute(ctx,val));
+         mk-glb(key, ctx.substitute(val));
       );
-      AType{tt=tt} => mk-atype(substitute(ctx, tt));
+      AType{tt=tt} => mk-atype(ctx.substitute( tt));
       _ => term;
    }
 );
@@ -4232,6 +4300,14 @@ type AST zero ASTEOF implies MustRetain, MustRelease
 
 let $"App"(left: OneOwnedData<AST>[], right: OneOwnedData<AST>[]): AST = App ( false, left, right );
 
+let .domain(t: AST): AST = (
+   match t {
+      Glb{val=val} => val.domain;
+      Abs{lhs=lhs} => lhs;
+      r => r;
+   };
+);
+
 let exit-error(msg: CString, t: AST): Nil = (
    print("\{msg}\n\{t.location}\n");
    exit(1);
@@ -4305,7 +4381,7 @@ let .into(t: AST, tgt: Type<String>): String = (
          let s = "$fragment{";
          for Tuple{k=first, v=second} in kvs.as-vector {
             if s != "$fragment{" then s = "\{s},";
-            s = "s\{k}:\{v}";
+            s = "\{s}\{k}:\{v}";
          };
          "\{s}}";
       );
@@ -4472,6 +4548,8 @@ let mk-token(s: String): Token = (
 );
 
 
+let or(l: AST, r: AST): AST = if non-zero(l) then l else r;
+
 let $"+"(l: AST, r: AST): AST = (
    match l {
       Seq{seq=seq} => (match r {
@@ -4485,6 +4563,14 @@ let $"+"(l: AST, r: AST): AST = (
          l = Seq(mk-vector(type(AST)));
          l + r
       );
+   };
+);
+
+let .range(t: AST): AST = ( 
+   match t {
+      Glb{val=val} => val.range;
+      Abs{rhs=rhs} => rhs;
+      r => r;
    };
 );
 
@@ -4875,13 +4961,22 @@ let render-direct-type-declaration(t: AST): String = (
    decls
 );
 
+let .frame(f: Hashtable<CString,S>): S = f.lookup(c"frame", SNil);
+let .expression(f: Hashtable<CString,S>): S = f.lookup(c"expression", SNil);
+
+let .set(f: Hashtable<CString,S>, key: CString, val: S): Hashtable<CString,S> = f.bind(key,val);
+let .set(f: Hashtable<CString,S>, key: CString, val: String): Hashtable<CString,S> = f.bind(key,SAtom(val));
+
+let mk-io-fragment(): Hashtable<CString,S> = mk-hashtable(type(CString), type(S));
+let mk-io-expression(s: S): Hashtable<CString,S> = mk-hashtable(type(CString), type(S)).bind(c"expression", s);
+let mk-io-expression(s: String): Hashtable<CString,S> = mk-hashtable(type(CString), type(S)).bind(c"expression", SAtom(s));
+
 let render(): String = (
    render-includes(ast-parsed-program) +
    render-forward-type-declaration(ast-parsed-program) +
    render-direct-type-declaration(ast-parsed-program) +
    render-forward-function-declaration(ast-parsed-program) +
-   render-direct-function-declaration(ast-parsed-program) +
-   render(ast-parsed-program)
+   render-direct-function-declaration(ast-parsed-program)
 );
 
 let render-includes(t: AST): String = (
@@ -4912,7 +5007,8 @@ let render-forward-function-declaration(t: AST): String = (
          decls
       );
       Glb{key=key, val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
-         if not tt.is-t(interned-tag-blob,0) and
+         if not tt.is-t(interned-tag-cffi,0) and
+            not tt.is-t(interned-tag-blob,0) and
             not tt.is-t(interned-tag-typed-macro,0)
          then (
             "\{render(typeof-term(t).range)} \{key.key}(\{render-function-parameters(lhs)});\n"
@@ -4924,34 +5020,45 @@ let render-forward-function-declaration(t: AST): String = (
 
 let render-direct-function-declaration(t: AST): String = (
    match t {
-      Seq{seq=seq} => (
-         let global-expressions = "";
-         let global-functions = "";
-         let main-function = mk-eof();
-         for s in seq {
-            match s {
-               Glb{key:Token{key:c"main"}} => main-function = s;
-               Glb{val:Abs{}} => global-functions = global-functions + render-direct-function-declaration(s);
-               _ => (
-                  let e = render(s);
-                  if non-zero(e) then global-expressions = global-expressions + e + ";";
-               );
-            };
-         };
-         global-functions + render-direct-function-declaration(global-expressions, main-function);
+      #Seq{seq=seq} => (
+      #   let global-frames = SNil;
+      #   let global-expressions = SNil;
+      #   let global-functions = "";
+      #   let main-function = mk-eof();
+      #   for s in seq {
+      #      match s {
+      #         Glb{key:Token{key:c"main"}} => main-function = s;
+      #         Glb{val:Abs{}} => global-functions = global-functions + render-direct-function-declaration(s);
+      #         _ => (
+      #            let e = render(s);
+      #            if non-zero(e) and non-zero(e.frame) then global-frames = global-frames + e.frame + ";";
+      #            if non-zero(e) and non-zero(e.expression) then global-expressions = global-expressions + e.expression + ";";
+      #         );
+      #      };
+      #   };
+      #   SAtom(global-functions) + render-direct-function-declaration(global-frames + global-expressions, main-function);
+      #);
+      Glb{val:Abs{tt=tt}} => (
+         if tt.is-t(interned-tag-cffi,0)
+         then ""
+         else render-direct-function-declaration(SNil, t);
       );
-      Glb{val:Abs{}} => render-direct-function-declaration("", t);
-      _ => render-direct-function-declaration(render(t), mk-eof());
+      _ => (
+         let rt = render-statement(t);
+         let result = render-direct-function-declaration(rt.frame + rt.expression, mk-eof());
+         result
+      );
    }
 );
 
-let render-direct-function-declaration(exprs: String, t: AST): String = (
+let render-direct-function-declaration(exprs: S, t: AST): String = (
    match t {
       Glb{key=key, val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
          if not tt.is-t(interned-tag-blob,0) and
             not tt.is-t(interned-tag-typed-macro,0)
          then (
-            "\{render(typeof-term(t).range)} \{key.key}(\{render-function-parameters(lhs)}){\{exprs}\{render-return(rhs)}}\n"
+            let rt = render-return(rhs);
+            "\{render(typeof-term(t).range)} \{key.key}(\{render-function-parameters(lhs)}){\{exprs}\{rt.frame}\{rt.expression}}\n"
          ) else ""
       );
       ASTEOF{} => "int main(){\{exprs}}\n";
@@ -4970,14 +5077,14 @@ let render-function-parameters(lhs: AST): String = (
       );
       App{ left:Lit{key:c":"}, right:App{ vbind=left:Var{vid=key}, right:AType{vtt=tt} } } => (
          if vtt.is-datatype
-         then "\{render(vtt)} \{render(vbind)}"
+         then "\{render(vtt)} \{render(vbind).expression}"
          else ""
       );
       _ => "";
    };
 );
 
-let render-return(t: AST): String = (
+let render-return(t: AST): Hashtable<CString,S> = (
    match t {
       App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render-return(inner);
       App{is-cons=is-cons, left=left, right=right} => (
@@ -4985,19 +5092,19 @@ let render-return(t: AST): String = (
          then (
             let lt = render-statement(left);
             let rt = render-statement(right);
-            if non-zero(rt) then "\{lt}return \{rt}"
-            else "\{lt}\{rt}"
+            if non-zero(rt) then (lt + rt).set(c"expression", "\{lt.expression}return \{rt.expression}")
+            else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
          ) else render-statement(t);
       );
       _ => (
          let rt = render-statement(t);
-         if non-zero(rt) then "return \{rt}"
+         if non-zero(rt) then rt.set(c"expression", "return \{rt.expression}");
          else rt
       );
    };
 );
 
-let render-statement(t: AST): String = (
+let render-statement(t: AST): Hashtable<CString,S> = (
    match t {
       App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render-statement(inner);
       App{is-cons=is-cons, left=left, right=right} => (
@@ -5005,12 +5112,12 @@ let render-statement(t: AST): String = (
          then render-statement(left) + render-statement(right)
          else (
             let rt = render(t);
-            if non-zero(rt) then "\{rt};" else ""
+            rt.set(c"expression", if non-zero(rt.expression) then "\{rt.expression};" else "");
          );
       );
       _ => (
          let rt = render(t);
-         if non-zero(rt) then "\{rt};" else ""
+         rt.set(c"expression", if non-zero(rt.expression) then "\{rt.expression};" else "");
       );
    };
 );
@@ -5036,9 +5143,10 @@ let render-global-declaration(t: AST): String = (
 
 let render-declaration(k: CString, kt: Type, t: AST): String = (
    (let prefix, let suffix) = render-declaration(kt);
+   let rt = render(t);
    if t.is-nil-constant
    then "\{prefix} \{k}\{suffix};"
-   else "\{prefix} \{k}\{suffix} = \{render(t)};"
+   else "\{rt.frame}\{prefix} \{k}\{suffix} = \{rt.expression};"
 );
 
 let render-declaration(tt: Type): (String, String) = (
@@ -5076,10 +5184,10 @@ let render-declaration(tt: Type, is-flexible-array-member: Bool): (String, Strin
    }
 );
 
-let render(t: AST): String = (
+let render(t: AST): Hashtable<CString,S> = (
    match t {
       Seq{seq=seq} => (
-         let result = "";
+         let result = mk-io-fragment();
          for s in seq {
             s = mk-app( mk-var(c"macro::backend::render"), s );
             (global-flow-tctx, s) = std-infer-expr(global-flow-tctx, s, false, Used, ta);
@@ -5088,33 +5196,89 @@ let render(t: AST): String = (
          result;
       );
       App{asc=left:Var{key:c"as"}, right:App{it=left,ot=right:AType{tt=tt}}} => (
-         "((\{render(tt)})(\{render(it)}))"
+         let f = render(it);
+         if not typeof-term(it).is-t(interned-tag-l,0)
+         then f = f.set(c"expression", "((\{render(tt)})(\{f.expression}))");
+         f
       );
       App{ left:Var{key:c"scope"}, st=right } => render(st);
-      App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => "(sizeof(\{render(tt)}))";
-      App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => render-declaration(lname, typeof-term(rhs), rhs);
+      App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => mk-io-expression("(sizeof(\{render(tt)}))");
+      App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => mk-io-expression(render-declaration(lname, typeof-term(rhs), rhs));
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
-         "((\{render(cond)})?(\{render(tterm)}):(\{render(fterm)}))"
+         let cf = render(cond);
+         let tf = render(tterm);
+         let ff = render(fterm);
+         let f = cf + tf + ff;
+         f.set(c"expression", "((\{cf.expression})?(\{tf.expression}):(\{ff.expression}))");
+      );
+      App{ left:Lit{key:c":"}, right:App{ left:Lit{cv=key}, right:AType{tt=tt} } } => (
+         if tt <: type-cstring-literal or
+            tt <: type-char-array-literal 
+         then mk-io-expression(render-cstring(cv))
+         else mk-io-expression(cv.into(type(String)))
       );
       App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
+      App{ left:Var{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
+      App{ left:Var{key:c"import"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{}, right:AType{} } } } => mk-io-fragment();
       App{left=left, right=right} => (
-         if typeof-term(t).is-t(interned-tag-cons,2)
+         let lt = render(left);
+         let rt = render(right);
+         let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
+         if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
+            let fterm = tr.get-or-panic.blame-or-zero;
+            let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
+            match tctx.beta-substitute(fterm.range) {
+               App{ left:Lit{key:c":"}, right:App{ f=left:Fragment{}, right:AType{} } } => render(f);
+               f => render(f);
+            };
+         } else if typeof-term(t).is-t(interned-tag-cons,2)
          then (
             if typeof-term(right).is-datatype and typeof-term(left).is-datatype-or-cons-datatype
-            then "\{render(left)},\{render(right)}"
-            else "\{render(left)}\{render(right)}"
-         ) else "\{render(left)}(\{render(right)})"
+            then (lt + rt).set(c"expression", "\{lt.expression},\{rt.expression}")
+            else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
+         ) else (lt + rt).set(c"expression", "\{lt.expression}(\{rt.expression})")
       );
-      ASTNil{} => "";
-      ASTEOF{} => "";
-      Lit{key1=key} => key1.into(type(String));
-      Var{key2=key} => key2.into(type(String));
-      AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
-      AType{tt=tt} => render(tt);
-      Glb{} => "";
-      Typedef{} => "";
-      _ => fail("render unknown term \{t}");
-   }
+      Fragment{kvs=kvs} => (
+         let f = mk-io-fragment();
+         for Tuple{fk=first, fv=second} in kvs.as-vector {
+            f = f.set(fk, render(fv).expression);
+         };
+         f
+      );
+      ASTNil{} => mk-io-fragment();
+      ASTEOF{} => mk-io-fragment();
+      Lit{key1=key} => mk-io-expression(key1.into(type(String)));
+      Var{key2=key} => mk-io-expression(key2.into(type(String)));
+      #AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
+      AType{tt=tt} => mk-io-expression(render(tt));
+      Glb{} => mk-io-fragment();
+      Typedef{} => mk-io-fragment();
+      #_ => fail("render unknown term \{t}");
+   };
+);
+
+let render-cstring(cs: CString): String = (
+   let s = "\"";
+   while non-zero(cs) { match cs {
+      c"\""..  rest1 => (s = s + "\\\""; cs = tail(cs););
+      c"\\:"..  rest2 => (s = s + ";"; cs = rest2;);
+      c"\\["..  rest3 => (s = s + "("; cs = rest3;);
+      c"\\]"..  rest4 => (s = s + ")"; cs = rest4;);
+      c"\\\\".. rest5 => (s = s + "\\\\"; cs = rest5;);
+      c"\\`"..  rest6 => (s = s + "'"; cs = rest6;);
+      c"\\l"..  rest7 => (s = s + "λ"; cs = rest7;);
+      c"\\n"..  rest8 => (s = s + "\\n"; cs = rest8;);
+      c"\\o"..  rest9 => (s = s + "#"; cs = rest9;);
+      c"\\s"..  rest10 => (s = s + " "; cs = rest10;);
+      c"\\t"..  rest11 => (s = s + "\\t"; cs = rest11;);
+      c"\n"..   rest12 => (s = s + "\\n"; cs = rest12;);
+      c"\\"..   rest13 => fail("Illegal Escape Character: \{head(rest13)}");
+      rest14 => (
+         s = s + clone-rope(head(rest14)).into(type(String));
+         cs = tail(rest14);
+      );
+   }};
+   s + "\""
 );
 
 let render(tt: Type): String = (
@@ -6198,6 +6362,31 @@ let $"&&"(lctx: Maybe<TypeContext>, rctx: Maybe<TypeContext>): Maybe<TypeContext
    if lctx.is-none then lctx else if rctx.is-none then rctx else union(lctx, rctx)
 );
 
+# this method assumes that function type matches argument type
+# if there are domain mismatches here it is not the responsibility of this function to catch them
+# i.e. (x: A)(1, 2) should never happen to bind a cons cell into a single arg.
+let .apply-lhs(tctx: TypeContext?, f: AST, args: AST): TypeContext? = (
+   match f {
+      Glb{val=val} => tctx = tctx.apply-lhs(val, args);
+      Abs{lhs=lhs} => tctx = tctx.apply-lhs(lhs, args);
+      App{ left:Lit{key:c":"}, right:App{ left:Var{k1=key}, right:AType{kt=tt} } } => (
+         tctx = tctx.bind(k1, kt, args);
+      );
+      App{ frst=left, right:App{ left:Lit{key:c":"}, right:App{ left:Var{k2=key}, right:AType{kt=tt} } } } => (
+         match args {
+            App{ left=left, right=right } => (
+               tctx = tctx.apply-lhs(frst, left);
+               tctx = tctx.bind(k2, kt, right);
+            );
+            _ => fail("tctx.apply-lhs domain mismatch f=\{f} args=\{args}");
+         }
+      );
+      ASTNil{} => ();
+      _ => fail("tctx.apply-lhs domain mismatch f=\{f} args=\{args}");
+   };
+   tctx
+);
+
 let .bind(tctx: TypeContext?, k: CString, kt: Type, blame: AST): TypeContext? = (
    Some(TypeContext(
       cons( TypeContextRow(k, kt, kt, blame), tctx.get-or(mk-tctx()).tctx ),
@@ -6373,6 +6562,15 @@ let .into(tctx: Maybe<TypeContext>, tt: Type<String>): String = (
    let result = "";
    for tr in tctx.get-or(mk-tctx()).tctx {
       result = result + "\{tr.key-or-zero} : \{tr.direct-type}\n";
+   };
+   result = result + tctx.get-or(mk-tctx()).pctx.into(type(String));
+   result
+);
+
+let .into-with-blame(tctx: Maybe<TypeContext>, tt: Type<String>): String = (
+   let result = "";
+   for tr in tctx.get-or(mk-tctx()).tctx {
+      result = result + "\{tr.key-or-zero} : \{tr.direct-type} = \{tr.blame-or-zero}\n";
    };
    result = result + tctx.get-or(mk-tctx()).pctx.into(type(String));
    result
@@ -6863,14 +7061,12 @@ let unify-inner(fpt: Type, pt: Type, blame: AST): Maybe<TypeContext> = (
       );
       Tuple{
           first:TGround{tag:interned-tag-cons, parameters:[
-             TGround{tag:interned-tag-vararg, parameters:[lp1..]}..
+             TGround{tag:interned-tag-vararg, parameters:[]}..
              lpr..
           ]},
           rp1=second
       } => (
-         if can-unify(lp1, rp1)
-         then { ctx = unify-inner(lp1,rp1,blame) && unify-inner(lpr, type-nil, blame); }
-         else { ctx = unify-inner(lpr,rp1,blame); }
+         if rp1.is-t(interned-tag-nil,0) then yes else unify-inner(lpr,rp1,blame)
       );
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
@@ -7071,12 +7267,12 @@ let can-unify(fpt: Type, pt: Type): Bool = (
       );
       Tuple{
           first:TGround{tag:interned-tag-cons, parameters:[
-             TGround{tag:interned-tag-vararg, parameters:[lp1..]}..
+             TGround{tag:interned-tag-vararg, parameters:[]}..
              lpr..
           ]},
           rp1=second
       } => (
-         if can-unify(lp1,rp1) then can-unify(lpr,type-nil) else can-unify(lpr,rp1)
+         if rp1.is-t(interned-tag-nil,0) then true else can-unify(lpr,rp1)
       );
       Tuple{
           first:TGround{tag:interned-tag-vararg, parameters:[lp1..]},
@@ -7398,6 +7594,9 @@ let type-type-string = t1(c"Type",t0(c"String"));
 let type-cstring-literal = t0(c"CString") && t0(c"Literal");
 
 # new allocations = 0 (constant)
+let type-char-array-literal = t2(c"Array",t1(c"C",t0(c"char")),ta) && t0(c"Literal");
+
+# new allocations = 0 (constant)
 let type-linear-moved = t1(interned-tag-linear,t0(interned-tag-phi-moved));
 
 # new allocations = 0 (constant)
@@ -7410,7 +7609,7 @@ let type-c-void = t1(interned-tag-c,t0(c"void"));
 let type-c-label = t1(interned-tag-c,t0(c":Label"));
 
 # new allocations = 0 (constant)
-let type-c-vararg = t1(interned-tag-c,t0(c"..."));
+let type-c-vararg = t0(interned-tag-vararg);
 
 # new allocations = 0 (constant)
 let type-c-tany = t1(interned-tag-c,ta);
@@ -8318,6 +8517,7 @@ let assert-well-typed(term: AST): Nil = (
       Typedef{} => ();
       ASTEOF{} => ();
       AType{} => ();
+      Fragment{} => ();
       ASTNil{} => assert-one-typed(term);
       Glb{key=key, val=val} => if not(typeof-term(term).is-open) then assert-well-typed(val);
       App{ left:Abs{}, rhs=right } => (assert-well-typed(rhs); assert-one-typed(term));
@@ -8594,7 +8794,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          tctx = tctx.ascript(term, type-nil);
          for kt in index-fields-of.lookup((dt.first,dt.second,tg), mk-vector(type((CString,Type)))) {
             let actx = mk-actx().bind(field-item,mk-var(kt.first));
-            let re-body = substitute(actx,body);
+            let re-body = actx.substitute(body);
             (tctx, re-body) = std-infer-expr(tctx, re-body, false, Used, ta);
             term = mk-cons(term, re-body);
             tctx = tctx.ascript(term, type-nil);
@@ -8621,7 +8821,7 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             # this convention is used to *discard* any tag information that exists in terms like (x as Tag::)
             # so effectively this is still a good and perfectly valid tag
             let actx = mk-actx().bind(case-item,mk-atype(t0(c"Tag::" + k)));
-            let re-body = substitute(actx,body);
+            let re-body = actx.substitute(body);
             (tctx, re-body) = std-infer-expr(tctx, re-body, false, Used, ta);
             term = mk-cons(term, re-body);
             tctx = tctx.ascript(term, type-nil);
@@ -8667,6 +8867,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
                then exit-error("Ascripted value does not match declared type:\nExpected \{tt}\nFound \{typeof-term(t)}\n", term);
             };
          };
+      );
+      Fragment{} => (
+         tctx = tctx.ascript(term, hint);
       );
       App{asc=left:Var{key:c"as"}, right:App{t=left,right:AType{tt=tt}}} => (
          let original-tt = tt;
@@ -9241,17 +9444,17 @@ let visit-field-template(field-name: CString, base-type: Type, field-type: Type,
    ctx = ctx.bind( c"primitive::field-get-indirect", ta, ta, mk-var(c"."+field-name) );
    ctx = ctx.bind( c"primitive::field-set-indirect", ta, ta, mk-var(c"set."+field-name) );
    let global-tctx = Some(mk-tctx());
-   let field-get = substitute(ctx, global-tctx.find-callable(c"primitive::field-get", base-type, blame).blame-or-zero);
-   let field-set = substitute(ctx, global-tctx.find-callable(c"primitive::field-set", t2(interned-tag-cons, base-type, field-type), blame).blame-or-zero);
-   let field-get-indirect = substitute(ctx, global-tctx.find-callable(c"primitive::field-get-indirect", t2(interned-tag-array,base-type,ta), blame).blame-or-zero);
-   let field-set-indirect = substitute(ctx, global-tctx.find-callable(c"primitive::field-set-indirect", t2(interned-tag-cons, t2(interned-tag-array,base-type,ta), field-type), blame).blame-or-zero);
+   let field-get = ctx.substitute(global-tctx.find-callable(c"primitive::field-get", base-type, blame).blame-or-zero);
+   let field-set = ctx.substitute(global-tctx.find-callable(c"primitive::field-set", t2(interned-tag-cons, base-type, field-type), blame).blame-or-zero);
+   let field-get-indirect = ctx.substitute(global-tctx.find-callable(c"primitive::field-get-indirect", t2(interned-tag-array,base-type,ta), blame).blame-or-zero);
+   let field-set-indirect = ctx.substitute(global-tctx.find-callable(c"primitive::field-set-indirect", t2(interned-tag-cons, t2(interned-tag-array,base-type,ta), field-type), blame).blame-or-zero);
 
    ctx = (None : Maybe<TypeContext>)();
    ctx = ctx.bind( c"base-type", base-type, denormalize(base-type), mk-eof() );
    ctx = ctx.bind( c"field-type", field-type, denormalize(field-type), mk-eof() );
    ctx = ctx.bind( c"field-name", ta, ta, mk-lit(mangled-field-name) );
    ctx = ctx.bind( c"primitive::field-get", ta, ta, mk-var(c"." + field-ordinal.into(type(CString))) );
-   let field-ordinal-get = substitute(ctx, global-tctx.find-callable(c"primitive::field-get", base-type, blame).blame-or-zero);
+   let field-ordinal-get = ctx.substitute(global-tctx.find-callable(c"primitive::field-get", base-type, blame).blame-or-zero);
 
    type-ast-inserts = type-ast-inserts.push(field-get);
    type-ast-inserts = type-ast-inserts.push(field-set);
@@ -9742,7 +9945,7 @@ let release-locals(tctx-before: TypeContext?, tctx-after: TypeContext?, term: AS
 let specialize(key: CString, unify-ctx: TypeContext?, result-type: Type, term: AST): Nil = (
    if (key!=c"open" or result-type.domain.slot(interned-tag-array,2).l1.is-t(interned-tag-owned-data,1) or result-type.domain.slot(interned-tag-array,2).l1.is-t(interned-tag-one-owned-data,1)) and key!=c"mov" and not(is-special(key, result-type)) {
       mark-as-special(key, result-type);
-      let special-term = substitute(unify-ctx, term);
+      let special-term = unify-ctx.substitute(term);
       match special-term {
          Glb{ k=key, frhs=val:Abs{lhs=lhs, rhs:App{left:Lit{key:c":"}, right:App{rhs=left, right:AType{return-type=tt}}}, misc-tt=tt} } => (
             let ft = t2(interned-tag-arrow, typeof-lhs(lhs), return-type.without-modifiers).without-phi-keep-state && misc-tt;
@@ -9771,7 +9974,7 @@ let std-apply-macro-candidates(tctx: TypeContext?, mname: CString, margs: AST, c
          tctx = tctx.phi-append(new-tctx);
          if mctx.is-some then mctx = union(mctx, Some(extract-uuids(mrhs)));
          if mctx.is-some then return-type = new-return-type;
-         if mctx.is-some then t = substitute(mctx.get-or-panic, mrhs).with-location-preserve(margs.location);
+         if mctx.is-some then t = mctx.get-or-panic.substitute(mrhs).with-location-preserve(margs.location);
       }
    };
    (tctx, t, return-type)
@@ -10538,9 +10741,9 @@ let substitute-lhs(tctx: TypeContext?, t: AST, idx: U32): AST = (
    }
 );
 
-let substitute(tctx: TypeContext?, t: AST): AST = substitute(tctx,t,false);
+let .substitute(tctx: TypeContext?, t: AST): AST = tctx.substitute(t,false);
 
-let substitute(tctx: TypeContext?, t: AST, is-return: Bool): AST = (
+let .substitute(tctx: TypeContext?, t: AST, is-return: Bool): AST = (
    match t {
       ASTEOF{} => t;
       ASTNil{} => t;
@@ -10550,23 +10753,23 @@ let substitute(tctx: TypeContext?, t: AST, is-return: Bool): AST = (
          let found = false;
          for TypeContextRow{tk1=key,ta=def} in tctx.get-or(mk-tctx()).tctx {
             if not(found) and tk1==v1 {
-               t = mk-app( mk-lit(c":",ctk.unique), mk-app(substitute(tctx,ta), mk-atype(vt1)) );
+               t = mk-app( mk-lit(c":",ctk.unique), mk-app(tctx.substitute(ta), mk-atype(vt1)) );
                found = true;
             }
          }; t
       );
       App{ left:Lit{key:c":",ctk=token}, right:App{ inner-t=left, right:AType{vt2=tt} } } => (
          vt2 = substitute-macro(tctx, vt2).expand-implied-phi.without-phi-keep-state;
-         mk-app( mk-lit(c":",ctk.unique), mk-app(substitute(tctx, inner-t), mk-atype(vt2)) );
+         mk-app( mk-lit(c":",ctk.unique), mk-app(tctx.substitute(inner-t), mk-atype(vt2)) );
       );
       Lit{v2=key,vtk2=token} => mk-lit(v2,vtk2.unique);
       Var{v3=key,vtk3=token} => mk-var(v3,vtk3.unique);
-      Abs{lhs=lhs,rhs=rhs,tt1=tt} => mk-abs(substitute-lhs(tctx,lhs),substitute(tctx,rhs,true),tctx.substitute(tt1));
+      Abs{lhs=lhs,rhs=rhs,tt1=tt} => mk-abs(substitute-lhs(tctx,lhs),tctx.substitute(rhs,true),tctx.substitute(tt1));
       AType{tt2=tt} => mk-atype(tctx.substitute(tt2).sanitize-phi);
-      App{is-cons=is-cons,lt=left,rt=right} => mk-cons-or-app(is-cons,substitute(tctx,lt),substitute(tctx,rt));
+      App{is-cons=is-cons,lt=left,rt=right} => mk-cons-or-app(is-cons,tctx.substitute(lt),tctx.substitute(rt));
       Seq{seq=seq} => (
          t = mk-eof();
-         for s in seq { t = t + substitute(tctx,s); };
+         for s in seq { t = t + tctx.substitute(s); };
          t
       );
       Glb{k=key, rt=val} => (
@@ -10580,8 +10783,56 @@ let substitute(tctx: TypeContext?, t: AST, is-return: Bool): AST = (
                found = true;
             }
          };
-         mk-glb(k.unique,substitute(tctx,rt))
+         mk-glb(k.unique,tctx.substitute(rt))
       );
+      Fragment{kvs=kvs, location=location} => (
+         let new-kvs = mk-hashtable(type(CString), type(AST));
+         for Tuple{fk=first, fv=second} in kvs.as-vector {
+            new-kvs = new-kvs.bind(fk, tctx.substitute(fv));
+         };
+         mk-fragment(new-kvs, location);
+      );
+      _ => fail("tctx.substitute unknown term \{t}\n");
+   }
+);
+
+let .beta-substitute(tctx: TypeContext?, t: AST): AST = tctx.beta-substitute(t,false);
+
+let .beta-substitute(tctx: TypeContext?, t: AST, is-return: Bool): AST = (
+   match t {
+      ASTEOF{} => t;
+      ASTNil{} => t;
+      Var{v2=key,vtk2=token} => tctx.lookup(v2).blame-or-zero or t;
+      Lit{v3=key,vtk3=token} => mk-var(v3,vtk3.unique);
+      Abs{lhs=lhs,rhs=rhs,tt1=tt} => mk-abs(substitute-lhs(tctx,lhs),tctx.beta-substitute(rhs,true),tctx.substitute(tt1));
+      AType{tt2=tt} => mk-atype(tctx.substitute(tt2).sanitize-phi);
+      App{is-cons=is-cons,lt=left,rt=right} => mk-cons-or-app(is-cons,tctx.beta-substitute(lt),tctx.beta-substitute(rt));
+      Seq{seq=seq} => (
+         t = mk-eof();
+         for s in seq { t = t + tctx.beta-substitute(s); };
+         t
+      );
+      Glb{k=key, rt=val} => (
+         let found = false;
+         for TypeContextRow{tk2=key,ta=def} in tctx.get-or(mk-tctx()).tctx {
+            if not(found) and k.key==tk2 {
+               match ta {
+                  Var{tvtk=token} => k = tvtk;
+                  _ => ();
+               };
+               found = true;
+            }
+         };
+         mk-glb(k.unique,tctx.beta-substitute(rt))
+      );
+      Fragment{kvs=kvs, location=location} => (
+         let new-kvs = mk-hashtable(type(CString), type(AST));
+         for Tuple{fk=first, fv=second} in kvs.as-vector {
+            new-kvs = new-kvs.bind(fk, tctx.beta-substitute(fv));
+         };
+         mk-fragment(new-kvs, location);
+      );
+      _ => fail("tctx.substitute unknown term \{t}\n");
    }
 );
 
@@ -10821,6 +11072,9 @@ import SRC/ast-substitute-uuids.lsts;
 import SRC/ast-acontext-to-string.lsts;
 import SRC/ast-unroll-seq.lsts;
 import SRC/ast-hash.lsts;
+import SRC/ast-domain.lsts;
+import SRC/ast-range.lsts;
+import SRC/ast-or.lsts;
 
 import SRC/unit-typecheck-core.lsts;
 
@@ -11057,6 +11311,7 @@ import SRC/tctx-misc-globals.lsts;
 import SRC/typecheck-infer-tctx.lsts;
 import SRC/tctx-move-diff.lsts;
 import SRC/tctx-prune-moved.lsts;
+import SRC/tctx-apply-lhs.lsts;
 
 import SRC/unit-util.lsts;
 
@@ -12969,6 +13224,7 @@ let std-c-type-of-specifiers(specifiers: CTerm): Tuple<Type,Type> = (
    match specifiers {
       CMaybe{value:Some{content=content}} => std-c-type-of-specifiers(content);
       CList{value=value} => std-c-type-of-specifiers(value);
+      CType1{value:"..."} => ( t0(c"..."), ta );
       CType1{value=value} => ( t1(c"C",t0(value.into(type(CString)))), ta );
       CBinaryOp{op:"struct", arg1:CIdentifier{name=value}, decl=arg2} => (
          let cname1 = if name=="" then uuid() else name.into(type(CString));
