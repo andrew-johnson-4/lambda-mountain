@@ -4972,7 +4972,7 @@ let mk-io-expression(s: S): Hashtable<CString,S> = mk-hashtable(type(CString), t
 let mk-io-expression(s: String): Hashtable<CString,S> = mk-hashtable(type(CString), type(S)).bind(c"expression", SAtom(s));
 
 let render-plugin(): Nil = (
-   print("TODO: Render V2\n");
+   write-file(config-target, render().into(type(CString)));
 );
 
 let render(): String = (
