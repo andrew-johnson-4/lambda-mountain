@@ -38,6 +38,7 @@ fn run_bootstrap(target: &str, leave_tmp: bool, is_v3: bool) -> String {
    let exit = Command::new("./bootstrap.exe")
               .stdout(std::process::Stdio::piped())
               .stderr(std::process::Stdio::piped())
+              .arg("--backend-v2")
               .arg("-o")
               .arg("tmp.c")
               .arg(target)
