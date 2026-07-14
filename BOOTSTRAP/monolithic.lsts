@@ -4971,6 +4971,10 @@ let mk-io-fragment(): Hashtable<CString,S> = mk-hashtable(type(CString), type(S)
 let mk-io-expression(s: S): Hashtable<CString,S> = mk-hashtable(type(CString), type(S)).bind(c"expression", s);
 let mk-io-expression(s: String): Hashtable<CString,S> = mk-hashtable(type(CString), type(S)).bind(c"expression", SAtom(s));
 
+let render-plugin(): Nil = (
+   print("TODO: Render V2\n");
+);
+
 let render(): String = (
    render-includes(ast-parsed-program) +
    render-forward-type-declaration(ast-parsed-program) +
@@ -5393,6 +5397,7 @@ import SRC/unit-prop-core.lsts;
 import SRC/unit-ascript-core.lsts;
 import SRC/unit-typecheck-core.lsts;
 import SRC/unit-backend-core.lsts;
+import SRC/unit-codegen-core.lsts;
 import SRC/unit-main-core.lsts;
 
 import PLUGINS/FRONTEND/LSTS/index.lsts;
@@ -11152,6 +11157,7 @@ let main(argc: C<"int">, argv: CString[]): Nil = (
             highlight = false;
          );
          c"--stripdebug" => config-strip-debug = true;
+         c"--backend-v2" => plugin-current-backend = &render-plugin;
          c"--showalloc" => show-alloc-count = true;
          c"--showallocgen" => show-alloc-count-in-program = true;
          c"--showastcount" => show-ast-count = true;
