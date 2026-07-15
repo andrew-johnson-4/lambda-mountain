@@ -3715,7 +3715,7 @@ let add-concrete-type-instance(tt: Type, blame: AST): Nil = (
          }
       );
       TGround{ tag=tag, parameters=parameters } => (
-         if tt.is-datatype then {
+         if tt.is-datatype and not tt.is-open then {
             tt = tt.rewrite-type-alias.without-any-phi;
             let gta = tt.ground-tag-and-arity;
             let row = concrete-type-instances-index.lookup(gta, mk-vector(type(Type)));
@@ -4841,7 +4841,7 @@ let .is-codegen-defined(tt: Type, is-flexible-array-member: Bool): Bool = (
       TAny{} => false;
       TVar{} => false;
       TGround{tag:interned-tag-sized,parameters:[st..]} => st.is-codegen-defined;
-      TGround{tag:interned-tag-array,parameters:[_..base-type..]} => is-flexible-array-member and base-type.is-codegen-defined;
+      TGround{tag:interned-tag-array,parameters:[_..base-type..]} => not is-flexible-array-member or base-type.is-codegen-defined;
       TGround{} => not complex-type-index.has(tt.ground-tag-and-arity)
                 or codegen-defined-type-index.has(tt);
    }
@@ -4859,6 +4859,7 @@ let find-concrete-types-unsorted(t: AST): Vector<(Type,Type)> = (
       );
       Typedef{lhs-type=lhs-type} => (
          for concrete-type in concrete-type-instances-index.lookup(lhs-type.ground-tag-and-arity, mk-vector(type(Type))) {
+            print("Concrete Type \{lhs-type} = \{concrete-type}\n");
             vs = vs.push((lhs-type, concrete-type));
          }
       );
@@ -4875,16 +4876,20 @@ let .sort-concrete-types(ts: Vector<(Type,Type)>): Vector<(Type,Type)> = (
    codegen-defined-type-index = mk-set(type(Type));
    let out = mk-vector(type((Type,Type)));
    while ts.length > 0 {
+      print("Typedef Iter\n");
       let next-ts = mk-vector(type((Type,Type)));
       for Tuple{lhs-type=first, concrete-type=second} in ts {
          let td = index-typedef.lookup(concrete-type.ground-tag-and-arity, mk-eof());
          match td { Typedef{} => (); _ => exit-error("Invalid compile type \{concrete-type} \{td}\n", td); };
          let tctx = unify(lhs-type, concrete-type, td);
+         print("\{lhs-type} = \{concrete-type} TCTX:\n\{tctx}\n");
          let is-incomplete = false;
          for Tuple{case-tag1=first, case-fields=second} in (td as Tag::Typedef).cases {
             for Tuple{field-name1=first, field-type=second} in case-fields {
+               print("Field type \{field-type}\n");
                field-type = tctx.substitute(field-type).rewrite-type-alias;
                is-incomplete = is-incomplete or not field-type.is-codegen-defined;
+               if not field-type.is-codegen-defined then print("Typedef field undefined \{field-type}\n");
             }
          };
          if is-incomplete
