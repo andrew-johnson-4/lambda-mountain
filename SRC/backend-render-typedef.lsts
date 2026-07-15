@@ -37,6 +37,7 @@ let find-concrete-types-unsorted(t: AST): Vector<(Type,Type)> = (
       );
       Typedef{lhs-type=lhs-type} => (
          for concrete-type in concrete-type-instances-index.lookup(lhs-type.ground-tag-and-arity, mk-vector(type(Type))) {
+            print("Concrete Type \{lhs-type} = \{concrete-type}\n");
             vs = vs.push((lhs-type, concrete-type));
          }
       );
@@ -59,7 +60,7 @@ let .sort-concrete-types(ts: Vector<(Type,Type)>): Vector<(Type,Type)> = (
          let td = index-typedef.lookup(concrete-type.ground-tag-and-arity, mk-eof());
          match td { Typedef{} => (); _ => exit-error("Invalid compile type \{concrete-type} \{td}\n", td); };
          let tctx = unify(lhs-type, concrete-type, td);
-         print("\{lhs-type} = \{concrete-type}\nTCTX: \{tctx}\n");
+         print("\{lhs-type} = \{concrete-type} TCTX:\n\{tctx}\n");
          let is-incomplete = false;
          for Tuple{case-tag1=first, case-fields=second} in (td as Tag::Typedef).cases {
             for Tuple{field-name1=first, field-type=second} in case-fields {
