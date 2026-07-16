@@ -4937,7 +4937,7 @@ let render-direct-type-declaration(t: AST): String = (
       for Tuple{case-tag1=first, case-fields=second} in (td as Tag::Typedef).cases {
          if case-tag1 == c"" {
             for Tuple{field-name1=first, field-type=second} in case-fields {
-               let mangled-field-name1 = c"0_" + field-name1;
+               let mangled-field-name1 = c"LM_0_" + field-name1;
                field-type = tctx.substitute(field-type);
                decls = "\{decls}\t\{render-declaration(mangled-field-name1,field-type,mk-nil())}\n";
             }
@@ -4950,7 +4950,7 @@ let render-direct-type-declaration(t: AST): String = (
             if case-tag2 != c"" {
                if case-fields.length > 0 then decls = "\{decls}\t\tstruct{\n";
                for Tuple{field-name2=first, field-type=second} in case-fields {
-                  let mangled-field-name2 = case-number.into(type(CString)) + c"_" + field-name2;
+                  let mangled-field-name2 = c"LM_" + case-number.into(type(CString)) + c"_" + field-name2;
                   field-type = tctx.substitute(field-type);
                   decls = "\{decls}\t\t\t\{render-declaration(mangled-field-name2,field-type,mk-nil())}\n";
                };

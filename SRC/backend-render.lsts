@@ -290,13 +290,46 @@ let render(t: AST): Hashtable<CString,S> = (
       ASTNil{} => mk-io-fragment();
       ASTEOF{} => mk-io-fragment();
       Lit{key1=key} => mk-io-expression(key1.into(type(String)));
-      Var{key2=key} => mk-io-expression(key2.into(type(String)));
+      Var{key2=key} => mk-io-expression(render-identifier(key2).into(type(String)));
       #AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
       AType{tt=tt} => mk-io-expression(render(tt));
       Glb{} => mk-io-fragment();
       Typedef{} => mk-io-fragment();
       #_ => fail("render unknown term \{t}");
    };
+);
+
+let render-identifier(k: CString): String = (
+   let cs = mk-vector(type(U8)); cs = cs.push(c"LM_");
+   while head(k) != 0 { match head(k) {
+      33 => cs = cs.push(c"_EX_"); # !
+      36 => cs = cs.push(c"_DL_"); # $
+      37 => cs = cs.push(c"_MD_"); # %
+      38 => cs = cs.push(c"_AM_"); # &
+      39 => cs = cs.push(c"_SQ_"); # '
+      42 => cs = cs.push(c"_ML_"); # *
+      43 => cs = cs.push(c"_AD_"); # +
+      44 => cs = cs.push(c"_CM_"); # ,
+      45 => cs = cs.push(c"_SB_"); # -
+      46 => cs = cs.push(c"_DT_"); # .
+      47 => cs = cs.push(c"_DV_"); # /
+      58 => cs = cs.push(c"_CL_"); # :
+      59 => cs = cs.push(c"_SC_"); # ;
+      60 => cs = cs.push(c"_LT_"); # <
+      61 => cs = cs.push(c"_EQ_"); # =
+      62 => cs = cs.push(c"_GT_"); # >
+      63 => cs = cs.push(c"_QM_"); # ?
+      64 => cs = cs.push(c"_AT_"); # @
+      91 => cs = cs.push(c"_LB_"); # [
+      93 => cs = cs.push(c"_RB_"); # ]
+      94 => cs = cs.push(c"_HT_"); # ^
+      95 => cs = cs.push(c"_US_"); # _
+      96 => cs = cs.push(c"_TK_"); # `
+      124 => cs = cs.push(c"_BR_"); # |
+      126 => cs = cs.push(c"_TL_"); # ~
+      c => cs = cs.push(c);
+   }; k = tail(k); };
+   cs.buffer-into-string
 );
 
 let render-cstring(cs: CString): String = (
