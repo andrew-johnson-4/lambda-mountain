@@ -106,6 +106,7 @@ let render-direct-type-declaration(t: AST): String = (
    let ts = find-concrete-types(t);
 
    for Tuple{lhs-type=first, concrete-type=second} in ts {
+      print("Declare typedef \{lhs-type}, \{concrete-type} = \{render(concrete-type)}\n");
       decls = "\{decls}struct \{render(concrete-type)}{\n";
       let td = index-typedef.lookup(concrete-type.ground-tag-and-arity, mk-eof());
       match td { Typedef{} => (); _ => exit-error("Invalid compile type \{concrete-type} \{td}\n", td); };
