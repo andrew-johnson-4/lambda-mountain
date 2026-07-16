@@ -4937,7 +4937,7 @@ let render-direct-type-declaration(t: AST): String = (
       for Tuple{case-tag1=first, case-fields=second} in (td as Tag::Typedef).cases {
          if case-tag1 == c"" {
             for Tuple{field-name1=first, field-type=second} in case-fields {
-               let mangled-field-name1 = c"LM_0_" + field-name1;
+               let mangled-field-name1 = "LM_0_" + render-identifier(field-name1);
                field-type = tctx.substitute(field-type);
                decls = "\{decls}\t\{render-declaration(mangled-field-name1,field-type,mk-nil())}\n";
             }
@@ -4950,7 +4950,7 @@ let render-direct-type-declaration(t: AST): String = (
             if case-tag2 != c"" {
                if case-fields.length > 0 then decls = "\{decls}\t\tstruct{\n";
                for Tuple{field-name2=first, field-type=second} in case-fields {
-                  let mangled-field-name2 = c"LM_" + case-number.into(type(CString)) + c"_" + field-name2;
+                  let mangled-field-name2 = "LM_\{case-number}_\{render-identifier(field-name2)}";
                   field-type = tctx.substitute(field-type);
                   decls = "\{decls}\t\t\t\{render-declaration(mangled-field-name2,field-type,mk-nil())}\n";
                };
@@ -5143,14 +5143,14 @@ let render-global-declaration(t: AST): String = (
       Glb{key=key, val=val} => (
          match val {
             Abs{} => "";
-            _ => render-declaration(key.key, typeof-term(val), val);
+            _ => render-declaration(render-identifier(key.key), typeof-term(val), val);
          }
       );
       _ => "";
    }
 );
 
-let render-declaration(k: CString, kt: Type, t: AST): String = (
+let render-declaration(k: String, kt: Type, t: AST): String = (
    (let prefix, let suffix) = render-declaration(kt);
    let rt = render(t);
    if t.is-nil-constant
@@ -5212,7 +5212,7 @@ let render(t: AST): Hashtable<CString,S> = (
       );
       App{ left:Var{key:c"scope"}, st=right } => render(st);
       App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => mk-io-expression("(sizeof(\{render(tt)}))");
-      App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => mk-io-expression(render-declaration(lname, typeof-term(rhs), rhs));
+      App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => mk-io-expression(render-declaration(render-identifier(lname), typeof-term(rhs), rhs));
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
          let cf = render(cond);
          let tf = render(tterm);
@@ -5257,13 +5257,46 @@ let render(t: AST): Hashtable<CString,S> = (
       ASTNil{} => mk-io-fragment();
       ASTEOF{} => mk-io-fragment();
       Lit{key1=key} => mk-io-expression(key1.into(type(String)));
-      Var{key2=key} => mk-io-expression(key2.into(type(String)));
+      Var{key2=key} => mk-io-expression(render-identifier(key2).into(type(String)));
       #AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
       AType{tt=tt} => mk-io-expression(render(tt));
       Glb{} => mk-io-fragment();
       Typedef{} => mk-io-fragment();
       #_ => fail("render unknown term \{t}");
    };
+);
+
+let render-identifier(k: CString): String = (
+   let cs = mk-vector(type(U8)); cs = cs.push(c"LM_");
+   while head(k) != 0 { match head(k) {
+      33 => cs = cs.push(c"_EX_"); # !
+      36 => cs = cs.push(c"_DL_"); # $
+      37 => cs = cs.push(c"_MD_"); # %
+      38 => cs = cs.push(c"_AM_"); # &
+      39 => cs = cs.push(c"_SQ_"); # '
+      42 => cs = cs.push(c"_ML_"); # *
+      43 => cs = cs.push(c"_AD_"); # +
+      44 => cs = cs.push(c"_CM_"); # ,
+      45 => cs = cs.push(c"_SB_"); # -
+      46 => cs = cs.push(c"_DT_"); # .
+      47 => cs = cs.push(c"_DV_"); # /
+      58 => cs = cs.push(c"_CL_"); # :
+      59 => cs = cs.push(c"_SC_"); # ;
+      60 => cs = cs.push(c"_LT_"); # <
+      61 => cs = cs.push(c"_EQ_"); # =
+      62 => cs = cs.push(c"_GT_"); # >
+      63 => cs = cs.push(c"_QM_"); # ?
+      64 => cs = cs.push(c"_AT_"); # @
+      91 => cs = cs.push(c"_LB_"); # [
+      93 => cs = cs.push(c"_RB_"); # ]
+      94 => cs = cs.push(c"_HT_"); # ^
+      95 => cs = cs.push(c"_US_"); # _
+      96 => cs = cs.push(c"_TK_"); # `
+      124 => cs = cs.push(c"_BR_"); # |
+      126 => cs = cs.push(c"_TL_"); # ~
+      c => cs = cs.push(c);
+   }; k = tail(k); };
+   cs.buffer-into-string
 );
 
 let render-cstring(cs: CString): String = (
