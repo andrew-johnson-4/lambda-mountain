@@ -9,7 +9,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 
 dev: install-production
 	lm --backend-v2 tests/promises/bool/arithmetic.lsts > out.txt
-	gcc tmp.c
+	gcc tmp.c 2> gcc.out
 	./a.out
 	echo $?
 
