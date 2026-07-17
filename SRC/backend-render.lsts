@@ -81,8 +81,9 @@ let render-direct-function-declaration(t: AST): String = (
       #   };
       #   SAtom(global-functions) + render-direct-function-declaration(global-frames + global-expressions, main-function);
       #);
-      Glb{val:Abs{tt=tt}} => (
-         if tt.is-t(interned-tag-cffi,0)
+      Glb{f=val:Abs{tt=tt}} => (
+         if tt.is-t(interned-tag-cffi,0) or
+            typeof-term(f).is-open
          then ""
          else render-direct-function-declaration(SNil, t);
       );
@@ -98,7 +99,8 @@ let render-direct-function-declaration(exprs: S, t: AST): String = (
    match t {
       Glb{key=key, f=val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
          if not tt.is-t(interned-tag-blob,0) and
-            not tt.is-t(interned-tag-typed-macro,0)
+            not tt.is-t(interned-tag-typed-macro,0) and
+            not typeof-term(f).is-open
          then (
             if render(typeof-term(f).range)=="" then print("Render direct return \{typeof-term(f)} was null\n");
             let rt = render-return(rhs);
@@ -307,7 +309,7 @@ let render-identifier(k: CString): String = (
 );
 
 let render-identifier(k: String): String = (
-   let cs = mk-vector(type(U8)); cs = cs.push(c"LM_");
+   let cs = mk-vector(type(U8));
    let ci = 0_sz;
    while ci < k.length { match k[ci] {
       33 => cs = cs.push(c"_EX_"); # !
@@ -394,6 +396,7 @@ let render-internal(tt: Type): String = (
       TGround{tag:interned-tag-c, parameters:[TGround{ctag=tag}..]} => untern(ctag).into(type(String));
       TGround{tag:interned-tag-sized, parameters:[_..]} => "";
       TGround{tag2=tag, parameters=parameters} => (
+         if not tt.is-datatype then "render \{tt} is not datatype\n";
          if not tt.is-datatype then "" else ("LM_" + render-identifier(tt.into(type(String))));
       );
       _ => "";
