@@ -5340,13 +5340,12 @@ let render-internal(tt: Type): String = (
          let modifiers = "";
          let datatype = "";
          for c in conjugate {
-            print("Render internal \{c}\n");
             if c.is-modifier
             then {
                if non-zero(modifiers)
                then modifiers = modifiers + " " + render-internal(c);
                else modifiers = render-internal(c);
-            } else datatype = render-internal(c);
+            } else datatype = datatype + render-internal(c);
          };
          if non-zero(modifiers) and non-zero(datatype)
          then modifiers + " " + datatype;
@@ -5362,7 +5361,6 @@ let render-internal(tt: Type): String = (
       TGround{tag:interned-tag-c, parameters:[TGround{ctag=tag}..]} => untern(ctag).into(type(String));
       TGround{tag:interned-tag-sized, parameters:[_..]} => "";
       TGround{tag2=tag, parameters=parameters} => (
-         if not tt.is-datatype then print("render \{tt} is not datatype\n");
          if not tt.is-datatype then "" else ("LM_" + render-identifier(tt.into(type(String))));
       );
       _ => "";
