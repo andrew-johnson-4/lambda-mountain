@@ -55,7 +55,7 @@ let render-forward-function-declaration(t: AST): String = (
             not typeof-term(f).is-open
          then (
             if render(typeof-term(f).range)=="" then print("Render forward return \{typeof-term(f)} was null\n");
-            "\{render(typeof-term(f).range)} \{key.key}(\{render-function-parameters(lhs)});\n"
+            "\{render(typeof-term(f).range)} LM_\{render-identifier(key.key)}(\{render-function-parameters(lhs)});\n"
          ) else ""
       );
       _ => "";
@@ -101,7 +101,7 @@ let render-direct-function-declaration(exprs: S, t: AST): String = (
          then (
             if render(typeof-term(f).range)=="" then print("Render direct return \{typeof-term(f)} was null\n");
             let rt = render-return(rhs);
-            "\{render(typeof-term(f).range)} \{key.key}(\{render-function-parameters(lhs)}){\{exprs}\{rt.frame}\{rt.expression}}\n"
+            "\{render(typeof-term(f).range)} LM_\{render-identifier(key.key)}(\{render-function-parameters(lhs)}){\{exprs}\{rt.frame}\{rt.expression}}\n"
          ) else ""
       );
       ASTEOF{} => "int main(){\{exprs}}\n";
@@ -372,12 +372,13 @@ let render-internal(tt: Type): String = (
          let modifiers = "";
          let datatype = "";
          for c in conjugate {
+            print("Render internal \{c}\n");
             if c.is-modifier
             then {
                if non-zero(modifiers)
                then modifiers = modifiers + " " + render-internal(c);
-               else modifiers = render(c);
-            } else datatype = render(c);
+               else modifiers = render-internal(c);
+            } else datatype = render-internal(c);
          };
          if non-zero(modifiers) and non-zero(datatype)
          then modifiers + " " + datatype;
