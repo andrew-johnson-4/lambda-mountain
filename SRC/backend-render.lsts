@@ -51,7 +51,8 @@ let render-forward-function-declaration(t: AST): String = (
       Glb{key=key, f=val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
          if not tt.is-t(interned-tag-cffi,0) and
             not tt.is-t(interned-tag-blob,0) and
-            not tt.is-t(interned-tag-typed-macro,0)
+            not tt.is-t(interned-tag-typed-macro,0) and
+            not typeof-term(f).is-open
          then (
             if render(typeof-term(f).range)=="" then print("Render forward return \{typeof-term(f)} was null\n");
             "\{render(typeof-term(f).range)} \{key.key}(\{render-function-parameters(lhs)});\n"
@@ -81,12 +82,7 @@ let render-direct-function-declaration(t: AST): String = (
       #   };
       #   SAtom(global-functions) + render-direct-function-declaration(global-frames + global-expressions, main-function);
       #);
-      Glb{f=val:Abs{tt=tt}} => (
-         if tt.is-t(interned-tag-cffi,0) or
-            typeof-term(f).is-open
-         then ""
-         else render-direct-function-declaration(SNil, t);
-      );
+      Glb{val:Abs{tt=tt}} => render-direct-function-declaration(SNil, t);
       _ => (
          let rt = render-statement(t);
          let result = render-direct-function-declaration(rt.frame + rt.expression, mk-eof());
@@ -100,6 +96,7 @@ let render-direct-function-declaration(exprs: S, t: AST): String = (
       Glb{key=key, f=val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
          if not tt.is-t(interned-tag-blob,0) and
             not tt.is-t(interned-tag-typed-macro,0) and
+            not tt.is-t(interned-tag-cffi,0) and
             not typeof-term(f).is-open
          then (
             if render(typeof-term(f).range)=="" then print("Render direct return \{typeof-term(f)} was null\n");
@@ -396,7 +393,7 @@ let render-internal(tt: Type): String = (
       TGround{tag:interned-tag-c, parameters:[TGround{ctag=tag}..]} => untern(ctag).into(type(String));
       TGround{tag:interned-tag-sized, parameters:[_..]} => "";
       TGround{tag2=tag, parameters=parameters} => (
-         if not tt.is-datatype then "render \{tt} is not datatype\n";
+         if not tt.is-datatype then print("render \{tt} is not datatype\n");
          if not tt.is-datatype then "" else ("LM_" + render-identifier(tt.into(type(String))));
       );
       _ => "";
