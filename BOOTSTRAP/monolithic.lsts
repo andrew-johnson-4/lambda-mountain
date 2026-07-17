@@ -5016,12 +5016,13 @@ let render-forward-function-declaration(t: AST): String = (
          };
          decls
       );
-      Glb{key=key, val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
+      Glb{key=key, f=val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
          if not tt.is-t(interned-tag-cffi,0) and
             not tt.is-t(interned-tag-blob,0) and
             not tt.is-t(interned-tag-typed-macro,0)
          then (
-            "\{render(typeof-term(t).range)} \{key.key}(\{render-function-parameters(lhs)});\n"
+            if render(typeof-term(f).range)=="" then print("Render forward return \{typeof-term(f)} was null\n");
+            "\{render(typeof-term(f).range)} \{key.key}(\{render-function-parameters(lhs)});\n"
          ) else ""
       );
       _ => "";
@@ -5063,12 +5064,13 @@ let render-direct-function-declaration(t: AST): String = (
 
 let render-direct-function-declaration(exprs: S, t: AST): String = (
    match t {
-      Glb{key=key, val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
+      Glb{key=key, f=val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
          if not tt.is-t(interned-tag-blob,0) and
             not tt.is-t(interned-tag-typed-macro,0)
          then (
+            if render(typeof-term(f).range)=="" then print("Render direct return \{typeof-term(f)} was null\n");
             let rt = render-return(rhs);
-            "\{render(typeof-term(t).range)} \{key.key}(\{render-function-parameters(lhs)}){\{exprs}\{rt.frame}\{rt.expression}}\n"
+            "\{render(typeof-term(f).range)} \{key.key}(\{render-function-parameters(lhs)}){\{exprs}\{rt.frame}\{rt.expression}}\n"
          ) else ""
       );
       ASTEOF{} => "int main(){\{exprs}}\n";
@@ -5090,7 +5092,8 @@ let render-function-parameters(lhs: AST): String = (
          then "\{render(vtt)} \{render(vbind).expression}"
          else ""
       );
-      _ => "";
+      ASTNil{} => "";
+      _ => fail("Render unknown function parameters \{lhs}\n");
    };
 );
 
@@ -5330,7 +5333,9 @@ let render-cstring(cs: CString): String = (
    s + "\""
 );
 
-let render(tt: Type): String = (
+let render(tt: Type): String = render-internal(tt.rewrite-type-alias.rewrite-opaque-type-alias);
+
+let render-internal(tt: Type): String = (
    match tt {
       TAnd{ conjugate=conjugate } => (
          let modifiers = "";
@@ -5339,7 +5344,7 @@ let render(tt: Type): String = (
             if c.is-modifier
             then {
                if non-zero(modifiers)
-               then modifiers = modifiers + " " + render(c);
+               then modifiers = modifiers + " " + render-internal(c);
                else modifiers = render(c);
             } else datatype = render(c);
          };
@@ -5354,7 +5359,7 @@ let render(tt: Type): String = (
          else render(array-base) + "*";
       );
       TGround{tag:interned-tag-arrow} => fail("TODO: render type \{tt}\n");
-      TGround{tag:interned-tag-c, parameters:[ct..]} => render(ct);
+      TGround{tag:interned-tag-c, parameters:[TGround{ctag=tag}..]} => untern(ctag).into(type(String));
       TGround{tag:interned-tag-sized, parameters:[_..]} => "";
       TGround{tag2=tag, parameters=parameters} => (
          if not tt.is-datatype then "" else ("LM_" + render-identifier(tt.into(type(String))));

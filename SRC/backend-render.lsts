@@ -365,7 +365,7 @@ let render-cstring(cs: CString): String = (
    s + "\""
 );
 
-let render(tt: Type): String = render-internal(tt.rewrite-type-alias.rewrite-opaque-alias);
+let render(tt: Type): String = render-internal(tt.rewrite-type-alias.rewrite-opaque-type-alias);
 
 let render-internal(tt: Type): String = (
    match tt {
