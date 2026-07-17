@@ -4928,6 +4928,7 @@ let render-direct-type-declaration(t: AST): String = (
    let ts = find-concrete-types(t);
 
    for Tuple{lhs-type=first, concrete-type=second} in ts {
+      print("Declare typedef \{lhs-type}, \{concrete-type} = \{render(concrete-type)}\n");
       decls = "\{decls}struct \{render(concrete-type)}{\n";
       let td = index-typedef.lookup(concrete-type.ground-tag-and-arity, mk-eof());
       match td { Typedef{} => (); _ => exit-error("Invalid compile type \{concrete-type} \{td}\n", td); };
@@ -5267,9 +5268,15 @@ let render(t: AST): Hashtable<CString,S> = (
 );
 
 let render-identifier(k: CString): String = (
+   render-identifier(k.into(type(String)));
+);
+
+let render-identifier(k: String): String = (
    let cs = mk-vector(type(U8)); cs = cs.push(c"LM_");
-   while head(k) != 0 { match head(k) {
+   let ci = 0_sz;
+   while ci < k.length { match k[ci] {
       33 => cs = cs.push(c"_EX_"); # !
+      34 => cs = cs.push(c"_DQ_"); # "
       36 => cs = cs.push(c"_DL_"); # $
       37 => cs = cs.push(c"_MD_"); # %
       38 => cs = cs.push(c"_AM_"); # &
@@ -5295,7 +5302,7 @@ let render-identifier(k: CString): String = (
       124 => cs = cs.push(c"_BR_"); # |
       126 => cs = cs.push(c"_TL_"); # ~
       c => cs = cs.push(c);
-   }; k = tail(k); };
+   }; ci = ci + 1; };
    cs.buffer-into-string
 );
 
@@ -5347,81 +5354,10 @@ let render(tt: Type): String = (
          else render(array-base) + "*";
       );
       TGround{tag:interned-tag-arrow} => fail("TODO: render type \{tt}\n");
-      TGround{tag:interned-tag-c, parameters:[TGround{tag1=tag}..]} => untern(tag1).into(type(String));
+      TGround{tag:interned-tag-c, parameters:[ct..]} => render(ct);
       TGround{tag:interned-tag-sized, parameters:[_..]} => "";
       TGround{tag2=tag, parameters=parameters} => (
-         if not tt.is-datatype then "" else {
-            let r = "LM_" + render-mangle(untern(tag2));
-            if parameters.length > 0 then r = r + render-mangle(c"<");
-            let p0 = true;
-            for p in parameters {
-               if not p0 then r = r + render-mangle(c",");
-               r = r + render-mangle(p);
-               p0 = false;
-            };
-            if parameters.length > 0 then r = r + render-mangle(c">");
-            r;
-         }
-      );
-      _ => "";
-   }
-);
-
-let render-mangle(k: CString): String = (
-   let cs = "";
-   while head(k) != 0 { match head(k) {
-      33 => cs = cs + "_EX_"; # !
-      36 => cs = cs + "_DL_"; # $
-      37 => cs = cs + "_MD_"; # %
-      38 => cs = cs + "_AM_"; # &
-      39 => cs = cs + "_SQ_"; # '
-      42 => cs = cs + "_ML_"; # *
-      43 => cs = cs + "_AD_"; # +
-      44 => cs = cs + "_CM_"; # ,
-      45 => cs = cs + "_SB_"; # -
-      46 => cs = cs + "_DT_"; # .
-      47 => cs = cs + "_DV_"; # /
-      58 => cs = cs + "_CL_"; # :
-      59 => cs = cs + "_SC_"; # ;
-      60 => cs = cs + "_LT_"; # <
-      61 => cs = cs + "_EQ_"; # =
-      62 => cs = cs + "_GT_"; # >
-      63 => cs = cs + "_QM_"; # ?
-      64 => cs = cs + "_AT_"; # @
-      91 => cs = cs + "_LB_"; # [
-      93 => cs = cs + "_RB_"; # ]
-      94 => cs = cs + "_HT_"; # ^
-      95 => cs = cs + "_US_"; # _
-      96 => cs = cs + "_TK_"; # `
-      124 => cs = cs + "_BR_"; # |
-      126 => cs = cs + "_TL_"; # ~
-      c => cs = c.encode-ascii(type(String));
-   }; k = tail(k); };
-   cs
-);
-
-let render-mangle(tt: Type): String = (
-   match tt {
-      TAnd{ conjugate=conjugate } => (
-         let datatype = "";
-         for c in conjugate {
-            datatype = render(c);
-         };
-         datatype;
-      );
-      TGround{tag2=tag, parameters=parameters} => (
-         if not tt.is-datatype then "" else {
-            let r = render-mangle(untern(tag2));
-            if parameters.length > 0 then r = r + render-mangle(c"<");
-            let p0 = true;
-            for p in parameters {
-               if not p0 then r = r + render-mangle(c",");
-               r = r + render-mangle(p);
-               p0 = false;
-            };
-            if parameters.length > 0 then r = r + render-mangle(c">");
-            r;
-         }
+         if not tt.is-datatype then "" else ("LM_" + render-identifier(tt.into(type(String))));
       );
       _ => "";
    }

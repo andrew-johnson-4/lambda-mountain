@@ -308,6 +308,7 @@ let render-identifier(k: String): String = (
    let ci = 0_sz;
    while ci < k.length { match k[ci] {
       33 => cs = cs.push(c"_EX_"); # !
+      34 => cs = cs.push(c"_DQ_"); # "
       36 => cs = cs.push(c"_DL_"); # $
       37 => cs = cs.push(c"_MD_"); # %
       38 => cs = cs.push(c"_AM_"); # &
@@ -385,29 +386,11 @@ let render(tt: Type): String = (
          else render(array-base) + "*";
       );
       TGround{tag:interned-tag-arrow} => fail("TODO: render type \{tt}\n");
-      TGround{tag:interned-tag-c, parameters:[TGround{tag1=tag}..]} => render-identifier(tag1.into(type(String)));
+      TGround{tag:interned-tag-c, parameters:[ct..]} => render(ct);
       TGround{tag:interned-tag-sized, parameters:[_..]} => "";
       TGround{tag2=tag, parameters=parameters} => (
-         if not tt.is-datatype then "" else ("LM_" + render-mangle(tt));
+         if not tt.is-datatype then "" else ("LM_" + render-identifier(tt.into(type(String))));
       );
       _ => "";
    }
-);
-
-let render-mangle(tt: Type): String = (
-   match tt {
-      TGround{tag2=tag, parameters=parameters} => (
-         let r = render-identifier(untern(tag2));
-         if parameters.length > 0 then r = r + render-identifier(c"<");
-         let p0 = true;
-         for p in parameters {
-            if not p0 then r = r + render-identifier(c",");
-            r = r + render-mangle(p);
-            p0 = false;
-         };
-         if parameters.length > 0 then r = r + render-identifier(c">");
-         r;
-      );
-      _ => "";
-   };
 );
