@@ -365,7 +365,9 @@ let render-cstring(cs: CString): String = (
    s + "\""
 );
 
-let render(tt: Type): String = (
+let render(tt: Type): String = render-internal(tt.rewrite-type-alias);
+
+let render-internal(tt: Type): String = (
    match tt {
       TAnd{ conjugate=conjugate } => (
          let modifiers = "";
@@ -374,7 +376,7 @@ let render(tt: Type): String = (
             if c.is-modifier
             then {
                if non-zero(modifiers)
-               then modifiers = modifiers + " " + render(c);
+               then modifiers = modifiers + " " + render-internal(c);
                else modifiers = render(c);
             } else datatype = render(c);
          };
