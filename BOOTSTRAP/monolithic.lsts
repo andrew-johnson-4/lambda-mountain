@@ -5022,8 +5022,7 @@ let render-forward-function-declaration(t: AST): String = (
             not tt.is-t(interned-tag-typed-macro,0) and
             not typeof-term(f).is-open
          then (
-            if render(typeof-term(f).range)=="" then print("Render forward return \{typeof-term(f)} was null\n");
-            "\{render(typeof-term(f).range)} LM_\{render-identifier(key.key)}(\{render-function-parameters(lhs)});\n"
+            "\{render(typeof-term(f).range)} \{render-identifier(key.key, typeof-term(f))}(\{render-function-parameters(lhs)});\n"
          ) else ""
       );
       _ => "";
@@ -5067,9 +5066,8 @@ let render-direct-function-declaration(exprs: S, t: AST): String = (
             not tt.is-t(interned-tag-cffi,0) and
             not typeof-term(f).is-open
          then (
-            if render(typeof-term(f).range)=="" then print("Render direct return \{typeof-term(f)} was null\n");
             let rt = render-return(rhs);
-            "\{render(typeof-term(f).range)} LM_\{render-identifier(key.key)}(\{render-function-parameters(lhs)}){\{exprs}\{rt.frame}\{rt.expression}}\n"
+            "\{render(typeof-term(f).range)} \{render-identifier(key.key, typeof-term(f))}(\{render-function-parameters(lhs)}){\{exprs}\{rt.frame}\{rt.expression}}\n"
          ) else ""
       );
       ASTEOF{} => "int main(){\{exprs}}\n";
@@ -5157,8 +5155,8 @@ let render-declaration(k: String, kt: Type, t: AST): String = (
    (let prefix, let suffix) = render-declaration(kt);
    let rt = render(t);
    if t.is-nil-constant
-   then "\{prefix} \{k}\{suffix};"
-   else "\{rt.frame}\{prefix} \{k}\{suffix} = \{rt.expression};"
+   then "\{prefix} \{render-identifier(k,kt)}\{suffix};"
+   else "\{rt.frame}\{prefix} \{render-identifier(k,kt)}\{suffix} = \{rt.expression};"
 );
 
 let render-declaration(tt: Type): (String, String) = (
@@ -5260,7 +5258,10 @@ let render(t: AST): Hashtable<CString,S> = (
       ASTNil{} => mk-io-fragment();
       ASTEOF{} => mk-io-fragment();
       Lit{key1=key} => mk-io-expression(key1.into(type(String)));
-      Var{key2=key} => mk-io-expression(render-identifier(key2).into(type(String)));
+      Var{key2=key} => (
+         # TODO: determine if this is a C global and passthrough, otherwise LM convention
+         mk-io-expression(render-identifier(key2, typeof-term(t)));
+      );
       #AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
       AType{tt=tt} => mk-io-expression(render(tt));
       Glb{} => mk-io-fragment();
@@ -5306,6 +5307,14 @@ let render-identifier(k: String): String = (
       c => cs = cs.push(c);
    }; ci = ci + 1; };
    cs.buffer-into-string
+);
+
+let render-identifier(k: CString, kt: Type): String = (
+   render-identifier(k.into(type(String)), kt)
+);
+
+let render-identifier(k: String, kt: Type): String = (
+   "LM_" + render-identifier(k) + "_" + render(kt);
 );
 
 let render-cstring(cs: CString): String = (
@@ -5357,9 +5366,11 @@ let render-internal(tt: Type): String = (
          then render(array-base);
          else render(array-base) + "*";
       );
-      TGround{tag:interned-tag-arrow} => fail("TODO: render type \{tt}\n");
       TGround{tag:interned-tag-c, parameters:[TGround{ctag=tag}..]} => untern(ctag).into(type(String));
       TGround{tag:interned-tag-sized, parameters:[_..]} => "";
+      TGround{tag:interned-tag-arrow, parameters:[_.._..]} => (
+         "LM_" + render-identifier(tt.into(type(String)));
+      );
       TGround{tag2=tag, parameters=parameters} => (
          if not tt.is-datatype then "" else ("LM_" + render-identifier(tt.into(type(String))));
       );
@@ -7906,7 +7917,7 @@ let .into(tt: Type, tgt: Type<String>): String = (
          for c in conjugate {
             result = result + c.into(type(String));
             ci = ci + 1;
-            if ci != conjugate.length then result = result + " + ";
+            if ci != conjugate.length then result = result + "+";
          };
          result
       );

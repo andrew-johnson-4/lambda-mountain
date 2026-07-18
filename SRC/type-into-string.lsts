@@ -29,7 +29,7 @@ let .into(tt: Type, tgt: Type<String>): String = (
          for c in conjugate {
             result = result + c.into(type(String));
             ci = ci + 1;
-            if ci != conjugate.length then result = result + " + ";
+            if ci != conjugate.length then result = result + "+";
          };
          result
       );
