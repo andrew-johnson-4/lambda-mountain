@@ -63,24 +63,24 @@ let render-forward-function-declaration(t: AST): String = (
 
 let render-direct-function-declaration(t: AST): String = (
    match t {
-      #Seq{seq=seq} => (
-      #   let global-frames = SNil;
-      #   let global-expressions = SNil;
-      #   let global-functions = "";
-      #   let main-function = mk-eof();
-      #   for s in seq {
-      #      match s {
-      #         Glb{key:Token{key:c"main"}} => main-function = s;
-      #         Glb{val:Abs{}} => global-functions = global-functions + render-direct-function-declaration(s);
-      #         _ => (
-      #            let e = render(s);
-      #            if non-zero(e) and non-zero(e.frame) then global-frames = global-frames + e.frame + ";";
-      #            if non-zero(e) and non-zero(e.expression) then global-expressions = global-expressions + e.expression + ";";
-      #         );
-      #      };
-      #   };
-      #   SAtom(global-functions) + render-direct-function-declaration(global-frames + global-expressions, main-function);
-      #);
+      Seq{seq=seq} => (
+         let global-frames = SNil;
+         let global-expressions = SNil;
+         let global-functions = SNil;
+         let main-function = mk-eof();
+         for s in seq {
+            match s {
+               Glb{key:Token{key:c"main"}} => main-function = s;
+               Glb{val:Abs{}} => global-functions = global-functions + render-direct-function-declaration(s);
+               _ => (
+                  let e = render(s);
+                  if non-zero(e) and non-zero(e.frame) then global-frames = global-frames + e.frame + ";";
+                  if non-zero(e) and non-zero(e.expression) then global-expressions = global-expressions + e.expression + ";";
+               );
+            };
+         };
+         global-functions + render-direct-function-declaration(global-frames + global-expressions, main-function);
+      );
       Glb{val:Abs{tt=tt}} => render-direct-function-declaration(SNil, t);
       _ => (
          let rt = render-statement(t);
