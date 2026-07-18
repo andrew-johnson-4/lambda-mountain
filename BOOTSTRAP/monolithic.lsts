@@ -4882,14 +4882,11 @@ let .sort-concrete-types(ts: Vector<(Type,Type)>): Vector<(Type,Type)> = (
          let td = index-typedef.lookup(concrete-type.ground-tag-and-arity, mk-eof());
          match td { Typedef{} => (); _ => exit-error("Invalid compile type \{concrete-type} \{td}\n", td); };
          let tctx = unify(lhs-type, concrete-type, td);
-         print("\{lhs-type} = \{concrete-type} TCTX:\n\{tctx}\n");
          let is-incomplete = false;
          for Tuple{case-tag1=first, case-fields=second} in (td as Tag::Typedef).cases {
             for Tuple{field-name1=first, field-type=second} in case-fields {
-               print("Field type \{field-type}\n");
                field-type = tctx.substitute(field-type).rewrite-type-alias;
                is-incomplete = is-incomplete or not field-type.is-codegen-defined;
-               if not field-type.is-codegen-defined then print("Typedef field undefined \{field-type}\n");
             }
          };
          if is-incomplete
@@ -4940,6 +4937,8 @@ let render-direct-type-declaration(t: AST): String = (
             for Tuple{field-name1=first, field-type=second} in case-fields {
                let mangled-field-name1 = "LM_0_" + render-identifier(field-name1);
                field-type = tctx.substitute(field-type);
+               print("Render decls \{field-name1} : \{field-type}\n");
+               print("Render decls \{render-declaration(mangled-field-name1,field-type,mk-nil())}\n");
                decls = "\{decls}\t\{render-declaration(mangled-field-name1,field-type,mk-nil())}\n";
             }
          } else has-guarded-cases = true;
@@ -4953,6 +4952,8 @@ let render-direct-type-declaration(t: AST): String = (
                for Tuple{field-name2=first, field-type=second} in case-fields {
                   let mangled-field-name2 = "LM_\{case-number}_\{render-identifier(field-name2)}";
                   field-type = tctx.substitute(field-type);
+                  print("Render decls \{field-name2} : \{field-type}\n");
+                  print("Render decls \{render-declaration(mangled-field-name2,field-type,mk-nil())}\n");
                   decls = "\{decls}\t\t\t\{render-declaration(mangled-field-name2,field-type,mk-nil())}\n";
                };
                if case-fields.length > 0 then decls = "\{decls}\t\t};\n";
@@ -5167,7 +5168,7 @@ let render-declaration(tt: Type): (String, String) = (
 );
 
 let render-declaration(tt: Type, is-flexible-array-member: Bool): (String, String) = (
-   match tt {
+   let result = match tt {
       TGround{tag:interned-tag-array, parameters:[ TGround{tag:interned-tag-CONST}.. array-base.. ]} => (
          (let prefix, let suffix) = render-declaration(array-base, false);
          ( prefix, "\{suffix}[]" )
@@ -5192,7 +5193,11 @@ let render-declaration(tt: Type, is-flexible-array-member: Bool): (String, Strin
          ("(*\{render(rng)})(", "\{render(dom)})")
       );
       _ => (render(tt), "");
-   }
+   };
+   print("Render declaration \{tt} is-flexible=\{is-flexible-array-member}\n");
+   print("Render declaration prefix \{result.first}\n");
+   print("Render declaration suffix \{result.second}\n");
+   result
 );
 
 let render(t: AST): Hashtable<CString,S> = (
@@ -5311,7 +5316,9 @@ let render-identifier(k: String): String = (
 );
 
 let render-identifier(k: CString, kt: Type): String = (
-   render-identifier(k.into(type(String)), kt)
+   let ri = render-identifier(k.into(type(String)), kt);
+   print("Render Identifier \{k} : \{kt} = \{ri}\n");
+   ri
 );
 
 let render-identifier(k: String, kt: Type): String = (
