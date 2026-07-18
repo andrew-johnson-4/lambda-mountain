@@ -5080,14 +5080,21 @@ let render-function-parameters(lhs: AST): String = (
       App{ rst=left, bind=right:App{ left:Lit{key:c":"}, right:App{ left:Var{}, right:AType{} } } } => (
          let m = render-function-parameters(rst);
          let n = render-function-parameters(bind);
-         if non-zero(m) and non-zero(n)
+         let result = if non-zero(m) and non-zero(n)
          then "\{m},\{n}"
-         else "\{m}\{n}"
+         else "\{m}\{n}";
+         print("Render function parameters \{lhs}\n");
+         print("Render function parameters result '\{result}'\n");
+         result
       );
       App{ left:Lit{key:c":"}, right:App{ vbind=left:Var{vid=key}, right:AType{vtt=tt} } } => (
-         if vtt.is-datatype
-         then "\{render(vtt)} \{render(vbind).expression}"
-         else ""
+         let rt = render(vtt);
+         let result = if non-zero(rt)
+         then "\{rt} \{render(vbind).expression}"
+         else "";
+         print("Render function parameters \{lhs}\n");
+         print("Render function parameters result '\{result}'\n");
+         result
       );
       ASTNil{} => "";
       _ => fail("Render unknown function parameters \{lhs}\n");

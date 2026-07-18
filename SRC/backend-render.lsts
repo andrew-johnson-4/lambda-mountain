@@ -114,12 +114,13 @@ let render-function-parameters(lhs: AST): String = (
          let n = render-function-parameters(bind);
          if non-zero(m) and non-zero(n)
          then "\{m},\{n}"
-         else "\{m}\{n}"
+         else "\{m}\{n}";
       );
       App{ left:Lit{key:c":"}, right:App{ vbind=left:Var{vid=key}, right:AType{vtt=tt} } } => (
-         if vtt.is-datatype
-         then "\{render(vtt)} \{render(vbind).expression}"
-         else ""
+         let rt = render(vtt);
+         if non-zero(rt)
+         then "\{rt} \{render-identifier(vid,vtt)}"
+         else "";
       );
       ASTNil{} => "";
       _ => fail("Render unknown function parameters \{lhs}\n");
