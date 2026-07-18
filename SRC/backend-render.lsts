@@ -79,7 +79,7 @@ let render-direct-function-declaration(t: AST): String = (
                );
             };
          };
-         global-functions + render-direct-function-declaration(global-frames + global-expressions, main-function);
+         (global-functions + render-direct-function-declaration(global-frames + global-expressions, main-function)).into(type(String));
       );
       Glb{val:Abs{tt=tt}} => render-direct-function-declaration(SNil, t);
       _ => (

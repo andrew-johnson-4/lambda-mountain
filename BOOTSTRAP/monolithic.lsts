@@ -5031,24 +5031,24 @@ let render-forward-function-declaration(t: AST): String = (
 
 let render-direct-function-declaration(t: AST): String = (
    match t {
-      #Seq{seq=seq} => (
-      #   let global-frames = SNil;
-      #   let global-expressions = SNil;
-      #   let global-functions = "";
-      #   let main-function = mk-eof();
-      #   for s in seq {
-      #      match s {
-      #         Glb{key:Token{key:c"main"}} => main-function = s;
-      #         Glb{val:Abs{}} => global-functions = global-functions + render-direct-function-declaration(s);
-      #         _ => (
-      #            let e = render(s);
-      #            if non-zero(e) and non-zero(e.frame) then global-frames = global-frames + e.frame + ";";
-      #            if non-zero(e) and non-zero(e.expression) then global-expressions = global-expressions + e.expression + ";";
-      #         );
-      #      };
-      #   };
-      #   SAtom(global-functions) + render-direct-function-declaration(global-frames + global-expressions, main-function);
-      #);
+      Seq{seq=seq} => (
+         let global-frames = SNil;
+         let global-expressions = SNil;
+         let global-functions = SNil;
+         let main-function = mk-eof();
+         for s in seq {
+            match s {
+               Glb{key:Token{key:c"main"}} => main-function = s;
+               Glb{val:Abs{}} => global-functions = global-functions + render-direct-function-declaration(s);
+               _ => (
+                  let e = render(s);
+                  if non-zero(e) and non-zero(e.frame) then global-frames = global-frames + e.frame + ";";
+                  if non-zero(e) and non-zero(e.expression) then global-expressions = global-expressions + e.expression + ";";
+               );
+            };
+         };
+         (global-functions + render-direct-function-declaration(global-frames + global-expressions, main-function)).into(type(String));
+      );
       Glb{val:Abs{tt=tt}} => render-direct-function-declaration(SNil, t);
       _ => (
          let rt = render-statement(t);
@@ -5080,21 +5080,15 @@ let render-function-parameters(lhs: AST): String = (
       App{ rst=left, bind=right:App{ left:Lit{key:c":"}, right:App{ left:Var{}, right:AType{} } } } => (
          let m = render-function-parameters(rst);
          let n = render-function-parameters(bind);
-         let result = if non-zero(m) and non-zero(n)
+         if non-zero(m) and non-zero(n)
          then "\{m},\{n}"
          else "\{m}\{n}";
-         print("Render function parameters \{lhs}\n");
-         print("Render function parameters result '\{result}'\n");
-         result
       );
       App{ left:Lit{key:c":"}, right:App{ vbind=left:Var{vid=key}, right:AType{vtt=tt} } } => (
          let rt = render(vtt);
-         let result = if non-zero(rt)
-         then "\{rt} \{render(vbind).expression}"
+         if non-zero(rt)
+         then "\{rt} \{render-identifier(vid,vtt)}"
          else "";
-         print("Render function parameters \{lhs}\n");
-         print("Render function parameters result '\{result}'\n");
-         result
       );
       ASTNil{} => "";
       _ => fail("Render unknown function parameters \{lhs}\n");
