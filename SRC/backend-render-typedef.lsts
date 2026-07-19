@@ -21,6 +21,7 @@ let .is-codegen-defined(tt: Type, is-flexible-array-member: Bool): Bool = (
       );
       TAny{} => false;
       TVar{} => false;
+      TGround{tag:interned-tag-c,parameters:[_..]} => true;
       TGround{tag:interned-tag-sized,parameters:[st..]} => st.is-codegen-defined;
       TGround{tag:interned-tag-array,parameters:[_..base-type..]} => base-type.is-codegen-defined;
       TGround{} => tt.is-datatype and (
@@ -68,7 +69,7 @@ let .sort-concrete-types(ts: Vector<(Type,Type)>): Vector<(Type,Type)> = (
          let is-incomplete = false;
          for Tuple{case-tag1=first, case-fields=second} in (td as Tag::Typedef).cases {
             for Tuple{field-name1=first, field-type=second} in case-fields {
-               field-type = tctx.substitute(field-type).rewrite-type-alias;
+               field-type = tctx.substitute(field-type).rewrite-type-alias.rewrite-opaque-type-alias;
                print("Is codegen defined \{field-type} = \{field-type.is-codegen-defined}\n");
                is-incomplete = is-incomplete or not field-type.is-codegen-defined;
             }
