@@ -19,7 +19,7 @@ let .is-codegen-defined(tt: Type, is-flexible-array-member: Bool): Bool = (
       TAny{} => false;
       TVar{} => false;
       TGround{tag:interned-tag-sized,parameters:[st..]} => st.is-codegen-defined;
-      TGround{tag:interned-tag-array,parameters:[_..base-type..]} => not is-flexible-array-member or base-type.is-codegen-defined;
+      TGround{tag:interned-tag-array,parameters:[_..base-type..]} => base-type.is-codegen-defined;
       TGround{} => not complex-type-index.has(tt.ground-tag-and-arity)
                 or codegen-defined-type-index.has(tt);
    }

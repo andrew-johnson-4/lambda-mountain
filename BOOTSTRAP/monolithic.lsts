@@ -5316,13 +5316,11 @@ let render-identifier(k: String): String = (
 );
 
 let render-identifier(k: CString, kt: Type): String = (
-   let ri = render-identifier(k.into(type(String)), kt);
-   print("Render Identifier \{k} : \{kt} = \{ri}\n");
-   ri
+   render-identifier(k.into(type(String)), kt);
 );
 
 let render-identifier(k: String, kt: Type): String = (
-   "LM_" + render-identifier(k) + "_" + render(kt);
+   "LM_" + render-identifier(k) + "_" + render-identifier(render(kt));
 );
 
 let render-cstring(cs: CString): String = (
