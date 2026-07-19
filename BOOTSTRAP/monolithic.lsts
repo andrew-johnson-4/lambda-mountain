@@ -4824,14 +4824,11 @@ let non-zero(f: Fragment): Bool = (
 let codegen-defined-type-index = mk-set(type(Type));
 
 let define-codegen(tt: Type) = (
-   print("Define type \{tt}\n");
    codegen-defined-type-index = codegen-defined-type-index.bind(tt);
 );
 
 let .is-codegen-defined(tt: Type): Bool = (
-   let return = tt.is-codegen-defined(tt.is-t(interned-tag-flexible-array-member,0));
-   print("Is codegen defined \{tt} = \{return}\n");
-   return
+   tt.is-codegen-defined(tt.is-t(interned-tag-flexible-array-member,0));
 );
 
 let .is-codegen-defined(tt: Type, is-flexible-array-member: Bool): Bool = (
@@ -4865,7 +4862,6 @@ let find-concrete-types-unsorted(t: AST): Vector<(Type,Type)> = (
       );
       Typedef{lhs-type=lhs-type} => (
          for concrete-type in concrete-type-instances-index.lookup(lhs-type.ground-tag-and-arity, mk-vector(type(Type))) {
-            print("Concrete Type \{lhs-type} = \{concrete-type}\n");
             vs = vs.push((lhs-type, concrete-type));
          }
       );
@@ -4882,7 +4878,6 @@ let .sort-concrete-types(ts: Vector<(Type,Type)>): Vector<(Type,Type)> = (
    codegen-defined-type-index = mk-set(type(Type));
    let out = mk-vector(type((Type,Type)));
    while ts.length > 0 {
-      print("Typedef Iter\n");
       let next-ts = mk-vector(type((Type,Type)));
       for Tuple{lhs-type=first, concrete-type=second} in ts {
          let td = index-typedef.lookup(concrete-type.ground-tag-and-arity, mk-eof());
@@ -4892,7 +4887,6 @@ let .sort-concrete-types(ts: Vector<(Type,Type)>): Vector<(Type,Type)> = (
          for Tuple{case-tag1=first, case-fields=second} in (td as Tag::Typedef).cases {
             for Tuple{field-name1=first, field-type=second} in case-fields {
                field-type = tctx.substitute(field-type).rewrite-type-alias.rewrite-opaque-type-alias;
-               print("Is codegen defined \{field-type} = \{field-type.is-codegen-defined}\n");
                is-incomplete = is-incomplete or not field-type.is-codegen-defined;
             }
          };
@@ -4932,7 +4926,6 @@ let render-direct-type-declaration(t: AST): String = (
    let ts = find-concrete-types(t);
 
    for Tuple{lhs-type=first, concrete-type=second} in ts {
-      print("Declare typedef \{lhs-type}, \{concrete-type} = \{render(concrete-type)}\n");
       decls = "\{decls}struct \{render(concrete-type)}{\n";
       let td = index-typedef.lookup(concrete-type.ground-tag-and-arity, mk-eof());
       match td { Typedef{} => (); _ => exit-error("Invalid compile type \{concrete-type} \{td}\n", td); };
@@ -4944,8 +4937,6 @@ let render-direct-type-declaration(t: AST): String = (
             for Tuple{field-name1=first, field-type=second} in case-fields {
                let mangled-field-name1 = "LM_0_" + render-identifier(field-name1);
                field-type = tctx.substitute(field-type);
-               print("Render decls \{field-name1} : \{field-type}\n");
-               print("Render decls \{render-declaration(mangled-field-name1,field-type,mk-nil())}\n");
                decls = "\{decls}\t\{render-declaration(mangled-field-name1,field-type,mk-nil())}\n";
             }
          } else has-guarded-cases = true;
@@ -4959,8 +4950,6 @@ let render-direct-type-declaration(t: AST): String = (
                for Tuple{field-name2=first, field-type=second} in case-fields {
                   let mangled-field-name2 = "LM_\{case-number}_\{render-identifier(field-name2)}";
                   field-type = tctx.substitute(field-type);
-                  print("Render decls \{field-name2} : \{field-type}\n");
-                  print("Render decls \{render-declaration(mangled-field-name2,field-type,mk-nil())}\n");
                   decls = "\{decls}\t\t\t\{render-declaration(mangled-field-name2,field-type,mk-nil())}\n";
                };
                if case-fields.length > 0 then decls = "\{decls}\t\t};\n";

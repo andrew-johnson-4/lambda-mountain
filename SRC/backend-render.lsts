@@ -217,7 +217,7 @@ let render-declaration(tt: Type, is-flexible-array-member: Bool): (String, Strin
             (let prefix, let suffix) = render-declaration(array-base, false);
             ( prefix, "\{suffix}[]" )
          } else {
-            (render(array-base), "")
+            (render(array-base), "[]")
          }
       );
       TGround{tag:interned-tag-arrow, parameters:[ rng.. dom.. ]} => (
