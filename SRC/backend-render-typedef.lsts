@@ -18,10 +18,13 @@ let .is-codegen-defined(tt: Type, is-flexible-array-member: Bool): Bool = (
       );
       TAny{} => false;
       TVar{} => false;
+      TGround{tag:interned-tag-c,parameters:[_..]} => true;
       TGround{tag:interned-tag-sized,parameters:[st..]} => st.is-codegen-defined;
-      TGround{tag:interned-tag-array,parameters:[_..base-type..]} => is-flexible-array-member and base-type.is-codegen-defined;
-      TGround{} => not complex-type-index.has(tt.ground-tag-and-arity)
+      TGround{tag:interned-tag-array,parameters:[_..base-type..]} => not is-flexible-array-member or base-type.is-codegen-defined;
+      TGround{} => tt.is-datatype and (
+                not complex-type-index.has(tt.ground-tag-and-arity)
                 or codegen-defined-type-index.has(tt);
+      );
    }
 );
 
@@ -61,7 +64,7 @@ let .sort-concrete-types(ts: Vector<(Type,Type)>): Vector<(Type,Type)> = (
          let is-incomplete = false;
          for Tuple{case-tag1=first, case-fields=second} in (td as Tag::Typedef).cases {
             for Tuple{field-name1=first, field-type=second} in case-fields {
-               field-type = tctx.substitute(field-type).rewrite-type-alias;
+               field-type = tctx.substitute(field-type).rewrite-type-alias.rewrite-opaque-type-alias;
                is-incomplete = is-incomplete or not field-type.is-codegen-defined;
             }
          };
@@ -69,7 +72,7 @@ let .sort-concrete-types(ts: Vector<(Type,Type)>): Vector<(Type,Type)> = (
          then next-ts = next-ts.push((lhs-type,concrete-type));
          else {
             out = out.push((lhs-type,concrete-type));
-            define-codegen(concrete-type);
+            define-codegen(concrete-type.rewrite-type-alias.rewrite-opaque-type-alias);
          };
       };
       if ts.length == next-ts.length {
@@ -110,7 +113,7 @@ let render-direct-type-declaration(t: AST): String = (
       for Tuple{case-tag1=first, case-fields=second} in (td as Tag::Typedef).cases {
          if case-tag1 == c"" {
             for Tuple{field-name1=first, field-type=second} in case-fields {
-               let mangled-field-name1 = c"0_" + field-name1;
+               let mangled-field-name1 = "LM_0_" + render-identifier(field-name1);
                field-type = tctx.substitute(field-type);
                decls = "\{decls}\t\{render-declaration(mangled-field-name1,field-type,mk-nil())}\n";
             }
@@ -123,7 +126,7 @@ let render-direct-type-declaration(t: AST): String = (
             if case-tag2 != c"" {
                if case-fields.length > 0 then decls = "\{decls}\t\tstruct{\n";
                for Tuple{field-name2=first, field-type=second} in case-fields {
-                  let mangled-field-name2 = case-number.into(type(CString)) + c"_" + field-name2;
+                  let mangled-field-name2 = "LM_\{case-number}_\{render-identifier(field-name2)}";
                   field-type = tctx.substitute(field-type);
                   decls = "\{decls}\t\t\t\{render-declaration(mangled-field-name2,field-type,mk-nil())}\n";
                };

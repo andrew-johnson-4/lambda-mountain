@@ -1,0 +1,3 @@
+
+import lib/core/baremetal-c.lsts;
+printf(c"Hello World\n");

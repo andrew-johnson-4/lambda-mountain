@@ -57,6 +57,7 @@ let main(argc: C<"int">, argv: CString[]): Nil = (
             highlight = false;
          );
          c"--stripdebug" => config-strip-debug = true;
+         c"--backend-v2" => plugin-current-backend = &render-plugin;
          c"--showalloc" => show-alloc-count = true;
          c"--showallocgen" => show-alloc-count-in-program = true;
          c"--showastcount" => show-ast-count = true;
