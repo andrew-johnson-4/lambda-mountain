@@ -199,7 +199,7 @@ let render-declaration(tt: Type): (String, String) = (
 );
 
 let render-declaration(tt: Type, is-flexible-array-member: Bool): (String, String) = (
-   let result = match tt {
+   match tt {
       TGround{tag:interned-tag-array, parameters:[ TGround{tag:interned-tag-CONST}.. array-base.. ]} => (
          (let prefix, let suffix) = render-declaration(array-base, false);
          ( prefix, "\{suffix}[]" )
@@ -225,10 +225,6 @@ let render-declaration(tt: Type, is-flexible-array-member: Bool): (String, Strin
       );
       _ => (render(tt), "");
    };
-   print("Render declaration \{tt} is-flexible=\{is-flexible-array-member}\n");
-   print("Render declaration prefix \{result.first}\n");
-   print("Render declaration suffix \{result.second}\n");
-   result
 );
 
 let render(t: AST): Hashtable<CString,S> = (
