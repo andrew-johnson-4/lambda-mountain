@@ -7,7 +7,7 @@ LSTSFLAGS = MALLOC_CHECK_=3
 # recursion is used fairly heavily
 # recommendation: ulimit -s unlimited
 
-dev: install-bootstrap
+dev: install-production
 	lm --backend-v2 tests/promises/bool/arithmetic.lsts > out.txt
 	gcc tmp.c 2> gcc.out
 	./a.out
