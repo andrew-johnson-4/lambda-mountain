@@ -4978,6 +4978,8 @@ let render-plugin(): Nil = (
    write-file(config-target, render().into(type(CString)));
 );
 
+let global-identifier-namespace-defined = mk-hashtable(type(String), type(String));
+
 let render(): String = (
    render-includes(ast-parsed-program) +
    render-forward-type-declaration(ast-parsed-program) +
@@ -5019,7 +5021,9 @@ let render-forward-function-declaration(t: AST): String = (
             not tt.is-t(interned-tag-typed-macro,0) and
             not typeof-term(f).is-open
          then (
-            "\{render(typeof-term(f).range)} \{render-identifier(key.key, typeof-term(f))}(\{render-function-parameters(lhs)});\n"
+            let def = "\{render(typeof-term(f).range)} \{render-identifier(key.key, typeof-term(f))}(\{render-function-parameters(lhs)});\n";
+            global-identifier-namespace-defined = global-identifier-namespace-defined.bind( "\{render-identifier(key.key, typeof-term(f))}", def );
+            def
          ) else ""
       );
       _ => "";
@@ -5257,8 +5261,11 @@ let render(t: AST): Hashtable<CString,S> = (
       ASTEOF{} => mk-io-fragment();
       Lit{key1=key} => mk-io-expression(key1.into(type(String)));
       Var{key2=key} => (
+         let m = render-identifier(key2, typeof-term(t));
+         if not global-identifier-namespace-defined.has-key(m)
+         then print("Unable to find variable \{key2} : \{typeof-term(t)} = \{m}\n");
          # TODO: determine if this is a C global and passthrough, otherwise LM convention
-         mk-io-expression(render-identifier(key2, typeof-term(t)));
+         mk-io-expression(m);
       );
       #AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
       AType{tt=tt} => mk-io-expression(render(tt));
