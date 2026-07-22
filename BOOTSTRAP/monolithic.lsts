@@ -5022,6 +5022,7 @@ let render-forward-function-declaration(t: AST): String = (
             not typeof-term(f).is-open
          then (
             let def = "\{render(typeof-term(f).range)} \{render-identifier(key.key, typeof-term(f))}(\{render-function-parameters(lhs)});\n";
+            print("Declare \{key.key} : \{typeof-term(f)} = \{render-identifier(key.key, typeof-term(f))}\n");
             global-identifier-namespace-defined = global-identifier-namespace-defined.bind( "\{render-identifier(key.key, typeof-term(f))}", def );
             def
          ) else ""
