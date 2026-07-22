@@ -5088,8 +5088,8 @@ let render-function-parameters(lhs: AST): String = (
       );
       App{ left:Lit{key:c":"}, right:App{ vbind=left:Var{vid=key}, right:AType{vtt=tt} } } => (
          let rt = render(vtt);
-         print("Declare \{vid} : \{vtt} = \{rt}\n");
-         global-identifier-namespace-defined = global-identifier-namespace-defined.bind( vid.into(type(String)), rt );
+         print("Declare \{vid} : \{vtt} = \{render-identifier(vid,vtt)}\n");
+         global-identifier-namespace-defined = global-identifier-namespace-defined.bind( render-identifier(vid,vtt), "\{rt} \{render-identifier(vid,vtt)}" );
          if non-zero(rt)
          then "\{rt} \{render-identifier(vid,vtt)}"
          else "";
