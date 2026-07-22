@@ -5264,9 +5264,10 @@ let render(t: AST): Hashtable<CString,S> = (
       ASTEOF{} => mk-io-fragment();
       Lit{key1=key} => mk-io-expression(key1.into(type(String)));
       Var{key2=key} => (
-         let m = render-identifier(key2, typeof-term(t));
+         let vtt = typeof-term(t).datatype;
+         let m = render-identifier(key2, vtt);
          if not global-identifier-namespace-defined.has-key(m)
-         then print("Unable to find variable \{key2} : \{typeof-term(t)} = \{m}\n");
+         then print("Unable to find variable \{key2} : \{vtt} = \{m}\n");
          # TODO: determine if this is a C global and passthrough, otherwise LM convention
          mk-io-expression(m);
       );
