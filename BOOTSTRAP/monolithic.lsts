@@ -4989,7 +4989,6 @@ let render(): String = (
 );
 
 let render-includes(t: AST): String = (
-   print("Render includes begin\n");
    let result = match t {
       Seq{seq=seq} => (
          let decls = "";
@@ -5005,12 +5004,10 @@ let render-includes(t: AST): String = (
       );
       _ => "";
    };
-   print("Render includes end\n");
    result
 );
 
 let render-forward-function-declaration(t: AST): String = (
-   print("Render forward function declaration begin\n");
    let result = match t {
       Seq{seq=seq} => (
          let decls = "";
@@ -5033,12 +5030,10 @@ let render-forward-function-declaration(t: AST): String = (
       );
       _ => "";
    };
-   print("Render forward function declaration end\n");
    result
 );
 
 let render-direct-function-declaration(t: AST): String = (
-   print("Render direct function declaration begin\n");
    let result = match t {
       Seq{seq=seq} => (
          let global-frames = SNil;
@@ -5065,12 +5060,10 @@ let render-direct-function-declaration(t: AST): String = (
          result
       );
    };
-   print("Render direct function declaration end\n");
    result
 );
 
 let render-direct-function-declaration(exprs: S, t: AST): String = (
-   print("Render direct function declaration begin\n");
    let result = match t {
       Glb{key=key, f=val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
          if not tt.is-t(interned-tag-blob,0) and
@@ -5085,12 +5078,10 @@ let render-direct-function-declaration(exprs: S, t: AST): String = (
       ASTEOF{} => "int main(){\{exprs}}\n";
       _ => "";
    };
-   print("Render direct function declaration end\n");
    result
 );
 
 let render-function-parameters(lhs: AST): String = (
-   print("Render function parameters begin\n");
    let result = match lhs {
       App{ rst=left, bind=right:App{ left:Lit{key:c":"}, right:App{ left:Var{}, right:AType{} } } } => (
          let m = render-function-parameters(rst);
@@ -5110,12 +5101,10 @@ let render-function-parameters(lhs: AST): String = (
       ASTNil{} => "";
       _ => fail("Render unknown function parameters \{lhs}\n");
    };
-   print("Render function parameters end\n");
    result
 );
 
 let render-return(t: AST): Hashtable<CString,S> = (
-   print("Render return begin\n");
    let result = match t {
       App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render-return(inner);
       App{is-cons=is-cons, left=left, right=right} => (
@@ -5133,7 +5122,6 @@ let render-return(t: AST): Hashtable<CString,S> = (
          else rt
       );
    };
-   print("Render return end\n");
    result
 );
 
@@ -5156,7 +5144,6 @@ let render-statement(t: AST): Hashtable<CString,S> = (
 );
 
 let render-global-declaration(t: AST): String = (
-   print("Render global declaration begin\n");
    let result = match t {
       Seq{seq=seq} => (
          let result = "";
@@ -5173,32 +5160,26 @@ let render-global-declaration(t: AST): String = (
       );
       _ => "";
    };
-   print("Render global declaration end\n");
    result
 );
 
 let render-declaration(k: String, kt: Type, t: AST): String = (
-   print("Render declaration begin\n");
    (let prefix, let suffix) = render-declaration(kt);
    let rt = render(t);
    let result = if t.is-nil-constant
    then "\{prefix} \{render-identifier(k,kt)}\{suffix};"
    else "\{rt.frame}\{prefix} \{render-identifier(k,kt)}\{suffix} = \{rt.expression};";
-   print("Render declaration end\n");
    result
 );
 
 let render-declaration(tt: Type): (String, String) = (
-   print("Render declaration end\n");
    let is-flexible-array-member = tt.is-t(interned-tag-flexible-array-member,0);
    tt = tt.normalize.rewrite-opaque-type-alias.without-any-phi;
    let result = render-declaration(tt, is-flexible-array-member);
-   print("Render declaration end\n");
    result
 );
 
 let render-declaration(tt: Type, is-flexible-array-member: Bool): (String, String) = (
-   print("Render declaration begin\n");
    let result = match tt {
       TGround{tag:interned-tag-array, parameters:[ TGround{tag:interned-tag-CONST}.. array-base.. ]} => (
          (let prefix, let suffix) = render-declaration(array-base, false);
@@ -5225,7 +5206,6 @@ let render-declaration(tt: Type, is-flexible-array-member: Bool): (String, Strin
       );
       _ => (render(tt), "");
    };
-   print("Render declaration end\n");
    result
 );
 
@@ -5234,7 +5214,6 @@ let count-global-namespace(k: String, v: String): Nil = (
 );
 
 let render(t: AST): Hashtable<CString,S> = (
-   print("Render term \{t} begin\n");
    let result = match t {
       Seq{seq=seq} => (
          let result = mk-io-fragment();
@@ -5317,19 +5296,15 @@ let render(t: AST): Hashtable<CString,S> = (
       Typedef{} => mk-io-fragment();
       #_ => fail("render unknown term \{t}");
    };
-   print("Render term \{t} end\n");
    result
 );
 
 let render-identifier(k: CString): String = (
-   print("Render identifier begin\n");
    let result = render-identifier(k.into(type(String)));
-   print("Render identifier end\n");
    result
 );
 
 let render-identifier(k: String): String = (
-   print("Render identifier begin\n");
    let cs = mk-vector(type(U8));
    let ci = 0_sz;
    while ci < k.length { match k[ci] {
@@ -5362,26 +5337,20 @@ let render-identifier(k: String): String = (
       c => cs = cs.push(c);
    }; ci = ci + 1; };
    let result = cs.buffer-into-string;
-   print("Render identifier end\n");
    result
 );
 
 let render-identifier(k: CString, kt: Type): String = (
-   print("Render identifier begin\n");
    let result = render-identifier(k.into(type(String)), kt);
-   print("Render identifier end\n");
    result
 );
 
 let render-identifier(k: String, kt: Type): String = (
-   print("Render identifier begin\n");
    let result = "LM_" + render-identifier(k) + "_" + render-identifier(render(kt));
-   print("Render identifier end\n");
    result
 );
 
 let render-cstring(cs: CString): String = (
-   print("Render cstring begin\n");
    let s = "\"";
    while non-zero(cs) { match cs {
       c"\""..  rest1 => (s = s + "\\\""; cs = tail(cs););
@@ -5403,14 +5372,11 @@ let render-cstring(cs: CString): String = (
       );
    }};
    let result = s + "\"";
-   print("Render cstring end\n");
    result
 );
 
 let render(tt: Type): String = (
-   print("Render type begin\n");
    let result = render-internal(tt.rewrite-type-alias.rewrite-opaque-type-alias);
-   print("Render type end\n");
    result
 );
 
