@@ -20,6 +20,7 @@ let render(): String = (
    render-forward-type-declaration(ast-parsed-program) +
    render-direct-type-declaration(ast-parsed-program) +
    render-forward-function-declaration(ast-parsed-program) +
+   render-global-declaration(ast-parsed-program) +
    render-direct-function-declaration(ast-parsed-program)
 );
 
