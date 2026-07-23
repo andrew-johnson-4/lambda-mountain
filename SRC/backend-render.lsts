@@ -24,7 +24,7 @@ let render(): String = (
 );
 
 let render-includes(t: AST): String = (
-   match t {
+   let result = match t {
       Seq{seq=seq} => (
          let decls = "";
          for s in seq {
@@ -38,11 +38,12 @@ let render-includes(t: AST): String = (
          else "";
       );
       _ => "";
-   }
+   };
+   result
 );
 
 let render-forward-function-declaration(t: AST): String = (
-   match t {
+   let result = match t {
       Seq{seq=seq} => (
          let decls = "";
          for s in seq {
@@ -63,11 +64,12 @@ let render-forward-function-declaration(t: AST): String = (
          ) else ""
       );
       _ => "";
-   }
+   };
+   result
 );
 
 let render-direct-function-declaration(t: AST): String = (
-   match t {
+   let result = match t {
       Seq{seq=seq} => (
          let global-frames = SNil;
          let global-expressions = SNil;
@@ -92,11 +94,12 @@ let render-direct-function-declaration(t: AST): String = (
          let result = render-direct-function-declaration(rt.frame + rt.expression, mk-eof());
          result
       );
-   }
+   };
+   result
 );
 
 let render-direct-function-declaration(exprs: S, t: AST): String = (
-   match t {
+   let result = match t {
       Glb{key=key, f=val:Abs{lhs=lhs, rhs=rhs, tt=tt}} => (
          if not tt.is-t(interned-tag-blob,0) and
             not tt.is-t(interned-tag-typed-macro,0) and
@@ -109,11 +112,12 @@ let render-direct-function-declaration(exprs: S, t: AST): String = (
       );
       ASTEOF{} => "int main(){\{exprs}}\n";
       _ => "";
-   }
+   };
+   result
 );
 
 let render-function-parameters(lhs: AST): String = (
-   match lhs {
+   let result = match lhs {
       App{ rst=left, bind=right:App{ left:Lit{key:c":"}, right:App{ left:Var{}, right:AType{} } } } => (
          let m = render-function-parameters(rst);
          let n = render-function-parameters(bind);
@@ -132,10 +136,11 @@ let render-function-parameters(lhs: AST): String = (
       ASTNil{} => "";
       _ => fail("Render unknown function parameters \{lhs}\n");
    };
+   result
 );
 
 let render-return(t: AST): Hashtable<CString,S> = (
-   match t {
+   let result = match t {
       App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render-return(inner);
       App{is-cons=is-cons, left=left, right=right} => (
          if is-cons
@@ -152,6 +157,7 @@ let render-return(t: AST): Hashtable<CString,S> = (
          else rt
       );
    };
+   result
 );
 
 let render-statement(t: AST): Hashtable<CString,S> = (
@@ -173,7 +179,7 @@ let render-statement(t: AST): Hashtable<CString,S> = (
 );
 
 let render-global-declaration(t: AST): String = (
-   match t {
+   let result = match t {
       Seq{seq=seq} => (
          let result = "";
          for s in seq {
@@ -188,25 +194,28 @@ let render-global-declaration(t: AST): String = (
          }
       );
       _ => "";
-   }
+   };
+   result
 );
 
 let render-declaration(k: String, kt: Type, t: AST): String = (
    (let prefix, let suffix) = render-declaration(kt);
    let rt = render(t);
-   if t.is-nil-constant
+   let result = if t.is-nil-constant
    then "\{prefix} \{render-identifier(k,kt)}\{suffix};"
-   else "\{rt.frame}\{prefix} \{render-identifier(k,kt)}\{suffix} = \{rt.expression};"
+   else "\{rt.frame}\{prefix} \{render-identifier(k,kt)}\{suffix} = \{rt.expression};";
+   result
 );
 
 let render-declaration(tt: Type): (String, String) = (
    let is-flexible-array-member = tt.is-t(interned-tag-flexible-array-member,0);
    tt = tt.normalize.rewrite-opaque-type-alias.without-any-phi;
-   render-declaration(tt, is-flexible-array-member);
+   let result = render-declaration(tt, is-flexible-array-member);
+   result
 );
 
 let render-declaration(tt: Type, is-flexible-array-member: Bool): (String, String) = (
-   match tt {
+   let result = match tt {
       TGround{tag:interned-tag-array, parameters:[ TGround{tag:interned-tag-CONST}.. array-base.. ]} => (
          (let prefix, let suffix) = render-declaration(array-base, false);
          ( prefix, "\{suffix}[]" )
@@ -232,10 +241,15 @@ let render-declaration(tt: Type, is-flexible-array-member: Bool): (String, Strin
       );
       _ => (render(tt), "");
    };
+   result
+);
+
+let count-global-namespace(k: String, v: String): Nil = (
+   global-identifier-namespace-defined = global-identifier-namespace-defined.bind( k, v );
 );
 
 let render(t: AST): Hashtable<CString,S> = (
-   match t {
+   let result = match t {
       Seq{seq=seq} => (
          let result = mk-io-fragment();
          for s in seq {
@@ -253,7 +267,12 @@ let render(t: AST): Hashtable<CString,S> = (
       );
       App{ left:Var{key:c"scope"}, st=right } => render(st);
       App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => mk-io-expression("(sizeof(\{render(tt)}))");
-      App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => mk-io-expression(render-declaration(render-identifier(lname), typeof-term(rhs), rhs));
+      App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => (
+         let vtt = typeof-term(rhs).datatype;
+         print("Declare \{lname} : \{vtt} = \{render-identifier(lname,vtt)}\n");
+         count-global-namespace( render-identifier(lname,vtt), render-declaration(render-identifier(lname, vtt), vtt, rhs) );
+         mk-io-expression(render-declaration(render-identifier(lname, vtt), vtt, rhs));
+      );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
          let cf = render(cond);
          let tf = render(tterm);
@@ -312,10 +331,12 @@ let render(t: AST): Hashtable<CString,S> = (
       Typedef{} => mk-io-fragment();
       #_ => fail("render unknown term \{t}");
    };
+   result
 );
 
 let render-identifier(k: CString): String = (
-   render-identifier(k.into(type(String)));
+   let result = render-identifier(k.into(type(String)));
+   result
 );
 
 let render-identifier(k: String): String = (
@@ -350,15 +371,18 @@ let render-identifier(k: String): String = (
       126 => cs = cs.push(c"_TL_"); # ~
       c => cs = cs.push(c);
    }; ci = ci + 1; };
-   cs.buffer-into-string
+   let result = cs.buffer-into-string;
+   result
 );
 
 let render-identifier(k: CString, kt: Type): String = (
-   render-identifier(k.into(type(String)), kt);
+   let result = render-identifier(k.into(type(String)), kt);
+   result
 );
 
 let render-identifier(k: String, kt: Type): String = (
-   "LM_" + render-identifier(k) + "_" + render-identifier(render(kt));
+   let result = "LM_" + render-identifier(k) + "_" + render-identifier(render(kt));
+   result
 );
 
 let render-cstring(cs: CString): String = (
@@ -382,10 +406,14 @@ let render-cstring(cs: CString): String = (
          cs = tail(rest14);
       );
    }};
-   s + "\""
+   let result = s + "\"";
+   result
 );
 
-let render(tt: Type): String = render-internal(tt.rewrite-type-alias.rewrite-opaque-type-alias);
+let render(tt: Type): String = (
+   let result = render-internal(tt.rewrite-type-alias.rewrite-opaque-type-alias);
+   result
+);
 
 let render-internal(tt: Type): String = (
    match tt {
