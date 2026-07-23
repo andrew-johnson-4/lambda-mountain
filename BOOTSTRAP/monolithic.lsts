@@ -4985,6 +4985,7 @@ let render(): String = (
    render-forward-type-declaration(ast-parsed-program) +
    render-direct-type-declaration(ast-parsed-program) +
    render-forward-function-declaration(ast-parsed-program) +
+   render-global-declaration(ast-parsed-program) +
    render-direct-function-declaration(ast-parsed-program)
 );
 
@@ -5155,7 +5156,14 @@ let render-global-declaration(t: AST): String = (
       Glb{key=key, val=val} => (
          match val {
             Abs{} => "";
-            _ => render-declaration(render-identifier(key.key), typeof-term(val), val);
+            _ => (
+               let vtt = typeof-term(val).datatype;
+               let k = render-identifier(key.key, vtt);
+               let def = render-declaration(k, vtt, val);
+               print("Declare \{key.key} : \{vtt} = \{def}\n");
+               count-global-namespace(k, def);
+               def
+            );
          }
       );
       _ => "";
