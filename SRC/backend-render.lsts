@@ -298,9 +298,9 @@ let render(t: AST): Hashtable<CString,S> = (
       App{ left:Var{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
       App{ left:Var{key:c"import"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{}, right:AType{} } } } => mk-io-fragment();
       App{left=left, right=right} => (
-         let lt = render(left);
          let rt = render(right);
          let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
+         let lt = if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) then mk-io-fragment() else render(left);
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
             let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
