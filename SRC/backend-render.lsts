@@ -257,6 +257,7 @@ let count-global-namespace(k: String, v: String): Nil = (
 );
 
 let render(t: AST): Hashtable<CString,S> = (
+   print("Render \{t}\n");
    let result = match t {
       Seq{seq=seq} => (
          let result = mk-io-fragment();
