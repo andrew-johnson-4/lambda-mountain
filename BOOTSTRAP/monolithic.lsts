@@ -5218,10 +5218,12 @@ let render-declaration(tt: Type, is-flexible-array-member: Bool): (String, Strin
 );
 
 let count-global-namespace(k: String, v: String): Nil = (
+   print("Count Global \{k} \{hash(k)}\n");
    global-identifier-namespace-defined = global-identifier-namespace-defined.bind( k, v );
 );
 
 let render(t: AST): Hashtable<CString,S> = (
+   print("Render \{t}\n");
    let result = match t {
       Seq{seq=seq} => (
          let result = mk-io-fragment();
@@ -5242,7 +5244,7 @@ let render(t: AST): Hashtable<CString,S> = (
       App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => mk-io-expression("(sizeof(\{render(tt)}))");
       App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => (
          let vtt = typeof-term(rhs).datatype;
-         print("Declare \{lname} : \{vtt} = \{render-identifier(lname,vtt)}\n");
+         print("Declare \{lname} : \{vtt} = '\{render-identifier(lname,vtt)}'\n");
          count-global-namespace( render-identifier(lname,vtt), render-declaration(render-identifier(lname, vtt), vtt, rhs) );
          mk-io-expression(render-declaration(render-identifier(lname, vtt), vtt, rhs));
       );
@@ -5294,7 +5296,7 @@ let render(t: AST): Hashtable<CString,S> = (
          let vtt = typeof-term(t).datatype;
          let m = render-identifier(key2, vtt);
          if not global-identifier-namespace-defined.has-key(m)
-         then print("Unable to find variable \{key2} : \{vtt} = \{m}\n");
+         then print("Unable to find variable \{key2} : \{vtt} = '\{m}' \{hash(m)}\n");
          # TODO: determine if this is a C global and passthrough, otherwise LM convention
          mk-io-expression(m);
       );
