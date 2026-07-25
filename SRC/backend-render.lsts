@@ -61,7 +61,7 @@ let render-forward-function-declaration(t: AST): String = (
             print("Declare \{key.key} : \{typeof-term(f)} = \{render-identifier(key.key, typeof-term(f))}\n");
             global-identifier-namespace-defined = global-identifier-namespace-defined.bind( "\{render-identifier(key.key, typeof-term(f))}", def );
             def
-         ) else ""
+         } else ""
       );
       _ => "";
    };
