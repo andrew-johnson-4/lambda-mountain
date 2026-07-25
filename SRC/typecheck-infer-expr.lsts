@@ -35,19 +35,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          let literal = mk-lit(r.into(type(CString))).ascript(type-cstring-literal);
          (tctx, term) = std-infer-expr(tctx, literal, false, Used, ta);
       );
-      App{o-t=left:Var{key:c"open"}, r=right} => (
-         (tctx, let new-r) = std-infer-expr(tctx, r, false, Used(), ta);
-         if not(is(r,new-r)) then { r = new-r; term = mk-app(o-t, r); };
-         let deref-type = typeof-term(r);
-         match deref-type.slot(interned-tag-array,2) {
-            TGround{tag:interned-tag-array, parameters:[_.. TAny{}..]} => ();
-            _ => (
-               mark-var-to-def-todo(tctx, c"open", deref-type, o-t);
-               (tctx, deref-type) = tctx.apply-callable(c"open", deref-type, term);
-            );
-         };
-         tctx = tctx.ascript(term, deref-type);
-      );
       App{szof=left:Var{key:c"sizeof"}, right:AType{}} => (
          let tt = t0(c"USize");
          tctx = tctx.ascript(term, tt);

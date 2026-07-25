@@ -5264,11 +5264,10 @@ let render(t: AST): Hashtable<CString,S> = (
       App{ left:Var{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
       App{ left:Var{key:c"import"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{}, right:AType{} } } } => mk-io-fragment();
       App{left=left, right=right} => (
-         let lt = if not non-zero(var-name-if-var-or-lit(left)) then render(left) else mk-io-fragment();
+         let lt = render(left);
          let rt = render(right);
          let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
          if non-zero(var-name-if-var-or-lit(left)) then print("App \{left} \{typeof-term(right)}\nApp result \{tr.dt-or-zero}\n");
-         if not non-zero(lt) and (not non-zero(tr) or not tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0)) then lt = render(left);
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
             let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
@@ -5294,10 +5293,12 @@ let render(t: AST): Hashtable<CString,S> = (
       ASTEOF{} => mk-io-fragment();
       Lit{key1=key} => mk-io-expression(key1.into(type(String)));
       Var{key2=key} => (
-         let vtt = typeof-term(t).datatype;
+         let ftt = typeof-term(t);
+         let vtt = ftt.datatype;
          let m = render-identifier(key2, vtt);
-         if not global-identifier-namespace-defined.has-key(m)
-         then print("Unable to find variable \{key2} : \{vtt} = '\{m}' \{hash(m)}\n");
+         if not Some(mk-tctx()).find-known-callable(key2, ftt).dt-or-zero.is-t(interned-tag-blob,0)
+         and not global-identifier-namespace-defined.has-key(m)
+         then print("Unable to find variable \{key2} : \{ftt}.\{vtt} = '\{m}' \{hash(m)}\n");
          # TODO: determine if this is a C global and passthrough, otherwise LM convention
          mk-io-expression(m);
       );
@@ -6130,6 +6131,15 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
 
 let .maybe-find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type): TypeContextRow? = (
    tctx.find-callable(fname, arg-types, blame, return-type-hint, false);
+);
+
+let .find-known-callable(tctx: TypeContext?, fname: CString, ftype: Type): TypeContextRow? = (
+   let result = None : TypeContextRow?;
+   for tr in global-tctx.lookup(fname, mk-vector(type(TypeContextRow)) ) {
+      if tr.dt-or-zero == ftype
+      then result = Some(tr);
+   };
+   result
 );
 
 let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type, failable: Bool): TypeContextRow? = (
@@ -8783,19 +8793,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       App{o-t=left:Var{key:c"stringof"}, r=right} => (
          let literal = mk-lit(r.into(type(CString))).ascript(type-cstring-literal);
          (tctx, term) = std-infer-expr(tctx, literal, false, Used, ta);
-      );
-      App{o-t=left:Var{key:c"open"}, r=right} => (
-         (tctx, let new-r) = std-infer-expr(tctx, r, false, Used(), ta);
-         if not(is(r,new-r)) then { r = new-r; term = mk-app(o-t, r); };
-         let deref-type = typeof-term(r);
-         match deref-type.slot(interned-tag-array,2) {
-            TGround{tag:interned-tag-array, parameters:[_.. TAny{}..]} => ();
-            _ => (
-               mark-var-to-def-todo(tctx, c"open", deref-type, o-t);
-               (tctx, deref-type) = tctx.apply-callable(c"open", deref-type, term);
-            );
-         };
-         tctx = tctx.ascript(term, deref-type);
       );
       App{szof=left:Var{key:c"sizeof"}, right:AType{}} => (
          let tt = t0(c"USize");
