@@ -299,11 +299,10 @@ let render(t: AST): Hashtable<CString,S> = (
       App{ left:Var{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
       App{ left:Var{key:c"import"}, right:App{ left:Lit{key:c":"}, right:App{ left:Lit{}, right:AType{} } } } => mk-io-fragment();
       App{left=left, right=right} => (
-         let lt = if not non-zero(var-name-if-var-or-lit(left)) then render(left) else mk-io-fragment();
+         let lt = render(left);
          let rt = render(right);
          let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
          if non-zero(var-name-if-var-or-lit(left)) then print("App \{left} \{typeof-term(right)}\nApp result \{tr.dt-or-zero}\n");
-         if not non-zero(lt) and (not non-zero(tr) or not tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0)) then lt = render(left);
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
             let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
@@ -329,9 +328,11 @@ let render(t: AST): Hashtable<CString,S> = (
       ASTEOF{} => mk-io-fragment();
       Lit{key1=key} => mk-io-expression(key1.into(type(String)));
       Var{key2=key} => (
-         let vtt = typeof-term(t).datatype;
+         let ftt = typeof-term(t);
+         let vtt = ftt.datatype;
          let m = render-identifier(key2, vtt);
-         if not global-identifier-namespace-defined.has-key(m)
+         if not Some(mk-tctx()).find-known-callable(key2, ftt).dt-or-zero.is-t(interned-tag-blob,0)
+         and not global-identifier-namespace-defined.has-key(m)
          then print("Unable to find variable \{key2} : \{vtt} = '\{m}' \{hash(m)}\n");
          # TODO: determine if this is a C global and passthrough, otherwise LM convention
          mk-io-expression(m);
