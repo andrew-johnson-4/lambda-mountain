@@ -302,7 +302,8 @@ let render(t: AST): Hashtable<CString,S> = (
          let lt = if not non-zero(var-name-if-var-or-lit(left)) then render(left) else mk-io-fragment();
          let rt = render(right);
          let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
-         if not non-zero(lt) and (not non-zero(tr) or tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0)) then lt = render(left);
+         if non-zero(var-name-if-var-or-lit(left)) then print("App \{left} \{typeof-term(right)}\nApp result \{tr.dt-or-zero}\n");
+         if not non-zero(lt) and (not non-zero(tr) or not tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0)) then lt = render(left);
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
             let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
