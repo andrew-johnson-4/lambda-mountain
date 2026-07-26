@@ -42,6 +42,7 @@ import SRC/type-without-modifiers.lsts;
 import SRC/type-with-only-phi.lsts;
 import SRC/type-reify-type-variables.lsts;
 import SRC/type-is-linear.lsts;
+import SRC/type-is-parameterized.lsts;
 import SRC/type-simple-id.lsts;
 import SRC/type-with-only-tag.lsts;
 import SRC/type-has-t.lsts;

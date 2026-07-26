@@ -5267,6 +5267,9 @@ let render(t: AST): Hashtable<CString,S> = (
          let rt = render(right);
          let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
          if non-zero(var-name-if-var-or-lit(left)) then print("App \{left} \{typeof-term(right)}\nApp result \{tr.dt-or-zero}\n");
+         if non-zero(var-name-if-var-or-lit(left)) and typeof-term(left).is-open
+         and not global-identifier-namespace-defined.has-key(lt.into(type(String)))
+         then print("Unable to find variable \{var-name-if-var-or-lit(left)} : \{typeof-term(left)} = '\{lt}'\n");
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
             let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
@@ -5296,7 +5299,7 @@ let render(t: AST): Hashtable<CString,S> = (
          let vtt = ftt.datatype;
          let fnc = Some(mk-tctx()).find-known-callable(key2, ftt).dt-or-zero;
          let m = if fnc.is-t(interned-tag-cffi,0) then key2.into(type(String)) else render-identifier(key2, vtt);
-         if not fnc.is-t(interned-tag-blob,0) and not fnc.is-t(interned-tag-cffi,0)
+         if not fnc.is-t(interned-tag-blob,0) and not fnc.is-t(interned-tag-cffi,0) and not fnc.is-open
          and not global-identifier-namespace-defined.has-key(m)
          then print("Unable to find variable \{key2} : \{ftt}.\{vtt} = '\{m}' \{hash(m)}\n");
          # TODO: determine if this is a C global and passthrough, otherwise LM convention
