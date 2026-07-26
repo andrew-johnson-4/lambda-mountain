@@ -333,9 +333,8 @@ let render(t: AST): Hashtable<CString,S> = (
       Var{key2=key} => (
          let ftt = typeof-term(t);
          let vtt = ftt.datatype;
-         let fnc = Some(mk-tctx()).find-known-callable(key2, ftt).dt-or-zero;
-         let m = if fnc.is-t(interned-tag-cffi,0) then key2.into(type(String)) else render-identifier(key2, vtt);
-         if not fnc.is-t(interned-tag-blob,0) and not fnc.is-t(interned-tag-cffi,0) and not fnc.is-parameterized
+         let m = if ftt.is-t(interned-tag-cffi,0) then key2.into(type(String)) else render-identifier(key2, vtt);
+         if not ftt.is-t(interned-tag-blob,0) and not ftt.is-t(interned-tag-cffi,0) and not ftt.is-parameterized
          and not global-identifier-namespace-defined.has-key(m)
          then print("Unable to find variable \{key2} : \{ftt}.\{vtt} = '\{m}' \{hash(m)}\n");
          # TODO: determine if this is a C global and passthrough, otherwise LM convention
