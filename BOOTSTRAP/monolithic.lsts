@@ -5267,7 +5267,7 @@ let render(t: AST): Hashtable<CString,S> = (
          let rt = render(right);
          let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
          if non-zero(var-name-if-var-or-lit(left)) then print("App \{left} \{typeof-term(right)}\nApp result \{tr.dt-or-zero}\n");
-         if non-zero(var-name-if-var(left)) and typeof-term(left).is-parameterized
+         if non-zero(var-name-if-var(left)) and not typeof-term(left).is-parameterized
          and not global-identifier-namespace-defined.has-key(lt.into(type(String)))
          then print("Unable to find variable \{var-name-if-var-or-lit(left)} : \{typeof-term(left)} = '\{lt}'\n");
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
