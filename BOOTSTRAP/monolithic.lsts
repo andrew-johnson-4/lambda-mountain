@@ -5267,8 +5267,9 @@ let render(t: AST): Hashtable<CString,S> = (
          let rt = render(right);
          let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
          if non-zero(var-name-if-var-or-lit(left)) then print("App \{left} \{typeof-term(right)}\nApp result \{tr.dt-or-zero}\n");
-         if non-zero(var-name-if-var(left)) and not typeof-term(left).is-parameterized
-         and not global-identifier-namespace-defined.has-key(lt.into(type(String)))
+         let fnc = typeof-term(left);
+         if non-zero(var-name-if-var(left)) and not fnc.is-parameterized and not fnc.is-t(interned-tag-blob,0)
+         and not global-identifier-namespace-defined.has-key(lt.expression.into(type(String)))
          then print("Unable to find variable \{var-name-if-var-or-lit(left)} : \{typeof-term(left)} = '\{lt}'\n");
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
@@ -8129,15 +8130,15 @@ let .is-parameterized(tt: Type): Bool = (
       TVar {} => true;
       TAnd { conjugate=conjugate } => (
          let result = false;
-         for c in conjugate { result = result or c.is-open };
+         for c in conjugate { result = result or c.is-parameterized };
          result
       );
       TGround { tag:interned-tag-array, parameters:[_.. TAny{}..] } => false;
-      TGround { tag:interned-tag-array, parameters:[_.. base-type..] } => base-type.is-open;
+      TGround { tag:interned-tag-array, parameters:[_.. base-type..] } => base-type.is-parameterized;
       TGround { parameters=parameters } => (
-         let is-open = false;
-         for p in parameters { is-open = is-open or p.is-open; };
-         is-open;
+         let is-parameterized = false;
+         for p in parameters { is-parameterized = is-parameterized or p.is-parameterized; };
+         is-parameterized;
       );
       TId{} => false;
    }
