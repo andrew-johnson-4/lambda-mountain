@@ -396,7 +396,7 @@ let render-identifier(k: CString, kt: Type): String = (
 );
 
 let render-identifier(k: String, kt: Type): String = (
-   let result = "LM_" + render-identifier(k) + "_" + render-identifier(render(kt));
+   let result = "LM_" + render-identifier(k) + "_" + render-identifier(render(kt).replace(" ",""));
    result
 );
 
@@ -442,7 +442,7 @@ let render-internal(tt: Type): String = (
                then modifiers = modifiers + " " + render-internal(c);
                else modifiers = render-internal(c);
             } else if non-zero(datatype) then datatype = datatype + " " + render-internal(c);
-              else datatype = datatype + render-internal(c);
+              else datatype = render-internal(c);
          };
          if non-zero(modifiers) and non-zero(datatype)
          then modifiers + " " + datatype;
