@@ -28,6 +28,13 @@ let .dt-or-zero(tr: TypeContextRow): Type = (
       _ => ta;
    }
 );
+let .dt-or-zero(tr: TypeContextRow?): Type = (
+   if not non-zero(tr) then ta
+   else match tr.get-or-panic {
+      TypeContextRow{ dt=dt } => dt;
+      _ => ta;
+   }
+);
 let .direct-type(tr: TypeContextRow): Type = (
    match tr {
       TypeContextRow{ nt=nt, dt=dt } => if non-zero(nt) then nt else dt;

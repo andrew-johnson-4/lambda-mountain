@@ -185,3 +185,17 @@ let .encode-ascii(x: U8, tt: Type<String>): String = (
    buf = buf.push(x);
    buf.buffer-into-string;
 );
+
+let .replace(base: String, pat: String, sub: String): String = (
+   let result = "";
+   while non-zero(base) {
+      if base.has-prefix(pat) {
+         result = result + sub;
+         base = base[pat.length : base.length];
+      } else {
+         result = result + base[0_u64 : 1_u64];
+         base = base[1_u64 : base.length];
+      }
+   };
+   result
+);

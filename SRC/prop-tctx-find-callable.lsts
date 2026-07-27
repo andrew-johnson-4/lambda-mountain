@@ -16,6 +16,15 @@ let .maybe-find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, bl
    tctx.find-callable(fname, arg-types, blame, return-type-hint, false);
 );
 
+let .find-known-callable(tctx: TypeContext?, fname: CString, ftype: Type): TypeContextRow? = (
+   let result = None : TypeContextRow?;
+   for tr in global-tctx.lookup(fname, mk-vector(type(TypeContextRow)) ) {
+      if tr.dt-or-zero == ftype
+      then result = Some(tr);
+   };
+   result
+);
+
 let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: AST, return-type-hint: Type, failable: Bool): TypeContextRow? = (
    # Coerce argument types into Type::Format::Denormal
    # TODO: replace with Into<Type::Format::Denormal>
