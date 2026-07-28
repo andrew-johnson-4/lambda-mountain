@@ -4994,6 +4994,8 @@ let render-plugin(): Nil = (
 
 let global-identifier-namespace-defined = mk-hashtable(type(String), type(String));
 
+let global-declaration-initializers = SNil;
+
 let render(): String = (
    render-includes(ast-parsed-program) +
    render-forward-type-declaration(ast-parsed-program) +
@@ -5086,10 +5088,12 @@ let render-direct-function-declaration(exprs: S, t: AST): String = (
             not typeof-term(f).is-open
          then (
             let rt = render-return(rhs);
-            "\{render(typeof-term(f).range)} \{render-identifier(key.key, typeof-term(f))}(\{render-function-parameters(lhs)}){\{exprs}\{rt.frame}\{rt.expression}}\n"
+            if key.key == c"main"
+            then "\{render(typeof-term(f).range)} \{render-identifier(key.key, typeof-term(f))}(\{render-function-parameters(lhs)}){\{global-declaration-initializers}\{exprs}\{rt.frame}\{rt.expression}}\n"
+            else "\{render(typeof-term(f).range)} \{render-identifier(key.key, typeof-term(f))}(\{render-function-parameters(lhs)}){\{exprs}\{rt.frame}\{rt.expression}}\n"
          ) else ""
       );
-      ASTEOF{} => "int main(){\{exprs}}\n";
+      ASTEOF{} => "int main(){\{global-declaration-initializers}\{exprs}}\n";
       _ => "";
    };
    result
@@ -5171,10 +5175,9 @@ let render-global-declaration(t: AST): String = (
             Abs{} => "";
             _ => (
                let vtt = typeof-term(val).datatype;
-               let k = render-identifier(key.key, vtt);
-               let def = render-declaration(k, vtt, val);
+               let def = render-declaration(key.key.into(type(String)), vtt, val);
                print("Declare \{key.key} : \{vtt} = \{def}\n");
-               count-global-namespace(k, def);
+               count-global-namespace(key.key.into(type(String)), def);
                def
             );
          }
@@ -5187,9 +5190,11 @@ let render-global-declaration(t: AST): String = (
 let render-declaration(k: String, kt: Type, t: AST): String = (
    (let prefix, let suffix) = render-declaration(kt);
    let rt = render(t);
-   let result = if t.is-nil-constant
-   then "\{prefix} \{render-identifier(k,kt)}\{suffix};"
-   else "\{rt.frame}\{prefix} \{render-identifier(k,kt)}\{suffix} = \{rt.expression};";
+   let result = "\{prefix} \{render-identifier(k,kt)}\{suffix};\n";
+   if not t.is-nil-constant {
+      global-declaration-initializers = global-declaration-initializers +
+      "\{render-identifier(k,kt)} = \{rt.expression};"
+   };
    result
 );
 
