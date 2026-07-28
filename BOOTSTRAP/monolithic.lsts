@@ -5293,9 +5293,10 @@ let render(t: AST): Hashtable<CString,S> = (
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
             let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
+            print("Apply lhs: \{tctx}\n");
             match tctx.beta-substitute(fterm.range) {
-               App{ left:Lit{key:c":"}, right:App{ f=left:Fragment{}, right:AType{} } } => render(f);
-               f => render(f);
+               App{ left:Lit{key:c":"}, right:App{ f=left:Fragment{}, right:AType{} } } => (print("Beta subsitute: \{f}\n"); render(f) );
+               f => (print("Beta subsitute: \{f}\n"); render(f));
             };
          } else if typeof-term(t).is-t(interned-tag-cons,2)
          then (
@@ -5311,6 +5312,8 @@ let render(t: AST): Hashtable<CString,S> = (
          for Tuple{fk=first, fv=second} in kvs.as-vector {
             f = f.set(fk, render(fv).expression);
          };
+         print("Render fragment in \{kvs}\n");
+         print("Render fragment out \{f}\n");
          f
       );
       ASTNil{} => mk-io-fragment();
