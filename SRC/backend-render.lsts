@@ -214,7 +214,7 @@ let render-declaration(k: String, kt: Type, t: AST): String = (
    let result = "\{prefix} \{render-identifier(k,kt)}\{suffix};\n";
    if not t.is-nil-constant {
       global-declaration-initializers = global-declaration-initializers +
-      "\{render-identifier(k,kt)} = \{rt.expression};"
+      "\{render-identifier(k,kt)} = \{rt.expression};\n"
    };
    result
 );
@@ -323,7 +323,9 @@ let render(t: AST): Hashtable<CString,S> = (
             if typeof-term(right).is-datatype and typeof-term(left).is-datatype-or-cons-datatype
             then (lt + rt).set(c"expression", "\{lt.expression},\{rt.expression}")
             else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
-         ) else (lt + rt).set(c"expression", "\{lt.expression}(\{rt.expression})")
+         ) else if typeof-term(left).is-t(interned-tag-arrow,2)
+           then (lt + rt).set(c"expression", "\{lt.expression}(\{rt.expression})")
+           else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
       );
       Fragment{kvs=kvs} => (
          let f = mk-io-fragment();
