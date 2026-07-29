@@ -1452,11 +1452,12 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
       match tokens {
          [Token{key:c"."}.. rest] => (
             tokens = rest;
-            lsts-parse-expect( c"[Identifier]", lsts-is-ident-head(lsts-parse-head(tokens)), tokens );
-            let method = c"." + head(tokens).key; tokens = tail(tokens);
+            let method = c".";
             if lsts-parse-head(tokens) == c"." {
-               method = c"." + method; tokens = tail(tokens);
+               method = c"..";
             };
+            lsts-parse-expect( c"[Identifier]", lsts-is-ident-head(lsts-parse-head(tokens)), tokens );
+            method = method + head(tokens).key; tokens = tail(tokens);
             if lsts-parse-head(tokens) == c"(" {
                lsts-parse-expect( c"(", tokens ); tokens = tail(tokens);
                while non-zero(tokens) and lsts-parse-head(tokens)!=c")" {
