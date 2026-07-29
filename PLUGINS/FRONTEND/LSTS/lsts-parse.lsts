@@ -1454,7 +1454,7 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
             tokens = rest;
             let method = c".";
             if lsts-parse-head(tokens) == c"." {
-               method = c"..";
+               method = c".."; tokens = tail(tokens);
             };
             lsts-parse-expect( c"[Identifier]", lsts-is-ident-head(lsts-parse-head(tokens)), tokens );
             method = method + head(tokens).key; tokens = tail(tokens);
