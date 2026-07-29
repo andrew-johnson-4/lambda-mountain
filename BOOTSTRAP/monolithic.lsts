@@ -2491,36 +2491,36 @@ typed macro declare-ternop(op-alias: lazy, x-type: lazy, y-type: lazy, z-type: l
 
 typed macro declare-zop(op-alias: lazy, r-type: lazy, op-expr: lazy): lazy = {
    let :Blob op-alias(): r-type = (
-      $fragment { expression: op-expr..expression; }
+      $fragment { expression: op-expr..expression }
    );
 };
 
 typed macro declare-unop(op-alias: lazy, x-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
    let :Blob op-alias(x: x-type): r-type = (
-      $fragment { expression: op-expr..expression; frame: x..frame }
+      $fragment { expression: op-expr..expression, frame: x..frame }
    );
 };
 typed macro declare-unop-retain(op-alias: lazy, x-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
    let :Blob+MustRetainOnCall op-alias(x: x-type): r-type = (
-      $fragment { expression: op-expr..expression; frame: x..frame }
+      $fragment { expression: op-expr..expression, frame: x..frame }
    );
 };
 
 typed macro declare-binop(op-alias: lazy, x-type: lazy, y-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
    let :Blob op-alias(x: x-type, y: y-type): r-type = (
-      $fragment { expression: op-expr..expression; frame: (x..frame; y..frame); }
+      $fragment { expression: op-expr..expression, frame: (x..frame; y..frame) }
    );
 };
 
 typed macro declare-binop-retain(op-alias: lazy, x-type: lazy, y-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
    let :Blob+MustRetainOnCall op-alias(x: x-type, y: y-type): r-type = (
-      $fragment { expression: op-expr..expression; frame: (x..frame; y..frame); }
+      $fragment { expression: op-expr..expression, frame: (x..frame; y..frame) }
    );
 };
 
 typed macro declare-ternop(op-alias: lazy, x-type: lazy, y-type: lazy, z-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
    let :Blob op-alias(x: x-type, y: y-type, z: z-type): r-type = (
-      $fragment { expression: op-expr..expression; frame: (x..frame; y..frame; z..frame); }
+      $fragment { expression: op-expr..expression, frame: (x..frame; y..frame; z..frame) }
    );
 };
 
@@ -5387,6 +5387,7 @@ let render(t: AST): Hashtable<CString,S> = (
          if non-zero(var-name-if-var-or-lit(left)) then print("App \{left} \{typeof-term(right)}\nApp result \{tr.dt-or-zero}\n");
          let fnc = typeof-term(left);
          if non-zero(var-name-if-var(left)) and not fnc.is-parameterized and not fnc.is-t(interned-tag-blob,0) and not fnc.is-t(interned-tag-cffi,0)
+         and not fnc == type-fragment-field
          and not global-identifier-namespace-defined.has-key(lt.expression.into(type(String)))
          then print("Unable to find variable \{var-name-if-var-or-lit(left)} : \{typeof-term(left)} = '\{lt.expression}'\n");
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
@@ -5399,6 +5400,8 @@ let render(t: AST): Hashtable<CString,S> = (
                App{ left:Lit{key:c":"}, right:App{ f=left:Fragment{}, right:AType{} } } => (print("Beta subsitute: \{f}\n"); render(f) );
                f => (print("Beta subsitute: \{f}\n"); render(f));
             };
+         } else if var-name-if-var-or-lit(left).has-prefix(c"..") {
+            mk-io-expression(rt.get(tail(tail(var-name-if-var-or-lit(left)))))
          } else if typeof-term(t).is-t(interned-tag-cons,2)
          then (
             if typeof-term(right).is-datatype and typeof-term(left).is-datatype-or-cons-datatype
@@ -5425,6 +5428,7 @@ let render(t: AST): Hashtable<CString,S> = (
          let vtt = ftt.datatype;
          let m = if ftt.is-t(interned-tag-cffi,0) then key2.into(type(String)) else render-identifier(key2, vtt);
          if not ftt.is-t(interned-tag-blob,0) and not ftt.is-t(interned-tag-cffi,0) and not ftt.is-parameterized
+         and not ftt == type-fragment-field
          and not global-identifier-namespace-defined.has-key(m)
          then print("Unable to find variable \{key2} : \{ftt}.\{vtt} = '\{m}' \{hash(m)}\n");
          # TODO: determine if this is a C global and passthrough, otherwise LM convention
@@ -6530,7 +6534,9 @@ let typeof-tag(tag: CString): Type = (
 
 let typeof-var-raw(sloc: AST, tctx: TypeContext?, vname: CString, must-not-fresh: Bool): (TypeContext?, Type) = (
    let tr = tctx.lookups-first(vname);
-   if non-zero(tr) then {
+   if not non-zero(tr) and vname.has-prefix(c"..")
+   then (tctx, type-fragment-field)
+   else if non-zero(tr) then {
       let dt = tr.denormalized;
       if dt.is-t(interned-tag-must-retain,0) and not(must-not-fresh) {
          (tctx, tr) = tctx.phi-fresh(tr);
@@ -7707,6 +7713,7 @@ let interned-tag-field = intern-type-tag(c"Field::");
 let interned-tag-unsafe = intern-type-tag(c"Unsafe");
 let interned-tag-never = intern-type-tag(c"Never");
 let interned-tag-char = intern-type-tag(c"char");
+let interned-tag-fragment = intern-type-tag(c"Fragment");
 let interned-tag-u64 = intern-type-tag(c"U64");
 let interned-tag-u32 = intern-type-tag(c"U32");
 let interned-tag-u16 = intern-type-tag(c"U16");
@@ -7766,6 +7773,9 @@ let type-l = t0(c"L");
 
 # new allocations = 0 (constant)
 let type-any = t0(c"Any");
+
+# new allocations = 0 (constant)
+let type-fragment-field = t2(c"Arrow",t0(c"Any"),t0(c"L"));
 
 # new allocations = 0 (constant)
 let type-tail-position = t0(interned-tag-tail-position);
@@ -9064,7 +9074,13 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             };
          };
       );
-      Fragment{} => (
+      Fragment{kvs=kvs,location=location} => (
+         let new-kvs = mk-hashtable(type(CString), type(AST));
+         for Tuple{k=first, v=second} in kvs.as-vector {
+            (tctx, v) = std-infer-expr(tctx, v, false, Used, ta);
+            new-kvs = new-kvs.bind(k, v);
+         };
+         term = mk-fragment(new-kvs, location);
          tctx = tctx.ascript(term, hint);
       );
       App{asc=left:Var{key:c"as"}, right:App{t=left,right:AType{tt=tt}}} => (

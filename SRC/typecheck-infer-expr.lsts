@@ -155,7 +155,13 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
             };
          };
       );
-      Fragment{} => (
+      Fragment{kvs=kvs,location=location} => (
+         let new-kvs = mk-hashtable(type(CString), type(AST));
+         for Tuple{k=first, v=second} in kvs.as-vector {
+            (tctx, v) = std-infer-expr(tctx, v, false, Used, ta);
+            new-kvs = new-kvs.bind(k, v);
+         };
+         term = mk-fragment(new-kvs, location);
          tctx = tctx.ascript(term, hint);
       );
       App{asc=left:Var{key:c"as"}, right:App{t=left,right:AType{tt=tt}}} => (

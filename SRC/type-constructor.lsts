@@ -53,6 +53,7 @@ let interned-tag-field = intern-type-tag(c"Field::");
 let interned-tag-unsafe = intern-type-tag(c"Unsafe");
 let interned-tag-never = intern-type-tag(c"Never");
 let interned-tag-char = intern-type-tag(c"char");
+let interned-tag-fragment = intern-type-tag(c"Fragment");
 let interned-tag-u64 = intern-type-tag(c"U64");
 let interned-tag-u32 = intern-type-tag(c"U32");
 let interned-tag-u16 = intern-type-tag(c"U16");
@@ -112,6 +113,9 @@ let type-l = t0(c"L");
 
 # new allocations = 0 (constant)
 let type-any = t0(c"Any");
+
+# new allocations = 0 (constant)
+let type-fragment-field = t2(c"Arrow",t0(c"Any"),t0(c"L"));
 
 # new allocations = 0 (constant)
 let type-tail-position = t0(interned-tag-tail-position);
