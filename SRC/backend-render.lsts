@@ -4,7 +4,7 @@ let .expression(f: Hashtable<CString,S>): S = f.lookup(c"expression", SNil);
 
 let .set(f: Hashtable<CString,S>, key: CString, val: S): Hashtable<CString,S> = f.bind(key,val);
 let .set(f: Hashtable<CString,S>, key: CString, val: String): Hashtable<CString,S> = f.bind(key,SAtom(val));
-let .get(f: Hashtable<CString,S>, key: CString): Hashtable<CString,S> = f.lookup(key,SNil);
+let .get(f: Hashtable<CString,S>, key: CString): S = f.lookup(key,SNil);
 
 let mk-io-fragment(): Hashtable<CString,S> = mk-hashtable(type(CString), type(S));
 let mk-io-expression(s: S): Hashtable<CString,S> = mk-hashtable(type(CString), type(S)).bind(c"expression", s);

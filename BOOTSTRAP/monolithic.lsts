@@ -5079,6 +5079,7 @@ let .expression(f: Hashtable<CString,S>): S = f.lookup(c"expression", SNil);
 
 let .set(f: Hashtable<CString,S>, key: CString, val: S): Hashtable<CString,S> = f.bind(key,val);
 let .set(f: Hashtable<CString,S>, key: CString, val: String): Hashtable<CString,S> = f.bind(key,SAtom(val));
+let .get(f: Hashtable<CString,S>, key: CString): S = f.lookup(key,SNil);
 
 let mk-io-fragment(): Hashtable<CString,S> = mk-hashtable(type(CString), type(S));
 let mk-io-expression(s: S): Hashtable<CString,S> = mk-hashtable(type(CString), type(S)).bind(c"expression", s);
@@ -9076,9 +9077,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       Fragment{kvs=kvs,location=location} => (
          let new-kvs = mk-hashtable(type(CString), type(AST));
-         for Tuple{k=first, v=second} in kvs.as-vector {
-            (tctx, v) = std-infer-expr(tctx, v, false, Used, ta);
-            new-kvs = new-kvs.bind(k, v);
+         for Tuple{kvs-k=first, kvs-v=second} in kvs.as-vector {
+            (tctx, kvs-v) = std-infer-expr(tctx, kvs-v, false, Used, ta);
+            new-kvs = new-kvs.bind(kvs-k, kvs-v);
          };
          term = mk-fragment(new-kvs, location);
          tctx = tctx.ascript(term, hint);

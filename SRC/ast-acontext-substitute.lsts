@@ -63,6 +63,13 @@ let .substitute(ctx: AContext, term: AST): AST = (
          mk-glb(key, ctx.substitute(val));
       );
       AType{tt=tt} => mk-atype(ctx.substitute( tt));
+      Fragment{kvs=kvs,location=location} => (
+         let new-kvs = mk-hashtable(type(CString), type(AST));
+         for Tuple{kvs-k=first, kvs-v=second} in kvs.as-vector {
+            new-kvs = new-kvs.bind(kvs-k, ctx.substitute(kvs-v));
+         };
+         mk-fragment(new-kvs, location);
+      );
       _ => term;
    }
 );

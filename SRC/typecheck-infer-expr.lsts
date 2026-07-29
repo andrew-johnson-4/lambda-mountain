@@ -157,9 +157,9 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
       );
       Fragment{kvs=kvs,location=location} => (
          let new-kvs = mk-hashtable(type(CString), type(AST));
-         for Tuple{k=first, v=second} in kvs.as-vector {
-            (tctx, v) = std-infer-expr(tctx, v, false, Used, ta);
-            new-kvs = new-kvs.bind(k, v);
+         for Tuple{kvs-k=first, kvs-v=second} in kvs.as-vector {
+            (tctx, kvs-v) = std-infer-expr(tctx, kvs-v, false, Used, ta);
+            new-kvs = new-kvs.bind(kvs-k, kvs-v);
          };
          term = mk-fragment(new-kvs, location);
          tctx = tctx.ascript(term, hint);
