@@ -316,6 +316,8 @@ let render(t: AST): Hashtable<CString,S> = (
          then print("Unable to find variable \{var-name-if-var-or-lit(left)} : \{typeof-term(left)} = '\{lt.expression}'\n");
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
+            print("Fterm \{fterm}\n");
+            print("Fterm range \{fterm.range}\n");
             let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
             print("Apply lhs: \{tctx}\n");
             match tctx.beta-substitute(fterm.range) {

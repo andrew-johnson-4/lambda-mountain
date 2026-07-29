@@ -375,6 +375,47 @@ import lib/core/dumb.lsts;
 
 let config-v23 = true;
 
+import stdint.h;
+import stdio.h;
+import stdlib.h;
+import string.h;
+import regex.h;
+# TODO: find a better way to create a hermetic distribution for these headers not manually
+# TODO: hermetic distribution should only include the live symbols, not dead code
+# Reason: Hermetic C headers allow us to declare C dependencies in LSTS instead of relying on random C mess on user's system
+
+# not sure why this is necessary, the C frontend must be missing this definition?
+let :FFI mktemp(template: U8[]): U8[] = ();
+let :FFI write(ft: USize, buf: C<"void">[], count: USize): USize;
+
+import lib/core/l.lsts;
+import lib/core/nil.lsts;
+import lib/core/never.lsts;
+import lib/core/phi.lsts;
+import lib/core/platform-macros2.lsts;
+import lib/core/common-macros.lsts;
+import lib/core/backend-macros.lsts;
+import lib/core/primitives.lsts;
+import lib/core/bool.lsts;
+import lib/core/u8.lsts;
+import lib/core/u16.lsts;
+import lib/core/u32.lsts;
+import lib/core/u64.lsts;
+import lib/core/i8.lsts;
+import lib/core/i16.lsts;
+import lib/core/i32.lsts;
+import lib/core/i64.lsts;
+import lib/core/sized.lsts;
+import lib/core/usize.lsts;
+import lib/core/cstring.lsts;
+import lib/core/array.lsts;
+import lib/core/io.lsts;
+import lib/core/cmp.lsts;
+import lib/core/c_int.lsts;
+import lib/core/dumb.lsts;
+
+let config-v23 = true;
+
 let .remove-prefix(base: CString, prefix: CString): CString? = (
    if not(base.has-prefix(prefix)) then None : CString?
    else {
@@ -421,6 +462,26 @@ let .split(s: CString, sep: CString): Vector<CString> = (
 );
 
 import lib/core/baremetal.lsts;
+
+# Requires Phi typing
+import lib/core/baremetal-into.lsts;
+import lib/core/bedrock-cstring.lsts;
+import lib/core/owned-data.lsts;
+import lib/core/one-owned-data.lsts;
+import lib/core/sparse-owned-data.lsts;
+import lib/core/string.lsts;
+import lib/core/vector.lsts;
+import lib/core/tuple.lsts;
+import lib/core/maybe.lsts;
+import lib/core/list.lsts;
+import lib/core/s.lsts;
+import lib/core/hashtable.lsts;
+import lib/core/persistent-btree.lsts;
+import lib/core/set.lsts;
+import lib/core/regex.lsts;
+import lib/core/functional.lsts;
+
+import lib/core/baremetal2.lsts;
 
 # Requires Phi typing
 import lib/core/baremetal-into.lsts;
@@ -2425,6 +2486,41 @@ typed macro declare-ternop(op-alias: lazy, x-type: lazy, y-type: lazy, z-type: l
    let :Blob op-alias(x: x-type, y: y-type, z: z-type): r-type = (
       $":expression"(op-expr);
       $":frame"($":frame"(x); $":frame"(y); $":frame"(z));
+   );
+};
+
+typed macro declare-zop(op-alias: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob op-alias(): r-type = (
+      $fragment { expression: op-expr..expression; }
+   );
+};
+
+typed macro declare-unop(op-alias: lazy, x-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob op-alias(x: x-type): r-type = (
+      $fragment { expression: op-expr..expression; frame: x..frame }
+   );
+};
+typed macro declare-unop-retain(op-alias: lazy, x-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob+MustRetainOnCall op-alias(x: x-type): r-type = (
+      $fragment { expression: op-expr..expression; frame: x..frame }
+   );
+};
+
+typed macro declare-binop(op-alias: lazy, x-type: lazy, y-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob op-alias(x: x-type, y: y-type): r-type = (
+      $fragment { expression: op-expr..expression; frame: (x..frame; y..frame); }
+   );
+};
+
+typed macro declare-binop-retain(op-alias: lazy, x-type: lazy, y-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob+MustRetainOnCall op-alias(x: x-type, y: y-type): r-type = (
+      $fragment { expression: op-expr..expression; frame: (x..frame; y..frame); }
+   );
+};
+
+typed macro declare-ternop(op-alias: lazy, x-type: lazy, y-type: lazy, z-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob op-alias(x: x-type, y: y-type, z: z-type): r-type = (
+      $fragment { expression: op-expr..expression; frame: (x..frame; y..frame; z..frame); }
    );
 };
 
@@ -5174,8 +5270,11 @@ let render-global-declaration(t: AST): String = (
          match val {
             Abs{} => "";
             _ => (
-               let vtt = typeof-term(val).datatype;
-               let def = render-declaration(key.key.into(type(String)), vtt, val);
+               let gtt = typeof-term(val);
+               let vtt = gtt.datatype;
+               let def = if gtt.is-t(interned-tag-cffi,0)
+               then ""
+               else render-declaration(key.key.into(type(String)), vtt, val);
                print("Declare \{key.key} : \{vtt} = \{def}\n");
                count-global-namespace(key.key.into(type(String)), def);
                def
@@ -5292,6 +5391,8 @@ let render(t: AST): Hashtable<CString,S> = (
          then print("Unable to find variable \{var-name-if-var-or-lit(left)} : \{typeof-term(left)} = '\{lt.expression}'\n");
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
+            print("Fterm \{fterm}\n");
+            print("Fterm range \{fterm.range}\n");
             let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
             print("Apply lhs: \{tctx}\n");
             match tctx.beta-substitute(fterm.range) {
@@ -17081,6 +17182,9 @@ let lsts-parse-atom-tail(base: AST, tokens: List<Token>): Tuple<AST,List<Token>>
             tokens = rest;
             lsts-parse-expect( c"[Identifier]", lsts-is-ident-head(lsts-parse-head(tokens)), tokens );
             let method = c"." + head(tokens).key; tokens = tail(tokens);
+            if lsts-parse-head(tokens) == c"." {
+               method = c"." + method; tokens = tail(tokens);
+            };
             if lsts-parse-head(tokens) == c"(" {
                lsts-parse-expect( c"(", tokens ); tokens = tail(tokens);
                while non-zero(tokens) and lsts-parse-head(tokens)!=c")" {
@@ -17230,11 +17334,11 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
       "!".. rest => (tokens = cons(text[:"!".length], tokens); text = rest;);
       "=".. rest => (tokens = cons(text[:"=".length], tokens); text = rest;);
       "^".. rest => (tokens = cons(text[:"^".length], tokens); text = rest;);
-      ".".. rest => (tokens = cons(text[:".".length], tokens); text = rest;);
 
-      (lin=r/^'[a-z]{1,3}/).. rest => (
-         tokens = cons(text[:lin.length], tokens); text = rest;
+      (id=r/^[.][.][$a-zA-Z0-9_-]+/).. rest => (
+         tokens = cons(text[:id.length], tokens); text = rest;
       );
+      ".".. rest => (tokens = cons(text[:".".length], tokens); text = rest;);
 
       # for docs
       "'".. rest => (tokens = cons(text[:"'".length], tokens); text = rest;);
@@ -17253,6 +17357,10 @@ let lsts-tokenize-string(file-path: String, text: String): List<Token> = (
       );
 
       (id=r/^[$]["]([^"\\]|([\\].))*["]/).. rest => (
+         tokens = cons(text[:id.length], tokens); text = rest;
+      );
+
+      (id=r/^[$a-zA-Z0-9_-]+/).. rest => (
          tokens = cons(text[:id.length], tokens); text = rest;
       );
 
