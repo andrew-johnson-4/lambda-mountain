@@ -4039,6 +4039,13 @@ let .substitute(ctx: AContext, term: AST): AST = (
          mk-glb(key, ctx.substitute(val));
       );
       AType{tt=tt} => mk-atype(ctx.substitute( tt));
+      Fragment{kvs=kvs,location=location} => (
+         let new-kvs = mk-hashtable(type(CString), type(AST));
+         for Tuple{kvs-k=first, kvs-v=second} in kvs.as-vector {
+            new-kvs = new-kvs.bind(kvs-k, ctx.substitute(kvs-v));
+         };
+         mk-fragment(new-kvs, location);
+      );
       _ => term;
    }
 );
@@ -6325,6 +6332,10 @@ let .find-callable(tctx: TypeContext?, fname: CString, arg-types: Type, blame: A
       if all-accept { result = Some(tr1) };
    }};
 
+   if not non-zero(result) and fname.has-prefix(c"..") {
+      result = Some(tcr-fragment-field);
+   };
+
    # Fail if function needs to be in an unsafe block
    if failable and non-zero(result) and result.get-or-panic.dt-or-zero.is-t(interned-tag-unsafe,0) and not(tctx.get-or(mk-tctx()).is-unsafe)
    then exit-error("Call to unsafe function outside of unsafe block", blame);
@@ -6657,6 +6668,8 @@ type PhiContextRow zero NullPhiContextRow implies MustRetain, MustRelease = Null
 type TypeContext implies MustRetain, MustRelease = { tctx:List<TypeContextRow>, pctx: PBTree<U32,PhiContextRow>, is-unsafe: Bool, is-blob: Bool, function-name:CString };
 let .into(pr: PhiContextRow, tt: Type<String>): String = "#\{pr.phi-id-or-zero} : \{pr.phi-tt-or-zero}";
 let .function-name(tctx: TypeContext?): CString = tctx.get-or(mk-tctx()).function-name;
+
+let tcr-fragment-field = TypeContextRow( c"..[fragment-field]", type-fragment-field, type-fragment-field, mk-eof() );
 
 let mk-tctx(): TypeContext = TypeContext( [] : List<TypeContextRow>, mk-pbtree(type(U32), type(PhiContextRow)), false, false, c"" );
 
@@ -8782,6 +8795,7 @@ let defof-var(sloc: AST, tctx: TypeContext?, vname: CString, tt: Type): AST = (
    if non-zero(row)
    then head(row).blame-or-zero
    else if not(non-zero(tt)) then ASTEOF
+   else if not(non-zero(tt)) and vname.has-prefix(c"..") then ASTEOF
    else fail("Unknown Referenced Variable: \{vname} : \{tt} at \{sloc.location}");
 );
 

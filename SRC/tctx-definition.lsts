@@ -8,6 +8,8 @@ type TypeContext implies MustRetain, MustRelease = { tctx:List<TypeContextRow>, 
 let .into(pr: PhiContextRow, tt: Type<String>): String = "#\{pr.phi-id-or-zero} : \{pr.phi-tt-or-zero}";
 let .function-name(tctx: TypeContext?): CString = tctx.get-or(mk-tctx()).function-name;
 
+let tcr-fragment-field = TypeContextRow( c"..[fragment-field]", type-fragment-field, type-fragment-field, mk-eof() );
+
 let mk-tctx(): TypeContext = TypeContext( [] : List<TypeContextRow>, mk-pbtree(type(U32), type(PhiContextRow)), false, false, c"" );
 
 let .key-or-zero(tr: TypeContextRow): CString = (
