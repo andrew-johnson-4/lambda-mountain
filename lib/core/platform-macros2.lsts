@@ -1,0 +1,35 @@
+
+typed macro declare-zop(op-alias: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob op-alias(): r-type = (
+      $fragment { expression: op-expr..expression }
+   );
+};
+
+typed macro declare-unop(op-alias: lazy, x-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob op-alias(x: x-type): r-type = (
+      $fragment { expression: op-expr..expression, frame: x..frame }
+   );
+};
+typed macro declare-unop-retain(op-alias: lazy, x-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob+MustRetainOnCall op-alias(x: x-type): r-type = (
+      $fragment { expression: op-expr..expression, frame: x..frame }
+   );
+};
+
+typed macro declare-binop(op-alias: lazy, x-type: lazy, y-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob op-alias(x: x-type, y: y-type): r-type = (
+      $fragment { expression: op-expr..expression, frame: (x..frame; y..frame) }
+   );
+};
+
+typed macro declare-binop-retain(op-alias: lazy, x-type: lazy, y-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob+MustRetainOnCall op-alias(x: x-type, y: y-type): r-type = (
+      $fragment { expression: op-expr..expression, frame: (x..frame; y..frame) }
+   );
+};
+
+typed macro declare-ternop(op-alias: lazy, x-type: lazy, y-type: lazy, z-type: lazy, r-type: lazy, op-expr: lazy): lazy = {
+   let :Blob op-alias(x: x-type, y: y-type, z: z-type): r-type = (
+      $fragment { expression: op-expr..expression, frame: (x..frame; y..frame; z..frame) }
+   );
+};

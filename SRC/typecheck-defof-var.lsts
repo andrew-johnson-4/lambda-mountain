@@ -9,5 +9,6 @@ let defof-var(sloc: AST, tctx: TypeContext?, vname: CString, tt: Type): AST = (
    if non-zero(row)
    then head(row).blame-or-zero
    else if not(non-zero(tt)) then ASTEOF
+   else if not(non-zero(row)) and vname.has-prefix(c"..") then ASTEOF
    else fail("Unknown Referenced Variable: \{vname} : \{tt} at \{sloc.location}");
 );

@@ -4,6 +4,7 @@ let .expression(f: Hashtable<CString,S>): S = f.lookup(c"expression", SNil);
 
 let .set(f: Hashtable<CString,S>, key: CString, val: S): Hashtable<CString,S> = f.bind(key,val);
 let .set(f: Hashtable<CString,S>, key: CString, val: String): Hashtable<CString,S> = f.bind(key,SAtom(val));
+let .get(f: Hashtable<CString,S>, key: CString): S = f.lookup(key,SNil);
 
 let mk-io-fragment(): Hashtable<CString,S> = mk-hashtable(type(CString), type(S));
 let mk-io-expression(s: S): Hashtable<CString,S> = mk-hashtable(type(CString), type(S)).bind(c"expression", s);
@@ -14,6 +15,8 @@ let render-plugin(): Nil = (
 );
 
 let global-identifier-namespace-defined = mk-hashtable(type(String), type(String));
+
+let global-declaration-initializers = SNil;
 
 let render(): String = (
    render-includes(ast-parsed-program) +
@@ -107,10 +110,12 @@ let render-direct-function-declaration(exprs: S, t: AST): String = (
             not typeof-term(f).is-open
          then (
             let rt = render-return(rhs);
-            "\{render(typeof-term(f).range)} \{render-identifier(key.key, typeof-term(f))}(\{render-function-parameters(lhs)}){\{exprs}\{rt.frame}\{rt.expression}}\n"
+            if key.key == c"main"
+            then "\{render(typeof-term(f).range)} \{render-identifier(key.key, typeof-term(f))}(\{render-function-parameters(lhs)}){\{global-declaration-initializers}\{exprs}\{rt.frame}\{rt.expression}}\n"
+            else "\{render(typeof-term(f).range)} \{render-identifier(key.key, typeof-term(f))}(\{render-function-parameters(lhs)}){\{exprs}\{rt.frame}\{rt.expression}}\n"
          ) else ""
       );
-      ASTEOF{} => "int main(){\{exprs}}\n";
+      ASTEOF{} => "int main(){\{global-declaration-initializers}\{exprs}}\n";
       _ => "";
    };
    result
@@ -191,11 +196,13 @@ let render-global-declaration(t: AST): String = (
          match val {
             Abs{} => "";
             _ => (
-               let vtt = typeof-term(val).datatype;
-               let k = render-identifier(key.key, vtt);
-               let def = render-declaration(k, vtt, val);
+               let gtt = typeof-term(val);
+               let vtt = gtt.datatype;
+               let def = if gtt.is-t(interned-tag-cffi,0)
+               then ""
+               else render-declaration(key.key.into(type(String)), vtt, val);
                print("Declare \{key.key} : \{vtt} = \{def}\n");
-               count-global-namespace(k, def);
+               count-global-namespace(key.key.into(type(String)), def);
                def
             );
          }
@@ -208,9 +215,11 @@ let render-global-declaration(t: AST): String = (
 let render-declaration(k: String, kt: Type, t: AST): String = (
    (let prefix, let suffix) = render-declaration(kt);
    let rt = render(t);
-   let result = if t.is-nil-constant
-   then "\{prefix} \{render-identifier(k,kt)}\{suffix};"
-   else "\{rt.frame}\{prefix} \{render-identifier(k,kt)}\{suffix} = \{rt.expression};";
+   let result = "\{prefix} \{render-identifier(k,kt)}\{suffix};\n";
+   if not t.is-nil-constant {
+      global-declaration-initializers = global-declaration-initializers +
+      "\{render-identifier(k,kt)} = \{rt.expression};\n"
+   };
    result
 );
 
@@ -304,27 +313,37 @@ let render(t: AST): Hashtable<CString,S> = (
          if non-zero(var-name-if-var-or-lit(left)) then print("App \{left} \{typeof-term(right)}\nApp result \{tr.dt-or-zero}\n");
          let fnc = typeof-term(left);
          if non-zero(var-name-if-var(left)) and not fnc.is-parameterized and not fnc.is-t(interned-tag-blob,0) and not fnc.is-t(interned-tag-cffi,0)
+         and not fnc == type-fragment-field
          and not global-identifier-namespace-defined.has-key(lt.expression.into(type(String)))
          then print("Unable to find variable \{var-name-if-var-or-lit(left)} : \{typeof-term(left)} = '\{lt.expression}'\n");
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
+            print("Fterm \{fterm}\n");
+            print("Fterm range \{fterm.range}\n");
             let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
+            print("Apply lhs: \{tctx}\n");
             match tctx.beta-substitute(fterm.range) {
-               App{ left:Lit{key:c":"}, right:App{ f=left:Fragment{}, right:AType{} } } => render(f);
-               f => render(f);
+               App{ left:Lit{key:c":"}, right:App{ f=left:Fragment{}, right:AType{} } } => (print("Beta subsitute: \{f}\n"); render(f) );
+               f => (print("Beta subsitute: \{f}\n"); render(f));
             };
+         } else if var-name-if-var-or-lit(left).has-prefix(c"..") {
+            mk-io-expression(rt.get(tail(tail(var-name-if-var-or-lit(left)))))
          } else if typeof-term(t).is-t(interned-tag-cons,2)
          then (
             if typeof-term(right).is-datatype and typeof-term(left).is-datatype-or-cons-datatype
             then (lt + rt).set(c"expression", "\{lt.expression},\{rt.expression}")
             else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
-         ) else (lt + rt).set(c"expression", "\{lt.expression}(\{rt.expression})")
+         ) else if typeof-term(left).is-t(interned-tag-arrow,2)
+           then (lt + rt).set(c"expression", "\{lt.expression}(\{rt.expression})")
+           else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
       );
       Fragment{kvs=kvs} => (
          let f = mk-io-fragment();
          for Tuple{fk=first, fv=second} in kvs.as-vector {
             f = f.set(fk, render(fv).expression);
          };
+         print("Render fragment in \{kvs}\n");
+         print("Render fragment out \{f}\n");
          f
       );
       ASTNil{} => mk-io-fragment();
@@ -335,6 +354,7 @@ let render(t: AST): Hashtable<CString,S> = (
          let vtt = ftt.datatype;
          let m = if ftt.is-t(interned-tag-cffi,0) then key2.into(type(String)) else render-identifier(key2, vtt);
          if not ftt.is-t(interned-tag-blob,0) and not ftt.is-t(interned-tag-cffi,0) and not ftt.is-parameterized
+         and not ftt == type-fragment-field
          and not global-identifier-namespace-defined.has-key(m)
          then print("Unable to find variable \{key2} : \{ftt}.\{vtt} = '\{m}' \{hash(m)}\n");
          # TODO: determine if this is a C global and passthrough, otherwise LM convention
