@@ -287,8 +287,8 @@ let render(t: AST): Hashtable<CString,S> = (
       App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => (
          let vtt = typeof-term(rhs).datatype;
          print("Declare \{lname} : \{vtt} = '\{render-identifier(lname,vtt)}'\n");
-         count-global-namespace( render-identifier(lname,vtt), render-declaration(render-identifier(lname, vtt), vtt, rhs) );
-         mk-io-expression(render-declaration(render-identifier(lname, vtt), vtt, rhs));
+         count-global-namespace( render-identifier(lname,vtt), render-declaration(lname.into(type(String)), vtt, rhs) );
+         mk-io-expression(render-declaration(lname.into(type(String)), vtt, rhs));
       );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
          let cf = render(cond);
