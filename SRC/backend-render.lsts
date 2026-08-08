@@ -276,6 +276,12 @@ let render(t: AST): Hashtable<CString,S> = (
          };
          result;
       );
+      App{ left:Var{key:c"mangle-pre"}, right:AType{tt=tt} } => (
+         mk-io-expression(render-declaration(tt).first)
+      );
+      App{ left:Var{key:c"mangle-post"}, right:AType{tt=tt} } => (
+         mk-io-expression(render-declaration(tt).second)
+      );
       App{asc=left:Var{key:c"as"}, right:App{it=left,ot=right:AType{tt=tt}}} => (
          let f = render(it);
          if not typeof-term(it).is-t(interned-tag-l,0)

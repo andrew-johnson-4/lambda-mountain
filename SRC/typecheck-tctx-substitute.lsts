@@ -60,7 +60,11 @@ let .beta-substitute(tctx: TypeContext?, t: AST, is-return: Bool): AST = (
    match t {
       ASTEOF{} => t;
       ASTNil{} => t;
-      Var{v2=key,vtk2=token} => tctx.lookup(v2).blame-or-zero or t;
+      Var{v2=key,vtk2=token} => (
+         let bound = tctx.lookup(v2).blame-or-zero;
+         if bound.is-global or not non-zero(bound) then t
+         else bound
+      );
       Lit{v3=key,vtk3=token} => mk-lit(v3,vtk3.unique);
       Abs{lhs=lhs,rhs=rhs,tt1=tt} => mk-abs(substitute-lhs(tctx,lhs),tctx.beta-substitute(rhs,true),tctx.substitute(tt1));
       AType{tt2=tt} => mk-atype(tctx.substitute(tt2).sanitize-phi);
