@@ -425,7 +425,7 @@ let render-identifier(k: CString, kt: Type): String = (
 );
 
 let render-identifier(k: String, kt: Type): String = (
-   let result = "LM_" + render-identifier(k) + "_" + render-identifier(render(kt).replace(" ",""));
+   let result = "LM_" + render-identifier(k) + "_" + render-identifier(render-symbolic(kt).replace(" ",""));
    result
 );
 
@@ -456,6 +456,10 @@ let render-cstring(cs: CString): String = (
 
 let render(tt: Type): String = (
    let result = render-internal(tt.rewrite-type-alias.rewrite-opaque-type-alias);
+   result
+);
+let render-symbolic(tt: Type): String = (
+   let result = render-internal(tt.rewrite-type-alias);
    result
 );
 
