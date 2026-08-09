@@ -121,6 +121,7 @@ let render-direct-type-declaration(t: AST): String = (
       };
       let case-number = 1_sz;
       if has-guarded-cases {
+         decls = "\{decls}\tunsigned int discriminator_case_tag;\n";
          decls = "\{decls}\tunion{\n";
          for Tuple{case-tag2=first, case-fields=second} in (td as Tag::Typedef).cases {
             if case-tag2 != c"" {
