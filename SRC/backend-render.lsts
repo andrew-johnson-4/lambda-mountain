@@ -277,11 +277,9 @@ let render(t: AST): Hashtable<CString,S> = (
          result;
       );
       App{ left:Var{key:c"mangle-pre"}, right:AType{tt=tt} } => (
-         print("\{t} = \{render-declaration(tt.l1).first}\n");
          mk-io-expression(render-declaration(tt.l1).first)
       );
       App{ left:Var{key:c"mangle-post"}, right:AType{tt=tt} } => (
-         print("\{t} = \{render-declaration(tt.l1).second}\n");
          mk-io-expression(render-declaration(tt.l1).second)
       );
       App{asc=left:Var{key:c"as"}, right:App{it=left,ot=right:AType{tt=tt}}} => (
@@ -295,8 +293,9 @@ let render(t: AST): Hashtable<CString,S> = (
       App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => (
          let vtt = typeof-term(rhs).datatype;
          print("Declare \{lname} : \{vtt} = '\{render-identifier(lname,vtt)}'\n");
-         count-global-namespace( render-identifier(lname,vtt), render-declaration(lname.into(type(String)), vtt, rhs) );
-         mk-io-expression(render-declaration(lname.into(type(String)), vtt, rhs));
+         let decl = render-declaration(lname.into(type(String)), vtt, rhs);
+         count-global-namespace( render-identifier(lname,vtt), decl );
+         mk-io-expression(decl, vtt, rhs));
       );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
          let cf = render(cond);
