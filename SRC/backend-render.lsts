@@ -200,7 +200,7 @@ let render-global-declaration(t: AST): String = (
                let vtt = gtt.datatype;
                let def = if gtt.is-t(interned-tag-cffi,0)
                then ""
-               else render-declaration(key.key.into(type(String)), vtt, val);
+               else render-global-declaration(key.key.into(type(String)), vtt, val);
                print("Declare \{key.key} : \{vtt} = \{def}\n");
                count-global-namespace(key.key.into(type(String)), def);
                def
@@ -215,7 +215,11 @@ let render-global-declaration(t: AST): String = (
 let render-declaration(k: String, kt: Type, t: AST): String = (
    (let prefix, let suffix) = render-declaration(kt);
    let rt = render(t);
-   let result = "\{prefix} \{render-identifier(k,kt)}\{suffix};\n";
+   "\{prefix} \{render-identifier(k,kt)}\{suffix};\n";
+);
+
+let render-global-declaration(k: String, kt: Type, t: AST): String = (
+   let result = render-declaration(k, kt, t);
    if not t.is-nil-constant {
       global-declaration-initializers = global-declaration-initializers +
       "\{render-identifier(k,kt)} = \{rt.expression};\n"
@@ -295,7 +299,7 @@ let render(t: AST): Hashtable<CString,S> = (
          print("Declare \{lname} : \{vtt} = '\{render-identifier(lname,vtt)}'\n");
          let decl = render-declaration(lname.into(type(String)), vtt, rhs);
          count-global-namespace( render-identifier(lname,vtt), decl );
-         mk-io-expression(decl, vtt, rhs));
+         mk-io-expression(decl, vtt, rhs);
       );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
          let cf = render(cond);
