@@ -301,7 +301,7 @@ let render(t: AST): Hashtable<CString,S> = (
          print("Declare \{lname} : \{vtt} = '\{render-identifier(lname,vtt)}'\n");
          let decl = render-declaration(lname.into(type(String)), vtt, rhs);
          count-global-namespace( render-identifier(lname,vtt), decl );
-         mk-io-expression(decl, vtt, rhs);
+         mk-io-expression(decl);
       );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
          let cf = render(cond);
