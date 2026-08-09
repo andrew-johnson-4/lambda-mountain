@@ -282,6 +282,13 @@ let .is-nil(t: AST): Bool = (
    }
 );
 
+let .is-global(t: AST): Bool = (
+   match t {
+      Glb{} => true;
+      _ => false;
+   }
+);
+
 let .is-nil-constant(t: AST): Bool = (
    match t {
       ASTNil{} => true;
