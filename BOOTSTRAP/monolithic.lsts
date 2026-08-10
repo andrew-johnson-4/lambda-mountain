@@ -1040,7 +1040,7 @@ let .has-prefix(s2: CString, s1: CString): Bool = (
 );
 
 let head(x: CString): U8 = if non-zero(x) then (x as U8[])[0] else 0;
-let tail(x: CString): CString = if non-zero(x) then ((x as U8[]) + 1) as CString else c"";
+let tail(x: CString): CString = if non-zero(x) then (x + 1) else c"";
 
 let .contains(base: CString, pat: CString): Bool = (
    let r = false;
@@ -3868,6 +3868,8 @@ let .is-datatype(tt: Type): Bool = (
          };
          found
       );
+      TGround{tag:interned-tag-c,parameters:[_..]} => true;
+      TGround{tag:interned-tag-array,parameters:[inner..]} => inner.is-datatype;
       _ => (
          let gta = tt.ground-tag-and-arity;
          datatype-index.has(gta)
@@ -5515,7 +5517,7 @@ let render-identifier(k: CString, kt: Type): String = (
 );
 
 let render-identifier(k: String, kt: Type): String = (
-   let result = "LM_" + render-identifier(k) + "_" + render-identifier(render(kt).replace(" ",""));
+   let result = "LM_" + render-identifier(k) + "_" + render-identifier(render-symbolic(kt).replace(" ",""));
    result
 );
 
@@ -5546,6 +5548,10 @@ let render-cstring(cs: CString): String = (
 
 let render(tt: Type): String = (
    let result = render-internal(tt.rewrite-type-alias.rewrite-opaque-type-alias);
+   result
+);
+let render-symbolic(tt: Type): String = (
+   let result = render-internal(tt.rewrite-type-alias);
    result
 );
 
