@@ -200,7 +200,7 @@ let render-global-declaration(t: AST): String = (
                let vtt = gtt.datatype;
                let def = if gtt.is-t(interned-tag-cffi,0)
                then ""
-               else render-declaration(key.key.into(type(String)), vtt, val);
+               else render-global-declaration(key.key.into(type(String)), vtt, val);
                print("Declare \{key.key} : \{vtt} = \{def}\n");
                count-global-namespace(key.key.into(type(String)), def);
                def
@@ -213,6 +213,12 @@ let render-global-declaration(t: AST): String = (
 );
 
 let render-declaration(k: String, kt: Type, t: AST): String = (
+   (let prefix, let suffix) = render-declaration(kt);
+   let rt = render(t);
+   "\{prefix} \{render-identifier(k,kt)}\{suffix};\n";
+);
+
+let render-global-declaration(k: String, kt: Type, t: AST): String = (
    (let prefix, let suffix) = render-declaration(kt);
    let rt = render(t);
    let result = "\{prefix} \{render-identifier(k,kt)}\{suffix};\n";
@@ -277,10 +283,10 @@ let render(t: AST): Hashtable<CString,S> = (
          result;
       );
       App{ left:Var{key:c"mangle-pre"}, right:AType{tt=tt} } => (
-         mk-io-expression(render-declaration(tt).first)
+         mk-io-expression(render-declaration(tt.l1).first)
       );
       App{ left:Var{key:c"mangle-post"}, right:AType{tt=tt} } => (
-         mk-io-expression(render-declaration(tt).second)
+         mk-io-expression(render-declaration(tt.l1).second)
       );
       App{asc=left:Var{key:c"as"}, right:App{it=left,ot=right:AType{tt=tt}}} => (
          let f = render(it);
@@ -293,8 +299,9 @@ let render(t: AST): Hashtable<CString,S> = (
       App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => (
          let vtt = typeof-term(rhs).datatype;
          print("Declare \{lname} : \{vtt} = '\{render-identifier(lname,vtt)}'\n");
-         count-global-namespace( render-identifier(lname,vtt), render-declaration(lname.into(type(String)), vtt, rhs) );
-         mk-io-expression(render-declaration(lname.into(type(String)), vtt, rhs));
+         let decl = render-declaration(lname.into(type(String)), vtt, rhs);
+         count-global-namespace( render-identifier(lname,vtt), decl );
+         mk-io-expression(decl);
       );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
          let cf = render(cond);
@@ -316,7 +323,6 @@ let render(t: AST): Hashtable<CString,S> = (
          let lt = render(left);
          let rt = render(right);
          let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
-         if non-zero(var-name-if-var-or-lit(left)) then print("App \{left} \{typeof-term(right)}\nApp result \{tr.dt-or-zero}\n");
          let fnc = typeof-term(left);
          if non-zero(var-name-if-var(left)) and not fnc.is-parameterized and not fnc.is-t(interned-tag-blob,0) and not fnc.is-t(interned-tag-cffi,0)
          and not fnc == type-fragment-field
@@ -324,13 +330,10 @@ let render(t: AST): Hashtable<CString,S> = (
          then print("Unable to find variable \{var-name-if-var-or-lit(left)} : \{typeof-term(left)} = '\{lt.expression}'\n");
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
-            print("Fterm \{fterm}\n");
-            print("Fterm range \{fterm.range}\n");
             let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
-            print("Apply lhs: \{tctx}\n");
             match tctx.beta-substitute(fterm.range) {
-               App{ left:Lit{key:c":"}, right:App{ f=left:Fragment{}, right:AType{} } } => (print("Beta subsitute: \{f}\n"); render(f) );
-               f => (print("Beta subsitute: \{f}\n"); render(f));
+               App{ left:Lit{key:c":"}, right:App{ f=left:Fragment{}, right:AType{} } } => render(f);
+               f => render(f);
             };
          } else if var-name-if-var-or-lit(left).has-prefix(c"..") {
             mk-io-expression(rt.get(tail(tail(var-name-if-var-or-lit(left)))))
@@ -422,7 +425,7 @@ let render-identifier(k: CString, kt: Type): String = (
 );
 
 let render-identifier(k: String, kt: Type): String = (
-   let result = "LM_" + render-identifier(k) + "_" + render-identifier(render(kt).replace(" ",""));
+   let result = "LM_" + render-identifier(k) + "_" + render-identifier(render-symbolic(kt).replace(" ",""));
    result
 );
 
@@ -453,6 +456,10 @@ let render-cstring(cs: CString): String = (
 
 let render(tt: Type): String = (
    let result = render-internal(tt.rewrite-type-alias.rewrite-opaque-type-alias);
+   result
+);
+let render-symbolic(tt: Type): String = (
+   let result = render-internal(tt.rewrite-type-alias);
    result
 );
 
