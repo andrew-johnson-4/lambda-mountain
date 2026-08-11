@@ -3825,7 +3825,7 @@ let add-concrete-type-instance(tt: Type, blame: AST): Nil = (
          }
       );
       TGround{ tag=tag, parameters=parameters } => (
-         if tt.is-datatype and not tt.is-open then {
+         if tt.is-struct-datatype and not tt.is-open then {
             tt = tt.rewrite-type-alias.without-any-phi;
             let gta = tt.ground-tag-and-arity;
             let row = concrete-type-instances-index.lookup(gta, mk-vector(type(Type)));
@@ -3858,6 +3858,7 @@ let does-concrete-type-instance-exist(tt: Type): Bool = (
 # All datatypes must be registered as such here
 
 let datatype-index = mk-set(type((U32,U32)));
+let struct-datatype-index = mk-set(type((U32,U32)));
 
 let .is-datatype(tt: Type): Bool = (
    match tt {
@@ -3873,6 +3874,22 @@ let .is-datatype(tt: Type): Bool = (
       _ => (
          let gta = tt.ground-tag-and-arity;
          datatype-index.has(gta)
+      );
+   }
+);
+
+let .is-struct-datatype(tt: Type): Bool = (
+   match tt {
+      TAnd{conjugate=conjugate} => (
+         let found = false;
+         for c in conjugate {
+            found = found or c.is-struct-datatype;
+         };
+         found
+      );
+      _ => (
+         let gta = tt.ground-tag-and-arity;
+         struct-datatype-index.has(gta)
       );
    }
 );
@@ -9787,6 +9804,7 @@ let infer-type-definition(term: AST): Nil = (
       for Tuple{ case-tag2=first, case-fields=second } in cases {
          complex-type-index = complex-type-index.bind( lhs-type.ground-tag-and-arity );
          datatype-index = datatype-index.bind( lhs-type.ground-tag-and-arity );
+         struct-datatype-index = struct-datatype-index.bind( lhs-type.ground-tag-and-arity );
          let field-ordinal = 0_u32;
          for Tuple{ field-name3=first, field-type=second } in case-fields {
             let guard = lhs-type && (if non-zero(case-tag2) then t0(c"Tag::"+case-tag2) else ta);
