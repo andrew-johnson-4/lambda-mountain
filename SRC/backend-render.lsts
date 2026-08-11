@@ -290,7 +290,8 @@ let render(t: AST): Hashtable<CString,S> = (
       );
       App{asc=left:Var{key:c"as"}, right:App{it=left,ot=right:AType{tt=tt}}} => (
          let f = render(it);
-         if not typeof-term(it).is-t(interned-tag-l,0)
+         let itt = typeof-term(it);
+         if not itt.is-t(interned-tag-l,0) and tt.is-datatype
          then f = f.set(c"expression", "((\{render(tt)})(\{f.expression}))");
          f
       );
@@ -326,6 +327,7 @@ let render(t: AST): Hashtable<CString,S> = (
          let fnc = typeof-term(left);
          if non-zero(var-name-if-var(left)) and not fnc.is-parameterized and not fnc.is-t(interned-tag-blob,0) and not fnc.is-t(interned-tag-cffi,0)
          and not fnc == type-fragment-field
+         and not var-name-if-var(left).has-prefix(c"..")
          and not global-identifier-namespace-defined.has-key(lt.expression.into(type(String)))
          then print("Unable to find variable \{var-name-if-var-or-lit(left)} : \{typeof-term(left)} = '\{lt.expression}'\n");
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
@@ -363,6 +365,7 @@ let render(t: AST): Hashtable<CString,S> = (
          let vtt = ftt.datatype;
          let m = if ftt.is-t(interned-tag-cffi,0) then key2.into(type(String)) else render-identifier(key2, vtt);
          if not ftt.is-t(interned-tag-blob,0) and not ftt.is-t(interned-tag-cffi,0) and not ftt.is-parameterized
+         and not key2.has-prefix(c"..")
          and not ftt == type-fragment-field
          and not global-identifier-namespace-defined.has-key(m)
          then print("Unable to find variable \{key2} : \{ftt}.\{vtt} = '\{m}' \{hash(m)}\n");
