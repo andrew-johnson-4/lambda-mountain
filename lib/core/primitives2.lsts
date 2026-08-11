@@ -16,19 +16,19 @@ let :Blob $"primitive::while"(cond: Bool, body: Any): Nil = ($fragment{
    )
 });
 
-let :Blob $"primitive::if"(f: Any, t: Any, c: Bool): Nil = (
+let :Blob $"primitive::if"(f: Any, t: Any, c: Bool): Nil = ($fragment{
    frame: (c..frame; t..frame; f..frame),
    expression: (
       l"("; c..expression; l"?"; t..expression; l":"; f..expression; l")"
    )
-);
+});
 
-let :Blob $"primitive::call"(ictx: ImplicitContext, args: Any): Nil = (
+let :Blob $"primitive::call"(ictx: ImplicitContext, args: Any): Nil = ($fragment{
    frame: (ictx..frame; args..frame),
    expression: (
       l"("; ictx..function-id; l"("; args..expression; l"))"
    )
-);
+});
 
 declare-unop( $".discriminator-case-tag", raw-type(LMStruct+MustNotRetain+MustReleaseAfterCall+CaseNumber<cn>), raw-type(USize), ( l"("; cn : L; l")"; ) );
 declare-unop( $".discriminator-case-tag", raw-type(LMStruct+MustNotRetain+MustReleaseAfterCall), raw-type(USize), ( l"("; x; l".discriminator_case_tag)"; ) );
