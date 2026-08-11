@@ -2,6 +2,7 @@
 # All datatypes must be registered as such here
 
 let datatype-index = mk-set(type((U32,U32)));
+let struct-datatype-index = mk-set(type((U32,U32)));
 
 let .is-datatype(tt: Type): Bool = (
    match tt {
@@ -17,6 +18,22 @@ let .is-datatype(tt: Type): Bool = (
       _ => (
          let gta = tt.ground-tag-and-arity;
          datatype-index.has(gta)
+      );
+   }
+);
+
+let .is-struct-datatype(tt: Type): Bool = (
+   match tt {
+      TAnd{conjugate=conjugate} => (
+         let found = false;
+         for c in conjugate {
+            found = found or c.is-struct-datatype;
+         };
+         found
+      );
+      _ => (
+         let gta = tt.ground-tag-and-arity;
+         struct-datatype-index.has(gta)
       );
    }
 );

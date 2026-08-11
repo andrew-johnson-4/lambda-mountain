@@ -3869,7 +3869,7 @@ let .is-datatype(tt: Type): Bool = (
          found
       );
       TGround{tag:interned-tag-c,parameters:[_..]} => true;
-      TGround{tag:interned-tag-array,parameters:[inner..]} => inner.is-datatype;
+      TGround{tag:interned-tag-array,parameters:[_..inner..]} => inner.is-datatype;
       _ => (
          let gta = tt.ground-tag-and-arity;
          datatype-index.has(gta)
@@ -3943,6 +3943,20 @@ let .with-only-datatype(tt: Type): Type = (
       );
       TGround{ tag=tag, parameters=parameters } => (
          if tt.is-datatype then tt else ta
+      );
+      _ => ta;
+   }
+);
+
+let .without-datatype(tt: Type): Type = (
+   match tt {
+      TAnd{ conjugate=conjugate } => (
+         let result = ta;
+         for c in conjugate { if not(non-zero(result)) then result = c.without-datatype };
+         result;
+      );
+      TGround{ tag=tag, parameters=parameters } => (
+         if tt.is-datatype then ta else tt
       );
       _ => ta;
    }
@@ -9128,8 +9142,12 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          (tctx, let new-t) = std-infer-expr(tctx, t, false, used, tt && hint);
          if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
          let inner-tt = typeof-term(t).normalize;
+         print("As inner-tt = \{inner-tt}, is-datatype = \{inner-tt.is-datatype}\n");
+         print("As tt = \{tt}, is-datatype = \{tt.is-datatype}\n");
          if tt.simple-interned-tag == interned-tag-tag then tt = tt && inner-tt
-         else tt = tt && inner-tt.with-only-datatype;
+         # TODO: filter exactly only what should persist or be filtered here for these two cases
+         else if tt.is-datatype then tt = tt;
+         else tt = inner-tt;
          # No need for new Phi types here
          if original-tt.is-t(interned-tag-phi-state,1) {
             (tctx, tt) = tctx.phi-initialize(tt, term);
@@ -11294,6 +11312,7 @@ import SRC/ascript-datatype-index.lsts;
 import SRC/ascript-with-only-datatype.lsts;
 import SRC/ascript-ascript.lsts;
 import SRC/ascript-tctx-resurrect.lsts;
+import SRC/ascript-without-datatype.lsts;
 
 
 import SRC/unit-type-core.lsts;
