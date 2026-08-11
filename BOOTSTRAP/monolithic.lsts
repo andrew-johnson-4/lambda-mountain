@@ -5184,7 +5184,6 @@ let render-forward-function-declaration(t: AST): String = (
             not tt.is-t(interned-tag-typed-macro,0) and
             not typeof-term(f).is-open {
             let def = "\{render(typeof-term(f).range)} \{render-identifier(key.key, typeof-term(f))}(\{render-function-parameters(lhs)});\n";
-            print("Declare \{key.key} : \{typeof-term(f)} = \{render-identifier(key.key, typeof-term(f))}\n");
             global-identifier-namespace-defined = global-identifier-namespace-defined.bind( "\{render-identifier(key.key, typeof-term(f))}", def );
             def
          } else ""
@@ -5255,7 +5254,6 @@ let render-function-parameters(lhs: AST): String = (
       );
       App{ left:Lit{key:c":"}, right:App{ vbind=left:Var{vid=key}, right:AType{vtt=tt} } } => (
          let rt = render(vtt);
-         print("Declare \{vid} : \{vtt} = \{render-identifier(vid,vtt)}\n");
          global-identifier-namespace-defined = global-identifier-namespace-defined.bind( render-identifier(vid,vtt), "\{rt} \{render-identifier(vid,vtt)}" );
          if non-zero(rt)
          then "\{rt} \{render-identifier(vid,vtt)}"
@@ -5281,7 +5279,8 @@ let render-return(t: AST): Hashtable<CString,S> = (
       );
       _ => (
          let rt = render-statement(t);
-         if non-zero(rt) then rt.set(c"expression", "return \{rt.expression}");
+         if non-zero(rt) and not typeof-term(t).is-t(interned-tag-nil,0)
+         then rt.set(c"expression", "return \{rt.expression}");
          else rt
       );
    };
@@ -5324,7 +5323,6 @@ let render-global-declaration(t: AST): String = (
                let def = if gtt.is-t(interned-tag-cffi,0)
                then ""
                else render-global-declaration(key.key.into(type(String)), vtt, val);
-               print("Declare \{key.key} : \{vtt} = \{def}\n");
                count-global-namespace(key.key.into(type(String)), def);
                def
             );
@@ -5390,7 +5388,6 @@ let render-declaration(tt: Type, is-flexible-array-member: Bool): (String, Strin
 );
 
 let count-global-namespace(k: String, v: String): Nil = (
-   print("Count Global \{k} \{hash(k)}\n");
    global-identifier-namespace-defined = global-identifier-namespace-defined.bind( k, v );
 );
 
@@ -5422,7 +5419,6 @@ let render(t: AST): Hashtable<CString,S> = (
       App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => mk-io-expression("(sizeof(\{render(tt)}))");
       App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => (
          let vtt = typeof-term(rhs).datatype;
-         print("Declare \{lname} : \{vtt} = '\{render-identifier(lname,vtt)}'\n");
          let decl = render-declaration(lname.into(type(String)), vtt, rhs);
          count-global-namespace( render-identifier(lname,vtt), decl );
          mk-io-expression(decl);
@@ -5448,11 +5444,6 @@ let render(t: AST): Hashtable<CString,S> = (
          let rt = render(right);
          let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
          let fnc = typeof-term(left);
-         if non-zero(var-name-if-var(left)) and not fnc.is-parameterized and not fnc.is-t(interned-tag-blob,0) and not fnc.is-t(interned-tag-cffi,0)
-         and not fnc == type-fragment-field
-         and not var-name-if-var(left).has-prefix(c"..")
-         and not global-identifier-namespace-defined.has-key(lt.expression.into(type(String)))
-         then print("Unable to find variable \{var-name-if-var-or-lit(left)} : \{typeof-term(left)} = '\{lt.expression}'\n");
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
             let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
@@ -5476,22 +5467,15 @@ let render(t: AST): Hashtable<CString,S> = (
          for Tuple{fk=first, fv=second} in kvs.as-vector {
             f = f.set(fk, render(fv).expression);
          };
-         print("Render fragment in \{kvs}\n");
-         print("Render fragment out \{f}\n");
          f
       );
-      ASTNil{} => mk-io-fragment();
+      ASTNil{} => mk-io-expression("({})");
       ASTEOF{} => mk-io-fragment();
       Lit{key1=key} => mk-io-expression(key1.into(type(String)));
       Var{key2=key} => (
          let ftt = typeof-term(t);
          let vtt = ftt.datatype;
          let m = if ftt.is-t(interned-tag-cffi,0) then key2.into(type(String)) else render-identifier(key2, vtt);
-         if not ftt.is-t(interned-tag-blob,0) and not ftt.is-t(interned-tag-cffi,0) and not ftt.is-parameterized
-         and not key2.has-prefix(c"..")
-         and not ftt == type-fragment-field
-         and not global-identifier-namespace-defined.has-key(m)
-         then print("Unable to find variable \{key2} : \{ftt}.\{vtt} = '\{m}' \{hash(m)}\n");
          # TODO: determine if this is a C global and passthrough, otherwise LM convention
          mk-io-expression(m);
       );
@@ -5501,6 +5485,9 @@ let render(t: AST): Hashtable<CString,S> = (
       Typedef{} => mk-io-fragment();
       #_ => fail("render unknown term \{t}");
    };
+   print("Render \{t}\n");
+   print("Render result frame \{result.frame}\n");
+   print("Render result expression \{result.expression}\n");
    result
 );
 
@@ -9162,8 +9149,6 @@ let std-infer-expr(tctx: Maybe<TypeContext>, term: AST, is-scoped: Bool, used: I
          (tctx, let new-t) = std-infer-expr(tctx, t, false, used, tt && hint);
          if not(is(t,new-t)) then { t = new-t; term = mk-app(asc, mk-app(t, mk-atype(tt))); };
          let inner-tt = typeof-term(t).normalize;
-         print("As inner-tt = \{inner-tt}, is-datatype = \{inner-tt.is-datatype}\n");
-         print("As tt = \{tt}, is-datatype = \{tt.is-datatype}\n");
          if tt.simple-interned-tag == interned-tag-tag then tt = tt && inner-tt
          # TODO: filter exactly only what should persist or be filtered here for these two cases
          else if tt.is-datatype then tt = tt;
