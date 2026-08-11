@@ -9734,6 +9734,8 @@ let infer-type-definition(term: AST): Nil = (
    };
    if non-zero(alias) then add-type-alias(lhs-type, alias);
    if non-zero(opaque-alias) then add-opaque-type-alias(lhs-type, opaque-alias);
+   if non-zero(opaque-alias)
+   then datatype-index = datatype-index.bind( lhs-type.ground-tag-and-arity );
    for rhs-type in implements {
       add-quick-prop(lhs-type, lhs-type, rhs-type);
       add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
