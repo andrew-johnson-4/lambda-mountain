@@ -53,6 +53,8 @@ let infer-type-definition(term: AST): Nil = (
    };
    if non-zero(alias) then add-type-alias(lhs-type, alias);
    if non-zero(opaque-alias) then add-opaque-type-alias(lhs-type, opaque-alias);
+   if non-zero(opaque-alias)
+   then datatype-index = datatype-index.bind( lhs-type.ground-tag-and-arity );
    for rhs-type in implements {
       add-quick-prop(lhs-type, lhs-type, rhs-type);
       add-weaken-quick-prop(lhs-type, lhs-type, rhs-type);
@@ -86,6 +88,7 @@ let infer-type-definition(term: AST): Nil = (
       for Tuple{ case-tag2=first, case-fields=second } in cases {
          complex-type-index = complex-type-index.bind( lhs-type.ground-tag-and-arity );
          datatype-index = datatype-index.bind( lhs-type.ground-tag-and-arity );
+         struct-datatype-index = struct-datatype-index.bind( lhs-type.ground-tag-and-arity );
          let field-ordinal = 0_u32;
          for Tuple{ field-name3=first, field-type=second } in case-fields {
             let guard = lhs-type && (if non-zero(case-tag2) then t0(c"Tag::"+case-tag2) else ta);
