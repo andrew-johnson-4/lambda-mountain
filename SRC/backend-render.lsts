@@ -61,7 +61,6 @@ let render-forward-function-declaration(t: AST): String = (
             not tt.is-t(interned-tag-typed-macro,0) and
             not typeof-term(f).is-open {
             let def = "\{render(typeof-term(f).range)} \{render-identifier(key.key, typeof-term(f))}(\{render-function-parameters(lhs)});\n";
-            print("Declare \{key.key} : \{typeof-term(f)} = \{render-identifier(key.key, typeof-term(f))}\n");
             global-identifier-namespace-defined = global-identifier-namespace-defined.bind( "\{render-identifier(key.key, typeof-term(f))}", def );
             def
          } else ""
@@ -132,7 +131,6 @@ let render-function-parameters(lhs: AST): String = (
       );
       App{ left:Lit{key:c":"}, right:App{ vbind=left:Var{vid=key}, right:AType{vtt=tt} } } => (
          let rt = render(vtt);
-         print("Declare \{vid} : \{vtt} = \{render-identifier(vid,vtt)}\n");
          global-identifier-namespace-defined = global-identifier-namespace-defined.bind( render-identifier(vid,vtt), "\{rt} \{render-identifier(vid,vtt)}" );
          if non-zero(rt)
          then "\{rt} \{render-identifier(vid,vtt)}"
@@ -201,7 +199,6 @@ let render-global-declaration(t: AST): String = (
                let def = if gtt.is-t(interned-tag-cffi,0)
                then ""
                else render-global-declaration(key.key.into(type(String)), vtt, val);
-               print("Declare \{key.key} : \{vtt} = \{def}\n");
                count-global-namespace(key.key.into(type(String)), def);
                def
             );
@@ -267,7 +264,6 @@ let render-declaration(tt: Type, is-flexible-array-member: Bool): (String, Strin
 );
 
 let count-global-namespace(k: String, v: String): Nil = (
-   print("Count Global \{k} \{hash(k)}\n");
    global-identifier-namespace-defined = global-identifier-namespace-defined.bind( k, v );
 );
 
@@ -299,7 +295,6 @@ let render(t: AST): Hashtable<CString,S> = (
       App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => mk-io-expression("(sizeof(\{render(tt)}))");
       App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => (
          let vtt = typeof-term(rhs).datatype;
-         print("Declare \{lname} : \{vtt} = '\{render-identifier(lname,vtt)}'\n");
          let decl = render-declaration(lname.into(type(String)), vtt, rhs);
          count-global-namespace( render-identifier(lname,vtt), decl );
          mk-io-expression(decl);
@@ -353,11 +348,9 @@ let render(t: AST): Hashtable<CString,S> = (
          for Tuple{fk=first, fv=second} in kvs.as-vector {
             f = f.set(fk, render(fv).expression);
          };
-         print("Render fragment in \{kvs}\n");
-         print("Render fragment out \{f}\n");
          f
       );
-      ASTNil{} => mk-io-fragment();
+      ASTNil{} => mk-io-expression("({})");
       ASTEOF{} => mk-io-fragment();
       Lit{key1=key} => mk-io-expression(key1.into(type(String)));
       Var{key2=key} => (
