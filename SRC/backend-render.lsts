@@ -156,7 +156,8 @@ let render-return(t: AST): Hashtable<CString,S> = (
       );
       _ => (
          let rt = render-statement(t);
-         if non-zero(rt) then rt.set(c"expression", "return \{rt.expression}");
+         if non-zero(rt) and not typeof-term(t).is-t(interned-tag-nil,0)
+         then rt.set(c"expression", "return \{rt.expression}");
          else rt
       );
    };
@@ -320,11 +321,6 @@ let render(t: AST): Hashtable<CString,S> = (
          let rt = render(right);
          let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
          let fnc = typeof-term(left);
-         if non-zero(var-name-if-var(left)) and not fnc.is-parameterized and not fnc.is-t(interned-tag-blob,0) and not fnc.is-t(interned-tag-cffi,0)
-         and not fnc == type-fragment-field
-         and not var-name-if-var(left).has-prefix(c"..")
-         and not global-identifier-namespace-defined.has-key(lt.expression.into(type(String)))
-         then print("Unable to find variable \{var-name-if-var-or-lit(left)} : \{typeof-term(left)} = '\{lt.expression}'\n");
          if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
             let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
@@ -357,11 +353,6 @@ let render(t: AST): Hashtable<CString,S> = (
          let ftt = typeof-term(t);
          let vtt = ftt.datatype;
          let m = if ftt.is-t(interned-tag-cffi,0) then key2.into(type(String)) else render-identifier(key2, vtt);
-         if not ftt.is-t(interned-tag-blob,0) and not ftt.is-t(interned-tag-cffi,0) and not ftt.is-parameterized
-         and not key2.has-prefix(c"..")
-         and not ftt == type-fragment-field
-         and not global-identifier-namespace-defined.has-key(m)
-         then print("Unable to find variable \{key2} : \{ftt}.\{vtt} = '\{m}' \{hash(m)}\n");
          # TODO: determine if this is a C global and passthrough, otherwise LM convention
          mk-io-expression(m);
       );
@@ -371,6 +362,9 @@ let render(t: AST): Hashtable<CString,S> = (
       Typedef{} => mk-io-fragment();
       #_ => fail("render unknown term \{t}");
    };
+   print("Render \{t}\n");
+   print("Render result frame \{result.frame}\n");
+   print("Render result expression \{result.expression}\n");
    result
 );
 
