@@ -32,7 +32,7 @@ import lib/core/i64.lsts;
 import lib/core/sized.lsts;
 import lib/core/usize.lsts;
 import lib/core/cstring.lsts;
-import lib/core/array.lsts;
+import lib/core/array2.lsts;
 import lib/core/io.lsts;
 import lib/core/cmp.lsts;
 import lib/core/c_int.lsts;

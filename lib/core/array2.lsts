@@ -1,0 +1,140 @@
+
+declare-binop-retain( $"[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), ( l"("; x; l"["; y; l"])"; ) );
+declare-ternop( $"set[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), raw-type(Nil), ( l"("; x; l"["; y; l"]="; z; l")"; ) );
+
+declare-binop( $"!=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"+", raw-type(base-type[]), raw-type(USize), raw-type(base-type[]), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(USize), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(base-type[]), raw-type(USize), ( l"("; x; l"-"; y; l")"; ) );
+
+declare-unop( $"&", raw-type(t+MustNotRetain), raw-type(t[]), (l"(&"; x; l")";) );
+declare-unop( $".void-pointer", raw-type(?[]), raw-type(C<"void">[]), x );
+
+let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   while len > 0_sz {
+      let ignored = ptr[0_sz];
+      len = len - 1_sz;
+      ptr = ((ptr as U8[]) + 1_sz) as t[];
+   };
+);
+
+# TODO: configure this with conditional compilation to remove if unused
+# EXAMPLE: # if CFG.debug
+#          let safe-alloc-block-count = 0_u64;
+#          let safe-alloc-block-count-monotonic = 0_u64;
+#          # endif
+# safe-alloc-block-count is an increment/decrement counter to track active malloc blocks
+# safe-alloc-block-count-monotonic is an increment-only counter to track historical malloc blocks
+let safe-alloc-block-count = 0_u64;
+let safe-alloc-block-count-monotonic = 0_u64;
+let safe-alloc-block-count-monotonic-history = 0_u64;
+
+let safe-alloc-semaphore = false;
+
+#let alloc-type-counter = {} : Hashtable<CString,(U64,U64)>;
+
+#let print-allocation-counts() = (
+#   print("Allocation Counts\n");
+#   print("Total memory usage: \{current_allocated_memory()}\n");
+#   let h-capacity = alloc-type-counter.data.capacity;
+#   let h-i = 0_sz;
+#   while h-i < h-capacity {
+#      (let h-key, let h-count-size) = alloc-type-counter.data[h-i];
+#      (let h-count, let h-size) = h-count-size;
+#      if non-zero(h-key) {
+#         print("\{h-key} x \{h-count} = \{h-size}\n");
+#      };
+#      h-i = h-i + 1;
+#   };
+#);
+
+let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
+   # TODO: wrap counter adjustments in conditional compilation
+   safe-alloc-block-count = safe-alloc-block-count + 1;
+   safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
+   safe-alloc-block-count-monotonic-history = safe-alloc-block-count-monotonic-history + 1;
+
+   #let tk = type(t).into(type(CString));
+   #if tk != c"SparseOwnedData<Tuple<Tuple<U64,U64>,C<\"char\">[],HashtableRowExists>>" {
+   #   (let running-count, let running-size) = alloc-type-counter.lookup(tk, (0_u64, 0_u64));
+   #   running-count = running-count + 1;
+   #   running-size = running-size + nb;
+   #   alloc-type-counter = alloc-type-counter.bind(tk, (running-count, running-size));
+   #};
+   # TODO: config flag or remove
+
+   # BEFORE CHANGING THIS: talk to alex
+
+   let ptr = malloc(nb) as t[];
+
+   if ptr as USize == 0_sz {
+      fail(c"malloc fail");
+   };
+
+   # Zero Out Memory
+   # this doubles as testing access to memory region
+   dumb_memset(ptr as U8[], 0, nb);
+
+   ptr
+);
+
+let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   let new-ptr = realloc(ptr as C<"void">[], nb) as ?[];
+
+   if new-ptr as USize == 0_sz {
+      fail(c"realloc fail");
+   };
+
+   # TODO: wrap counter adjustments in conditional compilation
+   safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
+   safe-alloc-block-count-monotonic-history = safe-alloc-block-count-monotonic-history + 1;
+
+   new-ptr
+);
+
+## this will fail() if len is 0
+let safe-alloc(len: USize, ty: Type<t>): t[] = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   let nb = len * (sizeof(t) as USize);
+   safe-alloc-impl(nb, type(t))
+);
+
+## this will fail() if len is 0
+let safe-realloc(ptr: t[], len: USize, ty: Type<t>): t[] = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   let nb = len * (sizeof(t) as USize);
+   safe-realloc-impl(ptr as ?[], nb) as t[]
+);
+
+# Disabling free here makes GC miscounts fail immediately due to lack of data overwrite
+# TODO: create a compiler option to disable free (--nofree)
+let safe-free(ptr: ?[]): Nil = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   # TODO: wrap counter adjustments in conditional compilation
+   safe-alloc-block-count = safe-alloc-block-count - 1;
+
+   #free(ptr as C<"void">[]);
+   ()
+);
+
+let :Blob open(i: x): x = ($fragment{
+   expression: i..expression,
+   frame: i..frame
+});
+
+let :Blob current_allocated_memory(): U64 = ($fragment{
+   expression: l"({struct mallinfo2 mi = mallinfo2(); mi.uordblks;})"
+});
