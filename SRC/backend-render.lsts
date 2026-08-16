@@ -280,7 +280,7 @@ let render(t: AST): Hashtable<CString,S> = (
          result;
       );
       App{ left:Var{key:c"mangle"}, right:App{ left:Var{vk=key}, right:AType{tt=tt} } } => (
-         mk-io-expression(render-identifier(vk, tt.slot(c"Type",1).l1))
+         mk-io-expression(render-identifier(vk, tt.l1))
       );
       App{ left:Var{key:c"mangle-pre"}, right:AType{tt=tt} } => (
          mk-io-expression(render-declaration(tt.l1).first)
