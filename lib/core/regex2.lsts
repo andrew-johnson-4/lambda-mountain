@@ -7,7 +7,7 @@ let :Blob .rm_so(t: C<"regmatch_t">): U64 = ($fragment{
 });
 let :Blob .rm_eo(t: C<"regmatch_t">): U64 = ($fragment{
    frame: t..frame,
-   expression: (l"("; t..expression; l".rm_eo)");
+   expression: (l"("; t..expression; l".rm_eo)")
 });
 
 declare-binop( $"set.rm_so", raw-type(C<"regmatch_t">), raw-type(U64), raw-type(Nil), ( l"("; x; l".rm_so="; y;  l")"; ) );
