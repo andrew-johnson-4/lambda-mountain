@@ -37,6 +37,8 @@ let clone-rope-impl(s: S, out: Vector<U8>): Vector<U8> = (
    out
 );
 
+let or(l: S, r: S): S = if non-zero(l) then l else r;
+
 let $"+"(l: S, r: S): S = (
    if non-zero(r) then (
       if non-zero(l)
