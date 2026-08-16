@@ -282,8 +282,20 @@ let render(t: AST): Hashtable<CString,S> = (
       App{ left:Var{key:c"mangle"}, right:App{ left:Var{vk1=key}, right:AType{tt=tt} } } => (
          mk-io-expression(render-identifier(vk1, tt.l1))
       );
-      App{ left:Var{key:c"mangle"}, right:App{ left:App{ left:Lit{key:c":"}, right:App{ left:Var{vk2=key}, right:AType{} } }, right:AType{tt=tt} } } => (
+      App{ left:Var{ key:c"mangle" }, right: App {
+         left: App {
+            left: Lit { key: c":" },
+            right: App {
+               left: Var { vk2=key },
+               right: AType {}
+            }
+         },
+         right: AType { tt=tt }
+      } } => (
          mk-io-expression(render-identifier(vk2, tt.l1))
+      );
+      App{ left:Var{key:c"mangle"}, right=right } => (
+         fail("Unmatched mangle expression: \{right}\n");
       );
       App{ left:Var{key:c"mangle-pre"}, right:AType{tt=tt} } => (
          mk-io-expression(render-declaration(tt.l1).first)
