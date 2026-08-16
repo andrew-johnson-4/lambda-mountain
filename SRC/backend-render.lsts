@@ -334,13 +334,13 @@ let render(t: AST): Hashtable<CString,S> = (
          then (
             if typeof-term(right).is-datatype and typeof-term(left).is-datatype-or-cons-datatype
             then (lt + rt).set(c"expression", "\{lt.expression},\{rt.expression}")
-            else if not non-zero(lt.expression) or not non-zero(rt.expression) or not lt.is-datatype or not rt.is-datatype
+            else if not non-zero(lt.expression) or not non-zero(rt.expression) or not typeof-term(left).is-datatype or not typeof-term(right).is-datatype
             then (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
             else (lt + rt).set(c"expression", "({\{lt.expression};\{rt.expression};})")
          ) else if typeof-term(left).is-t(interned-tag-arrow,2)
            then (lt + rt).set(c"expression", "\{lt.expression}(\{rt.expression})")
-           else if not non-zero(lt.expression) or not non-zero(rt.expression) or not lt.is-datatype or not rt.is-datatype
-            then (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
+           else if not non-zero(lt.expression) or not non-zero(rt.expression) or not typeof-term(left).is-datatype or not typeof-term(right).is-datatype
+           then (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
            else (lt + rt).set(c"expression", "({\{lt.expression};\{rt.expression};})")
       );
       Fragment{kvs=kvs} => (
