@@ -188,7 +188,7 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
       if config-backend-v2 {
          body = mk-cons(body, mk-app(mk-var(c"mangle"), mk-cons(
             mk-lit(mangled-field-name3).ascript(t0(c"L") && t0(c"Literal")),
-            mk-atype(field-type)
+            mk-atype(t1(c"Type",field-type))
          )));
       } else {
          body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name3).ascript(t0(c"L") && t0(c"Literal"))) );
@@ -205,7 +205,7 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
       if config-backend-v2 {
          body = mk-cons(body, mk-app(mk-var(c"mangle"), mk-cons(
             mk-lit(mangled-field-name4).ascript(t0(c"L") && t0(c"Literal")),
-            mk-atype(field-type)
+            mk-atype(t1(c"Type",field-type))
          )));
       } else {
          body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name4).ascript(t0(c"L") && t0(c"Literal"))) );
