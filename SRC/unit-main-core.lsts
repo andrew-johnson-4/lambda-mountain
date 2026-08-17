@@ -35,6 +35,7 @@ let show-ast-count = false;
 let ast-parsed-count = 0_sz;
 let ast-typed-count = 0_sz;
 let config-print-ast = false;
+let config-backend-v2 = false;
 
 let main(argc: C<"int">, argv: CString[]): Nil = (
    let argi = 1_sz;
@@ -57,7 +58,7 @@ let main(argc: C<"int">, argv: CString[]): Nil = (
             highlight = false;
          );
          c"--stripdebug" => config-strip-debug = true;
-         c"--backend-v2" => plugin-current-backend = &render-plugin;
+         c"--backend-v2" => ( plugin-current-backend = &render-plugin; config-backend-v2 = true; );
          c"--showalloc" => show-alloc-count = true;
          c"--showallocgen" => show-alloc-count-in-program = true;
          c"--showastcount" => show-ast-count = true;
