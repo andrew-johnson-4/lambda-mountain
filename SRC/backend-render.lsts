@@ -466,7 +466,7 @@ let render-cstring(cs: CString): String = (
 );
 
 let render(tt: Type): String = (
-   let result = render-internal(tt.rewrite-type-alias.rewrite-opaque-type-alias);
+   let result = render-internal(tt.rewrite-type-alias.rewrite-opaque-type-alias.without-sized-if-secondary);
    result
 );
 let render-symbolic(tt: Type): String = (
