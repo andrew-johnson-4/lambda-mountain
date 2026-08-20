@@ -12,7 +12,7 @@ import regex.h;
 let :FFI mktemp(template: U8[]): U8[] = ();
 let :FFI write(ft: USize, buf: C<"void">[], count: USize): USize;
 
-import lib/core/l.lsts;
+import lib/core/l2.lsts;
 import lib/core/nil.lsts;
 import lib/core/never.lsts;
 import lib/core/phi2.lsts;

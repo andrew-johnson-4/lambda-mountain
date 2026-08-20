@@ -139,6 +139,146 @@ let :Blob current_allocated_memory(): U64 = (
     $":expression"($":expression"(l"({struct mallinfo2 mi = mallinfo2(); mi.uordblks;})"))
 );
 
+declare-binop-retain( $"[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), ( l"("; x; l"["; y; l"])"; ) );
+declare-ternop( $"set[]", raw-type(base-type[]), raw-type(USize), raw-type(base-type), raw-type(Nil), ( l"("; x; l"["; y; l"]="; z; l")"; ) );
+
+declare-binop( $"!=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"!="; y; l")"; ) );
+declare-binop( $"==", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"=="; y; l")"; ) );
+declare-binop( $"<",  raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"<"; y; l")"; ) );
+declare-binop( $"<=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l"<="; y; l")"; ) );
+declare-binop( $">",  raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l">"; y; l")"; ) );
+declare-binop( $">=", raw-type(base-type[]), raw-type(base-type[]), raw-type(Bool), ( l"("; x; l">="; y; l")"; ) );
+
+declare-binop( $"+", raw-type(base-type[]), raw-type(USize), raw-type(base-type[]), ( l"("; x; l"+"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(USize), raw-type(base-type[]), ( l"("; x; l"-"; y; l")"; ) );
+declare-binop( $"-", raw-type(base-type[]), raw-type(base-type[]), raw-type(USize), ( l"("; x; l"-"; y; l")"; ) );
+
+declare-unop( $"&", raw-type(t+MustNotRetain), raw-type(t[]), (l"(&"; x; l")";) );
+declare-unop( $".void-pointer", raw-type(?[]), raw-type(C<"void">[]), x );
+
+let mark-memory-as-safe(ptr: t[], len: USize): Nil = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   while len > 0_sz {
+      let ignored = ptr[0_sz];
+      len = len - 1_sz;
+      ptr = ((ptr as U8[]) + 1_sz) as t[];
+   };
+);
+
+# TODO: configure this with conditional compilation to remove if unused
+# EXAMPLE: # if CFG.debug
+#          let safe-alloc-block-count = 0_u64;
+#          let safe-alloc-block-count-monotonic = 0_u64;
+#          # endif
+# safe-alloc-block-count is an increment/decrement counter to track active malloc blocks
+# safe-alloc-block-count-monotonic is an increment-only counter to track historical malloc blocks
+let safe-alloc-block-count = 0_u64;
+let safe-alloc-block-count-monotonic = 0_u64;
+let safe-alloc-block-count-monotonic-history = 0_u64;
+
+let safe-alloc-semaphore = false;
+
+#let alloc-type-counter = {} : Hashtable<CString,(U64,U64)>;
+
+#let print-allocation-counts() = (
+#   print("Allocation Counts\n");
+#   print("Total memory usage: \{current_allocated_memory()}\n");
+#   let h-capacity = alloc-type-counter.data.capacity;
+#   let h-i = 0_sz;
+#   while h-i < h-capacity {
+#      (let h-key, let h-count-size) = alloc-type-counter.data[h-i];
+#      (let h-count, let h-size) = h-count-size;
+#      if non-zero(h-key) {
+#         print("\{h-key} x \{h-count} = \{h-size}\n");
+#      };
+#      h-i = h-i + 1;
+#   };
+#);
+
+let safe-alloc-impl(nb: USize, tt: Type<t>): t[] = (
+   # TODO: wrap counter adjustments in conditional compilation
+   safe-alloc-block-count = safe-alloc-block-count + 1;
+   safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
+   safe-alloc-block-count-monotonic-history = safe-alloc-block-count-monotonic-history + 1;
+
+   #let tk = type(t).into(type(CString));
+   #if tk != c"SparseOwnedData<Tuple<Tuple<U64,U64>,C<\"char\">[],HashtableRowExists>>" {
+   #   (let running-count, let running-size) = alloc-type-counter.lookup(tk, (0_u64, 0_u64));
+   #   running-count = running-count + 1;
+   #   running-size = running-size + nb;
+   #   alloc-type-counter = alloc-type-counter.bind(tk, (running-count, running-size));
+   #};
+   # TODO: config flag or remove
+
+   # BEFORE CHANGING THIS: talk to alex
+
+   let ptr = malloc(nb) as t[];
+
+   if ptr as USize == 0_sz {
+      fail(c"malloc fail");
+   };
+
+   # Zero Out Memory
+   # this doubles as testing access to memory region
+   dumb_memset(ptr as U8[], 0, nb);
+
+   ptr
+);
+
+let safe-realloc-impl(ptr: ?[], nb: USize): ?[] = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   let new-ptr = realloc(ptr as C<"void">[], nb) as ?[];
+
+   if new-ptr as USize == 0_sz {
+      fail(c"realloc fail");
+   };
+
+   # TODO: wrap counter adjustments in conditional compilation
+   safe-alloc-block-count-monotonic = safe-alloc-block-count-monotonic + 1;
+   safe-alloc-block-count-monotonic-history = safe-alloc-block-count-monotonic-history + 1;
+
+   new-ptr
+);
+
+## this will fail() if len is 0
+let safe-alloc(len: USize, ty: Type<t>): t[] = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   let nb = len * (sizeof(t) as USize);
+   safe-alloc-impl(nb, type(t))
+);
+
+## this will fail() if len is 0
+let safe-realloc(ptr: t[], len: USize, ty: Type<t>): t[] = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   let nb = len * (sizeof(t) as USize);
+   safe-realloc-impl(ptr as ?[], nb) as t[]
+);
+
+# Disabling free here makes GC miscounts fail immediately due to lack of data overwrite
+# TODO: create a compiler option to disable free (--nofree)
+let safe-free(ptr: ?[]): Nil = (
+   # BEFORE CHANGING THIS: talk to alex
+
+   # TODO: wrap counter adjustments in conditional compilation
+   safe-alloc-block-count = safe-alloc-block-count - 1;
+
+   #free(ptr as C<"void">[]);
+   ()
+);
+
+let :Blob open(i: x): x = ($fragment{
+   expression: i..expression,
+   frame: i..frame
+});
+
+let :Blob current_allocated_memory(): U64 = ($fragment{
+   expression: l"({struct mallinfo2 mi = mallinfo2(); mi.uordblks;})"
+});
+
 typed macro macro::backend::render(t: macro::constant): lazy = (
    t
 );
@@ -388,14 +528,14 @@ import regex.h;
 let :FFI mktemp(template: U8[]): U8[] = ();
 let :FFI write(ft: USize, buf: C<"void">[], count: USize): USize;
 
-import lib/core/l.lsts;
+import lib/core/l2.lsts;
 import lib/core/nil.lsts;
 import lib/core/never.lsts;
-import lib/core/phi.lsts;
+import lib/core/phi2.lsts;
 import lib/core/platform-macros2.lsts;
 import lib/core/common-macros.lsts;
 import lib/core/backend-macros.lsts;
-import lib/core/primitives.lsts;
+import lib/core/primitives2.lsts;
 import lib/core/bool.lsts;
 import lib/core/u8.lsts;
 import lib/core/u16.lsts;
@@ -408,7 +548,7 @@ import lib/core/i64.lsts;
 import lib/core/sized.lsts;
 import lib/core/usize.lsts;
 import lib/core/cstring.lsts;
-import lib/core/array.lsts;
+import lib/core/array2.lsts;
 import lib/core/io.lsts;
 import lib/core/cmp.lsts;
 import lib/core/c_int.lsts;
@@ -498,7 +638,7 @@ import lib/core/s.lsts;
 import lib/core/hashtable.lsts;
 import lib/core/persistent-btree.lsts;
 import lib/core/set.lsts;
-import lib/core/regex.lsts;
+import lib/core/regex2.lsts;
 import lib/core/functional.lsts;
 
 type opaque alias Bool = C<"uint8_t">;
@@ -1824,6 +1964,19 @@ let :Blob mangle-post(t: Type<Any>): L;
 
 let :Blob import(t: L): Nil;
 
+type L suffix _l;
+
+let :Blob $":expression"(x0: Any): L;
+let :Blob $":frame"(x0: Any): L;
+
+let :Blob $":function-id"(x: ImplicitContext): L;
+
+let :Blob mangle(t: L, tt: Type<Any>): L;
+let :Blob mangle-pre(t: Type<Any>): L;
+let :Blob mangle-post(t: Type<Any>): L;
+
+let :Blob import(t: L): Nil;
+
 type List<x> implies MustRetain, MustRelease zero LEOF = LEOF | LCons { head: x, tail: OneOwnedData<List<x>>[] };
 
 # new allocations = 1
@@ -2449,6 +2602,83 @@ let .release(x: xt): Nil = (
    mark-as-released(x);
 );
 
+type phi MustRelease = ToRelease{ promise:'a } | Released;
+
+let :Blob mark-as-released(x: x+(MustRelease::ToRelease<'a> ~> MustRelease::Released)+MustNotRetain): Nil = ($fragment{
+   frame: x..frame,
+   expression: x..expression
+});
+let :Blob mark-as-released(x: x+(MustRelease::Released ~> MustRelease::Released)+MustNotRetain): Nil = ($fragment{
+   frame: x..frame,
+   expression: x..expression
+});
+let :Blob mark-as-released(x: x): Nil = ($fragment{
+   frame: x..frame,
+   expression: x..expression
+});
+
+let :Blob destroy(x: x+MustNotRetain): Nil = ($fragment{
+   expression: (
+      l"memset(&"; x..expression; l",0,sizeof "; x..expression; l");"
+   )
+});
+
+let .retain(x: xt): xt = (
+   for case in $cases-of(x) {
+      if x.discriminator-case-tag==(x as case).discriminator-case-tag {
+         for field in $fields-of(x as case) {
+            if typeof( macro::concat($".", field)(x as case) ) <: type(MustRetain) {
+               mark-as-released( macro::concat($".", field)(x as case).retain );
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(OwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  mark-as-released( macro::concat($".", field)(x as case).retain );
+               }
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(OneOwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  mark-as-released( macro::concat($".", field)(x as case).retain );
+               }
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(SparseOwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  mark-as-released( macro::concat($".", field)(x as case).retain );
+               }
+            };
+         };
+      };
+   };
+   x
+);
+
+let .release(x: xt): Nil = (
+   for case in $cases-of(x) {
+      if x.discriminator-case-tag==(x as case).discriminator-case-tag {
+         for field in $fields-of(x as case) {
+            if typeof( macro::concat($".", field)(x as case) ) <: type(MustRetain) {
+               macro::concat($".", field)(x as case).release;
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(OwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  macro::concat($".", field)(x as case).release;
+               }
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(OneOwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  macro::concat($".", field)(x as case).release;
+               }
+            };
+            if typeof( macro::concat($".", field)(x as case) ) <: type(SparseOwnedData<?>[]) {
+               if macro::concat($".", field)(x as case) as USize != 0 {
+                  macro::concat($".", field)(x as case).release;
+               }
+            };
+         };
+      };
+   };
+   mark-as-released(x);
+);
+
 typed macro declare-zop(op-alias: lazy, r-type: lazy, op-expr: lazy): lazy = {
    let :Blob op-alias(): r-type = (
       $":expression"(op-expr);
@@ -2564,6 +2794,46 @@ declare-binop( $"primitive::field-set", raw-type(base-type+MustNotRetain), raw-t
 declare-unop-retain( $"primitive::field-get-indirect", raw-type(base-type[]+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), ( l"("; x; l"->"; mangle(field-name : L); l")"; ) );
 declare-binop( $"primitive::field-set-indirect", raw-type(base-type[]+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), raw-type(Nil), ( l"("; x; l"->"; mangle(field-name : L); l"="; y; l")"; ) );
 
+declare-unop( $"cdecl::return", raw-type(Any), raw-type(Nil), (l"return "; x; l";";) );
+declare-unop( $"cdecl::return", raw-type(Nil), raw-type(Nil), (x; l";";) );
+
+declare-binop( mov, raw-type(datatype-rhs), raw-type(datatype-lhs+MustNotFresh+MustNotMove+MustNotRetain+MustReleaseAfterCall+MustNotRewrite), raw-type(Nil), ( l"({"; y; l"="; x; l";({});})"; ) );
+
+# needs to be declared to prevent a special case during inference
+# this only needs to be declared if you want to support casting type information into String literals
+# EXAMPLE: print(typeof(x))
+declare-binop( $".into", type(Any), type(CString), raw-type(CString), () );
+
+let :Blob $"primitive::while"(cond: Bool, body: Any): Nil = ($fragment{
+   frame: (cond..frame; body..frame),
+   expression: (
+      l"({while("; cond..expression; l"){"; body..expression; l";};})";
+   )
+});
+
+let :Blob $"primitive::if"(f: Any, t: Any, c: Bool): Nil = ($fragment{
+   frame: (c..frame; t..frame; f..frame),
+   expression: (
+      l"("; c..expression; l"?"; t..expression; l":"; f..expression; l")"
+   )
+});
+
+let :Blob $"primitive::call"(ictx: ImplicitContext, args: Any): Nil = ($fragment{
+   frame: (ictx..frame; args..frame),
+   expression: (
+      l"("; ictx..function-id; l"("; args..expression; l"))"
+   )
+});
+
+declare-unop( $".discriminator-case-tag", raw-type(LMStruct+MustNotRetain+MustReleaseAfterCall+CaseNumber<cn>), raw-type(USize), ( l"("; cn : L; l")"; ) );
+declare-unop( $".discriminator-case-tag", raw-type(LMStruct+MustNotRetain+MustReleaseAfterCall), raw-type(USize), ( l"("; x; l".discriminator_case_tag)"; ) );
+
+declare-unop-retain( $"primitive::field-get", raw-type(base-type+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), ( l"("; x; l"."; mangle(field-name : L, type(field-type)); l")"; ) );
+declare-binop( $"primitive::field-set", raw-type(base-type+MustNotRetain), raw-type(field-type), raw-type(Nil), ( l"("; x; l"."; mangle(field-name : L, type(field-type)); l"="; y; l")"; ) );
+
+declare-unop-retain( $"primitive::field-get-indirect", raw-type(base-type[]+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), ( l"("; x; l"->"; mangle(field-name : L, type(field-type)); l")"; ) );
+declare-binop( $"primitive::field-set-indirect", raw-type(base-type[]+MustNotRetain+MustReleaseAfterCall), raw-type(field-type), raw-type(Nil), ( l"("; x; l"->"; mangle(field-name : L, type(field-type)); l"="; y; l")"; ) );
+
 type Regex suffix _rgx;
 
 let :Blob .rm_so(t: C<"regmatch_t">): U64 = (
@@ -2574,6 +2844,107 @@ let :Blob .rm_eo(t: C<"regmatch_t">): U64 = (
    $":frame"( $":frame"(t) );
    $":expression"( l"("; $":expression"(t); l".rm_eo)"; );
 );
+
+declare-binop( $"set.rm_so", raw-type(C<"regmatch_t">), raw-type(U64), raw-type(Nil), ( l"("; x; l".rm_so="; y;  l")"; ) );
+declare-binop( $"set.rm_eo", raw-type(C<"regmatch_t">), raw-type(U64), raw-type(Nil), ( l"("; x; l".rm_eo="; y;  l")"; ) );
+
+declare-ternop( $"set.rm_so", raw-type(C<"regmatch_t">[]), raw-type(USize), raw-type(U64), raw-type(Nil), ( l"("; x; l"["; y; l"].rm_so="; z;  l")"; ) );
+declare-ternop( $"set.rm_eo", raw-type(C<"regmatch_t">[]), raw-type(USize), raw-type(U64), raw-type(Nil), ( l"("; x; l"["; y; l"].rm_eo="; z;  l")"; ) );
+
+declare-zop( $"reg_startend", raw-type(C<"int">), l"REG_STARTEND" );
+declare-zop( $"reg_nomatch", raw-type(C<"int">), l"REG_NOMATCH" );
+
+let .has-prefix(text: String, rgx: Regex): Bool = (
+   # TODO: fix this mess. The preprocessor is unpacking these erroneously
+   # macros 2.0 doesn't have this problem, but this code still needs to be updated after swapping
+   let a1 = &rgx as C<"regex_t">[];
+   let a2 = (text.data.data + text.start-offset) as C<"char">[];
+   let a3 = 0 as C<"size_t">;
+   let a4 = () : C<"regmatch_t">[1];
+   a4[0].rm_so = 0;
+   a4[0].rm_eo = text.length;
+   let a5 = reg_startend();
+   let status = regexec(
+      a1,
+      a2,
+      a3,
+      a4 as C<"regmatch_t">[],
+      a5
+   );
+   status != reg_nomatch() and a4[0].rm_so==0
+);
+
+let $"=="(text: CString, rgx: Regex): Bool = (
+   let matches = () : C<"regmatch_t">[1];
+   let a1 = &rgx as C<"regex_t">[];
+   let a2 = text as C<"char">[];
+   let a3 = 1 as C<"size_t">;
+   let a4 = matches as C<"regmatch_t">[];
+   let a5 = 0 as C<"int">;
+   let status = regexec(
+      a1,
+      a2,
+      a3,
+      a4,
+      a5
+   );
+   status != reg_nomatch() and matches[0].rm_so==0 and matches[0].rm_eo==text.length
+);
+
+let .remove-prefix(text: String, rgx: Regex): String? = (
+   let matches = () : C<"regmatch_t">[1];
+   matches[0].rm_so = 0;
+   matches[0].rm_eo = text.length;
+   let a1 = &rgx as C<"regex_t">[];
+   let a2 = (text.data.data + text.start-offset) as C<"char">[];
+   let a3 = 1 as C<"size_t">;
+   let a4 = matches as C<"regmatch_t">[];
+   let a5 = reg_startend();
+   let status = regexec(
+      a1,
+      a2,
+      a3,
+      a4,
+      a5
+   );
+   if status == reg_nomatch() then (None : String?)
+   else if matches[0].rm_so != 0 then (None : String?)
+   else if matches[0].rm_eo == 0 then (None : String?)
+   else Some(text[matches[0].rm_eo as I64 : ]);
+);
+
+let .get-prefix(text: String, rgx: Regex): String? = (
+   let matches = () : C<"regmatch_t">[1];
+   matches[0].rm_so = 0;
+   matches[0].rm_eo = text.length;
+   let a1 = &rgx as C<"regex_t">[];
+   let a2 = (text.data.data + text.start-offset) as C<"char">[];
+   let a3 = 1 as C<"size_t">;
+   let a4 = matches as C<"regmatch_t">[];
+   let a5 = reg_startend();
+   let status = regexec(
+      a1,
+      a2,
+      a3,
+      a4,
+      a5
+   );
+   if status == reg_nomatch() then (None : String?)
+   else if matches[0].rm_so != 0 then (None : String?)
+   else if matches[0].rm_eo == 0 then (None : String?)
+   else Some(text[0_i64 : matches[0].rm_eo as I64])
+);
+
+type Regex suffix _rgx;
+
+let :Blob .rm_so(t: C<"regmatch_t">): U64 = ($fragment{
+   frame: t..frame,
+   expression: (l"("; t..expression; l".rm_so)")
+});
+let :Blob .rm_eo(t: C<"regmatch_t">): U64 = ($fragment{
+   frame: t..frame,
+   expression: (l"("; t..expression; l".rm_eo)")
+});
 
 declare-binop( $"set.rm_so", raw-type(C<"regmatch_t">), raw-type(U64), raw-type(Nil), ( l"("; x; l".rm_so="; y;  l")"; ) );
 declare-binop( $"set.rm_eo", raw-type(C<"regmatch_t">), raw-type(U64), raw-type(Nil), ( l"("; x; l".rm_eo="; y;  l")"; ) );
@@ -2702,6 +3073,8 @@ let clone-rope-impl(s: S, out: Vector<U8>): Vector<U8> = (
    };
    out
 );
+
+let or(l: S, r: S): S = if non-zero(l) then l else r;
 
 let $"+"(l: S, r: S): S = (
    if non-zero(r) then (
@@ -5092,7 +5465,7 @@ let render-direct-type-declaration(t: AST): String = (
       for Tuple{case-tag1=first, case-fields=second} in (td as Tag::Typedef).cases {
          if case-tag1 == c"" {
             for Tuple{field-name1=first, field-type=second} in case-fields {
-               let mangled-field-name1 = "LM_0_" + render-identifier(field-name1);
+               let mangled-field-name1 = "0_\{field-name1}";
                field-type = tctx.substitute(field-type);
                decls = "\{decls}\t\{render-declaration(mangled-field-name1,field-type,mk-nil())}\n";
             }
@@ -5106,7 +5479,7 @@ let render-direct-type-declaration(t: AST): String = (
             if case-tag2 != c"" {
                if case-fields.length > 0 then decls = "\{decls}\t\tstruct{\n";
                for Tuple{field-name2=first, field-type=second} in case-fields {
-                  let mangled-field-name2 = "LM_\{case-number}_\{render-identifier(field-name2)}";
+                  let mangled-field-name2 = "\{case-number}_\{field-name2}";
                   field-type = tctx.substitute(field-type);
                   decls = "\{decls}\t\t\t\{render-declaration(mangled-field-name2,field-type,mk-nil())}\n";
                };
@@ -5402,6 +5775,21 @@ let render(t: AST): Hashtable<CString,S> = (
          };
          result;
       );
+      App{ left:Var{key:c"mangle"}, right:App{ left:Var{vk1=key}, right:AType{tt=tt} } } => (
+         mk-io-expression(render-identifier(vk1, tt.l1))
+      );
+      App{ left:Var{ key:c"mangle" }, right: App {
+         left: App {
+            left: Lit { key: c":" },
+            right: App {
+               left: Var { vk2=key },
+               right: AType {}
+            }
+         },
+         right: AType { tt=tt }
+      } } => (
+         mk-io-expression(render-identifier(vk2, tt.l1))
+      );
       App{ left:Var{key:c"mangle-pre"}, right:AType{tt=tt} } => (
          mk-io-expression(render-declaration(tt.l1).first)
       );
@@ -5442,25 +5830,31 @@ let render(t: AST): Hashtable<CString,S> = (
       App{left=left, right=right} => (
          let lt = render(left);
          let rt = render(right);
-         let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
-         let fnc = typeof-term(left);
-         if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
+         let fkey = var-name-if-var-or-lit(left);
+         let tr = Some(mk-tctx()).find-callable(fkey, typeof-term(right), t, typeof-term(t), false);
+         let ftt = tr.get-or(NullTypeContextRow).dt-or-zero;
+         let m = if ftt.is-t(interned-tag-cffi,0) then fkey.into(type(String)) else render-identifier(fkey, ftt);
+         if non-zero(tr) and ftt.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
             let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
             match tctx.beta-substitute(fterm.range) {
                App{ left:Lit{key:c":"}, right:App{ f=left:Fragment{}, right:AType{} } } => render(f);
                f => render(f);
             };
-         } else if var-name-if-var-or-lit(left).has-prefix(c"..") {
+         } else if fkey.has-prefix(c"..") {
             mk-io-expression(rt.get(tail(tail(var-name-if-var-or-lit(left)))))
          } else if typeof-term(t).is-t(interned-tag-cons,2)
          then (
             if typeof-term(right).is-datatype and typeof-term(left).is-datatype-or-cons-datatype
             then (lt + rt).set(c"expression", "\{lt.expression},\{rt.expression}")
-            else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
-         ) else if typeof-term(left).is-t(interned-tag-arrow,2)
-           then (lt + rt).set(c"expression", "\{lt.expression}(\{rt.expression})")
-           else (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
+            else if not non-zero(lt.expression) or not non-zero(rt.expression) or not typeof-term(left).is-datatype or not typeof-term(right).is-datatype
+            then (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
+            else (lt + rt).set(c"expression", "({\{lt.expression};\{rt.expression};})")
+         ) else if ftt.is-t(interned-tag-arrow,2)
+           then rt.set(c"expression", "\{m}(\{rt.expression})")
+           else if not non-zero(lt.expression) or not non-zero(rt.expression) or not typeof-term(left).is-datatype or not typeof-term(right).is-datatype
+           then (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
+           else (lt + rt).set(c"expression", "({\{lt.expression};\{rt.expression};})")
       );
       Fragment{kvs=kvs} => (
          let f = mk-io-fragment();
@@ -5604,10 +5998,10 @@ let render-internal(tt: Type): String = (
       TGround{tag:interned-tag-c, parameters:[TGround{ctag=tag}..]} => untern(ctag).into(type(String));
       TGround{tag:interned-tag-sized, parameters:[_..]} => "";
       TGround{tag:interned-tag-arrow, parameters:[_.._..]} => (
-         "LM_" + render-identifier(tt.into(type(String)));
+         "LMT_" + render-identifier(tt.into(type(String)));
       );
       TGround{tag2=tag, parameters=parameters} => (
-         if not tt.is-datatype then "" else ("LM_" + render-identifier(tt.into(type(String))));
+         if not tt.is-datatype then "" else ("LMT_" + render-identifier(tt.into(type(String))));
       );
       _ => "";
    }
@@ -9889,7 +10283,14 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
       let mangled-field-name3 = c"0_" + field-name8;
       body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")) );
       body = mk-cons(body, mk-lit(c".").ascript(t0(c"L") && t0(c"Literal")));
-      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name3).ascript(t0(c"L") && t0(c"Literal"))) );
+      if config-backend-v2 {
+         body = mk-cons(body, mk-app(mk-var(c"mangle"), mk-cons(
+            mk-lit(mangled-field-name3).ascript(t0(c"L") && t0(c"Literal")),
+            mk-atype(t1(c"Type",field-type))
+         )));
+      } else {
+         body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name3).ascript(t0(c"L") && t0(c"Literal"))) );
+      };
       body = mk-cons(body, mk-lit(c"=").ascript(t0(c"L") && t0(c"Literal")));
       body = mk-cons(body, mk-var(mangled-field-name3) );
       body = mk-cons(body, mk-lit(c";").ascript(t0(c"L") && t0(c"Literal")));
@@ -9899,7 +10300,14 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
       let mangled-field-name4 = case-number.into(type(CString)) + c"_" + field-name9;
       body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")) );
       body = mk-cons(body, mk-lit(c".").ascript(t0(c"L") && t0(c"Literal")));
-      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name4).ascript(t0(c"L") && t0(c"Literal"))) );
+      if config-backend-v2 {
+         body = mk-cons(body, mk-app(mk-var(c"mangle"), mk-cons(
+            mk-lit(mangled-field-name4).ascript(t0(c"L") && t0(c"Literal")),
+            mk-atype(t1(c"Type",field-type))
+         )));
+      } else {
+         body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name4).ascript(t0(c"L") && t0(c"Literal"))) );
+      };
       body = mk-cons(body, mk-lit(c"=").ascript(t0(c"L") && t0(c"Literal")));
       body = mk-cons(body, mk-var(mangled-field-name4) );
       body = mk-cons(body, mk-lit(c";").ascript(t0(c"L") && t0(c"Literal")));
@@ -11411,6 +11819,7 @@ let show-ast-count = false;
 let ast-parsed-count = 0_sz;
 let ast-typed-count = 0_sz;
 let config-print-ast = false;
+let config-backend-v2 = false;
 
 let main(argc: C<"int">, argv: CString[]): Nil = (
    let argi = 1_sz;
@@ -11433,7 +11842,7 @@ let main(argc: C<"int">, argv: CString[]): Nil = (
             highlight = false;
          );
          c"--stripdebug" => config-strip-debug = true;
-         c"--backend-v2" => plugin-current-backend = &render-plugin;
+         c"--backend-v2" => ( plugin-current-backend = &render-plugin; config-backend-v2 = true; );
          c"--showalloc" => show-alloc-count = true;
          c"--showallocgen" => show-alloc-count-in-program = true;
          c"--showastcount" => show-ast-count = true;

@@ -279,6 +279,21 @@ let render(t: AST): Hashtable<CString,S> = (
          };
          result;
       );
+      App{ left:Var{key:c"mangle"}, right:App{ left:Var{vk1=key}, right:AType{tt=tt} } } => (
+         mk-io-expression(render-identifier(vk1, tt.l1))
+      );
+      App{ left:Var{ key:c"mangle" }, right: App {
+         left: App {
+            left: Lit { key: c":" },
+            right: App {
+               left: Var { vk2=key },
+               right: AType {}
+            }
+         },
+         right: AType { tt=tt }
+      } } => (
+         mk-io-expression(render-identifier(vk2, tt.l1))
+      );
       App{ left:Var{key:c"mangle-pre"}, right:AType{tt=tt} } => (
          mk-io-expression(render-declaration(tt.l1).first)
       );
@@ -319,16 +334,18 @@ let render(t: AST): Hashtable<CString,S> = (
       App{left=left, right=right} => (
          let lt = render(left);
          let rt = render(right);
-         let tr = Some(mk-tctx()).find-callable(var-name-if-var-or-lit(left), typeof-term(right), t, typeof-term(t), false);
-         let fnc = typeof-term(left);
-         if non-zero(tr) and tr.get-or-panic.dt-or-zero.is-t(interned-tag-blob,0) {
+         let fkey = var-name-if-var-or-lit(left);
+         let tr = Some(mk-tctx()).find-callable(fkey, typeof-term(right), t, typeof-term(t), false);
+         let ftt = tr.get-or(NullTypeContextRow).dt-or-zero;
+         let m = if ftt.is-t(interned-tag-cffi,0) then fkey.into(type(String)) else render-identifier(fkey, ftt);
+         if non-zero(tr) and ftt.is-t(interned-tag-blob,0) {
             let fterm = tr.get-or-panic.blame-or-zero;
             let tctx = Some(mk-tctx()).apply-lhs(fterm.domain, right);
             match tctx.beta-substitute(fterm.range) {
                App{ left:Lit{key:c":"}, right:App{ f=left:Fragment{}, right:AType{} } } => render(f);
                f => render(f);
             };
-         } else if var-name-if-var-or-lit(left).has-prefix(c"..") {
+         } else if fkey.has-prefix(c"..") {
             mk-io-expression(rt.get(tail(tail(var-name-if-var-or-lit(left)))))
          } else if typeof-term(t).is-t(interned-tag-cons,2)
          then (
@@ -337,8 +354,8 @@ let render(t: AST): Hashtable<CString,S> = (
             else if not non-zero(lt.expression) or not non-zero(rt.expression) or not typeof-term(left).is-datatype or not typeof-term(right).is-datatype
             then (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
             else (lt + rt).set(c"expression", "({\{lt.expression};\{rt.expression};})")
-         ) else if typeof-term(left).is-t(interned-tag-arrow,2)
-           then (lt + rt).set(c"expression", "\{lt.expression}(\{rt.expression})")
+         ) else if ftt.is-t(interned-tag-arrow,2)
+           then rt.set(c"expression", "\{m}(\{rt.expression})")
            else if not non-zero(lt.expression) or not non-zero(rt.expression) or not typeof-term(left).is-datatype or not typeof-term(right).is-datatype
            then (lt + rt).set(c"expression", "\{lt.expression}\{rt.expression}")
            else (lt + rt).set(c"expression", "({\{lt.expression};\{rt.expression};})")
@@ -485,10 +502,10 @@ let render-internal(tt: Type): String = (
       TGround{tag:interned-tag-c, parameters:[TGround{ctag=tag}..]} => untern(ctag).into(type(String));
       TGround{tag:interned-tag-sized, parameters:[_..]} => "";
       TGround{tag:interned-tag-arrow, parameters:[_.._..]} => (
-         "LM_" + render-identifier(tt.into(type(String)));
+         "LMT_" + render-identifier(tt.into(type(String)));
       );
       TGround{tag2=tag, parameters=parameters} => (
-         if not tt.is-datatype then "" else ("LM_" + render-identifier(tt.into(type(String))));
+         if not tt.is-datatype then "" else ("LMT_" + render-identifier(tt.into(type(String))));
       );
       _ => "";
    }

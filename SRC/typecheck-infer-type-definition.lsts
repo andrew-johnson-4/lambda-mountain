@@ -185,7 +185,14 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
       let mangled-field-name3 = c"0_" + field-name8;
       body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")) );
       body = mk-cons(body, mk-lit(c".").ascript(t0(c"L") && t0(c"Literal")));
-      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name3).ascript(t0(c"L") && t0(c"Literal"))) );
+      if config-backend-v2 {
+         body = mk-cons(body, mk-app(mk-var(c"mangle"), mk-cons(
+            mk-lit(mangled-field-name3).ascript(t0(c"L") && t0(c"Literal")),
+            mk-atype(t1(c"Type",field-type))
+         )));
+      } else {
+         body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name3).ascript(t0(c"L") && t0(c"Literal"))) );
+      };
       body = mk-cons(body, mk-lit(c"=").ascript(t0(c"L") && t0(c"Literal")));
       body = mk-cons(body, mk-var(mangled-field-name3) );
       body = mk-cons(body, mk-lit(c";").ascript(t0(c"L") && t0(c"Literal")));
@@ -195,7 +202,14 @@ let infer-type-yield-constructor(base-type: Type, case-tag: CString, case-number
       let mangled-field-name4 = case-number.into(type(CString)) + c"_" + field-name9;
       body = mk-cons(body, mk-lit(return-id).ascript(t0(c"L") && t0(c"Literal")) );
       body = mk-cons(body, mk-lit(c".").ascript(t0(c"L") && t0(c"Literal")));
-      body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name4).ascript(t0(c"L") && t0(c"Literal"))) );
+      if config-backend-v2 {
+         body = mk-cons(body, mk-app(mk-var(c"mangle"), mk-cons(
+            mk-lit(mangled-field-name4).ascript(t0(c"L") && t0(c"Literal")),
+            mk-atype(t1(c"Type",field-type))
+         )));
+      } else {
+         body = mk-cons(body, mk-app(mk-var(c"mangle"),mk-lit(mangled-field-name4).ascript(t0(c"L") && t0(c"Literal"))) );
+      };
       body = mk-cons(body, mk-lit(c"=").ascript(t0(c"L") && t0(c"Literal")));
       body = mk-cons(body, mk-var(mangled-field-name4) );
       body = mk-cons(body, mk-lit(c";").ascript(t0(c"L") && t0(c"Literal")));
