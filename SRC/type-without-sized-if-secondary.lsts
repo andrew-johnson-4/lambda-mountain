@@ -1,0 +1,5 @@
+
+let .without-sized-if-secondary(tt: Type): Type = (
+   let tt2 = tt.without-slot(interned-tag-sized,1);
+   if tt2.is-datatype then tt2 else tt
+);

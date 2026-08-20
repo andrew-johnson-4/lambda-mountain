@@ -470,7 +470,7 @@ let render(tt: Type): String = (
    result
 );
 let render-symbolic(tt: Type): String = (
-   let result = render-internal(tt.rewrite-type-alias);
+   let result = render-internal(tt.rewrite-type-alias.without-sized-if-secondary);
    result
 );
 
