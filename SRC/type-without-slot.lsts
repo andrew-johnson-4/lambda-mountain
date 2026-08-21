@@ -7,9 +7,11 @@ let .without-slot(tt: Type, t-tag: TypeTagIntern, t-arity: U32): Type = (
             c = c.without-slot(t-tag, t-arity);
             if non-zero(c) then result = result.push(c);
          };
-         if result.length==0 then ta
+         let return = if result.length==0 then ta
          else if result.length==1 then result[0]
-         else tand(result)
+         else tand(result);
+         print("without slot \{tt} = \{return}\n");
+         return
       );
       TGround { tag=tag, parameters=parameters } => if tag==t-tag and parameters.length==t-arity then ta else tt;
       _ => tt;

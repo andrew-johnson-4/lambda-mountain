@@ -47,4 +47,3 @@ import SRC/type-simple-id.lsts;
 import SRC/type-with-only-tag.lsts;
 import SRC/type-has-t.lsts;
 import SRC/type-is-modifier.lsts;
-import SRC/type-without-sized-if-secondary.lsts;
