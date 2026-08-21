@@ -15,6 +15,7 @@ let .is-datatype(tt: Type): Bool = (
       );
       TGround{tag:interned-tag-c,parameters:[_..]} => true;
       TGround{tag:interned-tag-array,parameters:[_..inner..]} => inner.is-datatype;
+      TGround{tag:interned-tag-arrow,parameters:[_.._..]} => true;
       _ => (
          let gta = tt.ground-tag-and-arity;
          datatype-index.has(gta)

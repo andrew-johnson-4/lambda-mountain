@@ -1,0 +1,24 @@
+
+let .without-sized-if-secondary(tt: Type): Type = (
+   match tt {
+      TAnd { conjugate=conjugate } => (
+         let is-sized-primary = tt.datatype.is-t(interned-tag-sized,1);
+         let result = mk-vector(type(Type), 0);
+         for c in conjugate {
+            if not c.is-t(interned-tag-sized,1) or is-sized-primary
+            then result = result.push(c.without-sized-if-secondary);
+         };
+         if result.length==0 then ta
+         else if result.length==1 then result[0]
+         else tand(result);
+      );
+      TGround { tag=tag, parameters=parameters } => (
+         let new-parameters = mk-vector(type(Type));
+         for p in parameters {
+            new-parameters = new-parameters.push(p.without-sized-if-secondary);
+         };
+         ts(tag,new-parameters);
+      );
+      _ => tt;
+   }
+);

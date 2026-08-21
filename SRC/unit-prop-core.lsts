@@ -26,3 +26,4 @@ import SRC/prop-is-lone-tag.lsts;
 import SRC/prop-is-suffixed.lsts;
 import SRC/prop-global-is-seen.lsts;
 import SRC/prop-is-macro-head.lsts;
+import SRC/prop-type-simplify.lsts;

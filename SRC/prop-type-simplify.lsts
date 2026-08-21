@@ -1,0 +1,22 @@
+
+let .simplify(tt: Type): Type = (
+   if not tt.is-datatype then tt else (tt = tt.datatype; match tt {
+      TAnd{ conjugate=conjugate } => (
+         let result = mk-vector(type(Type));
+         for c in conjugate {
+            result = result.push(c.simplify);
+         };
+         if result.length==0 then ta
+         else if result.length==1 then result[0]
+         else tand(result);
+      );
+      TGround{ tag=tag, parameters=parameters } => (
+         let result = mk-vector(type(Type));
+         for c in parameters {
+            result = result.push(c.simplify);
+         };
+         ts(tag, result);         
+      );
+      _ => tt;
+   })
+);
