@@ -466,13 +466,15 @@ let render-cstring(cs: CString): String = (
 );
 
 let render(tt: Type): String = (
-   let result = render-internal(tt.rewrite-type-alias.rewrite-opaque-type-alias.without-sized-if-secondary);
-   print("Render type \{tt} = \{result}\n");
+   let rt = tt.rewrite-type-alias.rewrite-opaque-type-alias.without-sized-if-secondary;
+   let result = render-internal(rt);
+   print("Render type \{tt} , \{rt} = \{result}\n");
    result
 );
 let render-symbolic(tt: Type): String = (
-   let result = render-internal(tt.rewrite-type-alias.without-sized-if-secondary);
-   print("Render symbolic type \{tt} = \{result}\n");
+   let rt = tt.rewrite-type-alias.without-sized-if-secondary;
+   let result = render-internal(rt);
+   print("Render symbolic type \{tt} , \{rt} = \{result}\n");
    result
 );
 
