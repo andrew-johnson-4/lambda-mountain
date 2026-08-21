@@ -210,10 +210,14 @@ let render-global-declaration(t: AST): String = (
    result
 );
 
-let render-declaration(k: String, kt: Type, t: AST): String = (
+let render-declaration(k: String, kt: Type, t: AST): Hashtable<CString,S> = (
    (let prefix, let suffix) = render-declaration(kt);
+   let id = render-identifier(k,kt);
    let rt = render(t);
-   "\{prefix} \{render-identifier(k,kt)}\{suffix};\n";
+   rt = rt.set(c"frame", "\{rt.frame}\{prefix} \{id}\{suffix};\n");
+   if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void
+   then rt.set(c"expression", "({})");
+   else rt.set(c"expression", "({\{id}=\{rt.expression};})");
 );
 
 let render-global-declaration(k: String, kt: Type, t: AST): String = (
@@ -311,9 +315,7 @@ let render(t: AST): Hashtable<CString,S> = (
       App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => mk-io-expression("(sizeof(\{render(tt)}))");
       App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => (
          let vtt = typeof-term(rhs).datatype;
-         let decl = render-declaration(lname.into(type(String)), vtt, rhs);
-         count-global-namespace( render-identifier(lname,vtt), decl );
-         mk-io-expression(decl);
+         render-declaration(lname.into(type(String)), vtt, rhs);
       );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
          let cf = render(cond);
