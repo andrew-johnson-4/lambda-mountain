@@ -210,10 +210,16 @@ let render-global-declaration(t: AST): String = (
    result
 );
 
-let render-declaration(k: String, kt: Type, t: AST): String = (
+let render-declaration(k: String, kt: Type, t: AST): Hashtable<CString,S> = (
    (let prefix, let suffix) = render-declaration(kt);
+   let id = render-identifier(k,kt);
    let rt = render(t);
-   "\{prefix} \{render-identifier(k,kt)}\{suffix};\n";
+   if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void
+   then ();
+   else rt = rt.set(c"frame", "\{rt.frame}\{prefix} \{id}\{suffix};\n");
+   if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void
+   then rt.set(c"expression", "({})");
+   else rt.set(c"expression", "({\{id}=\{rt.expression};})");
 );
 
 let render-global-declaration(k: String, kt: Type, t: AST): String = (
@@ -279,20 +285,17 @@ let render(t: AST): Hashtable<CString,S> = (
          };
          result;
       );
-      App{ left:Var{key:c"mangle"}, right:App{ left:Var{vk1=key}, right:AType{tt=tt} } } => (
-         mk-io-expression(render-identifier(vk1, tt.l1))
-      );
       App{ left:Var{ key:c"mangle" }, right: App {
          left: App {
             left: Lit { key: c":" },
             right: App {
-               left: Var { vk2=key },
+               left: Lit { vk2=key },
                right: AType {}
             }
          },
          right: AType { tt=tt }
       } } => (
-         mk-io-expression(render-identifier(vk2, tt.l1))
+         mk-io-expression(render-identifier(vk2, tt.slot(interned-tag-type,1).l1))
       );
       App{ left:Var{key:c"mangle-pre"}, right:AType{tt=tt} } => (
          mk-io-expression(render-declaration(tt.l1).first)
@@ -311,9 +314,7 @@ let render(t: AST): Hashtable<CString,S> = (
       App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => mk-io-expression("(sizeof(\{render(tt)}))");
       App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => (
          let vtt = typeof-term(rhs).datatype;
-         let decl = render-declaration(lname.into(type(String)), vtt, rhs);
-         count-global-namespace( render-identifier(lname,vtt), decl );
-         mk-io-expression(decl);
+         render-declaration(lname.into(type(String)), vtt, rhs);
       );
       App{left:App{ left:App{ ifv=left:Var{key:c"if"}, cond=right }, tterm=right }, fterm=right} => (
          let cf = render(cond);
@@ -375,7 +376,9 @@ let render(t: AST): Hashtable<CString,S> = (
          let vtt = ftt.datatype;
          let m = if ftt.is-t(interned-tag-cffi,0) then key2.into(type(String)) else render-identifier(key2, vtt);
          # TODO: determine if this is a C global and passthrough, otherwise LM convention
-         mk-io-expression(m);
+         if ftt.is-t(interned-tag-nil,0) or ftt.is-t(interned-tag-never,0) or ftt <: type-c-void
+         then mk-io-expression("({})");
+         else mk-io-expression(m);
       );
       #AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
       AType{tt=tt} => mk-io-expression(render(tt));

@@ -115,7 +115,7 @@ let render-direct-type-declaration(t: AST): String = (
             for Tuple{field-name1=first, field-type=second} in case-fields {
                let mangled-field-name1 = "0_\{field-name1}";
                field-type = tctx.substitute(field-type);
-               decls = "\{decls}\t\{render-declaration(mangled-field-name1,field-type,mk-nil())}\n";
+               decls = "\{decls}\t\{render-declaration(mangled-field-name1,field-type,mk-nil()).frame}\n";
             }
          } else has-guarded-cases = true;
       };
@@ -129,7 +129,7 @@ let render-direct-type-declaration(t: AST): String = (
                for Tuple{field-name2=first, field-type=second} in case-fields {
                   let mangled-field-name2 = "\{case-number}_\{field-name2}";
                   field-type = tctx.substitute(field-type);
-                  decls = "\{decls}\t\t\t\{render-declaration(mangled-field-name2,field-type,mk-nil())}\n";
+                  decls = "\{decls}\t\t\t\{render-declaration(mangled-field-name2,field-type,mk-nil()).frame}\n";
                };
                if case-fields.length > 0 then decls = "\{decls}\t\t};\n";
                case-number = case-number + 1;
