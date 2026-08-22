@@ -1,6 +1,7 @@
 
 let uuid-counter = 0_u32;
 
+# 0 is not a valid id
 let iuid(): U32 = (
    uuid-counter = uuid-counter + 1;
    uuid-counter;

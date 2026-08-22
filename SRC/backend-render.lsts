@@ -108,7 +108,9 @@ let render-direct-function-declaration(exprs: S, t: AST): String = (
             not tt.is-t(interned-tag-cffi,0) and
             not typeof-term(f).is-open
          then (
+            variable-salt-forward-pass = {} : Hashtable<String,U32>;
             let rt = render-return(rhs);
+            variable-salt-forward-pass = {} : Hashtable<String,U32>;
             if key.key == c"main"
             then "\{render(typeof-term(f).range)} \{render-identifier(key.key, typeof-term(f))}(\{render-function-parameters(lhs)}){\{global-declaration-initializers}\{exprs}\{rt.frame}\{rt.expression}}\n"
             else "\{render(typeof-term(f).range)} \{render-identifier(key.key, typeof-term(f))}(\{render-function-parameters(lhs)}){\{exprs}\{rt.frame}\{rt.expression}}\n"
@@ -274,6 +276,12 @@ let count-global-namespace(k: String, v: String): Nil = (
    global-identifier-namespace-defined = global-identifier-namespace-defined.bind( k, v );
 );
 
+# variable salt is used to give unique salts to variables in different scopes
+# it works by assuming a depth first processing of the code to be generated
+# not having a salt means that the variable is not a local and is either a global or function parameter
+# this variable needs to be reset within each function scope
+let variable-salt-forward-pass = {} : Hashtable<String,U32>;
+
 let render(t: AST): Hashtable<CString,S> = (
    let result = match t {
       Seq{seq=seq} => (
@@ -313,6 +321,7 @@ let render(t: AST): Hashtable<CString,S> = (
       App{ left:Var{key:c"scope"}, st=right } => render(st);
       App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => mk-io-expression("(sizeof(\{render(tt)}))");
       App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => (
+         variable-salt-forward-pass = variable-salt-forward-pass.push(lname.into(type(String)), iuid());
          let vtt = typeof-term(rhs).datatype;
          render-declaration(lname.into(type(String)), vtt, rhs);
       );
@@ -434,12 +443,13 @@ let render-identifier(k: String): String = (
 );
 
 let render-identifier(k: CString, kt: Type): String = (
-   let result = render-identifier(k.into(type(String)), kt);
-   result
+   render-identifier(k.into(type(String)), kt);
 );
 
 let render-identifier(k: String, kt: Type): String = (
    let result = "LM_" + render-identifier(k) + "_" + render-identifier(render-symbolic(kt).replace(" ",""));
+   let salt = variable-salt-forward-pass.lookup(k, 0);
+   if salt > 0 then result = "\{result}_\{salt}";
    result
 );
 
