@@ -119,12 +119,13 @@ let render-direct-type-declaration(t: AST): String = (
             }
          } else has-guarded-cases = true;
       };
-      let case-number = 1_sz;
+
+      let case-number = 0_sz;
       if has-guarded-cases {
          decls = "\{decls}\tunsigned int discriminator_case_tag;\n";
          decls = "\{decls}\tunion{\n";
          for Tuple{case-tag2=first, case-fields=second} in (td as Tag::Typedef).cases {
-            if case-tag2 != c"" {
+            if case-tag2 != c"" and case-fields.length > 0 {
                if case-fields.length > 0 then decls = "\{decls}\t\tstruct{\n";
                for Tuple{field-name2=first, field-type=second} in case-fields {
                   let mangled-field-name2 = "\{case-number}_\{field-name2}";
@@ -132,8 +133,8 @@ let render-direct-type-declaration(t: AST): String = (
                   decls = "\{decls}\t\t\t\{render-declaration(mangled-field-name2,field-type,mk-nil()).frame}\n";
                };
                if case-fields.length > 0 then decls = "\{decls}\t\t};\n";
-               case-number = case-number + 1;
             }
+            case-number = case-number + 1;
          };
          decls = "\{decls}\t};\n";
       };
