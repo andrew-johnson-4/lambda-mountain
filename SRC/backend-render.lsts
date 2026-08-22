@@ -447,17 +447,17 @@ let render-identifier(k: CString, kt: Type): String = (
 );
 
 let render-identifier(k: String, kt: Type): String = (
-   let result = "LM_" + render-string(k) + "_" + render-string(render-symbolic(kt).replace(" ",""));
+   let result = "LM_" + render-identifier(k) + "_" + render-identifier(render-symbolic(kt).replace(" ",""));
    let salt = variable-salt-forward-pass.lookup(k, 0_u32);
    if salt > 0 then result = "\{result}_\{salt}";
    result
 );
 
-let render-string(cs: CString): String = (
-   cs.into(type(String))
+let render-string(cs: String): String = (
+   render-string(cs.into(type(CString)))
 );
 
-let render-string(cs: String): String = (
+let render-string(cs: CString): String = (
    let s = "\"";
    while non-zero(cs) { match cs {
       c"\""..  rest1 => (s = s + "\\\""; cs = tail(cs););
