@@ -321,7 +321,7 @@ let render(t: AST): Hashtable<CString,S> = (
       App{ left:Var{key:c"scope"}, st=right } => render(st);
       App{ left:Var{key:c"sizeof"}, right:AType{tt=tt} } => mk-io-expression("(sizeof(\{render(tt)}))");
       App{ left:Abs{lhs:Var{lname=key}, rhs:ASTNil{}}, rhs=right } => (
-         variable-salt-forward-pass = variable-salt-forward-pass.push(lname.into(type(String)), iuid());
+         variable-salt-forward-pass = variable-salt-forward-pass.bind(lname.into(type(String)), iuid());
          let vtt = typeof-term(rhs).datatype;
          render-declaration(lname.into(type(String)), vtt, rhs);
       );
@@ -335,7 +335,7 @@ let render(t: AST): Hashtable<CString,S> = (
       App{ left:Lit{key:c":"}, right:App{ left:Lit{cv=key}, right:AType{tt=tt} } } => (
          if tt <: type-cstring-literal or
             tt <: type-char-array-literal 
-         then mk-io-expression(render-cstring(cv))
+         then mk-io-expression(render-string(cv))
          else mk-io-expression(cv.into(type(String)))
       );
       App{ left:Lit{key:c":"}, right:App{ inner=left, right:AType{} } } => render(inner);
@@ -447,13 +447,17 @@ let render-identifier(k: CString, kt: Type): String = (
 );
 
 let render-identifier(k: String, kt: Type): String = (
-   let result = "LM_" + render-identifier(k) + "_" + render-identifier(render-symbolic(kt).replace(" ",""));
-   let salt = variable-salt-forward-pass.lookup(k, 0);
+   let result = "LM_" + render-string(k) + "_" + render-string(render-symbolic(kt).replace(" ",""));
+   let salt = variable-salt-forward-pass.lookup(k, 0_u32);
    if salt > 0 then result = "\{result}_\{salt}";
    result
 );
 
-let render-cstring(cs: CString): String = (
+let render-string(cs: CString): String = (
+   cs.into(type(String))
+);
+
+let render-string(cs: String): String = (
    let s = "\"";
    while non-zero(cs) { match cs {
       c"\""..  rest1 => (s = s + "\\\""; cs = tail(cs););
