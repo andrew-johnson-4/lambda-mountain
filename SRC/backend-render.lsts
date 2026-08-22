@@ -214,7 +214,9 @@ let render-declaration(k: String, kt: Type, t: AST): Hashtable<CString,S> = (
    (let prefix, let suffix) = render-declaration(kt);
    let id = render-identifier(k,kt);
    let rt = render(t);
-   rt = rt.set(c"frame", "\{rt.frame}\{prefix} \{id}\{suffix};\n");
+   if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void
+   then ();
+   else rt = rt.set(c"frame", "\{rt.frame}\{prefix} \{id}\{suffix};\n");
    if kt.is-t(interned-tag-nil,0) or kt.is-t(interned-tag-never,0) or kt <: type-c-void
    then rt.set(c"expression", "({})");
    else rt.set(c"expression", "({\{id}=\{rt.expression};})");
@@ -374,7 +376,9 @@ let render(t: AST): Hashtable<CString,S> = (
          let vtt = ftt.datatype;
          let m = if ftt.is-t(interned-tag-cffi,0) then key2.into(type(String)) else render-identifier(key2, vtt);
          # TODO: determine if this is a C global and passthrough, otherwise LM convention
-         mk-io-expression(m);
+         if ftt.is-t(interned-tag-nil,0) or ftt.is-t(interned-tag-never,0) or ftt <: type-c-void
+         then mk-io-expression("({})");
+         else mk-io-expression(m);
       );
       #AType{tt:TGround{tag:interned-tag-type,parameters:[p1..]}} => render(p1);
       AType{tt=tt} => mk-io-expression(render(tt));
